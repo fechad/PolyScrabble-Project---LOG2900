@@ -2,16 +2,20 @@
     min-height: 100vh;
     height: auto;
 }
-
+h1 {
+    color: aquamarine;
+    font-size: xx-large;
+    padding: 1px;
+}
 .justified {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
 }
 
 .button {
-    margin-top: 10px;
+    margin: 10px;
     text-align: center;
 }
 
