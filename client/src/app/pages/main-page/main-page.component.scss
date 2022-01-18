@@ -2,11 +2,17 @@
     min-height: 100vh;
     height: auto;
 }
-h1 {
+
+.middle {
+    vertical-align: middle;
+}
+
+.title {
+    margin: auto;
     color: aquamarine;
     font-size: xx-large;
-    padding: 1px;
 }
+
 .justified {
     display: flex;
     flex-direction: column;
