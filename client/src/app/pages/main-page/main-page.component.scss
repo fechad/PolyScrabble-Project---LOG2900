@@ -1,6 +1,7 @@
 .container {
     min-height: 100vh;
     height: auto;
+    background-color: darkseagreen;
 }
 
 .middle {
@@ -23,6 +24,10 @@
 .button {
     margin: 10px;
     text-align: center;
+}
+
+.button:hover {
+    font-size: x-large;
 }
 
 .team-name {
