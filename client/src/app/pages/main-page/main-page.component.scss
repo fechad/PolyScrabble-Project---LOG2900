@@ -1,33 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300;400;500;600;700&display=swap');
+
 .container {
     min-height: 100vh;
     height: auto;
     background-color: darkseagreen;
+    width: 100%;
 }
 
-.middle {
-    vertical-align: middle;
+.apropos {
+    width: 97%;
+    margin: 30px;
+    text-align: right;
 }
 
 .title {
-    margin: auto;
+    align-items: center;
+    vertical-align: middle;
+    text-align: center;
+    margin: 100px;
+    //margin: auto;
     color: aquamarine;
-    font-size: xx-large;
+    font-family: 'Signika Negative', sans-serif;
+    font-size: 70px;
 }
 
 .justified {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
     align-items: center;
 }
 
 .button {
+    font-family: 'Signika Negative', sans-serif;
+    font-size: 30px;
     margin: 10px;
     text-align: center;
 }
 
 .button:hover {
-    font-size: x-large;
+    background-color: darkgoldenrod;
 }
 
 .team-name {
@@ -53,6 +64,7 @@
 }
 
 .server-message {
+    margin: auto;
     justify-content: center;
     width: 20%;
     min-width: min-content;
