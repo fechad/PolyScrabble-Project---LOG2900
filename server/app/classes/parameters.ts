@@ -11,31 +11,24 @@ export enum Difficulty {
     Expert,
 }
 
-type Error = string | undefined;
 
 export class Parameters {
-    timer: Timer = 30;
-    dictionnary: IdDictionnary = 0;
-    gameType: GameType = GameType.Multiplayer;
-    difficulty?: Difficulty;
+    public timer: Timer = 30;
+    public dictionnary: IdDictionnary = 0;
+    public gameType: GameType = GameType.Multiplayer;
+    public difficulty?: Difficulty;
 
     constructor() {}
 
-    parseChange(input: string): Error {
-        for(const change in input.split(' ')) {
-            const [param, _value] = change.split(':');
-            switch (param) {
-                case 'timer':
-                    break;
-                case 'dictionnary':
-                    break;
-                case 'gameType':
-                    break;
-                case 'difficulty':
-                    break;
-                default:
-                    return 'You suck';
-            }
+
+    validateParameters(): Error | undefined {
+        //TODO: check if dictionnary ID is in the list
+        
+        if(this.timer <= 0 || this.timer % 30 != 0 || this.timer > 600){
+            return Error('Timer should be divisible by 30 and be between 0 and 600');
+        }
+        if(this.gameType == GameType.Solo && this.difficulty === undefined){
+            return Error('Difficulty is needed for Solo mode');
         }
         return;
     }

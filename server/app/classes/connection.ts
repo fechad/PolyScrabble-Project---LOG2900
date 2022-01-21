@@ -1,17 +1,20 @@
 import * as io from 'socket.io';
+import { Parameters } from './parameters';
 
 const ROOMS_LIST_UPDATE_TIMEOUT = 500; // ms
 
+export type Room = {name: string, parameters: Parameters};
+
 export class Connection {
     private io: io.Socket;
-    private room: string;
+    private room: Room;
     private roomsBroadcastTimer: NodeJS.Timeout | undefined;
 
     constructor(io: io.Socket) { this.io = io; }
 
     init(): void {
         // message initial
-        this.io.on('joinRoom', (room) => this.joinRoom(room));
+        this.io.on('joinRoom', (room : Room) => this.joinRoom(room));
         this.roomsBroadcastTimer = setInterval(() => this.broadcastRooms(), ROOMS_LIST_UPDATE_TIMEOUT);
         this.io.on('changeParameters', (change) => this.changeParameters(change));
 
@@ -31,8 +34,8 @@ export class Connection {
         });
     }
 
-    joinRoom(room: string): void {
-        console.log(`Client ${this.io.id} joined room ${room}`);
+    joinRoom(room: Room): void {
+        console.log(`Client ${this.io.id} joined room ${room.name}`);
         this.room = room;
         this.stopBroadcastsRooms();
     }
@@ -52,7 +55,12 @@ export class Connection {
         console.log(`Room ${this.room} started game`);
     }
 
-    changeParameters(message: string): void {
-
+    changeParameters(newParameters: Parameters): void {
+        const validation = newParameters.validateParameters()
+        if(validation === undefined){
+            this.room.parameters = newParameters;
+        } else {
+            this.io.emit('validationError', `Error of Parameter: ${validation}`)
+        }
     }
 }
