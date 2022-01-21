@@ -1,6 +1,17 @@
 <div class="container">
-    <app-sidebar></app-sidebar>
-    <section class="play-area-container">
-        <app-play-area class="play-area" tabindex="0"></app-play-area>
-    </section>
+    <!--<app-sidebar></app-sidebar> -->
+    <div class="infosArea">
+        <app-infos-box></app-infos-box>
+    </div>
+    <div class="center">
+        <section class="play-area-container">
+            <app-play-area class="play-area" tabindex="0"></app-play-area>
+        </section>
+        <section class="chatArea">
+            <app-chat-box></app-chat-box>
+        </section>
+    </div>
+    <div class="rackArea">
+        <app-letter-rack></app-letter-rack>
+    </div>
 </div>

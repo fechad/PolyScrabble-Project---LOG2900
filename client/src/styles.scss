@@ -78,3 +78,30 @@ body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+.infosArea {
+    margin-left: 30%;
+    margin-right: 30%;
+    display: flex;
+    justify-content: space-around;
+}
+.center {
+    margin-left: 30%;
+    display: flex;
+    justify-content: space-around;
+}
+.chatArea {
+    margin-right: 10%;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+.rackArea {
+    margin-left: 30%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
