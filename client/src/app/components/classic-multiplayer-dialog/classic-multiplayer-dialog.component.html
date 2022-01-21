@@ -15,7 +15,7 @@
 
 <mat-card-content>
     <div class="container">
-        <form [formGroup]="gameParametersForm" ></form>
+        <form [formGroup]="gameParametersForm" (submit)="onSubmit()"></form>
             <div class="form-group">
                 <div class="row">
                     <div class="col-md-10">
@@ -32,7 +32,8 @@
                             <option *ngFor="let minute of [0,1,2,3,4,5]" [selected]="minute === 1">{{minute}}</option>
                           </select>
                           min :
-                          <select id="seconds" name="second">
+                          <select id="seconds" name="second"
+                          (change)="checkNonZero()">
                             <option value="default">00</option>
                             <option value="thirty">30</option>
                           </select> 
