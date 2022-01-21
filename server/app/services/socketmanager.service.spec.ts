@@ -55,17 +55,4 @@ describe('SocketManager service tests', () => {
             done();
         });
     });
-
-    it('should broadcast message to multiple clients on broadcastAll event', (done) => {
-        const clientSocket2 = ioClient(urlString);
-        const testMessage = 'Hello World';
-        const spy = sinon.spy(service['io'].sockets, 'emit');
-
-        clientSocket2.on('massMessage', (message: string) => {
-            expect(message).to.contain(testMessage);
-            assert(spy.called);
-            done();
-        });
-        clientSocket.emit('broadcastAll', testMessage);
-    });
 });
