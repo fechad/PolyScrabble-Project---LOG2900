@@ -7,11 +7,6 @@
     width: 100%;
 }
 
-.apropos {
-    width: 97%;
-    margin: 30px;
-    text-align: right;
-}
 
 .title {
     align-items: center;
@@ -74,9 +69,15 @@
     min-width: min-content;
 }
 
-::ng-deep .mat-tooltip {
-    white-space: pre-line; // Allow line break 
-    
-  }
 
- 
+
+.material-icons {
+    color: black;
+    font-size: 48px;
+}
+
+.material-icons:hover {
+    font-size: 55px;
+    transition: font-size 0.2s ease-in-out;
+    cursor: pointer;
+}
