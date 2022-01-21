@@ -15,13 +15,13 @@ describe('SocketManager service tests', () => {
     beforeEach(async () => {
         server = Container.get(Server);
         server.init();
-        service = server.socketManager;
+        service = server['socketManager'];
         clientSocket = ioClient(urlString);
     });
 
     afterEach(() => {
         clientSocket.close();
-        service.io.close();
+        service['io'].close();
         sinon.restore();
     });
 
@@ -59,7 +59,7 @@ describe('SocketManager service tests', () => {
     it('should broadcast message to multiple clients on broadcastAll event', (done) => {
         const clientSocket2 = ioClient(urlString);
         const testMessage = 'Hello World';
-        const spy = sinon.spy(service.io.sockets, 'emit');
+        const spy = sinon.spy(service['io'].sockets, 'emit');
 
         clientSocket2.on('massMessage', (message: string) => {
             expect(message).to.contain(testMessage);
