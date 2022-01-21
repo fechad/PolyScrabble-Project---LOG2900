@@ -1,15 +1,19 @@
+import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { of } from 'rxjs';
+
 import SpyObj = jasmine.SpyObj;
 
 describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
     let communicationServiceSpy: SpyObj<CommunicationService>;
+    let location: Location;
+    let router: RouterTestingModule;
 
     beforeEach(async () => {
         communicationServiceSpy = jasmine.createSpyObj('ExampleService', ['basicGet', 'basicPost']);
@@ -46,4 +50,6 @@ describe('MainPageComponent', () => {
         component.sendTimeToServer();
         expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
     });
+
+    it('clicking on button should redirect to /modes/classic', () => {});
 });

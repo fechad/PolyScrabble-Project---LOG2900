@@ -1,6 +1,41 @@
-<h2 mat-dialog-title>Paramètres partie multijoueur</h2>
+<!-- <h2 mat-dialog-title>Paramètres partie multijoueur</h2>
 <mat-dialog-content>Votre nom:</mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close mat-dialog-close="true">Jouer!</button>
     <button mat-button mat-dialog-close mat-dialog-close="false">Annuler</button>
-</mat-dialog-actions>
+</mat-dialog-actions> -->
+
+<mat-card-header>
+    <mat-toolbar class="toolbar">
+        <mat-card-title>Parametres partie multijoueur</mat-card-title>
+        <span class="toolbar-spacer"></span>
+        <mat-icon (click)="onNoClick()">cancel</mat-icon>
+    </mat-toolbar>
+</mat-card-header>
+
+<mat-card-content>
+    <div class="container">
+        <form [formGroup]="gameParametersForm" ></form>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-10">
+                        <label>Votre nom:</label>
+                        <input type="text" formControlname="playerName" class="form-control">
+                    </div>
+                    <div class="col-md-10">
+                        <label>Temps limite par tour:</label>
+                        <input type="text" formControlname="timer" class="form-control">
+                    </div>
+                    <div class="col-md-10">
+                        <label>Choix du dictionnaire:</label>
+                        <select id="dictionaries" name="dictionary">
+                            <option value="default">Dictionnaire du serveur</option>
+                          </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn success">Jouer!</button>
+            </div>
+    </div>
+</mat-card-content>
