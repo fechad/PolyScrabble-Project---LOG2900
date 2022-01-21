@@ -1,0 +1,25 @@
+div {
+    border-radius: 15px;
+    border-width: thin;
+    width: 20vw;
+    border-style: solid;
+}
+
+#wholeBox {
+    background-color: #99B1AC;
+    margin-right: -5vw;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    height: 75vh;
+}
+
+#writingBox {
+    
+    height:20%;
+    border-radius: 15px;
+    border-style: solid;
+    margin: 20px;
+}

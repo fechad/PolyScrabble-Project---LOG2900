@@ -2,7 +2,7 @@
 .game-infos,
 .opponent,
 .player {
-    border-radius: 1px;
+    border-width: thin;
     border-style: solid;
 }
 .infos {
@@ -16,7 +16,8 @@
 .game-infos,
 .opponent,
 .player {
-    width: 33vw;
+    background-color: #99B1AC;
+    width: 33.33vw;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
