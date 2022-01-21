@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import { Message } from '@app/message';
-import { ExampleService } from '@app/services/example.service';
+import { LeaderBoardService } from '@app/services/leaderboard.service';
 import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -10,36 +10,36 @@ import { Container } from 'typedi';
 const HTTP_STATUS_OK = StatusCodes.OK;
 const HTTP_STATUS_CREATED = StatusCodes.CREATED;
 
-describe('ExampleController', () => {
+describe('LeaderBoardController', () => {
     const baseMessage = { title: 'Hello world', body: 'anything really' } as Message;
-    let exampleService: SinonStubbedInstance<ExampleService>;
+    let leaderboardService: SinonStubbedInstance<LeaderBoardService>;
     let expressApp: Express.Application;
 
     beforeEach(async () => {
-        exampleService = createStubInstance(ExampleService);
-        exampleService.helloWorld.resolves(baseMessage);
-        exampleService.about.returns(baseMessage);
-        exampleService.getAllMessages.returns([baseMessage, baseMessage]);
+        leaderboardService = createStubInstance(LeaderBoardService);
+        leaderboardService.helloWorld.resolves(baseMessage);
+        leaderboardService.about.returns(baseMessage);
+        leaderboardService.getAllMessages.returns([baseMessage, baseMessage]);
         const app = Container.get(Application);
         // eslint-disable-next-line dot-notation
-        Object.defineProperty(app['exampleController'], 'exampleService', { value: exampleService });
+        Object.defineProperty(app['leaderBoardController'], 'leaderboardService', { value: leaderboardService });
         expressApp = app.app;
     });
 
-    it('should return message from example service on valid get request to root', async () => {
+    it('should return message from leaderboard service on valid get request to root', async () => {
         return supertest(expressApp)
-            .get('/api/example')
+            .get('/api/leaderboard')
             .expect(HTTP_STATUS_OK)
             .then((response) => {
                 expect(response.body).to.deep.equal(baseMessage);
             });
     });
 
-    it('should return message from example service on valid get request to about route', async () => {
+    it('should return message from leaderboard service on valid get request to about route', async () => {
         const aboutMessage = { ...baseMessage, title: 'About' };
-        exampleService.about.returns(aboutMessage);
+        leaderboardService.about.returns(aboutMessage);
         return supertest(expressApp)
-            .get('/api/example/about')
+            .get('/api/leaderboard/about')
             .expect(HTTP_STATUS_OK)
             .then((response) => {
                 expect(response.body).to.deep.equal(aboutMessage);
@@ -48,13 +48,13 @@ describe('ExampleController', () => {
 
     it('should store message in the array on valid post request to /send', async () => {
         const message: Message = { title: 'Hello', body: 'World' };
-        return supertest(expressApp).post('/api/example/send').send(message).set('Accept', 'application/json').expect(HTTP_STATUS_CREATED);
+        return supertest(expressApp).post('/api/leaderboard/send').send(message).set('Accept', 'application/json').expect(HTTP_STATUS_CREATED);
     });
 
     it('should return an array of messages on valid get request to /all', async () => {
-        exampleService.getAllMessages.returns([baseMessage, baseMessage]);
+        leaderboardService.getAllMessages.returns([baseMessage, baseMessage]);
         return supertest(expressApp)
-            .get('/api/example/all')
+            .get('/api/leaderboard/all')
             .expect(HTTP_STATUS_OK)
             .then((response) => {
                 expect(response.body).to.deep.equal([baseMessage, baseMessage]);
