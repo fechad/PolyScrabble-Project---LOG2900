@@ -26,4 +26,15 @@ export class ClassicMultiplayerDialogComponent implements OnInit {
             dictionary: [],
         });
     }
+
+    // function to avoid having turn time limit at 00:00
+    checkNonZero() {
+        const minute = document.getElementById('minutes') as HTMLSelectElement;
+        const second = document.getElementById('seconds') as HTMLSelectElement;
+
+        const selectedMin = minute?.options[minute?.selectedIndex].text;
+        if (selectedMin === '0') {
+            second.selectedIndex = 1;
+        }
+    }
 }

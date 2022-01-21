@@ -15,6 +15,7 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
 import { ClassicMultiplayerDialogComponent } from './components/classic-multiplayer-dialog/classic-multiplayer-dialog.component';
 import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-modes-page.component';
 
@@ -47,6 +48,9 @@ import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-mo
         MatCardModule,
         MatIconModule,
         MatToolbarModule,
+        IgxTimePickerModule,
+        IgxInputGroupModule,
+        IgxIconModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

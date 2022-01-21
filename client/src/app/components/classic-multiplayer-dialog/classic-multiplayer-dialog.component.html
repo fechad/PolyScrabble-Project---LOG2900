@@ -7,7 +7,7 @@
 
 <mat-card-header>
     <mat-toolbar class="toolbar">
-        <mat-card-title>Parametres partie multijoueur</mat-card-title>
+        <mat-card-title>Paramètres de la partie multijoueur</mat-card-title>
         <span class="toolbar-spacer"></span>
         <mat-icon (click)="onNoClick()">cancel</mat-icon>
     </mat-toolbar>
@@ -19,17 +19,28 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-md-10">
-                        <label>Votre nom:</label>
+                        <label>Votre nom: </label>
                         <input type="text" formControlname="playerName" class="form-control">
                     </div>
                     <div class="col-md-10">
-                        <label>Temps limite par tour:</label>
-                        <input type="text" formControlname="timer" class="form-control">
+                        <label>Temps limite par tour: </label>
+                
+                        <!-- <app-timer-picker></app-timer-picker> -->
+
+                        <select id="minutes" name="minute"
+                        (change)="checkNonZero()">
+                            <option *ngFor="let minute of [0,1,2,3,4,5]" [selected]="minute === 1">{{minute}}</option>
+                          </select>
+                          min :
+                          <select id="seconds" name="second">
+                            <option value="default">00</option>
+                            <option value="thirty">30</option>
+                          </select> 
                     </div>
                     <div class="col-md-10">
-                        <label>Choix du dictionnaire:</label>
+                        <label>Choix du dictionnaire: </label>
                         <select id="dictionaries" name="dictionary">
-                            <option value="default">Dictionnaire du serveur</option>
+                            <option value="default">Dictionnaire langue française</option>
                           </select>
                     </div>
                 </div>
