@@ -82,6 +82,7 @@ body {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
+    background-color: #5a5a5a;
 }
 .infosArea {
     margin-left: 30%;
@@ -89,10 +90,23 @@ body {
     display: flex;
     justify-content: space-around;
 }
-.center {
-    margin-left: 30%;
+.game-container {
     display: flex;
-    justify-content: space-around;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #5a5a5a;
+    height: 80vh;
+}
+.center {
+    display: flex;
+    background-color: #5a5a5a;
+    flex-direction: column;
+    width: 75vw;
+    margin-top: 20px;
+}
+.play-area-container {
+    height: 40vh;
+    margin-left: 60vh;
 }
 .chatArea {
     margin-right: 10%;
@@ -100,8 +114,16 @@ body {
     justify-content: space-evenly;
 }
 .rackArea {
-    margin-left: 30%;
     display: flex;
-    justify-content: center;
-    flex-direction: column;
+    justify-content: space-evenly;
+    flex-direction: row;
+    background-color: #5a5a5a;
+    margin-bottom: 2vh;
+    margin-left: 30vh;
+}
+#quit-game,
+#skip-turn {
+    margin-top: 30px;
+    height: 10vh;
+    width: 10vh;
 }

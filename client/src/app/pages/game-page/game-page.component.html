@@ -3,15 +3,19 @@
     <div class="infosArea">
         <app-infos-box></app-infos-box>
     </div>
-    <div class="center">
-        <section class="play-area-container">
-            <app-play-area class="play-area" tabindex="0"></app-play-area>
-        </section>
-        <section class="chatArea">
+    <div class="game-container">
+        <div class="center">
+            <section class="play-area-container">
+                <app-play-area class="play-area" tabindex="0"></app-play-area>
+            </section>
+            <section class="rackArea">
+                <button id="quit-game"></button>
+                <app-letter-rack></app-letter-rack>
+                <button id="skip-turn"></button>
+            </section>
+        </div>
+        <div class="chatArea">
             <app-chat-box></app-chat-box>
-        </section>
-    </div>
-    <div class="rackArea">
-        <app-letter-rack></app-letter-rack>
+        </div>
     </div>
 </div>
