@@ -22,11 +22,11 @@ export class ClassicMultiplayerDialogComponent implements OnInit {
     }
 
     ngOnInit() {
-        // use VALIDATORS HERE
+        // use VALIDATORS HERE??
         this.gameParametersForm = this.formBuilder.group({
             id: [],
-            playerName: ['', [Validators.required]],
-            timer: [, [Validators.required]],
+            playerName: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]*$')]],
+            timer: ['', [Validators.required]],
             dictionary: ['', [Validators.required]],
         });
     }
@@ -36,7 +36,7 @@ export class ClassicMultiplayerDialogComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    // avoid having turn time limit at 00:00
+    // avoid having turn time limit at 00:00 or 5:30
     checkNonZero() {
         const minute = document.getElementById('minutes') as HTMLSelectElement;
         const second = document.getElementById('seconds') as HTMLSelectElement;
@@ -44,12 +44,12 @@ export class ClassicMultiplayerDialogComponent implements OnInit {
         const selectedMin = minute?.options[minute?.selectedIndex].text;
         const selectedSec = second?.options[second?.selectedIndex].text;
 
-        if (selectedMin === '0') {
+        if (selectedMin === '0' && selectedSec === '00') {
             second.selectedIndex = 1;
         }
 
-        if (selectedMin === '0' && selectedSec === '00') {
-            second.selectedIndex = 1;
+        if (selectedMin === '5' && selectedSec === '30') {
+            second.selectedIndex = 0;
         }
     }
 }

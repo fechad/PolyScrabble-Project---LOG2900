@@ -15,19 +15,17 @@
 
 <mat-card-content>
     <div class="container">
-        <form [formGroup]="gameParametersForm" (submit)="onSubmit()"></form>
+        <form [formGroup]="gameParametersForm" (submit)="onSubmit()">
             <div class="form-group">
                 <div class="row">
                     <div class="col-md-10">
                         <label>Votre nom: </label>
-                        <input type="text" formControlname="playerName" class="form-control">
+                        <input type="text" formControlName="playerName" class="form-control">
                     </div>
                     <div class="col-md-10">
                         <label>Temps limite par tour: </label>
-                
-                        <!-- <app-timer-picker></app-timer-picker> -->
 
-                        <select id="minutes" name="minute"
+                        <select  formControlName="timer" class="form-control" id="minutes" name="minute"
                         (change)="checkNonZero()">
                             <option *ngFor="let minute of [0,1,2,3,4,5]" [selected]="minute === 1">{{minute}}</option>
                           </select>
@@ -40,14 +38,15 @@
                     </div>
                     <div class="col-md-10">
                         <label>Choix du dictionnaire: </label>
-                        <select id="dictionaries" name="dictionary">
-                            <option value="default">Dictionnaire langue française</option>
+                        <select id="dictionaries" name="dictionary" formControlName="dictionary" class="form-control">
+                            <option value="">Langue française</option>
                           </select>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <button type="submit" class="btn success">Jouer!</button>
+                <button type="submit" class="btn success" routerLink="/waiting-room">Jouer!</button>
             </div>
+        </form>
     </div>
 </mat-card-content>

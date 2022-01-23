@@ -18,6 +18,8 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
 import { ClassicMultiplayerDialogComponent } from './components/classic-multiplayer-dialog/classic-multiplayer-dialog.component';
 import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-modes-page.component';
+import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
+import { GamesListService } from './services/games-list.service';
 
 /**
  * Main module that is used in main.ts.
@@ -35,6 +37,7 @@ import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-mo
         SidebarComponent,
         ClassicModesPageComponent,
         ClassicMultiplayerDialogComponent,
+        WaitingRoomPageComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -52,7 +55,7 @@ import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-mo
         IgxInputGroupModule,
         IgxIconModule,
     ],
-    providers: [],
+    providers: [GamesListService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

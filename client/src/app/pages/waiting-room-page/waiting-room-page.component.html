@@ -1,0 +1,25 @@
+<span routerLink="/modes/classic" class="home-button">
+    <i class="material-icons">home</i>
+</span>
+<mat-card>
+    <mat-card-header>
+        <mat-toolbar class="toolbar">
+            <mat-card-title>Joignez une partie mode classique</mat-card-title>
+            <span class="toolbar-spacer"></span>
+            
+        </mat-toolbar>
+    </mat-card-header>
+</mat-card>
+
+<div id="games-list" *ngFor="let game of gameList">
+<mat-card matRipple class="clickable" (click)="openDialog()">
+<mat-card-content>
+    <div class="container">
+            <span>
+                <p>Nom du joueur: {{game.playerName}} </p>
+                <p>Dictionnaire: {{game.dictionary}} </p>
+            </span>
+    </div>
+</mat-card-content>
+</mat-card>
+</div>
