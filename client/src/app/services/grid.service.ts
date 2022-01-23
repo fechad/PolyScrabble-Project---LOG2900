@@ -15,10 +15,22 @@ export class GridService {
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
     /* eslint-disable @typescript-eslint/no-magic-numbers */
     drawGrid() {
-        this.gridContext.beginPath();
-        this.gridContext.strokeStyle = 'black';
-        this.gridContext.lineWidth = 3;
+        const dimension = 15;
+        const offset = dimension / dimension;
+        const squareSize = DEFAULT_WIDTH / dimension - offset;
+        this.gridContext.lineWidth = offset;
+        this.gridContext.fillStyle = '#838383';
+        this.gridContext.strokeStyle = '#B1ACAC';
 
+        for (let i = 0; i < dimension; i++) {
+            for (let j = 0; j < dimension; j++) {
+                this.gridContext.beginPath();
+                this.gridContext.rect((squareSize + offset) * i, (squareSize + offset) * j, squareSize, squareSize);
+                this.gridContext.fill();
+            }
+        }
+        // this.gridContext.lineWidth
+        /*
         this.gridContext.moveTo((this.width * 3) / 10, (this.height * 4) / 10);
         this.gridContext.lineTo((this.width * 7) / 10, (this.height * 4) / 10);
 
@@ -30,8 +42,7 @@ export class GridService {
 
         this.gridContext.moveTo((this.width * 6) / 10, (this.height * 3) / 10);
         this.gridContext.lineTo((this.width * 6) / 10, (this.height * 7) / 10);
-
-        this.gridContext.stroke();
+        */
     }
 
     drawWord(word: string) {
