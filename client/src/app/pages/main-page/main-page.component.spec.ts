@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -37,10 +36,6 @@ describe('MainPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it("should have as title 'LOG2990'", () => {
-        expect(component.title).toEqual('LOG2990');
-    });
-
     it('should call basicGet when calling getMessagesFromServer', () => {
         component.getMessagesFromServer();
         expect(communicationServiceSpy.basicGet).toHaveBeenCalled();
@@ -51,5 +46,7 @@ describe('MainPageComponent', () => {
         expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
     });
 
-    it('clicking on button should redirect to /modes/classic', () => {});
+    it('clicking on button should redirect to /modes/classic', () => {
+        component.goToModes();
+    });
 });
