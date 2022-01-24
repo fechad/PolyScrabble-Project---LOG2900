@@ -20,27 +20,25 @@
                 <div class="row">
                     <div class="col-md-10">
                         <label>Votre nom: </label>
-                        <input type="text" formControlName="playerName" class="form-control">
+                        <input type="text" formControlName="playerName" class="form-control" />
                     </div>
                     <div class="col-md-10">
                         <label>Temps limite par tour: </label>
 
-                        <select  formControlName="timer" class="form-control" id="minutes" name="minute"
-                        (change)="checkNonZero()">
-                            <option *ngFor="let minute of [0,1,2,3,4,5]" [selected]="minute === 1">{{minute}}</option>
-                          </select>
-                          min :
-                          <select id="seconds" name="second"
-                          (change)="checkNonZero()">
+                        <select formControlName="timer" class="form-control" id="minutes" name="minute" (change)="checkNonZero()">
+                            <option *ngFor="let minute of [0, 1, 2, 3, 4, 5]" [selected]="minute === 1">{{ minute }}</option>
+                        </select>
+                        min :
+                        <select id="seconds" name="second" (change)="checkNonZero()">
                             <option value="default">00</option>
                             <option value="thirty">30</option>
-                          </select> 
+                        </select>
                     </div>
                     <div class="col-md-10">
                         <label>Choix du dictionnaire: </label>
                         <select id="dictionaries" name="dictionary" formControlName="dictionary" class="form-control">
                             <option value="">Langue française</option>
-                          </select>
+                        </select>
                     </div>
                 </div>
             </div>
