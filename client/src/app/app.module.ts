@@ -16,7 +16,9 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
-import { ClassicMultiplayerDialogComponent } from './components/classic-multiplayer-dialog/classic-multiplayer-dialog.component';
+import { ClassicMultiplayerDialogComponent } from './components/game-dialog/classic-multiplayer-dialog.component';
+import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
+import { ThreeButtonOptionsComponent } from './components/three-button-options/three-button-options.component';
 import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { GamesListService } from './services/games-list.service';
@@ -38,6 +40,8 @@ import { GamesListService } from './services/games-list.service';
         ClassicModesPageComponent,
         ClassicMultiplayerDialogComponent,
         WaitingRoomPageComponent,
+        ThreeButtonOptionsComponent,
+        GameSetupDialogComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ClassicMultiplayerDialogComponent } from '@app/components/classic-multiplayer-dialog/classic-multiplayer-dialog.component';
+import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
 
 @Component({
     selector: 'app-classic-modes-page',
@@ -11,6 +11,6 @@ export class ClassicModesPageComponent {
     constructor(public dialog: MatDialog) {}
 
     openDialog() {
-        this.dialog.open(ClassicMultiplayerDialogComponent);
+        this.dialog.open(GameSetupDialogComponent);
     }
 }

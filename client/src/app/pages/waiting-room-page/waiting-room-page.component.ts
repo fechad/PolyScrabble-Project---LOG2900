@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ClassicMultiplayerDialogComponent } from '@app/components/classic-multiplayer-dialog/classic-multiplayer-dialog.component';
+import { ClassicMultiplayerDialogComponent } from '@app/components/game-dialog/classic-multiplayer-dialog.component';
 import { GamesListService } from '@app/services/games-list.service';
 
 @Component({
