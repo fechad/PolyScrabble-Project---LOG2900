@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ClassicMultiplayerDialogComponent } from '@app/components/game-dialog/classic-multiplayer-dialog.component';
+import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
 import { GamesListService } from '@app/services/games-list.service';
 
 @Component({
@@ -18,6 +18,6 @@ export class WaitingRoomPageComponent implements OnInit {
     }
 
     openDialog() {
-        this.dialog.open(ClassicMultiplayerDialogComponent);
+        this.dialog.open(GameSetupDialogComponent);
     }
 }
