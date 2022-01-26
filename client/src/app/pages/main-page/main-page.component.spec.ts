@@ -11,8 +11,6 @@ describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
     let communicationServiceSpy: SpyObj<CommunicationService>;
-    let location: Location;
-    let router: RouterTestingModule;
 
     beforeEach(async () => {
         communicationServiceSpy = jasmine.createSpyObj('ExampleService', ['basicGet', 'basicPost']);
@@ -44,9 +42,5 @@ describe('MainPageComponent', () => {
     it('should call basicPost when calling sendTimeToServer', () => {
         component.sendTimeToServer();
         expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
-    });
-
-    it('clicking on button should redirect to /modes/classic', () => {
-        component.goToModes();
     });
 });
