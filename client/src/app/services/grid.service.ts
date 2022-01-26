@@ -19,13 +19,18 @@ export class GridService {
         const offset = dimension / dimension;
         const squareSize = DEFAULT_WIDTH / dimension - offset;
         this.gridContext.lineWidth = offset;
+        this.gridContext.beginPath();
+        this.drawWord('ABCDEFGHIJKLMNO');
+        this.drawNumbers('0 1 2 3 4 5 6 7 8 9 10 11 12 13 14');
+
         this.gridContext.fillStyle = '#838383';
         this.gridContext.strokeStyle = '#B1ACAC';
+        const gridOrigin = 20;
 
         for (let i = 0; i < dimension; i++) {
             for (let j = 0; j < dimension; j++) {
                 this.gridContext.beginPath();
-                this.gridContext.rect((squareSize + offset) * i, (squareSize + offset) * j, squareSize, squareSize);
+                this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
                 this.gridContext.fill();
             }
         }
@@ -46,14 +51,24 @@ export class GridService {
     }
 
     drawWord(word: string) {
-        const startPosition: Vec2 = { x: 175, y: 100 };
-        const step = 20;
+        const startPosition: Vec2 = { x: 20, y: 20 };
+        const step = 32;
         this.gridContext.font = '20px system-ui';
         for (let i = 0; i < word.length; i++) {
             this.gridContext.fillText(word[i], startPosition.x + step * i, startPosition.y);
         }
     }
+    drawNumbers(numbers: string) {
+        const startPosition: Vec2 = { x: 0, y: 40 };
+        const step = 32;
+        this.gridContext.font = '20px system-ui';
+        const numberList = numbers.split(' ', 15);
 
+        for (let i = 0; i < numberList.length; i++) {
+            const number: string = numberList[i];
+            this.gridContext.fillText(number.toString(), startPosition.x, startPosition.y + step * i);
+        }
+    }
     get width(): number {
         return this.canvasSize.x;
     }

@@ -15,22 +15,23 @@
     outline: none;
 }
 .center {
-    display:flex;
+    display: flex;
     width: 50vw;
     margin-left: 23vw;
     align-items: center;
 }
- .game-container {
-     display: flex;
-     flex-direction: row;
+.game-container {
+    display: flex;
+    flex-direction: row;
 }
-.icon, .sizing {
-     margin-top: 10px;
-     width: 5vw;
-     height: 5vw;
-     border: none;
-     outline:none;
-     background-color: transparent;
+.icon,
+.sizing {
+    margin-top: 5vh;
+    width: 5vw;
+    height: 5vw;
+    border: none;
+    outline: none;
+    background-color: transparent;
 }
 #icon-container {
     margin-left: 2vw;
