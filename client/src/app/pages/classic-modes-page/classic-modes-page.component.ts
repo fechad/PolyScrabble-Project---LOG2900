@@ -5,11 +5,11 @@ import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game
 @Component({
     selector: 'app-classic-modes-page',
     templateUrl: './classic-modes-page.component.html',
-    styleUrls: ['./classic-modes-page.component.scss'],
+    styleUrls: ['../../styles/menus.scss'],
 })
 export class ClassicModesPageComponent {
+    mainPage: boolean;
     constructor(public dialog: MatDialog) {}
-
     openDialog() {
         this.dialog.open(GameSetupDialogComponent);
     }

@@ -1,29 +1,10 @@
 <div class="container justified">
     <a routerLink="/" class="home-button">
         <i class="material-icons">home</i>
-      </a>
-
+    </a>
     <h1 class="title">SCRABBLE</h1>
     <h2 class="subtitle">Mode Classique</h2>
-    <section id="server-message">
-    
-        <div class="justified">
-            <button class="button" 
-            matTooltip="Jouer avec un joueur virtuel"
-            matTooltipPosition="right"
-            aria-label="solo mode button">Partie solo</button>
-
-            <button class="button" (click)="openDialog()"
-            matTooltip="Partez une nouvelle partie"
-            matTooltipPosition="right"
-            aria-label="multiplayer mode button">Nouvelle partie multijoueur</button>
-            
-            <button class="button" routerLink="/waiting-room"
-            matTooltip="Joignez un autre joueur"
-            matTooltipPosition="right"
-            aria-label="join game mode button">Rejoindre une partie</button>
-        </div>
-    </section>
-
-
+    <div class="justified">
+        <app-three-button-options [name]="['Solo', 'Multijoueur', 'Rejoindre une partie']"></app-three-button-options>
+    </div>
 </div>

@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
-    styleUrls: ['./main-page.component.scss'],
+    styleUrls: ['../../styles/menus.scss'],
 })
 export class MainPageComponent {
     readonly title: string = 'LOG2990';

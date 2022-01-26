@@ -1,8 +1,16 @@
 <div class="justified">
-    <button class="button" matTooltip="Jouer avec un joueur virtuel" matTooltipPosition="right" aria-label="solo mode button">Partie solo</button>
+    <button class="button" matTooltip="Jouer avec un joueur virtuel" matTooltipPosition="right" aria-label="solo mode button">
+        {{ name[0] }}
+    </button>
 
-    <button class="button" matTooltip="Partez une nouvelle partie" matTooltipPosition="right" aria-label="multiplayer mode button">
-        Nouvelle partie multijoueur
+    <button
+        class="button"
+        (click)="openDialog()"
+        matTooltip="Partez une nouvelle partie"
+        matTooltipPosition="right"
+        aria-label="multiplayer mode button"
+    >
+        {{ name[1] }}
     </button>
 
     <button
@@ -12,6 +20,6 @@
         matTooltipPosition="right"
         aria-label="join game mode button"
     >
-        Rejoindre une partie
+        {{ name[2] }}
     </button>
 </div>
