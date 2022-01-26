@@ -99,11 +99,10 @@ body {
     display: flex;
     flex-direction: column;
     width: 75vw;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 .play-area-container {
     height: 40vh;
-    margin-left: 30vw;
 }
 .chatArea {
     margin-right: 10vw;
@@ -116,7 +115,6 @@ body {
     flex-direction: row;
     background-color: #5a5a5a;
     margin-bottom: 2vh;
-    margin-left: 18vw;
 }
 #quit-game,
 #skip-turn {

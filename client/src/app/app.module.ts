@@ -14,6 +14,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { LetterRackComponent } from './components/letter-rack/letter-rack.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 /**
  * Main module that is used in main.ts.
@@ -23,7 +24,7 @@ import { InfosBoxComponent } from './components/infos-box/infos-box.component';
  */
 @NgModule({
     declarations: [AppComponent, GamePageComponent, MainPageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent, LetterRackComponent, ChatBoxComponent, InfosBoxComponent],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, FontAwesomeModule],
     providers: [],
     bootstrap: [AppComponent],
 })
