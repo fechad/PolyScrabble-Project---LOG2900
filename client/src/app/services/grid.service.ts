@@ -97,6 +97,7 @@ export class GridService {
             this.gridContext.fill();
             this.drawMessage("étoile !", canvasX, canvasY)
 
+            
             /*const etoile = new Image();
             etoile.src = 'client\src\assets\transparent-background-star-115497268824j1ftohfyn (1).png';
             //this.gridContext.drawImage(etoile, 0, 0);
