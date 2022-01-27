@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GamesListService } from '@app/services/games-list.service';
 
@@ -15,20 +15,26 @@ export class ClassicMultiplayerDialogComponent implements OnInit {
         private dialogRef: MatDialogRef<ClassicMultiplayerDialogComponent>,
         private gameService: GamesListService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
-    ) {}
+    ) {
+        this.gameParametersForm = this.formBuilder.group({
+            id: [''],
+            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z ]*$')]),
+            timer: new FormControl('', [Validators.required]),
+            dictionary: new FormControl('', [Validators.required]),
+        });
+    }
 
     onNoClick(): void {
         this.dialogRef.close();
     }
 
     ngOnInit() {
-        // use VALIDATORS HERE??
-        this.gameParametersForm = this.formBuilder.group({
-            id: [],
-            playerName: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]*$')]],
-            timer: ['', [Validators.required]],
-            dictionary: ['', [Validators.required]],
-        });
+        // this.gameParametersForm = this.formBuilder.group({
+        //     id: [''],
+        //     playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z ]*$')]),
+        //     timer: new FormControl('', [Validators.required]),
+        //     dictionary: new FormControl('', [Validators.required]),
+        // });
     }
 
     onSubmit() {
