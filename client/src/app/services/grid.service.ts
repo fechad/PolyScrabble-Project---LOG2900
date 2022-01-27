@@ -34,39 +34,30 @@ export class GridService {
                 this.gridContext.fill();
             }
         }
-        // this.gridContext.lineWidth
-        /*
-        this.gridContext.moveTo((this.width * 3) / 10, (this.height * 4) / 10);
-        this.gridContext.lineTo((this.width * 7) / 10, (this.height * 4) / 10);
-
-        this.gridContext.moveTo((this.width * 3) / 10, (this.height * 6) / 10);
-        this.gridContext.lineTo((this.width * 7) / 10, (this.height * 6) / 10);
-
-        this.gridContext.moveTo((this.width * 4) / 10, (this.height * 3) / 10);
-        this.gridContext.lineTo((this.width * 4) / 10, (this.height * 7) / 10);
-
-        this.gridContext.moveTo((this.width * 6) / 10, (this.height * 3) / 10);
-        this.gridContext.lineTo((this.width * 6) / 10, (this.height * 7) / 10);
-        */
     }
 
     drawWord(word: string) {
-        const startPosition: Vec2 = { x: 20, y: 20 };
-        const step = 32;
+        const startPosition: Vec2 = { x: 30, y: 16 };
+        const step = 33;
         this.gridContext.font = '20px system-ui';
         for (let i = 0; i < word.length; i++) {
             this.gridContext.fillText(word[i], startPosition.x + step * i, startPosition.y);
         }
     }
     drawNumbers(numbers: string) {
-        const startPosition: Vec2 = { x: 0, y: 40 };
-        const step = 32;
+        const startPosition: Vec2 = { x: -4, y: 40 };
+        const step = 34;
         this.gridContext.font = '20px system-ui';
         const numberList = numbers.split(' ', 15);
 
         for (let i = 0; i < numberList.length; i++) {
-            const number: string = numberList[i];
+            const number: number = +numberList[i];
+            if(number < 10) {
+                this.gridContext.fillText(number.toString(), startPosition.x + 4, startPosition.y + step * i);
+            }
+            else {
             this.gridContext.fillText(number.toString(), startPosition.x, startPosition.y + step * i);
+            }
         }
     }
     get width(): number {

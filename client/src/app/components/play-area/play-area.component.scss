@@ -1,10 +1,8 @@
 #canvas {
-    border: 1px solid #838383;
+    
     width: 65vh;
     height: 65vh;
     display: block;
-    background-color: #b1acac;
-}
-#grid-container {
-    
+    background-color: transparent;
+    overflow:hidden;
 }
