@@ -1,28 +1,35 @@
 <div class="container justified">
-    <div class="apropos" 
-    matTooltip="Etienne Aumais-Boucher&#13;
+    <div
+        class="apropos"
+        matTooltip="Etienne Aumais-Boucher&#13;
     Fedwin Chatelier&#13;
     Anna Guo&#13;
     Xavier L'Heureux&#13;
     Justin St-Arnaud&#13;
     Francois Tourigny"
-    matTooltipPosition="below"
-    matTooltipClass="authors">À propos</div>
+        matTooltipPosition="below"
+        matTooltipClass="authors"
+    >
+        À propos
+    </div>
     <h1 class="title">SCRABBLE</h1>
 
     <section id="server-message">
         <!-- <p>Petit message du serveur : {{ message.getValue() }}</p> -->
         <div class="justified">
-            <button class="button" routerLink="/modes/classic" 
-            matTooltip="Mode Classique"
-            matTooltipPosition="right"
-            aria-label="LOG2990 mode button">Classique</button>
-            <button class="button" (click)="goToModes()" 
-            matTooltip="Mode LOG2990"
-            matTooltipPosition="right"
-            aria-label="classic mode button">LOG2990</button>
-            <button class="button" >Meilleurs scores</button>
+            <button
+                class="button"
+                routerLink="/modes/classic"
+                matTooltip="Mode Classique"
+                matTooltipPosition="right"
+                aria-label="LOG2990 mode button"
+            >
+                Classique
+            </button>
+            <button class="button" routerLink="/modes/classic" matTooltip="Mode LOG2990" matTooltipPosition="right" aria-label="classic mode button">
+                LOG2990
+            </button>
+            <button class="button">Meilleurs scores</button>
         </div>
     </section>
-
 </div>

@@ -1,0 +1,25 @@
+<div class="justified">
+    <button class="button" matTooltip="Jouer avec un joueur virtuel" matTooltipPosition="right" aria-label="solo mode button">
+        {{ name[0] }}
+    </button>
+
+    <button
+        class="button"
+        (click)="openDialog()"
+        matTooltip="Partez une nouvelle partie"
+        matTooltipPosition="right"
+        aria-label="multiplayer mode button"
+    >
+        {{ name[1] }}
+    </button>
+
+    <button
+        class="button"
+        routerLink="/waiting-room"
+        matTooltip="Joignez un autre joueur"
+        matTooltipPosition="right"
+        aria-label="join game mode button"
+    >
+        {{ name[2] }}
+    </button>
+</div>

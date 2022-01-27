@@ -4,15 +4,15 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GamesListService } from '@app/services/games-list.service';
 
 @Component({
-    selector: 'app-classic-multiplayer-dialog',
-    templateUrl: './classic-multiplayer-dialog.component.html',
-    styleUrls: ['./classic-multiplayer-dialog.component.scss'],
+    selector: 'app-game-setup-dialog',
+    templateUrl: './game-setup-dialog.component.html',
+    styleUrls: ['./game-setup-dialog.component.scss'],
 })
-export class ClassicMultiplayerDialogComponent implements OnInit {
+export class GameSetupDialogComponent implements OnInit {
     gameParametersForm: FormGroup;
     constructor(
         private formBuilder: FormBuilder,
-        private dialogRef: MatDialogRef<ClassicMultiplayerDialogComponent>,
+        private dialogRef: MatDialogRef<GameSetupDialogComponent>,
         private gameService: GamesListService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {

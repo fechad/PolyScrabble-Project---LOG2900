@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -12,8 +11,6 @@ describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
     let communicationServiceSpy: SpyObj<CommunicationService>;
-    let location: Location;
-    let router: RouterTestingModule;
 
     beforeEach(async () => {
         communicationServiceSpy = jasmine.createSpyObj('ExampleService', ['basicGet', 'basicPost']);
@@ -37,10 +34,6 @@ describe('MainPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it("should have as title 'LOG2990'", () => {
-        expect(component.title).toEqual('LOG2990');
-    });
-
     it('should call basicGet when calling getMessagesFromServer', () => {
         component.getMessagesFromServer();
         expect(communicationServiceSpy.basicGet).toHaveBeenCalled();
@@ -50,6 +43,4 @@ describe('MainPageComponent', () => {
         component.sendTimeToServer();
         expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
     });
-
-    it('clicking on button should redirect to /modes/classic', () => {});
 });

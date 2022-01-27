@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WaitingRoomPageComponent } from './waiting-room-page.component';
+import { GameSetupDialogComponent } from './game-setup-dialog.component';
 
-describe('WaitingRoomPageComponent', () => {
-    let component: WaitingRoomPageComponent;
-    let fixture: ComponentFixture<WaitingRoomPageComponent>;
+describe('GameSetupDialogComponent', () => {
+    let component: GameSetupDialogComponent;
+    let fixture: ComponentFixture<GameSetupDialogComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [WaitingRoomPageComponent],
+            declarations: [GameSetupDialogComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(WaitingRoomPageComponent);
+        fixture = TestBed.createComponent(GameSetupDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
