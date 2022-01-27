@@ -2,19 +2,19 @@
     <!--<app-sidebar></app-sidebar> -->
     <div class="infosArea">
         <app-infos-box></app-infos-box>
-    </div> 
-    
+    </div>
+
     <div class="game-container">
-        <div id=icon-container>
-        <button class="icon"><fa-icon [icon]="faQuestionCircle" size = "6x"></fa-icon></button>
-        <button class="sizing">  <fa-icon [icon]="faCogs" size="6x"></fa-icon></button>
+        <div id="icon-container">
+            <button class="icon"><fa-icon [icon]="faQuestionCircle" size="6x"></fa-icon></button>
+            <button class="sizing"><fa-icon [icon]="faCogs" size="6x"></fa-icon></button>
         </div>
         <div class="center">
             <section class="play-area-container">
                 <app-play-area class="play-area" tabindex="0"></app-play-area>
             </section>
             <section class="rackArea">
-                <button id="quit-game">Abandonner</button>
+                <button id="quit-game" (click)="abandonner()">Abandonner</button>
                 <app-letter-rack></app-letter-rack>
                 <button id="skip-turn">Passer son tour</button>
             </section>
