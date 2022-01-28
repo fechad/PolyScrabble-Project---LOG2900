@@ -1,7 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
-import { GamesListService } from '@app/services/games-list.service';
 
 @Component({
     selector: 'app-waiting-room-page',
@@ -9,15 +6,7 @@ import { GamesListService } from '@app/services/games-list.service';
     styleUrls: ['./waiting-room-page.component.scss'],
 })
 export class WaitingRoomPageComponent implements OnInit {
-    constructor(public dialog: MatDialog, private gameService?: GamesListService) {}
+    constructor() {}
 
     ngOnInit(): void {}
-
-    get gameList() {
-        return this.gameService?.getAllGames();
-    }
-
-    openDialog() {
-        this.dialog.open(GameSetupDialogComponent);
-    }
 }

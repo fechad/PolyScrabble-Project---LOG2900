@@ -29,6 +29,7 @@
                 Classique
             </button> -->
             <button
+                (click)="openDialog(isMain, champ.texte)"
                 (click)="changeState(champ.texte)"
                 class="button"
                 routerLink="{{ champ.route }}"

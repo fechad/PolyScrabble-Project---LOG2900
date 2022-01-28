@@ -1,10 +1,3 @@
-<!-- <h2 mat-dialog-title>Paramètres partie multijoueur</h2>
-<mat-dialog-content>Votre nom:</mat-dialog-content>
-<mat-dialog-actions>
-    <button mat-button mat-dialog-close mat-dialog-close="true">Jouer!</button>
-    <button mat-button mat-dialog-close mat-dialog-close="false">Annuler</button>
-</mat-dialog-actions> -->
-
 <mat-card-header>
     <mat-toolbar class="toolbar">
         <mat-card-title>Paramètres de la partie multijoueur</mat-card-title>
@@ -14,6 +7,7 @@
 </mat-card-header>
 
 <mat-card-content>
+
     <div class="container">
         <form [formGroup]="gameParametersForm" (submit)="onSubmit()">
             <div class="form-group">
@@ -22,6 +16,12 @@
                         <label>Votre nom: </label>
                         <input type="text" formControlName="playerName" class="form-control" />
                     </div>
+
+                    <div class="requirement" *ngIf="gameParametersForm.controls['playerName'].errors && 
+                        gameParametersForm.controls['playerName'].touched">
+                        Rentrez un nom contenant seulement des lettres.
+                    </div>
+
                     <div class="col-md-10">
                         <label>Temps limite par tour: </label>
 
@@ -42,11 +42,18 @@
                           </select>
 
                     </div>
+
+                    <div class="requirement" *ngIf="gameParametersForm.controls['dictionary'].errors">
+                    Choisissez un dictionnaire.
+                    </div>
+
                 </div>
             </div>
             <div class="row">
-                <button type="submit" class="btn success" (click)="connect()">Jouer!</button>
+                <button type="submit" class="btn success">Jouer!</button>
             </div>
+
+            
         </form>
     </div>
 </mat-card-content>
