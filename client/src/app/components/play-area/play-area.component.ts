@@ -3,8 +3,8 @@ import { Vec2 } from '@app/classes/vec2';
 import { GridService } from '@app/services/grid.service';
 
 // TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_WIDTH = 525;
+export const DEFAULT_HEIGHT = 525;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -37,7 +37,7 @@ export class PlayAreaComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gridService.drawGrid();
-        this.gridService.drawWord('Scrabble');
+        // this.gridService.drawWord('Scrabble');
         this.gridCanvas.nativeElement.focus();
     }
 

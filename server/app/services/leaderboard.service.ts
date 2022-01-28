@@ -1,11 +1,10 @@
 import { Message } from '@app/message';
-import { DateService } from '@app/services/date.service';
 import { Service } from 'typedi';
 
 @Service()
-export class ExampleService {
+export class LeaderBoardService {
     clientMessages: Message[];
-    constructor(private readonly dateService: DateService) {
+    constructor() {
         this.clientMessages = [];
     }
 
@@ -17,20 +16,7 @@ export class ExampleService {
     }
 
     async helloWorld(): Promise<Message> {
-        return this.dateService
-            .currentTime()
-            .then((timeMessage: Message) => {
-                return {
-                    title: 'Hello world',
-                    body: 'Time is ' + timeMessage.body,
-                };
-            })
-            .catch((error: unknown) => {
-                return {
-                    title: 'Error',
-                    body: error as string,
-                };
-            });
+        return { title: 'Hello World', body: 'Time is now' };
     }
 
     // TODO : ceci est à titre d'exemple. À enlever pour la remise

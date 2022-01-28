@@ -15,14 +15,19 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
+import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
+import { InfosBoxComponent } from './components/infos-box/infos-box.component';
+import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
+import { LetterRackComponent } from './components/letter-rack/letter-rack.component';
+import { SingleLetterComponent } from './components/single-letter/single-letter.component';
 import { ThreeButtonOptionsComponent } from './components/three-button-options/three-button-options.component';
 import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-modes-page.component';
+import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { GamesListService } from './services/games-list.service';
-import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
-import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -44,6 +49,10 @@ import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-se
         GameSetupDialogComponent,
         JoiningRoomPageComponent,
         JoinSetupDialogComponent,
+        LetterRackComponent,
+        ChatBoxComponent,
+        InfosBoxComponent,
+        SingleLetterComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -60,6 +69,7 @@ import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-se
         IgxTimePickerModule,
         IgxInputGroupModule,
         IgxIconModule,
+        FontAwesomeModule,
     ],
     providers: [GamesListService],
     bootstrap: [AppComponent],

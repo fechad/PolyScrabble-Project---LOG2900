@@ -1,0 +1,19 @@
+.rack-container {
+    background-color: #c4c4c4;
+    height: 8vh;
+    width: 30vw;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+    margin-top: 30px;
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+app-single-letter {
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+    background-color: burlywood;
+}
