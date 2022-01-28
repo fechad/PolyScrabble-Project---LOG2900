@@ -1,8 +1,10 @@
+import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { of } from 'rxjs';
@@ -20,12 +22,18 @@ describe('MainPageComponent', () => {
         communicationServiceSpy = jasmine.createSpyObj('ExampleService', ['basicGet', 'basicPost']);
         communicationServiceSpy.basicGet.and.returnValue(of({ title: '', body: '' }));
         communicationServiceSpy.basicPost.and.returnValue(of());
-
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule],
+            imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             declarations: [MainPageComponent],
-            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
+            providers: [
+                { provide: CommunicationService, useValue: communicationServiceSpy },
+                // { provide: Router, useValue: routerSpy },
+            ],
         }).compileComponents();
+
+        location = TestBed.inject(Location);
+        router = TestBed.inject(Router);
+        router.initialNavigation();
     });
 
     beforeEach(() => {
@@ -48,10 +56,9 @@ describe('MainPageComponent', () => {
         expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
     });
 
-    it('click on classic button should redirect to /modes/classic page', () => {
-        const buttonElement = fixture.debugElement.query(By.css('.classic'));
-        buttonElement.nativeElement.click();
+    fit('click on classic button should redirect to /modes/classic page', fakeAsync(() => {
+        fixture.debugElement.query(By.css('.classic')).nativeElement.click();
         tick();
-        router.navigate(['/modes/classic']);
-    });
+        expect(location.path()).toBe('/modes/classic');
+    }));
 });

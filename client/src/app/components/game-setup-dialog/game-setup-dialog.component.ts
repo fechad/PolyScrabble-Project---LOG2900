@@ -17,24 +17,31 @@ export class GameSetupDialogComponent implements OnInit {
         private dialogRef: MatDialogRef<GameSetupDialogComponent>,
         private gameService: GamesListService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
-    ) {
-        this.gameParametersForm = this.formBuilder.group({
-            id: [''],
-            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
-            timer: new FormControl('', [Validators.required]),
-            dictionary: new FormControl('', [Validators.required]),
-        });
-    }
+    ) {}
 
     onNoClick(): void {
         this.dialogRef.close();
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.gameParametersForm = this.formBuilder.group({
+            id: [''],
+            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            timer: [''],
+            dictionary: new FormControl('', [Validators.required]),
+        });
+    }
 
     onSubmit() {
+        for (const key of Object.keys(this.gameParametersForm.controls)) {
+            if (!this.gameParametersForm.controls[key].valid) {
+                return;
+            }
+        }
+
         this.gameService.addGame(this.gameParametersForm.value);
         this.dialogRef.close();
+        this.router.navigate(['/waiting-room']);
     }
 
     // avoid having turn time limit at 00:00 or 5:30
