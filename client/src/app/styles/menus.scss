@@ -14,16 +14,16 @@
     margin: 100px;
     //margin: auto;
     color: aquamarine;
-    font-family: 'Signika Negative', sans-serif;
+    font-family: 'Signika Negative';
     font-size: 70px;
 }
 
 .apropos {
-    width: 97%;
-    margin: 30px;
-    text-align: right;
+    font-family: 'Signika Negative';
+    font-size: 36px;
+    width: max-content;
+    margin: 20px;
 }
-
 
 .justified {
     display: flex;
@@ -40,7 +40,7 @@
 
 .button:hover {
     cursor: pointer;
-    box-shadow: 0 5px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
     transition: box-shadow 0.1s ease-in-out;
     transform: scale(1.2);
     transition: transform 0.3s ease-in-out;
@@ -75,15 +75,13 @@
     min-width: min-content;
 }
 
-
 ::ng-deep .mat-tooltip {
-    white-space: pre-line; // Allow line break 
-    
-  }
+    white-space: pre-line; // Allow line break
+}
 
 .material-icons {
     color: black;
-    font-size: 48px;
+    font-size: 36px;
 }
 
 .material-icons:hover {
