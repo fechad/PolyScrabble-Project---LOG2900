@@ -1,5 +1,5 @@
 <div class="infos">
-    <div class="opponent">
+    <div class="opponent" [ngClass]="{ player: true, tour: skipTurn.tourPlayer1 }">
         <p>Joueur1</p>
         <p>score joueur1</p>
         <p>lettes restantes joueur1</p>
@@ -13,7 +13,7 @@
         <p>objectif facile</p>
         <p>objectif dure</p>
     </div>
-    <div class="player">
+    <div class="player" [ngClass]="{ player: true, tour: skipTurn.tourPlayer2 }">
         <p>Joueur2</p>
         <p>score joueur2</p>
         <p>lettes restantes joueur2</p>

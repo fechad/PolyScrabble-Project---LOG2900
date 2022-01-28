@@ -14,9 +14,9 @@
                 <app-play-area class="play-area" tabindex="0"></app-play-area>
             </section>
             <section class="rackArea">
-                <button id="quit-game" (click)="abandonner()">Abandonner</button>
+                <button id="quit-game" (click)="quitGame()">Abandonner</button>
                 <app-letter-rack></app-letter-rack>
-                <button id="skip-turn">Passer son tour</button>
+                <button id="skip-turn" (click)="skipMyTurn()">Passer son tour</button>
             </section>
         </div>
         <div class="chatArea">
