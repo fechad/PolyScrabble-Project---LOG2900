@@ -21,6 +21,7 @@ import { ThreeButtonOptionsComponent } from './components/three-button-options/t
 import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { GamesListService } from './services/games-list.service';
+import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -40,6 +41,7 @@ import { GamesListService } from './services/games-list.service';
         WaitingRoomPageComponent,
         ThreeButtonOptionsComponent,
         GameSetupDialogComponent,
+        JoiningRoomPageComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -14,6 +14,7 @@
 </mat-card-header>
 
 <mat-card-content>
+
     <div class="container">
         <form [formGroup]="gameParametersForm" (submit)="onSubmit()">
             <div class="form-group">
@@ -43,10 +44,12 @@
 
                     </div>
                 </div>
+        
             </div>
             <div class="row">
-                <button type="submit" class="btn success" (click)="connect()">Jouer!</button>
+                <button type="submit" class="btn success" routerLink="/waiting-room">Jouer!</button>
             </div>
+            
         </form>
     </div>
 </mat-card-content>
