@@ -4,6 +4,8 @@ import * as io from 'socket.io';
 
 export class SocketManager {
     private io: io.Server;
+    connections: Connection[] = [];
+
     constructor(server: http.Server) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -14,6 +16,7 @@ export class SocketManager {
 
             const connection = new Connection(socket);
             connection.init();
+            this.connections.push(connection);
         });
     }
 }

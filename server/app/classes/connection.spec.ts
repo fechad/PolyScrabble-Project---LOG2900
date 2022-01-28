@@ -3,9 +3,9 @@ import { assert } from 'chai';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
-import { Parameters } from './parameters';
-import { Room } from './connection';
 import { SocketManager } from '../services/socketmanager.service';
+import { Room } from './connection';
+import { Parameters } from './parameters';
 
 const RESPONSE_DELAY = 200;
 describe('SocketManager service tests', () => {
@@ -25,6 +25,11 @@ describe('SocketManager service tests', () => {
         parameters = new Parameters();
         const roomName = 'helloWorld';
         room = {name: roomName, parameters : parameters};
+        await new Promise<void>((resolve, reject) => {
+            service['io'].on('connection', () => {
+                resolve();
+            });
+        })
     });
 
     afterEach(() => {
@@ -53,18 +58,22 @@ describe('SocketManager service tests', () => {
     });
 
 
-    //TODO: fix test
     it('should stop broadcast rooms when room is joined', (done) => {
-        let called = false;
+        let nbrCalls = 0;
+        const spy = sinon.spy(service['connections'][0], 'stopBroadcastsRooms')
         clientSocket.on('rooms', () => {
-            console.log(`called: ${called}`)
-            if(!called){
+            if(nbrCalls < 2){
                 clientSocket.emit('joinRoom', room);
-                called = true;
-                setTimeout(() => done(), 1000);
+                nbrCalls++;
+                if (nbrCalls == 2){
+                    setTimeout(() => {
+                        assert(spy.called);
+                        done();
+                    }, 1000);
+                }
             } else {
                 assert(false);
-            }
+            } 
         });
     });
 });

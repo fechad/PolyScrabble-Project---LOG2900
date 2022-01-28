@@ -1,9 +1,8 @@
 import * as io from 'socket.io';
 import { Parameters } from './parameters';
+import { Room } from './room';
 
 const ROOMS_LIST_UPDATE_TIMEOUT = 500; // ms
-
-export type Room = {name: string, parameters: Parameters};
 
 export class Connection {
     private io: io.Socket;
@@ -56,11 +55,6 @@ export class Connection {
     }
 
     changeParameters(newParameters: Parameters): void {
-        const validation = newParameters.validateParameters()
-        if(validation === undefined){
-            this.room.parameters = newParameters;
-        } else {
-            this.io.emit('validationError', `Error of Parameter: ${validation}`)
-        }
+        this.room.changeParameter(newParameters);
     }
 }
