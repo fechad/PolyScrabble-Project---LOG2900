@@ -1,38 +1,43 @@
-<div>
-    <div
-        class="apropos"
-        matTooltip="Etienne Aumais-Boucher&#13;
+<div class="container">
+    <div class="header-container">
+        <div
+            *ngIf="isMain"
+            class="apropos"
+            matTooltip="Etienne Aumais-Boucher&#13;
                 Fedwin Chatelier&#13;
                 Anna Guo&#13;
                 Xavier L'Heureux&#13;
                 Justin St-Arnaud&#13;
                 Francois Tourigny"
-        matTooltipPosition="left"
-        matTooltipClass="authors"
-    >
-        Auteurs
-        <span class="material-icons">create</span>
-    </div>
-</div>
-<div class="container justified">
-    <h1 class="title">SCRABBLE</h1>
-
-    <section id="server-message">
-        <!-- <p>Petit message du serveur : {{ message.getValue() }}</p> -->
-        <div class="justified">
-            <button
-                class="button"
-                routerLink="/modes/classic"
-                matTooltip="Mode Classique"
-                matTooltipPosition="right"
-                aria-label="LOG2990 mode button"
-            >
-                Classique
-            </button>
-            <button class="button" routerLink="/modes/classic" matTooltip="Mode LOG2990" matTooltipPosition="right" aria-label="classic mode button">
-                LOG2990
-            </button>
-            <button class="button">Meilleurs scores</button>
+            matTooltipPosition="left"
+            matTooltipClass="authors"
+        >
+            Auteurs
+            <span class="material-icons">groups</span>
         </div>
-    </section>
+        <a *ngIf="!isMain" (click)="changeState()" class="home-button">
+            <i class="material-icons">home</i>
+        </a>
+    </div>
+
+    <div class="justified">
+        <h1 class="title">SCRABBLE</h1>
+        <h2 *ngIf="!isMain" class="subtitle">Mode {{ mode }}</h2>
+
+        <div *ngFor="let champ of donneesBoutons" class="justified">
+            <!-- <button (click)="changeState()" class="button" routerLink="{{ champ.route }}" matTooltip="Mode Classique" matTooltipPosition="right">
+                Classique
+            </button> -->
+            <button
+                (click)="changeState(champ.texte)"
+                class="button"
+                routerLink="{{ champ.route }}"
+                matTooltip="{{ champ.toolTip }}"
+                matTooltipPosition="right"
+            >
+                {{ champ.texte }}
+            </button>
+            <!-- <button (click)="changeState()" class="button">Meilleurs scores</button> -->
+        </div>
+    </div>
 </div>
