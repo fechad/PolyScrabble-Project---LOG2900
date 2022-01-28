@@ -8,8 +8,9 @@
 .infos {
     display: inline-flex;
     flex-direction: row;
-    height: 17vh;
+    height: 10vh;
     width: 100vw;
+    margin-bottom: 2vh;
 }
 .game-infos,
 .opponent,
@@ -27,4 +28,11 @@
 
 p {
     margin-bottom: 0px;
+}
+.p-infos {
+    display: flex;
+    flex-direction: row;
+}
+.p-infos p {
+    margin-left: 1vh;
 }

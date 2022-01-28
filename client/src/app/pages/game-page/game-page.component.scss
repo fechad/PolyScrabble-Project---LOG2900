@@ -17,34 +17,48 @@
 .center {
     display: flex;
     width: 50vw;
-    margin-left: 23vw;
+    height: 48vw;
+    margin-left: 20vw;
     align-items: center;
+    justify-content: space-between;
 }
 .game-container {
     display: flex;
     flex-direction: row;
 }
 .icon {
-    margin-top: 5vw;
     margin-bottom: 2vw;
+    width: 1vh;
+    height: 1vh;
 }
 .icon,
 .sizing {
     border: none;
     outline: none;
     background-color: transparent;
+    margin-left: 2vh;
 }
 .sizing {
     margin-top: 1vh;
-    width: 2vw;
-    height: 2vw;
 }
-#icon-container {
-    margin-left: 2vw;
+#left-container {
+    margin-top: 1vh;
     display: flex;
     flex-direction: column;
+    width: 10vw;
 }
 .size-container {
     display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+.goals,
+.game-goals {
+    display: flex;
     flex-direction: column;
+    width: 5vw;
+    margin-left: 2vh;
+}
+.goals {
+    margin-top: 10vh;
 }
