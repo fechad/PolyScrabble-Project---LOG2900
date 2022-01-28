@@ -1,7 +1,7 @@
 import { Parameters } from './parameters';
 
 export type Player = { name: string; id: PlayerId };
-export type EventHandler = (event: string, payload: unknown) => void; // TODO
+export type EventHandler = (event: string, payload: unknown) => void;
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -21,7 +21,7 @@ export class Room {
             id: playerId,
             name: playerName,
         };
-        this.name = `partie de ${playerName}`;
+        this.name = `Partie de ${playerName}`;
         this.eventHandler = eventHandler;
     }
 
@@ -53,5 +53,9 @@ export class Room {
             this.otherPlayer = undefined;
             this.eventHandler('kick', null);
         }
+    }
+
+    hasOtherPlayer(): boolean {
+        return this.otherPlayer !== undefined;
     }
 }
