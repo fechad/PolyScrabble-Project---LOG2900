@@ -1,58 +1,57 @@
-import { Connection } from './connection';
-import { Parameters } from "./parameters";
+import { Parameters } from './parameters';
 
-type Player = {connection: Connection, name: string};
-type Function = () => void; 
+export type Player = { name: string; id: PlayerId };
+export type EventHandler = (event: string, payload: unknown) => void; // TODO
+
+export type RoomId = number;
+export type PlayerId = string;
 
 export class Room {
+    readonly parameters: Parameters;
+    readonly name: string;
+    readonly id: RoomId;
+    private mainPlayer: Player;
+    private otherPlayer: Player | undefined;
+    private eventHandler: EventHandler;
 
-    private parameters : Parameters;
-    readonly name : string;
-    private mainPlayer : Player;
-    private otherPlayer : Player | undefined;
-    private deleteFunction : Function;
-
-    
-    constructor(playerSocket: Connection, playerName: string, deleteFunction: Function){
-        this.parameters = new Parameters();
+    constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters, eventHandler: EventHandler) {
+        this.id = id;
+        this.parameters = parameters;
         this.mainPlayer = {
-            connection: playerSocket,
-            name: playerName
+            id: playerId,
+            name: playerName,
         };
-        this.name = `partie de ${playerName}`
-        this.deleteFunction = deleteFunction;
+        this.name = `partie de ${playerName}`;
+        this.eventHandler = eventHandler;
     }
 
-    getParameters(): Parameters{
-        return this.parameters;
-    }
-
-    changeParameter(parameters: Parameters, playerSocket: Connection){
-        if(playerSocket != this.mainPlayer.connection){
-            return Error("You're not allowed to change the parameters");
+    addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
+        if (playerName === this.mainPlayer.name) {
+            return Error('this name is already taken');
         }
-        let error = parameters.validateParameters();
-        if (error === undefined) {
-            this.parameters = parameters;
+        if (playerId === this.mainPlayer.id) {
+            return Error('Cannot have same id for both players');
         }
-        return error;
+        if (this.otherPlayer !== undefined) {
+            return Error('already 2 players in the game');
+        }
+        this.otherPlayer = { id: playerId, name: playerName };
+        return undefined;
     }
 
-    addPlayer(playerSocket: Connection, playerName: string): Error | undefined{
-        if (playerName == this.mainPlayer.name) {
-            return Error("this name is already taken");
-        } else {
-            this.otherPlayer = { connection: playerSocket, name: playerName };
-        }
-        return;
-    }
-
-    removePlayer(playerSocket: Connection): Error | undefined{
-        if(this.otherPlayer && playerSocket == this.otherPlayer.connection){
+    quit(playerId: PlayerId) {
+        if (playerId === this.mainPlayer.id) {
+            this.eventHandler('delete', null);
+        } else if (this.otherPlayer && playerId === this.otherPlayer.id) {
             this.otherPlayer = undefined;
-        } else if(this.mainPlayer.connection == playerSocket){
-            this.deleteFunction();
+            this.eventHandler('left', null);
         }
-        return Error("player not found");
+    }
+
+    kickOtherPlayer() {
+        if (this.otherPlayer) {
+            this.otherPlayer = undefined;
+            this.eventHandler('kick', null);
+        }
     }
 }

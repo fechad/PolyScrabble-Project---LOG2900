@@ -1,68 +1,83 @@
-import { SocketManager } from '@app/services/socketmanager.service';
-import { Server } from 'app/server';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import { io as ioClient, Socket } from 'socket.io-client';
-import { Container } from 'typedi';
 import { Parameters } from './parameters';
 import { Room } from './room';
+
+// For to.be.undefined for chai
+/* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions */
 
 describe('Room', () => {
     let parameters: Parameters;
     let room: Room;
-    let server: Server;
-    let service: SocketManager;
-    let clientSocket: Socket;
+    let stub: sinon.SinonSpy;
 
-    const urlString = 'http://localhost:3000';
     beforeEach(async () => {
-        server = Container.get(Server);
-        server.init();
-        service = server['socketManager'];
-        service.init();
-        clientSocket = ioClient(urlString);
         parameters = new Parameters();
-        await new Promise<void>((resolve, reject) => {
-            service['io'].on('connection', () => {
-                resolve();
-            });
-        })
-        let playerSocket = service['connections'][0];
-        let deleteFunction = () => {console.log("delete room")};
-        room = new Room(playerSocket, 'name', deleteFunction);
+        stub = sinon.stub();
+        room = new Room(0, 'DummyPlayerId', 'Dummy', parameters, stub);
     });
 
     afterEach(() => {
-        clientSocket.close();
-        service['io'].close();
         sinon.restore();
     });
 
-    it('should join a room', (done) => {
-        const spy = sinon.spy(console, 'log');
-        clientSocket.emit('joinRoom', room);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, 1000);
+    it('should not add a player with same name', (done) => {
+        const result = room.addPlayer('Rumumumumu', 'Dummy');
+        expect(result).to.not.be.undefined;
+        done();
     });
 
-    it('should change ', (done) => {
-        let nbrCalls = 0;
-        const spy = sinon.spy(service['connections'][0], 'stopBroadcastsRooms')
-        clientSocket.on('rooms', () => {
-            if(nbrCalls < 2){
-                clientSocket.emit('joinRoom', room);
-                nbrCalls++;
-                if (nbrCalls == 2){
-                    setTimeout(() => {
-                        assert(spy.called);
-                        done();
-                    }, 1000);
-                }
-            } else {
-                assert(false);
-            } 
-        });
+    it('should not add a player with same name', (done) => {
+        const result = room.addPlayer('Rumumumumu', 'Dummy');
+        expect(result).to.not.be.undefined;
+        done();
     });
+
+    it('should not add a player with same ID', (done) => {
+        const result = room.addPlayer('DummyPlayerId', 'NotDummy');
+        expect(result).to.not.be.undefined;
+        done();
+    });
+
+    it('should not add more than 1 player', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy');
+        expect(result2).to.not.be.undefined;
+        done();
+    });
+
+    it('should add player', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        done();
+    });
+
+    it('should kick player', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.kickOtherPlayer();
+        // eslint-disable-next-line dot-notation
+        expect(room['otherPlayer']).to.be.undefined;
+        done();
+    });
+
+    it('should not error when there is no player to kick', (done) => {
+        room.kickOtherPlayer();
+        // eslint-disable-next-line dot-notation
+        expect(room['otherPlayer']).to.be.undefined;
+        done();
+    });
+
+    it('should send event when kicking player', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.kickOtherPlayer();
+        // eslint-disable-next-line dot-notation
+        expect(room['otherPlayer']).to.be.undefined;
+        assert(stub.calledWith('kick', null));
+        done();
+    });
+
+    // TODO test quit
 });
