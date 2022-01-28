@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
 const boutonMainPage = [
     { route: '', toolTip: 'Une partie de Scrabble avec les règles standards.', texte: 'Classique' },
     { route: '', toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires', texte: 'Mode 2990' },
     { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores' },
 ];
 const boutonModeChoisi = [
-    { route: '/waiting-room', toolTip: '', texte: 'Solo' },
-    { route: '/waiting-room', toolTip: '', texte: 'Muiltijoueur' },
-    { route: '/waiting-room', toolTip: '', texte: 'Rejoindre une partie' },
+    { route: '', toolTip: '', texte: 'Solo' },
+    { route: '', toolTip: '', texte: 'Muiltijoueur' },
+    { route: '/joining-room', toolTip: '', texte: 'Rejoindre une partie' },
 ];
 @Component({
     selector: 'app-main-page',
@@ -18,6 +20,12 @@ export class MainPageComponent {
     isMain: boolean = true;
     donneesBoutons = boutonMainPage;
     mode: string;
+    constructor(public dialog: MatDialog) {}
+    openDialog(isMain: boolean, text: string) {
+        if (!isMain && text !== 'Rejoindre une partie') {
+            this.dialog.open(GameSetupDialogComponent);
+        }
+    }
     changeState(button?: string) {
         switch (button) {
             case 'Meilleurs scores': {
