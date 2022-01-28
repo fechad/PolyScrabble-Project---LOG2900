@@ -1,15 +1,15 @@
 import { Message } from '@app/message';
-import { ExampleService } from '@app/services/example.service';
+import { LeaderBoardService } from '@app/services/leaderboard.service';
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 
 const HTTP_STATUS_CREATED = 201;
 
 @Service()
-export class ExampleController {
+export class LeaderBoardController {
     router: Router;
 
-    constructor(private readonly exampleService: ExampleService) {
+    constructor(private readonly leaderboardService: LeaderBoardService) {
         this.configureRouter();
     }
 
@@ -55,7 +55,7 @@ export class ExampleController {
          */
         this.router.get('/', async (req: Request, res: Response) => {
             // Send the request to the service and send the response
-            const time: Message = await this.exampleService.helloWorld();
+            const time: Message = await this.leaderboardService.helloWorld();
             res.json(time);
         });
 
@@ -77,7 +77,7 @@ export class ExampleController {
          */
         this.router.get('/about', (req: Request, res: Response) => {
             // Send the request to the service and send the response
-            res.json(this.exampleService.about());
+            res.json(this.leaderboardService.about());
         });
 
         /**
@@ -107,7 +107,7 @@ export class ExampleController {
          */
         this.router.post('/send', (req: Request, res: Response) => {
             const message: Message = req.body;
-            this.exampleService.storeMessage(message);
+            this.leaderboardService.storeMessage(message);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
 
@@ -131,7 +131,7 @@ export class ExampleController {
          *             $ref: '#/definitions/Message'
          */
         this.router.get('/all', (req: Request, res: Response) => {
-            res.json(this.exampleService.getAllMessages());
+            res.json(this.leaderboardService.getAllMessages());
         });
     }
 }
