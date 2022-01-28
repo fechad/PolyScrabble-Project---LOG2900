@@ -1,8 +1,8 @@
 <div class="letter-container">
-    <div class="letter-value">
-        <p>Letter</p>
+    <div class="letter-name">
+        <p *ngIf="selectedLetter.name">{{ selectedLetter.name }}</p>
     </div>
     <div class="letter-score">
-        <p>Score value</p>
+        <p *ngIf="selectedLetter.score">{{ selectedLetter.score }}</p>
     </div>
 </div>
