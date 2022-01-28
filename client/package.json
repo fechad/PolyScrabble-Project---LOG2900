@@ -28,6 +28,7 @@
     "rxjs": "~6.6.0",
     "socket.io-client": "^4.4.0",
     "tslib": "^2.2.0",
+    "uuid": "^8.3.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -41,6 +42,7 @@
     "@angular/compiler-cli": "12.1.5",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.11.1",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "4.28.2",
     "@typescript-eslint/parser": "4.28.2",
     "eslint": "^7.26.0",
