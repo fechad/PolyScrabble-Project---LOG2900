@@ -10,6 +10,8 @@ export const DEFAULT_HEIGHT = 500;
 })
 export class GridService {
     gridContext: CanvasRenderingContext2D;
+    fontSize = '7px system-ui';
+
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
@@ -137,7 +139,7 @@ export class GridService {
     drawMessage(word: string, posX: number, posY: number) {
         if (this.gridContext.fillStyle != '#838383') {
             this.gridContext.fillStyle = '#000000';
-            this.gridContext.font = '8px system-ui';
+            this.gridContext.font = this.fontSize;
             const sentence = word.split(' ');
             this.gridContext.fillText(sentence[0], posX, posY);
             this.gridContext.fillText(sentence[1], posX, posY + 10);
@@ -148,12 +150,14 @@ export class GridService {
         const step = 33;
         this.gridContext.font = '20px system-ui';
         for (let i = 0; i < word.length; i++) {
+            this.gridContext.fillStyle = '#000000';
             this.gridContext.fillText(word[i], startPosition.x + step * i, startPosition.y);
         }
     }
     drawNumbers(numbers: string) {
         const startPosition: Vec2 = { x: -4, y: 40 };
         const step = 34;
+        this.gridContext.fillStyle = '#000000';
         this.gridContext.font = '20px system-ui';
         const numberList = numbers.split(' ', 15);
 

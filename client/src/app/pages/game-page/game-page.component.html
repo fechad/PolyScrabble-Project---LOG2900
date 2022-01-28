@@ -7,7 +7,11 @@
     <div class="game-container">
         <div id="icon-container">
             <button class="icon"><fa-icon [icon]="faQuestionCircle" size="6x"></fa-icon></button>
-            <button class="sizing"><fa-icon [icon]="faCogs" size="6x"></fa-icon></button>
+            <div class="size-container">
+                <button class="sizing"><fa-icon [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon></button>
+            </div>
         </div>
         <div class="center">
             <section class="play-area-container">
