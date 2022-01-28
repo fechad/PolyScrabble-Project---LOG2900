@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
+import { JoinSetupDialogComponent } from '@app/components/join-setup-dialog/join-setup-dialog.component';
 import { GamesListService } from '@app/services/games-list.service';
 
 @Component({
@@ -18,6 +18,6 @@ export class JoiningRoomPageComponent implements OnInit {
     }
 
     openDialog() {
-        this.dialog.open(GameSetupDialogComponent);
+        this.dialog.open(JoinSetupDialogComponent);
     }
 }

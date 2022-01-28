@@ -22,6 +22,7 @@ import { ClassicModesPageComponent } from './pages/classic-modes-page/classic-mo
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { GamesListService } from './services/games-list.service';
 import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
+import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -42,6 +43,7 @@ import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room
         ThreeButtonOptionsComponent,
         GameSetupDialogComponent,
         JoiningRoomPageComponent,
+        JoinSetupDialogComponent,
     ],
     imports: [
         AppMaterialModule,
