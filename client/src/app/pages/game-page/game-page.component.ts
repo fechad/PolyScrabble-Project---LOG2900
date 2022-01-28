@@ -12,8 +12,6 @@ import { faCogs } from '@fortawesome/free-solid-svg-icons';
 export class GamePageComponent {
     faQuestionCircle = faQuestionCircle;
     faCogs = faCogs;
-    tourPlayer1 = true;
-    tourPlayer2 = false;
     constructor(private router: Router, private skipTurn: SkipTurn) {}
 
     quitGame() {
