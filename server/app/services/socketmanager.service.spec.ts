@@ -1,14 +1,19 @@
+import { Parameters } from '@app/classes/parameters';
+import { Room } from '@app/classes/room';
 import { Server } from 'app/server';
+import { assert } from 'chai';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketManager } from './socketmanager.service';
 
-// const RESPONSE_DELAY = 200;
+const RESPONSE_DELAY = 1000;
+
 describe('SocketManager service tests', () => {
     let service: SocketManager;
     let server: Server;
-    let clientSocket: Socket;
+    let playersSocket: Socket[];
+    let broadcastSocket: Socket;
 
     const urlString = 'http://localhost:3000';
     beforeEach(async () => {
@@ -16,79 +21,94 @@ describe('SocketManager service tests', () => {
         server.init();
         // eslint-disable-next-line dot-notation
         service = server['socketManager'];
-        clientSocket = ioClient(urlString);
+        playersSocket = [ioClient(`${urlString}/`, { forceNew: true }), ioClient(`${urlString}/`, { forceNew: true })];
+        broadcastSocket = ioClient(`${urlString}/waitingRoom`, { forceNew: true });
+        // wait for connections
+        for (const socket of [broadcastSocket, ...playersSocket]) {
+            if (!socket.connected) {
+                await new Promise((resolve) => {
+                    socket.on('connect', () => resolve(undefined));
+                });
+            }
+        }
     });
 
     afterEach(() => {
-        clientSocket.close();
+        playersSocket.forEach((socket) => socket.close());
+        broadcastSocket.close();
         // eslint-disable-next-line dot-notation
         service['io'].close();
         sinon.restore();
     });
 
-    /* it('should join a room', (done) => {
-        clientSocket.emit('join', room);
+    it('should broadcast available rooms', (done) => {
+        const stub = sinon.stub();
+        broadcastSocket.on('broadcastRooms', stub);
         setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, 1000);
-    });
-
-    it('should change ', (done) => {
-        let nbrCalls = 0;
-        const spy = sinon.spy(service['connections'][0], 'stopBroadcastsRooms')
-        clientSocket.on('rooms', () => {
-            if(nbrCalls < 2){
-                clientSocket.emit('joinRoom', room);
-                nbrCalls++;
-                if (nbrCalls == 2){
-                    setTimeout(() => {
-                        assert(spy.called);
-                        done();
-                    }, 1000);
-                }
-            } else {
-                assert(false);
-            } 
-        });
-    });
-
-    it('should join a room', (done) => {
-        const spy = sinon.spy(console, 'log');
-        clientSocket.emit('joinRoom', room);
-        setTimeout(() => {
-            assert(spy.called);
+            assert(stub.callCount > 1);
+            assert(stub.alwaysCalledWith([]));
             done();
         }, RESPONSE_DELAY);
     });
 
-    it('should broadcast rooms more than once', (done) => {
-        let counter = 0;
-        clientSocket.on('rooms', (result: boolean) => {
-            counter ++;
-            if(counter >= 4){
+    it('should create a room', (done) => {
+        const stub = sinon.stub();
+        const parameters = new Parameters();
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        broadcastSocket.on('broadcastRooms', stub);
+        const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters, () => {
+            /* do nothing */
+        });
+        const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
+        setTimeout(() => {
+            assert(stub.callCount > 1);
+            assert(stub.calledWith([expectedRoomSerialized]));
+            done();
+        }, RESPONSE_DELAY);
+    });
+
+    it('should join a room', (done) => {
+        const stub = sinon.stub();
+        const parameters = new Parameters();
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        broadcastSocket.on('broadcastRooms', stub);
+        const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters, () => {
+            /* do nothing */
+        });
+        const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
+        setTimeout(() => {
+            assert(stub.callCount > 1);
+            assert(stub.calledWith([expectedRoomSerialized]));
+
+            const stub2 = sinon.stub();
+            playersSocket[1].on('join', stub2);
+            playersSocket[1].emit('joinRoom', 0);
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+                done();
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should not display full rooms', (done) => {
+        let full = false;
+        let connected = false;
+        const parameters = new Parameters();
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        broadcastSocket.on('broadcastRooms', (rooms) => {
+            assert(!full || connected || rooms.length !== 0); // TODO check if logical
+            if (full) {
                 done();
             }
         });
+        setTimeout(() => {
+            connected = true;
+            playersSocket[1].on('join', () => {
+                full = true;
+            });
+            playersSocket[1].emit('joinRoom', 0);
+        }, RESPONSE_DELAY);
     });
 
-
-    it('should stop broadcast rooms when room is joined', (done) => {
-        let nbrCalls = 0;
-        const spy = sinon.spy(service['connections'][0], 'stopBroadcastsRooms')
-        clientSocket.on('rooms', () => {
-            if(nbrCalls < 2){
-                clientSocket.emit('joinRoom', room);
-                nbrCalls++;
-                if (nbrCalls == 2){
-                    setTimeout(() => {
-                        assert(spy.called);
-                        done();
-                    }, 1000);
-                }
-            } else {
-                assert(false);
-            } 
-        });
-    });*/
+    // TODO add tests
 });
