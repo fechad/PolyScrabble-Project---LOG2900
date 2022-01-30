@@ -2,12 +2,14 @@ import { Parameters } from '@app/classes/parameters';
 import { Room, RoomId } from '@app/classes/room';
 import * as http from 'http';
 import * as io from 'socket.io';
+import { isDeepStrictEqual } from 'util';
 
 const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
 
 export class SocketManager {
     private io: io.Server;
     private rooms: Room[];
+    private prevRooms: Room[];
     private nextRoomId = 0;
 
     constructor(server: http.Server) {
@@ -41,9 +43,10 @@ export class SocketManager {
                     namespace.emit(event, payload);
                 });
                 socket.emit('join', roomId);
+                console.log(`Created room ${roomId} for player ${playerName}`);
 
                 namespace.on('connect', (namespaceSocket) => {
-                    const isMainPlayer = namespaceSocket === socket;
+                    const isMainPlayer = namespaceSocket.id === room.mainPlayer.id;
 
                     if (isMainPlayer) {
                         namespace.on('kick', () => {
@@ -72,17 +75,28 @@ export class SocketManager {
                 this.rooms.push(room);
             });
 
-            this.io.on('disconnect', (reason) => {
+            socket.on('disconnect', (reason) => {
                 console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
                 console.log(`Raison de deconnexion : ${reason}`);
+                this.rooms
+                    .filter((room) => room.mainPlayer.id === socket.id || room.getOtherPlayer()?.id === socket.id)
+                    .forEach((room) => room.quit(socket.id));
+                this.rooms = this.rooms.filter((room) => room.mainPlayer.id !== socket.id);
             });
         });
         const waitingRoom = this.io.of('/waitingRoom');
-        setInterval(() => {
-            waitingRoom.emit(
+        waitingRoom.on('connect', (socket) => {
+            socket.emit(
                 'broadcastRooms',
                 this.rooms.filter((room) => !room.hasOtherPlayer()),
             );
+        });
+        setInterval(() => {
+            const newRooms = this.rooms.filter((room) => !room.hasOtherPlayer());
+            if (!isDeepStrictEqual(newRooms, this.prevRooms)) {
+                waitingRoom.emit('broadcastRooms', newRooms);
+                this.prevRooms = newRooms;
+            }
         }, ROOMS_LIST_UPDATE_TIMEOUT);
     }
 

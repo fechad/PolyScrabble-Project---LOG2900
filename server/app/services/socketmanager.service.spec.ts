@@ -7,7 +7,7 @@ import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketManager } from './socketmanager.service';
 
-const RESPONSE_DELAY = 1000;
+const RESPONSE_DELAY = 400;
 
 describe('SocketManager service tests', () => {
     let service: SocketManager;
@@ -27,7 +27,7 @@ describe('SocketManager service tests', () => {
         for (const socket of [broadcastSocket, ...playersSocket]) {
             if (!socket.connected) {
                 await new Promise((resolve) => {
-                    socket.on('connect', () => resolve(undefined));
+                    socket.once('connect', () => resolve(undefined));
                 });
             }
         }
@@ -41,11 +41,11 @@ describe('SocketManager service tests', () => {
         sinon.restore();
     });
 
-    it('should broadcast available rooms', (done) => {
+    it('should broadcast available rooms on connect', (done) => {
         const stub = sinon.stub();
         broadcastSocket.on('broadcastRooms', stub);
         setTimeout(() => {
-            assert(stub.callCount > 1);
+            assert(stub.callCount == 1);
             assert(stub.alwaysCalledWith([]));
             done();
         }, RESPONSE_DELAY);
@@ -53,15 +53,14 @@ describe('SocketManager service tests', () => {
 
     it('should create a room', (done) => {
         const stub = sinon.stub();
+        broadcastSocket.on('broadcastRooms', stub);
         const parameters = new Parameters();
         playersSocket[0].emit('createRoom', 'Dummy', parameters);
-        broadcastSocket.on('broadcastRooms', stub);
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters, () => {
             /* do nothing */
         });
         const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
         setTimeout(() => {
-            assert(stub.callCount > 1);
             assert(stub.calledWith([expectedRoomSerialized]));
             done();
         }, RESPONSE_DELAY);
@@ -69,15 +68,14 @@ describe('SocketManager service tests', () => {
 
     it('should join a room', (done) => {
         const stub = sinon.stub();
+        broadcastSocket.on('broadcastRooms', stub);
         const parameters = new Parameters();
         playersSocket[0].emit('createRoom', 'Dummy', parameters);
-        broadcastSocket.on('broadcastRooms', stub);
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters, () => {
             /* do nothing */
         });
         const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
         setTimeout(() => {
-            assert(stub.callCount > 1);
             assert(stub.calledWith([expectedRoomSerialized]));
 
             const stub2 = sinon.stub();
