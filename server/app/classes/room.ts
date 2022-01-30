@@ -10,7 +10,7 @@ export class Room {
     readonly parameters: Parameters;
     readonly name: string;
     readonly id: RoomId;
-    private mainPlayer: Player;
+    readonly mainPlayer: Player;
     private otherPlayer: Player | undefined;
     private eventHandler: EventHandler;
 
@@ -57,5 +57,9 @@ export class Room {
 
     hasOtherPlayer(): boolean {
         return this.otherPlayer !== undefined;
+    }
+
+    getOtherPlayer(): Player | undefined {
+        return this.otherPlayer;
     }
 }
