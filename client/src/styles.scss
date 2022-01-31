@@ -95,11 +95,6 @@ body {
     justify-content: space-between;
     height: 80vh;
 }
-.center {
-    display: flex;
-    flex-direction: column;
-    width: 75vw;
-}
 .play-area-container {
     height: 40vh;
 }
@@ -113,6 +108,7 @@ body {
     justify-content: space-around;
     flex-direction: row;
     background-color: #5a5a5a;
+
     
 }
 #quit-game,
