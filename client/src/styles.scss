@@ -113,12 +113,23 @@ body {
     justify-content: space-around;
     flex-direction: row;
     background-color: #5a5a5a;
+    
 }
 #quit-game,
 #skip-turn {
-    margin-top: 30px;
     height: 6vh;
     width: 8vh;
+    margin-right: 0.5vh;
+    margin-left: 0.5vh;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+}
+
+#quit-game:hover,
+#skip-turn:hover {
+    height: 7vh;
+    width: 9vh;
     border-radius: 15px;
     border-width: thin;
     border-style: solid;
