@@ -25,7 +25,7 @@ export class GridService {
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('0 1 2 3 4 5 6 7 8 9 10 11 12 13 14');
 
-        this.gridContext.fillStyle = '#838383';
+        this.gridContext.fillStyle = '#c4c4c4';
         this.gridContext.strokeStyle = '#B1ACAC';
         const gridOrigin = 20;
 
@@ -39,7 +39,7 @@ export class GridService {
                 this.drawDoubleWord(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
                 this.drawDoubleLetter(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
                 this.drawStar(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.gridContext.fillStyle = '#838383';
+                this.gridContext.fillStyle = '#c4c4c4';
             }
         }
     }
@@ -48,7 +48,7 @@ export class GridService {
         const coord: string = posX.toString() + posY.toString();
         const tripleWord = ['00', '07', '014', '70', '714', '147', '140', '1414'];
         if (tripleWord.includes(coord)) {
-            this.gridContext.fillStyle = '#c93de0';
+            this.gridContext.fillStyle = '#670b3f';
             this.gridContext.fill();
 
             this.drawMessage('TRIPLE WORD', canvasX, canvasY);

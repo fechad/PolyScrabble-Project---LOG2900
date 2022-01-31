@@ -1,7 +1,7 @@
 .container {
     height: 100%;
     display: flex;
-    background-color: #5a5a5a;
+    background-color: #f9f6f8;
 }
 
 .play-area-container {
@@ -77,4 +77,8 @@
 }
 .goals {
     margin-top: 10vh;
+}
+
+#quit-game, #skip-turn {
+    background-color: #670b3f;
 }
