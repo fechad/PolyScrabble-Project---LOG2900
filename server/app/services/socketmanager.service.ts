@@ -30,7 +30,7 @@ export class SocketManager {
                 }
                 const error = room.addPlayer(socket.id, playerName);
                 if (error !== undefined) {
-                    socket.emit('error', error);
+                    socket.emit('error', error.message);
                     return;
                 }
                 socket.emit('join', id);
@@ -61,7 +61,7 @@ export class SocketManager {
                         namespace.on('join', (name: string) => {
                             const error = room.addPlayer(socket.id, name);
                             if (error !== undefined) {
-                                socket.emit('error', error);
+                                socket.emit('error', error.message);
                             }
                         });
                     }

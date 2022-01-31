@@ -88,6 +88,7 @@ describe('SocketManager service tests', () => {
         }, RESPONSE_DELAY);
     });
 
+    //A verifier
     it('should not display full rooms', (done) => {
         let full = false;
         let connected = false;
@@ -107,6 +108,44 @@ describe('SocketManager service tests', () => {
             playersSocket[1].emit('joinRoom', 0);
         }, RESPONSE_DELAY);
     });
+
+    it('should return an error if room does not exist', (done) => {
+        const stub = sinon.stub();
+        setTimeout(() => {
+            playersSocket[0].on('error', stub);
+            playersSocket[0].emit('joinRoom', 0);
+            setTimeout(() => {
+                assert(stub.calledWith('Room is no longer available'));
+                done();
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should return an error if an error is created in room', (done) => {
+        playersSocket.push(ioClient(`${urlString}/`, { forceNew: true }));
+        const stub = sinon.stub();
+        const parameters = new Parameters();
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        new Room(0, playersSocket[0].id, 'Dummy', parameters, () => {
+            /* do nothing */
+        });
+        setTimeout(() => {
+            playersSocket[1].on('join', stub);
+            playersSocket[1].emit('joinRoom', 0);
+            setTimeout(() => {
+                assert(stub.calledWith(0));
+
+                const stub2 = sinon.stub();
+                playersSocket[2].on('error', stub2);
+                playersSocket[2].emit('joinRoom', 0);
+                setTimeout(() => {
+                    assert(stub2.calledWith('already 2 players in the game'));
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
 
     // TODO add tests
 });

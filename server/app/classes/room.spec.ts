@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { Parameters } from './parameters';
-import { Room } from './room';
+import { Player, Room } from './room';
 
 // For to.be.undefined for chai
 /* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions */
@@ -29,9 +29,16 @@ describe('Room', () => {
         done();
     });
 
-    it('should not add a player with same name', (done) => {
-        const result = room.addPlayer('Rumumumumu', 'Dummy');
-        expect(result).to.not.be.undefined;
+    it('should get the other player', (done) => {
+        assert(!room.hasOtherPlayer());
+        let player2: Player = {name: 'NotDummyId', id: 'NotDummy'};
+        const result = room.addPlayer(player2.id, player2.name);
+        expect(result).to.be.undefined;
+        let otherPlayer: Player | undefined = room.getOtherPlayer();
+        assert(otherPlayer !== undefined);
+        otherPlayer = otherPlayer as Player;
+        expect(otherPlayer.id === player2.id);
+        expect(otherPlayer.name === player2.name);
         done();
     });
 
