@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faFont } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleRight, faFont, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-game-page',
@@ -14,6 +14,8 @@ import { faFont } from '@fortawesome/free-solid-svg-icons';
 export class GamePageComponent {
     faQuestionCircle = faQuestionCircle;
     faFont = faFont;
+    faSignOutAlt = faSignOutAlt;
+    faAngleDoubleRight = faAngleDoubleRight;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
 
     constructor(private router: Router, public gridService: GridService, private skipTurn: SkipTurnService) {}
