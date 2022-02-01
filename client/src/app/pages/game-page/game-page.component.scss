@@ -5,7 +5,6 @@
 }
 
 .play-area-container {
-    /* overflow: auto;*/
     flex: 1 1 auto;
 }
 
@@ -29,14 +28,11 @@
     height:90vh;
 }
 .icon {
+    border-radius: 20px;
     margin-bottom: 2vw;
     margin-left: 2vh;
     width: 3vh;
     height: 3vh;
-}
-.icon:hover {
-    margin-left: 2vh;
-    font-size: 16px;
 }
 
 .icon,
@@ -45,13 +41,9 @@
     outline: none;
     background-color: transparent;
     margin-left: 2vh;
+    transition: transform 0.3s ease-in-out;
 }
-.sizing {
-    margin-top: 1vh;
-}
-.sizing:hover {
-    font-size: 16px;
-}
+
 #left-container {
     margin-top: 1vh;
     display: flex;
@@ -81,4 +73,25 @@
 
 #quit-game, #skip-turn {
     background-color: #670b3f;
+    height: 6vh;
+    width: 8vh;
+    margin-right: 0.5vh;
+    margin-left: 0.5vh;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+    transition: transform 0.3s ease-in-out;
+}
+.rackArea {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    background-color: #f9f6f8;
+}
+
+.sizing:hover, .icon:hover, #quit-game:hover,
+#skip-turn:hover {
+    cursor: pointer;
+    
+    transform: scale(1.1);
 }

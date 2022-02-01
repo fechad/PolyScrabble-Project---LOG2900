@@ -103,30 +103,3 @@ body {
     flex-direction: column;
     justify-content: space-evenly;
 }
-.rackArea {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    background-color: #f9f6f8;
-
-    
-}
-#quit-game,
-#skip-turn {
-    height: 6vh;
-    width: 8vh;
-    margin-right: 0.5vh;
-    margin-left: 0.5vh;
-    border-radius: 15px;
-    border-width: thin;
-    border-style: solid;
-}
-
-#quit-game:hover,
-#skip-turn:hover {
-    height: 7vh;
-    width: 9vh;
-    border-radius: 15px;
-    border-width: thin;
-    border-style: solid;
-}
