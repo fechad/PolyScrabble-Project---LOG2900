@@ -2,14 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
-
 describe('JoiningRoomPageComponent', () => {
     let component: JoiningRoomPageComponent;
     let fixture: ComponentFixture<JoiningRoomPageComponent>;
+    let matDialog: MatDialog;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [JoiningRoomPageComponent, MatDialog],
+            declarations: [JoiningRoomPageComponent],
+            providers: [{ provide: MatDialog, useValue: matDialog }],
         }).compileComponents();
     });
 
