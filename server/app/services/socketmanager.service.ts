@@ -33,7 +33,7 @@ export class SocketManager {
                     socket.emit('error', error);
                     return;
                 }
-                socket.emit('join', id);
+                socket.emit('join', id, 1);
             });
 
             socket.on('createRoom', (playerName: string, parameters: Parameters) => {
@@ -42,35 +42,38 @@ export class SocketManager {
                 const room = new Room(roomId, socket.id, playerName, parameters, (event: string, payload: unknown) => {
                     namespace.emit(event, payload);
                 });
-                socket.emit('join', roomId);
+                socket.emit('join', roomId, 0);
                 console.log(`Created room ${roomId} for player ${playerName}`);
 
+                namespace.use((socket, next) => {
+                    const token = socket.handshake.auth.token;
+                    if (token === 0 || token === 1) { // valid token
+                        next();
+                    } else {
+                        next(Error('Invalid token for room'));
+                    }
+                });
                 namespace.on('connect', (namespaceSocket) => {
-                    const isMainPlayer = namespaceSocket.id === room.mainPlayer.id;
+                    const isMainPlayer = namespaceSocket.handshake.auth.token === 0;
 
                     if (isMainPlayer) {
-                        namespace.on('kick', () => {
+                        namespaceSocket.on('kick', () => {
+                            console.log(`Kicked player from room ${room.id}`);
                             room.kickOtherPlayer();
-                            namespace.emit('kick');
                         });
 
-                        namespace.on('start', () => {
-                            console.log('start');
-                        }); // TODO
-                    } else {
-                        namespace.on('join', (name: string) => {
-                            const error = room.addPlayer(socket.id, name);
-                            if (error !== undefined) {
-                                socket.emit('error', error);
+                        namespaceSocket.on('start', () => {
+                            if (room.hasOtherPlayer()) {
+                                console.log('start'); // TODO
+                            } else {
+                                namespaceSocket.emit('error', 'No other player');
                             }
                         });
                     }
                     namespaceSocket.on('disconnect', () => {
-                        room.quit(namespaceSocket.id);
+                        room.quit(isMainPlayer);
                     });
-                    namespaceSocket.on('leave', () => {
-                        room.quit(namespaceSocket.id);
-                    });
+                    namespaceSocket.emit('updateRoom', room);
                 });
                 this.rooms.push(room);
             });
@@ -78,9 +81,6 @@ export class SocketManager {
             socket.on('disconnect', (reason) => {
                 console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
                 console.log(`Raison de deconnexion : ${reason}`);
-                this.rooms
-                    .filter((room) => room.mainPlayer.id === socket.id || room.getOtherPlayer()?.id === socket.id)
-                    .forEach((room) => room.quit(socket.id));
                 this.rooms = this.rooms.filter((room) => room.mainPlayer.id !== socket.id);
             });
         });

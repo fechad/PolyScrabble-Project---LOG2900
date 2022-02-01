@@ -23,6 +23,7 @@ export class Room {
         };
         this.name = `Partie de ${playerName}`;
         this.eventHandler = eventHandler;
+        this.eventHandler('updateRoom', this);
     }
 
     addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
@@ -36,15 +37,16 @@ export class Room {
             return Error('already 2 players in the game');
         }
         this.otherPlayer = { id: playerId, name: playerName };
+        this.eventHandler('updateRoom', this);
         return undefined;
     }
 
-    quit(playerId: PlayerId) {
-        if (playerId === this.mainPlayer.id) {
-            this.eventHandler('delete', null);
-        } else if (this.otherPlayer && playerId === this.otherPlayer.id) {
+    quit(mainPlayer: boolean) {
+        if (mainPlayer) {
+            this.eventHandler('kick', null);
+        } else {
             this.otherPlayer = undefined;
-            this.eventHandler('left', null);
+            this.eventHandler('updateRoom', this);
         }
     }
 
@@ -52,6 +54,7 @@ export class Room {
         if (this.otherPlayer) {
             this.otherPlayer = undefined;
             this.eventHandler('kick', null);
+            this.eventHandler('updateRoom', this);
         }
     }
 
