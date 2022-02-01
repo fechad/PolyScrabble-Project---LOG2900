@@ -21,6 +21,14 @@ describe('Room', () => {
         sinon.restore();
     });
 
+    it('should check if has other player', (done) => {
+        assert(!room.hasOtherPlayer());
+        const result = room.addPlayer('NotDummyId', 'NotDummy');
+        expect(result).to.be.undefined;
+        assert(room.hasOtherPlayer());
+        done();
+    });
+
     it('should not add a player with same name', (done) => {
         const result = room.addPlayer('Rumumumumu', 'Dummy');
         expect(result).to.not.be.undefined;
@@ -79,5 +87,45 @@ describe('Room', () => {
         done();
     });
 
-    // TODO test quit
+    it('should stop the game when the main player quits', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.quit(true);
+        assert(stub.calledWith('kick', null));
+        done();
+    });
+
+    it('should remove the other player when they quit', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.quit(false);
+        // eslint-disable-next-line dot-notation
+        expect(room['otherPlayer']).to.be.undefined;
+        assert(stub.calledWith('updateRoom', room));
+        done();
+    });
+
+    it('should let someone join after they quit', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.quit(false);
+        // eslint-disable-next-line dot-notation
+        expect(room['otherPlayer']).to.be.undefined;
+        assert(stub.calledWith('updateRoom', room));
+        const result2 = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result2).to.be.undefined;
+        done();
+    });
+
+    it('should let someone else join after someone else quit', (done) => {
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.quit(false);
+        // eslint-disable-next-line dot-notation
+        expect(room['otherPlayer']).to.be.undefined;
+        assert(stub.calledWith('updateRoom', room));
+        const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy');
+        expect(result2).to.be.undefined;
+        done();
+    });
 });

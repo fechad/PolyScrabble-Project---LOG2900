@@ -1,7 +1,7 @@
 import { Parameters } from './parameters';
 
 export type Player = { name: string; id: PlayerId };
-export type EventHandler = (event: string, payload: unknown) => void; // TODO
+export type EventHandler = (event: string, payload: unknown) => void;
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -10,7 +10,7 @@ export class Room {
     readonly parameters: Parameters;
     readonly name: string;
     readonly id: RoomId;
-    private mainPlayer: Player;
+    readonly mainPlayer: Player;
     private otherPlayer: Player | undefined;
     private eventHandler: EventHandler;
 
@@ -21,8 +21,9 @@ export class Room {
             id: playerId,
             name: playerName,
         };
-        this.name = `partie de ${playerName}`;
+        this.name = `Partie de ${playerName}`;
         this.eventHandler = eventHandler;
+        this.eventHandler('updateRoom', this);
     }
 
     addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
@@ -36,15 +37,16 @@ export class Room {
             return Error('already 2 players in the game');
         }
         this.otherPlayer = { id: playerId, name: playerName };
+        this.eventHandler('updateRoom', this);
         return undefined;
     }
 
-    quit(playerId: PlayerId) {
-        if (playerId === this.mainPlayer.id) {
-            this.eventHandler('delete', null);
-        } else if (this.otherPlayer && playerId === this.otherPlayer.id) {
+    quit(mainPlayer: boolean) {
+        if (mainPlayer) {
+            this.eventHandler('kick', null);
+        } else {
             this.otherPlayer = undefined;
-            this.eventHandler('left', null);
+            this.eventHandler('updateRoom', this);
         }
     }
 
@@ -52,6 +54,15 @@ export class Room {
         if (this.otherPlayer) {
             this.otherPlayer = undefined;
             this.eventHandler('kick', null);
+            this.eventHandler('updateRoom', this);
         }
+    }
+
+    hasOtherPlayer(): boolean {
+        return this.otherPlayer !== undefined;
+    }
+
+    getOtherPlayer(): Player | undefined {
+        return this.otherPlayer;
     }
 }
