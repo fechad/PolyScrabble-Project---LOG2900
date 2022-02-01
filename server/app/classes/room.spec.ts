@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { Parameters } from './parameters';
-import { Player, Room } from './room';
+import { Room } from './room';
 
 // For to.be.undefined for chai
 /* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions */
