@@ -1,10 +1,12 @@
 <div id="grid-container">
-    
-    <canvas id="canvas" #gridCanvas (click)="mouseHitDetect($event)" [attr.width]="width" [attr.height]="height"><img src="assets\transparent-background-star-115497268824j1ftohfyn (1).png" id="source" width="30" height="30"></canvas>
-    <!--- <div id="mouse-position-display">
+    <canvas id="canvas" #gridCanvas (click)="mouseDetectService.mouseHitDetect($event)" [attr.width]="width" [attr.height]="height"
+        ><img src="assets\transparent-background-star-115497268824j1ftohfyn (1).png" id="source" width="30" height="30"
+    /></canvas>
+    <!--
+        <div id="mouse-position-display">
         <p>Cliquez sur la grille pour avoir la position de la souris</p>
-        <p *ngIf="mousePosition.x !== 0">X : {{ mousePosition.x }}</p>
-        <p *ngIf="mousePosition.y !== 0">Y : {{ mousePosition.y }}</p>
+        <p *ngIf="mouseDetectService.mousePosition.x !== 0">X : {{ mouseDetectService.mousePosition.x }}</p>
+        <p *ngIf="mouseDetectService.mousePosition.y !== 0">Y : {{ mouseDetectService.mousePosition.y }}</p>
         <hr />
         <p>Appuyez sur une touche du clavier pour la détecter</p>
         <p *ngIf="buttonPressed !== ''">Touche : {{ buttonPressed }}</p>

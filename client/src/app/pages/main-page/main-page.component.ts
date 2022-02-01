@@ -17,6 +17,12 @@ const boutonModeChoisi = [
     styleUrls: ['../../styles/menus.scss'],
 })
 export class MainPageComponent {
+    sendTimeToServer() {
+        throw new Error('Method not implemented.');
+    }
+    getMessagesFromServer() {
+        throw new Error('Method not implemented.');
+    }
     isMain: boolean = true;
     donneesBoutons = boutonMainPage;
     mode: string;
