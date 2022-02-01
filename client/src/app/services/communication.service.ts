@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { fromEventPattern, Observable, of } from 'rxjs';
+import { BehaviorSubject, fromEventPattern, Observable, of } from 'rxjs';
 import { catchError, shareReplay, startWith } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -26,19 +26,80 @@ export class Room {
 export class CommunicationService {
     private readonly baseUrl: string = environment.serverUrl;
     private readonly roomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
-    //private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
-    //private gameSocket: Socket | undefined = undefined;
+    private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
+    private gameSocket: Socket | undefined = undefined;
 
     readonly rooms: Observable<Room[]> = fromEventPattern<Room[]>((handler) => { this.roomsSocket.on('broadcastRooms', handler) }, (handler) => { this.roomsSocket.off('broadcastRooms', handler) }).pipe(
         startWith(<Room[]>[]),
         shareReplay(1),
       );
-    
+    readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(<Room | undefined>undefined);
 
     constructor(private readonly http: HttpClient) {
         this.listenRooms();
+        this.mainSocket.on('join', (room, token) => this._joinRoom(room, token));
+        this.mainSocket.on('error', (e) => this._error(e));
         (<any>window)['communication'] = this; // TODO: wack
         (<any>window)['io'] = io; // TODO: wack
+    }
+
+    private _error(e: string | Error) {
+        console.log(e);
+    }
+
+    private _leave() {
+        this.gameSocket?.close();
+        this.gameSocket = undefined;
+        this.selectedRoom.next(undefined);
+    }
+
+    kick() {
+        if (this.selectedRoom.value !== undefined && this.isRoomCreator()) {
+            console.log(this.gameSocket);
+            this.gameSocket?.emit('kick');
+        } else {
+            throw new Error('Tried to kick when not room creator');
+        }
+    }
+
+    leave() {
+        if (this.selectedRoom.value !== undefined) {
+            this._leave();
+        } else {
+            throw new Error('Tried to leave when not in room');
+        }
+    }
+
+    start() {
+        if (this.selectedRoom.value !== undefined && this.isRoomCreator()) {
+            this.gameSocket?.emit('start');
+        } else {
+            throw new Error('Tried to start when not room creator');
+        }
+    }
+
+    joinRoom(playerName: string, roomId: RoomId) {
+        if (this.selectedRoom.value === undefined) {
+            this.mainSocket.emit('joinRoom', roomId, playerName);
+        }
+    }
+
+    private _joinRoom(room: string, token: number) {
+        console.log(`Join room ${room} with token ${token}`);
+        this.gameSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token, bob: 'Lennon' } });
+        this.gameSocket.on('kick', () => this._leave());
+        this.gameSocket.on('updateRoom', (room) => { this.selectedRoom.next(room); });
+        this.gameSocket.on('error', (e) => this._error(e));
+    }
+
+    createRoom(playerName: string, parameters: Parameters) {
+        if (this.selectedRoom.value === undefined) {
+            this.mainSocket.emit('createRoom', playerName, parameters);
+        }
+    }
+
+    isRoomCreator(): boolean {
+        return this.selectedRoom.value?.mainPlayer.id === this.mainSocket.id;
     }
 
     listenRooms(): Promise<void> {

@@ -78,3 +78,48 @@ body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+.container {
+    display: flex;
+
+    flex-direction: column;
+}
+.infosArea {
+    margin-left: 30%;
+    margin-right: 30%;
+    display: flex;
+    justify-content: space-around;
+}
+.game-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 80vh;
+}
+.center {
+    display: flex;
+    flex-direction: column;
+    width: 75vw;
+}
+.play-area-container {
+    height: 40vh;
+}
+.chatArea {
+    margin-right: 10vw;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+.rackArea {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    background-color: #5a5a5a;
+}
+#quit-game,
+#skip-turn {
+    margin-top: 30px;
+    height: 6vh;
+    width: 8vh;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+}

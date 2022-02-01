@@ -1,22 +1,44 @@
-<div class="container justified">
-    <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
-    <img src="https://bit.ly/3m206ss" width="400" height="80" alt="Logo Scrabble" />
-    <section id="server-message">
-        <p>Petit message du serveur : {{ message.getValue() }}</p>
-        <div class="justified">
-            <button class="button" (click)="getMessagesFromServer()">Récupérer un message du serveur</button>
-            <button class="button" (click)="sendTimeToServer()">Envoyer un message au serveur</button>
-            <button class="button" routerLink="/material">Voir la page démo Angular Material</button>
+<div class="container">
+    <div class="header-container">
+        <div
+            *ngIf="isMain"
+            class="apropos"
+            matTooltip="Etienne Aumais-Boucher&#13;
+                Fedwin Chatelier&#13;
+                Anna Guo&#13;
+                Xavier L'Heureux&#13;
+                Justin St-Arnaud&#13;
+                Francois Tourigny"
+            matTooltipPosition="left"
+            matTooltipClass="authors"
+        >
+            Auteurs
+            <span class="material-icons">groups</span>
         </div>
-    </section>
+        <a *ngIf="!isMain" (click)="changeState()" class="home-button">
+            <i class="material-icons">home</i>
+        </a>
+    </div>
 
-    <button class="button" routerLink="/game">Jouer!</button>
+    <div class="justified">
+        <h1 class="title">SCRABBLE</h1>
+        <h2 *ngIf="!isMain" class="subtitle">Mode {{ mode }}</h2>
 
-    <div class="footer-item">
-        <h4 class="team-name">Équipe Poly</h4>
-        <p>
-            <span>Coéquipier #1</span>, <span>Coéquipier #2</span>, <span>Coéquipier #3</span>, <span>Coéquipier #4</span>,
-            <span>Coéquipier #5</span>, <span>Coéquipier #6</span>
-        </p>
+        <div *ngFor="let champ of donneesBoutons" class="justified">
+            <!-- <button (click)="changeState()" class="button" routerLink="{{ champ.route }}" matTooltip="Mode Classique" matTooltipPosition="right">
+                Classique
+            </button> -->
+            <button
+                (click)="openDialog(isMain, champ.texte)"
+                (click)="changeState(champ.texte)"
+                class="button"
+                routerLink="{{ champ.route }}"
+                matTooltip="{{ champ.toolTip }}"
+                matTooltipPosition="right"
+            >
+                {{ champ.texte }}
+            </button>
+            <!-- <button (click)="changeState()" class="button">Meilleurs scores</button> -->
+        </div>
     </div>
 </div>

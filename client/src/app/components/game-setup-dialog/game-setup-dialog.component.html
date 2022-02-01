@@ -1,0 +1,59 @@
+<mat-card-header>
+    <mat-toolbar class="toolbar">
+        <mat-card-title>Paramètres de la partie multijoueur</mat-card-title>
+        <span class="toolbar-spacer"></span>
+        <mat-icon (click)="onNoClick()">cancel</mat-icon>
+    </mat-toolbar>
+</mat-card-header>
+
+<mat-card-content>
+
+    <div class="container">
+        <form [formGroup]="gameParametersForm" (submit)="onSubmit()">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-10">
+                        <label>Votre nom: </label>
+                        <input type="text" formControlName="playerName" class="form-control" />
+                    </div>
+
+                    <div class="requirement" *ngIf="gameParametersForm.controls['playerName'].errors && 
+                        gameParametersForm.controls['playerName'].touched">
+                        Rentrez un nom contenant seulement des lettres.
+                    </div>
+
+                    <div class="col-md-10">
+                        <label>Temps limite par tour: </label>
+
+                        <select formControlName="timer" class="form-control" id="minutes" name="minute" (change)="checkNonZero()">
+                            <option *ngFor="let minute of [0, 1, 2, 3, 4, 5]" [selected]="minute === 1">{{ minute }}</option>
+                        </select>
+                        min :
+                        <select id="seconds" name="second" (change)="checkNonZero()">
+                            <option value="default">00</option>
+                            <option value="thirty">30</option>
+                        </select>
+                    </div>
+                    <div class="col-md-10">
+                        <label>Choix du dictionnaire: </label>
+                        <select id="dictionaries" name="dictionary" formControlName="dictionary" class="form-control">
+                            <option selected disabled value="">Choisissez</option>
+                            <option value="langue française">Langue française</option>
+                          </select>
+
+                    </div>
+
+                    <div class="requirement" *ngIf="gameParametersForm.controls['dictionary'].errors">
+                    Choisissez un dictionnaire.
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn success">Jouer!</button>
+            </div>
+
+            
+        </form>
+    </div>
+</mat-card-content>

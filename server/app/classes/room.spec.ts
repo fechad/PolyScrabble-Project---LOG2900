@@ -29,16 +29,9 @@ describe('Room', () => {
         done();
     });
 
-    it('should get the other player', (done) => {
-        assert(!room.hasOtherPlayer());
-        let player2: Player = {name: 'NotDummyId', id: 'NotDummy'};
-        const result = room.addPlayer(player2.id, player2.name);
-        expect(result).to.be.undefined;
-        let otherPlayer: Player | undefined = room.getOtherPlayer();
-        assert(otherPlayer !== undefined);
-        otherPlayer = otherPlayer as Player;
-        expect(otherPlayer.id === player2.id);
-        expect(otherPlayer.name === player2.name);
+    it('should not add a player with same name', (done) => {
+        const result = room.addPlayer('Rumumumumu', 'Dummy');
+        expect(result).to.not.be.undefined;
         done();
     });
 
@@ -97,36 +90,28 @@ describe('Room', () => {
     it('should stop the game when the main player quits', (done) => {
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
-        room.quit('DummyPlayerId');
-        assert(stub.calledWith('delete', null));
-        done();
-    });
-
-    it('should ignore random players trying to quit', (done) => {
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
-        expect(result).to.be.undefined;
-        room.quit('RandomId');
-        assert(stub.notCalled);
+        room.quit(true);
+        assert(stub.calledWith('kick', null));
         done();
     });
 
     it('should remove the other player when they quit', (done) => {
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
-        room.quit('NotDummyPlayerId');
+        room.quit(false);
         // eslint-disable-next-line dot-notation
         expect(room['otherPlayer']).to.be.undefined;
-        assert(stub.calledWith('left', null));
+        assert(stub.calledWith('updateRoom', room));
         done();
     });
 
-    it('should let someone else join after they quit', (done) => {
+    it('should let someone join after they quit', (done) => {
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
-        room.quit('NotDummyPlayerId');
+        room.quit(false);
         // eslint-disable-next-line dot-notation
         expect(room['otherPlayer']).to.be.undefined;
-        assert(stub.calledWith('left', null));
+        assert(stub.calledWith('updateRoom', room));
         const result2 = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result2).to.be.undefined;
         done();
@@ -135,10 +120,10 @@ describe('Room', () => {
     it('should let someone else join after someone else quit', (done) => {
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
-        room.quit('NotDummyPlayerId');
+        room.quit(false);
         // eslint-disable-next-line dot-notation
         expect(room['otherPlayer']).to.be.undefined;
-        assert(stub.calledWith('left', null));
+        assert(stub.calledWith('updateRoom', room));
         const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy');
         expect(result2).to.be.undefined;
         done();

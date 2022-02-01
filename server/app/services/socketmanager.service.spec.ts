@@ -88,7 +88,6 @@ describe('SocketManager service tests', () => {
         }, RESPONSE_DELAY);
     });
 
-    //A verifier
     it('should not display full rooms', (done) => {
         let full = false;
         let connected = false;

@@ -1,0 +1,27 @@
+div {
+    border-radius: 15px;
+    border-width: thin;
+    width: 20vw;
+}
+
+#wholeBox {
+    background-color: #99b1ac;
+    margin-left: 5vw;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-style: solid;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    height: 75vh;
+}
+.chat-log {
+    overflow: auto;
+}
+#writingBox {
+    height: 20%;
+    border-radius: 15px;
+    border-style: solid;
+    margin: 20px;
+    overflow-wrap: break-word;
+}

@@ -1,38 +1,54 @@
 import { Component } from '@angular/core';
-import { Message } from '@app/classes/message';
-import { CommunicationService } from '@app/services/communication.service';
-import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
-
+import { MatDialog } from '@angular/material/dialog';
+import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
+const boutonMainPage = [
+    { route: '', toolTip: 'Une partie de Scrabble avec les règles standards.', texte: 'Classique' },
+    { route: '', toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires', texte: 'Mode 2990' },
+    { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores' },
+];
+const boutonModeChoisi = [
+    { route: '', toolTip: '', texte: 'Solo' },
+    { route: '', toolTip: '', texte: 'Muiltijoueur' },
+    { route: '/joining-room', toolTip: '', texte: 'Rejoindre une partie' },
+];
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
-    styleUrls: ['./main-page.component.scss'],
+    styleUrls: ['../../styles/menus.scss'],
 })
 export class MainPageComponent {
-    readonly title: string = 'LOG2990';
-    message: BehaviorSubject<string> = new BehaviorSubject<string>('');
-
-    constructor(private readonly communicationService: CommunicationService) {}
-
-    sendTimeToServer(): void {
-        const newTimeMessage: Message = {
-            title: 'Hello from the client',
-            body: 'Time is : ' + new Date().toString(),
-        };
-        // Important de ne pas oublier "subscribe" ou l'appel ne sera jamais lancé puisque personne l'observe
-        this.communicationService.basicPost(newTimeMessage).subscribe();
+    sendTimeToServer() {
+        throw new Error('Method not implemented.');
     }
-
-    getMessagesFromServer(): void {
-        this.communicationService
-            .basicGet()
-            // Cette étape transforme l'objet Message en un seul string
-            .pipe(
-                map((message: Message) => {
-                    return `${message.title} ${message.body}`;
-                }),
-            )
-            .subscribe(this.message);
+    getMessagesFromServer() {
+        throw new Error('Method not implemented.');
+    }
+    isMain: boolean = true;
+    donneesBoutons = boutonMainPage;
+    mode: string;
+    constructor(public dialog: MatDialog) {}
+    openDialog(isMain: boolean, text: string) {
+        if (!isMain && text !== 'Rejoindre une partie') {
+            this.dialog.open(GameSetupDialogComponent);
+        }
+    }
+    changeState(button?: string) {
+        switch (button) {
+            case 'Meilleurs scores': {
+                this.isMain = true;
+                break;
+            }
+            case undefined: {
+                this.isMain = true;
+                this.donneesBoutons = boutonMainPage;
+                break;
+            }
+            default: {
+                this.isMain = false;
+                this.mode = button === undefined ? 'welp' : button;
+                this.donneesBoutons = boutonModeChoisi;
+                break;
+            }
+        }
     }
 }

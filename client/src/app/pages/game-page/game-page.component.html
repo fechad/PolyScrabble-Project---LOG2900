@@ -1,6 +1,42 @@
 <div class="container">
-    <app-sidebar></app-sidebar>
-    <section class="play-area-container">
-        <app-play-area class="play-area" tabindex="0"></app-play-area>
-    </section>
+    <!--<app-sidebar></app-sidebar> -->
+    <div class="infosArea">
+        <app-infos-box></app-infos-box>
+    </div>
+
+    <div class="game-container">
+        <div id="left-container">
+            <button class="icon"><fa-icon [icon]="faQuestionCircle" size="2x"></fa-icon></button>
+            <div class="size-container">
+                <button class="sizing"><fa-icon [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon></button>
+            </div>
+            <div class="goals">
+                <div class="game-goals">
+                    <label for="easy-goal"> Objectif facile:</label>
+                    <progress id="easy-goal" value="10" max="100"></progress>
+                    <label for="hard-goal"> Objectif difficile:</label>
+                    <progress id="hard-goal" value="5" max="100"></progress>
+                </div>
+                <div class="game-goals">
+                    <label for="personal-goal"> Mon objectif:</label>
+                    <progress id="personal-goal" value="30" max="100"></progress>
+                </div>
+            </div>
+        </div>
+        <div class="center">
+            <section class="play-area-container">
+                <app-play-area class="play-area" tabindex="0"></app-play-area>
+            </section>
+            <section class="rackArea">
+                <button id="quit-game" (click)="quitGame()">Quit</button>
+                <app-letter-rack></app-letter-rack>
+                <button id="skip-turn" (click)="skipMyTurn()">Skip Turn</button>
+            </section>
+        </div>
+        <div class="chatArea">
+            <app-chat-box></app-chat-box>
+        </div>
+    </div>
 </div>
