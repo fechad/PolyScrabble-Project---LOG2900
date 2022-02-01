@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { MenusStatesService } from '@app/services/menus-states.service';
 
 @Component({
-    selector: 'app-main-page',
-    templateUrl: './main-page.component.html',
+    selector: 'app-modes-page',
+    templateUrl: './modes-page.component.html',
     styleUrls: ['../../styles/menus.scss'],
 })
-export class MainPageComponent {
+export class ModesPageComponent {
     constructor(public state: MenusStatesService) {}
 }

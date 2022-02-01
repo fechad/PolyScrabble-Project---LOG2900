@@ -1,7 +1,6 @@
 <div class="container">
     <div class="header-container">
         <div
-            *ngIf="isMain"
             class="apropos"
             matTooltip="Etienne Aumais-Boucher&#13;
                 Fedwin Chatelier&#13;
@@ -15,30 +14,10 @@
             Auteurs
             <span class="material-icons">groups</span>
         </div>
-        <a *ngIf="!isMain" (click)="changeState()" class="home-button">
-            <i class="material-icons">home</i>
-        </a>
     </div>
 
     <div class="justified">
         <h1 class="title">SCRABBLE</h1>
-        <h2 *ngIf="!isMain" class="subtitle">Mode {{ mode }}</h2>
-
-        <div *ngFor="let champ of donneesBoutons" class="justified">
-            <!-- <button (click)="changeState()" class="button" routerLink="{{ champ.route }}" matTooltip="Mode Classique" matTooltipPosition="right">
-                Classique
-            </button> -->
-            <button
-                (click)="openDialog(isMain, champ.texte)"
-                (click)="changeState(champ.texte)"
-                class="button"
-                routerLink="{{ champ.route }}"
-                matTooltip="{{ champ.toolTip }}"
-                matTooltipPosition="right"
-            >
-                {{ champ.texte }}
-            </button>
-            <!-- <button (click)="changeState()" class="button">Meilleurs scores</button> -->
-        </div>
+        <app-buttons-options [donneesBoutons]="state.boutonMainPage"></app-buttons-options>
     </div>
 </div>
