@@ -45,7 +45,7 @@ describe('SocketManager service tests', () => {
         const stub = sinon.stub();
         broadcastSocket.on('broadcastRooms', stub);
         setTimeout(() => {
-            assert(stub.callCount == 1);
+            assert(stub.callCount === 1);
             assert(stub.alwaysCalledWith([]));
             done();
         }, RESPONSE_DELAY);

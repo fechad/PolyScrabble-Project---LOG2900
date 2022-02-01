@@ -45,9 +45,10 @@ export class SocketManager {
                 socket.emit('join', roomId, 0);
                 console.log(`Created room ${roomId} for player ${playerName}`);
 
-                namespace.use((socket, next) => {
-                    const token = socket.handshake.auth.token;
-                    if (token === 0 || token === 1) { // valid token
+                namespace.use((s, next) => {
+                    const token = s.handshake.auth.token;
+                    if (token === 0 || token === 1) {
+                        // valid token
                         next();
                     } else {
                         next(Error('Invalid token for room'));

@@ -1,3 +1,6 @@
+
+/* Copy from server */
+
 type Timer = number;
 type IdDictionnary = number;
 
