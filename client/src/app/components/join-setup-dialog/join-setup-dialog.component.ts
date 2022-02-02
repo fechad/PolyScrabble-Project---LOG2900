@@ -12,7 +12,13 @@ import { CommunicationService } from '@app/services/communication.service';
 export class JoinSetupDialogComponent implements OnInit {
     joiningRoomForm: FormGroup;
 
-    constructor(private dialogRef: MatDialogRef<JoinSetupDialogComponent>, private formBuilder: FormBuilder, private router: Router, public communicationService: CommunicationService, @Inject(MAT_DIALOG_DATA) public data: any) {}
+    constructor(
+        private dialogRef: MatDialogRef<JoinSetupDialogComponent>,
+        private formBuilder: FormBuilder,
+        private router: Router,
+        public communicationService: CommunicationService,
+        @Inject(MAT_DIALOG_DATA) public data: any
+    ) {}
 
     ngOnInit(): void {
         this.joiningRoomForm = this.formBuilder.group({

@@ -55,7 +55,7 @@ export class SocketManager {
                 namespace.on('connect', (namespaceSocket) => {
                     const isMainPlayer = namespaceSocket.handshake.auth.token === 0;
 
-                    const events: { [key: string]: (() => void) } = { updateRoom: () => namespaceSocket.emit('updateRoom', room) };
+                    const events: { [key: string]: () => void } = { updateRoom: () => namespaceSocket.emit('updateRoom', room) };
                     if (!isMainPlayer) events.kick = () => namespaceSocket.emit('kick');
                     Object.entries(events).forEach(([name, handler]) => room.events.on(name, handler));
 
@@ -73,7 +73,8 @@ export class SocketManager {
                     namespaceSocket.on('disconnect', () => {
                         room.quit(isMainPlayer);
                         Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));
-                        if (isMainPlayer) { // swap remove
+                        if (isMainPlayer) {
+                            // swap remove
                             const idx = this.rooms.indexOf(room);
                             if (idx === -1) throw Error('Current room does not exist?');
                             this.rooms[idx] = this.rooms[this.rooms.length - 1];
@@ -91,7 +92,7 @@ export class SocketManager {
                 console.log(`Raison de deconnexion : ${reason}`);
             });
         });
-        
+
         const waitingRoom = this.io.of('/waitingRoom');
         waitingRoom.on('connect', (socket) => {
             socket.emit(

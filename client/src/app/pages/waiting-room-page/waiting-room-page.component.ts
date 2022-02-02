@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from "@angular/router";
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
@@ -7,7 +7,7 @@ import { CommunicationService } from '@app/services/communication.service';
     templateUrl: './waiting-room-page.component.html',
     styleUrls: ['./waiting-room-page.component.scss'],
 })
-export class WaitingRoomPageComponent implements OnInit {
+export class WaitingRoomPageComponent {
     constructor(public communicationService: CommunicationService, private router: Router) {
         if (communicationService.selectedRoom.value === undefined) {
             this.router.navigate(['/home']);
@@ -25,6 +25,4 @@ export class WaitingRoomPageComponent implements OnInit {
     kick() {
         this.communicationService.kick();
     }
-
-    ngOnInit(): void {}
 }

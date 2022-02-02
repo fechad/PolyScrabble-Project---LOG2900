@@ -12,7 +12,10 @@ describe('Game', () => {
     let game: Game;
 
     beforeEach(async () => {
-        players = [{name: 'Bob', id: '0'}, {name: 'notBob', id: '1'}];
+        players = [
+            { name: 'Bob', id: '0' },
+            { name: 'notBob', id: '1' },
+        ];
         parameters = new Parameters();
         game = new Game(0, players, parameters);
     });
@@ -22,24 +25,24 @@ describe('Game', () => {
     });
 
     it('should get a message and broadcast it', (done) => {
-        let stub = sinon.stub();
-        let message: Message = {text: "test message", playerId: players[0].id};
+        const stub = sinon.stub();
+        const message: Message = { text: 'test message', playerId: players[0].id };
         game.eventEmitter.on('message', stub);
         game.sendMessage(message);
-        setTimeout(() => { 
-           assert(stub.calledWith(message));
-           assert(game['messages'][0] === message);
-           done();
+        setTimeout(() => {
+            assert(stub.calledWith(message));
+            assert(game['messages'][0] === message);
+            done();
         }, RESPONSE_DELAY);
     });
 
     it('should get parameters', (done) => {
-        let stub = sinon.stub();
+        const stub = sinon.stub();
         game.eventEmitter.on('parameters', stub);
         game.getParameters();
-        setTimeout(() => { 
-           assert(stub.calledWith(parameters));
-           done();
+        setTimeout(() => {
+            assert(stub.calledWith(parameters));
+            done();
         }, RESPONSE_DELAY);
     });
 });

@@ -1,4 +1,4 @@
-import { Component, Injectable, Injector, OnInit } from '@angular/core';
+import { Component, Injectable, Injector } from '@angular/core';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 @Component({
     selector: 'app-infos-box',
@@ -6,10 +6,8 @@ import { SkipTurnService } from '@app/services/skip-turn.service';
     styleUrls: ['./infos-box.component.scss'],
 })
 @Injectable()
-export class InfosBoxComponent implements OnInit {
+export class InfosBoxComponent {
     constructor(public skipTurn: SkipTurnService) {}
-
-    ngOnInit(): void {}
 }
 Injector.create({
     providers: [

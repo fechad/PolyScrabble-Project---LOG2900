@@ -139,6 +139,5 @@ describe('SocketManager service tests', () => {
         }, RESPONSE_DELAY);
     });
 
-
     // TODO add tests
 });

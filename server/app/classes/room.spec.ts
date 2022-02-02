@@ -76,7 +76,7 @@ describe('Room', () => {
     it('should send event when kicking player', (done) => {
         const stub = sinon.stub();
         room.events.on('kick', stub);
-        
+
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
         room.kickOtherPlayer();

@@ -7,12 +7,13 @@ export type RoomId = number;
 export type PlayerId = string;
 
 export class Room {
+    readonly events: EventEmitter = new EventEmitter();
+
     readonly parameters: Parameters;
     readonly name: string;
     readonly id: RoomId;
     readonly mainPlayer: Player;
     private otherPlayer: Player | undefined;
-    readonly events: EventEmitter = new EventEmitter();
 
     constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters) {
         this.id = id;
