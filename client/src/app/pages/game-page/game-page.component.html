@@ -8,9 +8,9 @@
         <div id="left-container">
             <button class="icon"><fa-icon [icon]="faQuestionCircle" size="2x"></fa-icon></button>
             <div class="size-container">
-                <button class="sizing" id="smallTxt"><fa-icon [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon></button>
-                <button class="sizing" id="mediumTxt"><fa-icon [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon></button>
-                <button class="sizing" id="largeTxt"><fa-icon [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon></button>
+                <button class="sizing"><fa-icon [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon></button>
             </div>
             <div class="goals">
                 <div class="game-goals">
@@ -30,9 +30,9 @@
                 <app-play-area class="play-area" tabindex="0"></app-play-area>
             </div>
             <div class="rackArea">
-                <button id="quit-game" (click)="quitGame()"><fa-icon [icon]="faSignOutAlt" size="3x" ></fa-icon></button>
+                <button id="quit-game" (click)="quitGame()"><fa-icon [icon]="faSignOutAlt" size="3x"></fa-icon></button>
                 <app-letter-rack></app-letter-rack>
-                <button id="skip-turn" (click)="skipMyTurn()"><fa-icon [icon]="faAngleDoubleRight" size="3x" ></fa-icon></button>
+                <button id="skip-turn" (click)="skipMyTurn()"><fa-icon [icon]="faAngleDoubleRight" size="3x"></fa-icon></button>
             </div>
         </div>
         <div class="chatArea">

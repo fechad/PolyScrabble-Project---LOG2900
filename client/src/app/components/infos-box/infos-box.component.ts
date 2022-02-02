@@ -18,7 +18,7 @@ export class InfosBoxComponent implements AfterViewInit {
 Injector.create({
     providers: [
         { provide: InfosBoxComponent, deps: [SkipTurnService, ChronoService] },
-        { provide: SkipTurnService, deps: [] },
-        { provide: ChronoService, deps: [] },
+        // { provide: SkipTurnService, deps: [] },
+        // { provide: ChronoService, deps: [] },
     ],
 });

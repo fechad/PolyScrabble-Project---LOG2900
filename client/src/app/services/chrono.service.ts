@@ -30,6 +30,6 @@ export class ChronoService {
 Injector.create({
     providers: [
         { provide: ChronoService, deps: [SkipTurnService] },
-        { provide: SkipTurnService, deps: [] },
+        // { provide: SkipTurnService, deps: [] },
     ],
 });
