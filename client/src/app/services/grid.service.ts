@@ -23,7 +23,7 @@ export class GridService {
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('0 1 2 3 4 5 6 7 8 9 10 11 12 13 14');
 
-        this.gridContext.fillStyle = '#838383';
+        this.gridContext.fillStyle = '#c4c4c4';
         this.gridContext.strokeStyle = '#B1ACAC';
         const gridOrigin = 20;
 

@@ -15,7 +15,7 @@
 .game-infos,
 .opponent,
 .player {
-    background-color: #99b1ac;
+    background-color: #ddbcf5;
     width: 33.33vw;
     display: flex;
     flex-direction: column;
@@ -23,7 +23,7 @@
     justify-content: space-between;
 }
 .tour {
-    background-color: aqua;
+    background-color: #c93de0;
 }
 
 p {
@@ -35,4 +35,12 @@ p {
 }
 .p-infos p {
     margin-left: 1vh;
+}
+.backChrono {
+    display: flex;
+    background-color: #f9f6f8;
+    width: 10%;
+    height: 30%;
+    justify-content: center;
+    align-items: center;
 }
