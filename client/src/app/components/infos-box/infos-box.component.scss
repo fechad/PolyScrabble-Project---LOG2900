@@ -15,7 +15,11 @@
 .game-infos,
 .opponent,
 .player {
+<<<<<<< HEAD
     background-color: #ddbcf5;
+=======
+    background-color: #670b3f;
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
     width: 33.33vw;
     display: flex;
     flex-direction: column;
@@ -23,7 +27,11 @@
     justify-content: space-between;
 }
 .tour {
+<<<<<<< HEAD
     background-color: #c93de0;
+=======
+    background-color: #f9f6f8;
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
 }
 
 p {
@@ -36,11 +44,19 @@ p {
 .p-infos p {
     margin-left: 1vh;
 }
+<<<<<<< HEAD
 #backChrono {
     display: flex;
     background-color: #f9f6f8;
     width: 10%;
     height: 30%;
+=======
+#backChrono{
+    display: flex;
+    background-color: #f9f6f8;
+    width:10%;
+    height:30%;
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
     justify-content: center;
     align-items: center;
 }

@@ -25,7 +25,11 @@
 .game-container {
     display: flex;
     flex-direction: row;
+<<<<<<< HEAD
     height: 90vh;
+=======
+    height:90vh;
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
 }
 .icon {
     border-radius: 20px;
@@ -63,19 +67,30 @@
     width: 10vw;
     margin-left: 2vh;
 }
+<<<<<<< HEAD
 #easy-goal,
 #hard-goal,
 #personal-goal {
     width: 20vw;
     margin: 2vh;
+=======
+#easy-goal, #hard-goal, #personal-goal {
+    width: 20vw;
+    margin: 2vh
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
 }
 .goals {
     margin-top: 10vh;
 }
 
+<<<<<<< HEAD
 #quit-game,
 #skip-turn {
     background-color: #c93de0;
+=======
+#quit-game, #skip-turn {
+    background-color: #670b3f;
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
     height: 6vh;
     width: 8vh;
     margin-right: 0.5vh;
@@ -92,6 +107,7 @@
     background-color: #f9f6f8;
 }
 
+<<<<<<< HEAD
 .sizing:hover,
 .icon:hover,
 #quit-game:hover,
@@ -100,3 +116,11 @@
 
     transform: scale(1.1);
 }
+=======
+.sizing:hover, .icon:hover, #quit-game:hover,
+#skip-turn:hover {
+    cursor: pointer;
+    
+    transform: scale(1.1);
+}
+>>>>>>> 381553880f1e48587b8eac11a5c81c2bf6a8b0e6
