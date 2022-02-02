@@ -1,7 +1,7 @@
+import { EventEmitter } from 'events';
 import { Parameters } from './parameters';
 
 export type Player = { name: string; id: PlayerId };
-export type EventHandler = (event: string, payload: unknown) => void;
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -12,9 +12,9 @@ export class Room {
     readonly id: RoomId;
     readonly mainPlayer: Player;
     private otherPlayer: Player | undefined;
-    private eventHandler: EventHandler;
+    readonly events: EventEmitter = new EventEmitter();
 
-    constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters, eventHandler: EventHandler) {
+    constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters) {
         this.id = id;
         this.parameters = parameters;
         this.mainPlayer = {
@@ -22,8 +22,6 @@ export class Room {
             name: playerName,
         };
         this.name = `Partie de ${playerName}`;
-        this.eventHandler = eventHandler;
-        this.eventHandler('updateRoom', this);
     }
 
     addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
@@ -37,24 +35,25 @@ export class Room {
             return Error('already 2 players in the game');
         }
         this.otherPlayer = { id: playerId, name: playerName };
-        this.eventHandler('updateRoom', this);
+        this.events.emit('updateRoom');
         return undefined;
     }
 
     quit(mainPlayer: boolean) {
         if (mainPlayer) {
-            this.eventHandler('kick', null);
+            this.events.emit('kick');
         } else {
             this.otherPlayer = undefined;
-            this.eventHandler('updateRoom', this);
+            this.events.emit('updateRoom');
         }
     }
 
     kickOtherPlayer() {
         if (this.otherPlayer) {
+            console.log(`Kicked player from room ${this.id}`);
             this.otherPlayer = undefined;
-            this.eventHandler('kick', null);
-            this.eventHandler('updateRoom', this);
+            this.events.emit('kick');
+            this.events.emit('updateRoom');
         }
     }
 

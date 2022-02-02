@@ -38,13 +38,11 @@ export class SocketManager {
 
             socket.on('createRoom', (playerName: string, parameters: Parameters) => {
                 const roomId = this.getNewRoomId();
-                const namespace = this.io.of(`/rooms/${roomId}`);
-                const room = new Room(roomId, socket.id, playerName, parameters, (event: string, payload: unknown) => {
-                    namespace.emit(event, payload);
-                });
+                const room = new Room(roomId, socket.id, playerName, parameters);
                 socket.emit('join', roomId, 0);
                 console.log(`Created room ${roomId} for player ${playerName}`);
 
+                const namespace = this.io.of(`/rooms/${roomId}`);
                 namespace.use((s, next) => {
                     const token = s.handshake.auth.token;
                     if (token === 0 || token === 1) {
@@ -57,11 +55,12 @@ export class SocketManager {
                 namespace.on('connect', (namespaceSocket) => {
                     const isMainPlayer = namespaceSocket.handshake.auth.token === 0;
 
+                    const events: { [key: string]: (() => void) } = { updateRoom: () => namespaceSocket.emit('updateRoom', room) };
+                    if (!isMainPlayer) events.kick = () => namespaceSocket.emit('kick');
+                    Object.entries(events).forEach(([name, handler]) => room.events.on(name, handler));
+
                     if (isMainPlayer) {
-                        namespaceSocket.on('kick', () => {
-                            console.log(`Kicked player from room ${room.id}`);
-                            room.kickOtherPlayer();
-                        });
+                        namespaceSocket.on('kick', () => room.kickOtherPlayer());
 
                         namespaceSocket.on('start', () => {
                             if (room.hasOtherPlayer()) {
@@ -73,7 +72,9 @@ export class SocketManager {
                     }
                     namespaceSocket.on('disconnect', () => {
                         room.quit(isMainPlayer);
+                        Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));
                     });
+
                     namespaceSocket.emit('updateRoom', room);
                 });
                 this.rooms.push(room);
@@ -85,6 +86,7 @@ export class SocketManager {
                 this.rooms = this.rooms.filter((room) => room.mainPlayer.id !== socket.id);
             });
         });
+        
         const waitingRoom = this.io.of('/waitingRoom');
         waitingRoom.on('connect', (socket) => {
             socket.emit(
