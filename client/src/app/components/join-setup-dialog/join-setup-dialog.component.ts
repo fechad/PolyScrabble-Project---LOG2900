@@ -1,17 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-join-setup-dialog',
     templateUrl: './join-setup-dialog.component.html',
-    styleUrls: ['./join-setup-dialog.component.scss'],
+    styleUrls: ['../../styles/dialogs.scss'],
 })
-export class JoinSetupDialogComponent implements OnInit {
-    constructor(private dialogRef: MatDialogRef<JoinSetupDialogComponent>) {}
+export class JoinSetupDialogComponent {
+    constructor(public dialogRef: MatDialogRef<JoinSetupDialogComponent>) {}
 
-    ngOnInit(): void {}
-
-    onNoClick() {
+    closeDialog() {
         this.dialogRef.close();
     }
 }

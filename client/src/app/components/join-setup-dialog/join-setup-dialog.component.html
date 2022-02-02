@@ -2,12 +2,11 @@
     <mat-toolbar class="toolbar">
         <mat-card-title>Paramètres de la partie multijoueur</mat-card-title>
         <span class="toolbar-spacer"></span>
-        <mat-icon (click)="onNoClick()">cancel</mat-icon>
+        <mat-icon class="icone-cancel" (click)="closeDialog()">cancel</mat-icon>
     </mat-toolbar>
 </mat-card-header>
 
 <mat-card-content>
-
     <div class="container">
         <form>
             <div class="form-group">
@@ -17,24 +16,18 @@
                         <input type="text" formControlName="secondPlayerName" class="form-control" />
                     </div>
 
-
                     <div class="col-md-10">
                         <label>Nom de l'adversaire: </label>
                     </div>
-                  
+
                     <div class="col-md-10">
                         <label>Choix du dictionnaire: </label>
-
                     </div>
-
-                
                 </div>
             </div>
             <div class="row">
                 <button type="submit" class="btn success">Jouer!</button>
             </div>
-
-            
         </form>
     </div>
 </mat-card-content>
