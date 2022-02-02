@@ -73,6 +73,12 @@ export class SocketManager {
                     namespaceSocket.on('disconnect', () => {
                         room.quit(isMainPlayer);
                         Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));
+                        if (isMainPlayer) { // swap remove
+                            const idx = this.rooms.indexOf(room);
+                            if (idx === -1) throw Error('Current room does not exist?');
+                            this.rooms[idx] = this.rooms[this.rooms.length - 1];
+                            this.rooms.pop();
+                        }
                     });
 
                     namespaceSocket.emit('updateRoom', room);
@@ -83,7 +89,6 @@ export class SocketManager {
             socket.on('disconnect', (reason) => {
                 console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
                 console.log(`Raison de deconnexion : ${reason}`);
-                this.rooms = this.rooms.filter((room) => room.mainPlayer.id !== socket.id);
             });
         });
         
