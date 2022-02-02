@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from "@angular/router";
+import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-waiting-room-page',
@@ -6,7 +8,23 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./waiting-room-page.component.scss'],
 })
 export class WaitingRoomPageComponent implements OnInit {
-    constructor() {}
+    constructor(public communicationService: CommunicationService, private router: Router) {
+        if (communicationService.selectedRoom.value === undefined) {
+            this.router.navigate(['/home']);
+        }
+    }
+
+    leave() {
+        this.communicationService.leave();
+    }
+
+    start() {
+        this.communicationService.start();
+    }
+
+    kick() {
+        this.communicationService.kick();
+    }
 
     ngOnInit(): void {}
 }
