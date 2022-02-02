@@ -18,13 +18,14 @@ export class GamePageComponent {
     faAngleDoubleRight = faAngleDoubleRight;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
 
-    constructor(private router: Router, public gridService: GridService, private skipTurn: SkipTurnService) {}
+    constructor(private router: Router, public gridService: GridService, /* private chrono: ChronoService,*/ private skipTurn: SkipTurnService) {}
 
     quitGame() {
         this.router.navigateByUrl('http://localhost:4200/#/home');
     }
     skipMyTurn() {
         this.skipTurn.skipTurn();
+        // this.chrono.reset();
     }
     resetFont() {
         this.gridService.fontSize = '7px system-ui';

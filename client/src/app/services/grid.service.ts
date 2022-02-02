@@ -32,56 +32,11 @@ export class GridService {
                 this.gridContext.beginPath();
                 this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
                 this.gridContext.fill();
-<<<<<<< HEAD
                 this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
                 this.gridContext.fillStyle = '#838383';
             }
         }
     }
-=======
-                this.drawTripleWord(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.drawTripleLetter(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.drawDoubleWord(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.drawDoubleLetter(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.drawStar(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.gridContext.fillStyle = '#c4c4c4';
-            }
-        }
-    }
-    //
-    drawTripleWord(posX: number, posY: number, canvasX: number, canvasY: number) {
-        const coord: string = posX.toString() + posY.toString();
-        const tripleWord = ['00', '07', '014', '70', '714', '147', '140', '1414'];
-        if (tripleWord.includes(coord)) {
-            this.gridContext.fillStyle = '#670b3f';
-            this.gridContext.fill();
-
-            this.drawMessage('TRIPLE WORD', canvasX, canvasY);
-        }
-    }
-
-    drawTripleLetter(posX: number, posY: number, canvasX: number, canvasY: number) {
-        const coord: string = posX.toString() + posY.toString();
-        const tripleWord = ['15', '19', '51', '55', '59', '513', '91', '95', '99', '913', '135', '139'];
-        if (tripleWord.includes(coord)) {
-            this.gridContext.fillStyle = '#54bd9d';
-            this.gridContext.fill();
-
-            this.drawMessage('TRIPLE LETTER', canvasX, canvasY);
-        }
-    }
-
-    drawDoubleWord(posX: number, posY: number, canvasX: number, canvasY: number) {
-        const coord: string = posX.toString() + posY.toString();
-        const tripleWord = ['11', '22', '33', '44', '1010', '1111', '1212', '1313', '113', '212', '311', '410', '131', '122', '113', '104'];
-        if (tripleWord.includes(coord)) {
-            this.gridContext.fillStyle = '#e1adf3';
-            this.gridContext.fill();
-
-            this.drawMessage('DOUBLE WORD', canvasX, canvasY);
-        }
-    }
->>>>>>> 548a1da... changement de la palette de couleur pour matcher celle des menus
 
     bonusConditions(posX: number, posY: number, canvasX: number, canvasY: number) {
         const coord: string = posX.toString() + posY.toString();
