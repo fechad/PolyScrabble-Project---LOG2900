@@ -13,7 +13,7 @@ export class JoinSetupDialogComponent implements OnInit {
     joiningRoomForm: FormGroup;
 
     constructor(
-        private dialogRef: MatDialogRef<JoinSetupDialogComponent>,
+        public dialogRef: MatDialogRef<JoinSetupDialogComponent>,
         private formBuilder: FormBuilder,
         private router: Router,
         public communicationService: CommunicationService,
