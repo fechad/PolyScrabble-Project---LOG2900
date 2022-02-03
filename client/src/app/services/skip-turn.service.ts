@@ -10,6 +10,6 @@ export class SkipTurnService {
 
     skipTurn() {
         this.isYourTurn = !this.isYourTurn;
-        // this.chrono.reset();
+        /* TODO: Avertit le serveur que le joeur viens de passer son tour*/
     }
 }
