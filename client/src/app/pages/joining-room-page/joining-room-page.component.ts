@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Room } from '@app/classes/room';
 import { JoinSetupDialogComponent } from '@app/components/join-setup-dialog/join-setup-dialog.component';
-import { CommunicationService, Room } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-joining-room-page',
