@@ -17,6 +17,7 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
+import { CountdownModule } from 'ngx-countdown';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
@@ -70,6 +71,7 @@ import { GamesListService } from './services/games-list.service';
         IgxInputGroupModule,
         IgxIconModule,
         FontAwesomeModule,
+        CountdownModule,
     ],
     providers: [GamesListService],
     bootstrap: [AppComponent],
