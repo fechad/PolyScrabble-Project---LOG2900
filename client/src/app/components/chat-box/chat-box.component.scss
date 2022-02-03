@@ -9,9 +9,10 @@ div {
     margin-left: 5vw;
     margin-top: 10px;
     margin-bottom: 20px;
+    padding: 20px;
     border-style: solid;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     flex-direction: column;
     height: 75vh;
 }
@@ -20,20 +21,22 @@ div {
 }
 .chat-log {
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
-    height: 10%;
+    overflow-y: hidden;
     width: 70%;
+    padding: 10px;
     margin: 5% 5% 5% 25%;
     border-radius: 15px;
-    background-color: #f1ffed;
+    background-color: #b7ffe5;
 }
 .chat-log-opponent {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
-    height: 10%;
+    overflow-y: hidden;
     width: 70%;
+    padding: 10px;
     margin: 5% 25% 5% 5%;
     border-radius: 15px;
     background-color: #ffefed;
@@ -42,10 +45,10 @@ div {
     height: 20%;
     border-radius: 15px;
     border-style: solid;
-    margin: 5%;
     overflow-wrap: break-word;
 }
 #nonWritingBox {
+    padding-right: 20px;
     width: 100%;
     height: 75%;
     overflow-y: scroll;

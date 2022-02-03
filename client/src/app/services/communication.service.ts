@@ -1,17 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { BehaviorSubject, fromEventPattern, Observable, of } from 'rxjs';
 import { catchError, shareReplay, startWith } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
-
 export type RoomId = number;
 export type PlayerId = string;
 export type Player = { name: string; id: PlayerId };
-
 export class Room {
     readonly parameters: Parameters;
     readonly name: string;
@@ -19,6 +16,8 @@ export class Room {
     readonly mainPlayer: Player;
     readonly otherPlayer: Player | undefined;
 }
+export type Message = { message: string; playerId: number };
+export type GameId = number;
 
 @Injectable({
     providedIn: 'root',
@@ -29,18 +28,22 @@ export class CommunicationService {
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
     private gameSocket: Socket | undefined = undefined;
 
-    readonly rooms: Observable<Room[]> = fromEventPattern<Room[]>((handler) => { this.roomsSocket.on('broadcastRooms', handler) }, (handler) => { this.roomsSocket.off('broadcastRooms', handler) }).pipe(
-        startWith(<Room[]>[]),
-        shareReplay(1),
-      );
+    readonly rooms: Observable<Room[]> = fromEventPattern<Room[]>(
+        (handler) => {
+            this.roomsSocket.on('broadcastRooms', handler);
+        },
+        (handler) => {
+            this.roomsSocket.off('broadcastRooms', handler);
+        },
+    ).pipe(startWith(<Room[]>[]), shareReplay(1));
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(<Room | undefined>undefined);
 
     constructor(private readonly http: HttpClient) {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this._joinRoom(room, token));
         this.mainSocket.on('error', (e) => this._error(e));
-        (<any>window)['communication'] = this; // TODO: wack
-        (<any>window)['io'] = io; // TODO: wack
+        (<unknown>window).communication = this; // TODO: wack
+        (<unknown>window).io = io; // TODO: wack
     }
 
     private _error(e: string | Error) {
@@ -70,6 +73,21 @@ export class CommunicationService {
         }
     }
 
+    sendMessage(message: Message) {
+        this.gameSocket?.emit('sendMessage');
+    }
+
+    receiveMessage(message: Message) {
+        console.log(message.message);
+    }
+
+    private _joinGame(gameId: GameId, token: number) {
+        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token, bob: 'Lennon' } });
+        this.gameSocket.on('receiveMessage', (message: Message) => {
+            this.receiveMessage(message);
+        });
+    }
+
     start() {
         if (this.selectedRoom.value !== undefined && this.isRoomCreator()) {
             this.gameSocket?.emit('start');
@@ -88,7 +106,12 @@ export class CommunicationService {
         console.log(`Join room ${room} with token ${token}`);
         this.gameSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token, bob: 'Lennon' } });
         this.gameSocket.on('kick', () => this._leave());
-        this.gameSocket.on('updateRoom', (room) => { this.selectedRoom.next(room); });
+        this.gameSocket.on('updateRoom', (room) => {
+            this.selectedRoom.next(room);
+        });
+        this.gameSocket.on('gameStarted', (gameId: number) => {
+            this._joinGame(gameId, token);
+        });
         this.gameSocket.on('error', (e) => this._error(e));
     }
 
@@ -102,7 +125,7 @@ export class CommunicationService {
         return this.selectedRoom.value?.mainPlayer.id === this.mainSocket.id;
     }
 
-    listenRooms(): Promise<void> {
+    async listenRooms(): Promise<void> {
         return new Promise((resolve) => {
             if (this.roomsSocket.connected) return;
             this.roomsSocket.once('connect', () => resolve());

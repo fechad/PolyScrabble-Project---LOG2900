@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject, interval } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { SkipTurnService } from './skip-turn.service';
 
 @Injectable({
@@ -8,21 +8,19 @@ import { SkipTurnService } from './skip-turn.service';
 export class ChronoService {
     constructor(public skipTurn: SkipTurnService) {}
     time: BehaviorSubject<number> = new BehaviorSubject(0);
-
+    subscription: Subscription;
     startTimer() {
         const time = this.time;
         const obs$ = interval(1000);
-        obs$.subscribe((d) => {
-            if (d != 59) {
-                time.next(59 - d);
-            } else {
-                time.next(0);
-                time.unsubscribe();
-            }
+        this.subscription = obs$.subscribe((d) => {
+            time.next(10 - d);
         });
+        setTimeout(() => {
+            this.reset();
+        }, 11000);
     }
     reset() {
-        this.time.unsubscribe();
+        this.subscription.unsubscribe();
         this.startTimer();
         this.skipTurn.skipTurn();
     }
