@@ -21,6 +21,11 @@ export class ChatBoxComponent implements OnInit {
             this.scrollToBottom();
         }
     }
+
+    isMyMessage() {
+        this.yourMessage = false;
+    }
+    
     scrollToBottom() {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
