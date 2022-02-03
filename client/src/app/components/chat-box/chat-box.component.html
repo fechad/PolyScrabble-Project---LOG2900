@@ -1,6 +1,6 @@
 <div id="wholeBox">
     <div id="nonWritingBox" #scroll [scrollTop]="scroll.scrollHeight">
-        <div class="chat-log-opponent"></div>
+        <!--<div class="chat-log-opponent"></div>-->
         <div *ngFor="let message of messages">
             <div *ngIf="yourMessage" class="chat-log">
                 <p class="message">{{ message }}</p>

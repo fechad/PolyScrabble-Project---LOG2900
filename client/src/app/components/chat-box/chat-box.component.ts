@@ -15,7 +15,7 @@ export class ChatBoxComponent implements OnInit {
     ngOnInit(): void {}
 
     sendMessage() {
-        if (this.validSynthax()) {
+        if (this.validSyntax()) {
             this.messages.push(this.textValue);
             this.textValue = '';
             this.scrollToBottom();
@@ -25,12 +25,12 @@ export class ChatBoxComponent implements OnInit {
     isMyMessage() {
         this.yourMessage = false;
     }
-    
+
     scrollToBottom() {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
-    validSynthax(): boolean {
-        if (this.textValue === '') {
+    validSyntax(): boolean {
+        if (this.textValue.trim() === '') {
             return false;
         } else {
             return true;
