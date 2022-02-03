@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 })
 export class SkipTurnService {
     isYourTurn = true;
-    // chrono: ChronoService;
     constructor() {}
 
     skipTurn() {
