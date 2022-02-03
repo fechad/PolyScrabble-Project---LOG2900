@@ -24,8 +24,8 @@ describe('WaitingRoomPageComponent', () => {
             ],
         }).compileComponents();
 
-        const selectedRoom = 'selectedRoom';
-        Object.defineProperty(communicationServiceSpy, selectedRoom, { value: '0' });
+        // const selectedRoom = 'selectedRoom';
+        // Object.defineProperty(communicationServiceSpy, selectedRoom, { value: '0' });
     });
 
     beforeEach(() => {
