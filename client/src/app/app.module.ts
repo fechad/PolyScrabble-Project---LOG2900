@@ -27,7 +27,7 @@ import { SingleLetterComponent } from './components/single-letter/single-letter.
 import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
-import { GamesListService } from './services/games-list.service';
+import { CommunicationService } from './services/communication.service';
 
 /**
  * Main module that is used in main.ts.
@@ -71,7 +71,7 @@ import { GamesListService } from './services/games-list.service';
         IgxIconModule,
         FontAwesomeModule,
     ],
-    providers: [GamesListService],
+    providers: [CommunicationService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

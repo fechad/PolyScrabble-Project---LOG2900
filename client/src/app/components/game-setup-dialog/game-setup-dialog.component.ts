@@ -2,7 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { GamesListService } from '@app/services/games-list.service';
+import { Parameters } from '@app/classes/parameters';
+import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-game-setup-dialog',
@@ -15,7 +16,7 @@ export class GameSetupDialogComponent implements OnInit {
         private router: Router,
         private formBuilder: FormBuilder,
         private dialogRef: MatDialogRef<GameSetupDialogComponent>,
-        private gameService: GamesListService,
+        private communicationService: CommunicationService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 
@@ -27,38 +28,30 @@ export class GameSetupDialogComponent implements OnInit {
         this.gameParametersForm = this.formBuilder.group({
             id: [''],
             playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
-            timer: [''],
+            minutes: new FormControl(1, [Validators.required]),
+            seconds: new FormControl(0, [Validators.required]),
             dictionary: new FormControl('', [Validators.required]),
         });
     }
 
-    onSubmit() {
+    async onSubmit() {
         for (const key of Object.keys(this.gameParametersForm.controls)) {
             if (!this.gameParametersForm.controls[key].valid) {
                 return;
             }
         }
 
-        this.gameService.addGame(this.gameParametersForm.value);
+        const parameters = new Parameters();
+        parameters.timer = this.gameParametersForm.value.minutes * 60 + this.gameParametersForm.value.seconds;
+        parameters.dictionnary = this.gameParametersForm.value.dictionary;
+        const error = parameters.validateParameters();
+        if (error !== undefined) {
+            console.error(error, parameters, this.gameParametersForm.value);
+            return;
+        }
+        await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters);
         this.dialogRef.close();
         this.router.navigate(['/waiting-room']);
-    }
-
-    // avoid having turn time limit at 00:00 or 5:30
-    checkNonZero() {
-        const minute = document.getElementById('minutes') as HTMLSelectElement;
-        const second = document.getElementById('seconds') as HTMLSelectElement;
-
-        const selectedMin = minute?.options[minute?.selectedIndex].text;
-        const selectedSec = second?.options[second?.selectedIndex].text;
-
-        if (selectedMin === '0' && selectedSec === '00') {
-            second.selectedIndex = 1;
-        }
-
-        if (selectedMin === '5' && selectedSec === '30') {
-            second.selectedIndex = 0;
-        }
     }
 
     createGame() {

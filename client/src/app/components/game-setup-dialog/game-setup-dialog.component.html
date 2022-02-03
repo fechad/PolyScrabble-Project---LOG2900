@@ -26,20 +26,20 @@
                     <div class="col-md-10">
                         <label>Temps limite par tour: </label>
 
-                        <select formControlName="timer" class="form-control" id="minutes" name="minute" (change)="checkNonZero()">
-                            <option *ngFor="let minute of [0, 1, 2, 3, 4, 5]" [selected]="minute === 1">{{ minute }}</option>
+                        <select formControlName="minutes" class="form-control" id="minutes" name="minute">
+                            <option *ngFor="let minute of [0, 1, 2, 3, 4, 5]" [ngValue]="minute" [selected]="minute === 1">{{ minute }}</option>
                         </select>
                         min :
-                        <select id="seconds" name="second" (change)="checkNonZero()">
-                            <option value="default">00</option>
-                            <option value="thirty">30</option>
+                        <select formControlName="seconds" class="form-control" id="seconds" name="second">
+                            <option [ngValue]="0" selected [disabled]="this.gameParametersForm.value.minutes === 0">00</option>
+                            <option [ngValue]="30" [disabled]="this.gameParametersForm.value.minutes === 5">30</option>
                         </select>
                     </div>
                     <div class="col-md-10">
                         <label>Choix du dictionnaire: </label>
                         <select id="dictionaries" name="dictionary" formControlName="dictionary" class="form-control">
                             <option selected disabled value="">Choisissez</option>
-                            <option value="langue française">Langue française</option>
+                            <option [ngValue]="0">Langue française</option>
                         </select>
                     </div>
 

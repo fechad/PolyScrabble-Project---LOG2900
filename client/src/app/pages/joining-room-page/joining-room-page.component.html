@@ -10,13 +10,13 @@
     </mat-card-header>
 </mat-card>
 
-<div id="games-list" *ngFor="let game of gameList">
-    <mat-card matRipple class="clickable" (click)="openDialog()">
+<div id="games-list" *ngFor="let game of communicationService.rooms | async">
+    <mat-card matRipple class="clickable" (click)="openDialog(game)">
         <mat-card-content>
             <div class="container">
                 <span>
-                    <p id="firstPlayer">Nom du joueur: {{ game.playerName }}</p>
-                    <p id="dictChoice">Dictionnaire: {{ game.dictionary }}</p>
+                    <p id="firstPlayer">Nom du joueur: {{ game.name }}</p>
+                    <p id="dictChoice">Dictionnaire: {{ game.parameters.dictionnary }}</p>
                 </span>
             </div>
         </mat-card-content>

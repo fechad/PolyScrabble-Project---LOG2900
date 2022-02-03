@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { GamesListService } from '@app/services/games-list.service';
 import { GameSetupDialogComponent } from './game-setup-dialog.component';
 
 describe('GameSetupDialogComponent', () => {
@@ -11,7 +10,6 @@ describe('GameSetupDialogComponent', () => {
     let router: Router;
     let formBuilder: FormBuilder;
     let matDialogRef: MatDialogRef<GameSetupDialogComponent>;
-    let gamesListService: GamesListService;
     let matDialogData: typeof MAT_DIALOG_DATA;
 
     beforeEach(async () => {
@@ -21,7 +19,6 @@ describe('GameSetupDialogComponent', () => {
                 { provide: Router, useValue: router },
                 { provide: FormBuilder, useValue: formBuilder },
                 { provide: MatDialogRef, useValue: matDialogRef },
-                { provide: GamesListService, useValue: gamesListService },
                 { provide: MAT_DIALOG_DATA, useValue: matDialogData },
             ],
         }).compileComponents();

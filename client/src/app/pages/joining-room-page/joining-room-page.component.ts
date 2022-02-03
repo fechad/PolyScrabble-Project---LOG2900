@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Room } from '@app/classes/room';
 import { JoinSetupDialogComponent } from '@app/components/join-setup-dialog/join-setup-dialog.component';
-import { GamesListService } from '@app/services/games-list.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { MenusStatesService } from '@app/services/menus-states.service';
 
 @Component({
@@ -9,16 +10,14 @@ import { MenusStatesService } from '@app/services/menus-states.service';
     templateUrl: './joining-room-page.component.html',
     styleUrls: ['./joining-room-page.component.scss'],
 })
-export class JoiningRoomPageComponent implements OnInit {
-    constructor(public dialog: MatDialog, public state: MenusStatesService, private gameService?: GamesListService) {}
+export class JoiningRoomPageComponent {
+    constructor(public dialog: MatDialog, public state: MenusStatesService, public communicationService: CommunicationService) {}
 
-    ngOnInit(): void {}
-
-    get gameList() {
-        return this.gameService?.getAllGames();
-    }
-
-    openDialog() {
-        this.dialog.open(JoinSetupDialogComponent);
+    openDialog(room: Room) {
+        this.dialog.open(JoinSetupDialogComponent, {
+            data: {
+                room: room.id,
+            },
+        });
     }
 }
