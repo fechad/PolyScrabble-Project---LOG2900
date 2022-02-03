@@ -29,6 +29,7 @@ describe('WaitingRoomPageComponent', () => {
     });
 
     beforeEach(() => {
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['leave']);
         fixture = TestBed.createComponent(WaitingRoomPageComponent);
         router = TestBed.inject(Router);
         router.initialNavigation();
@@ -36,7 +37,23 @@ describe('WaitingRoomPageComponent', () => {
         fixture.detectChanges();
     });
 
+    // TO-DO: should create fails
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    // it('leave should call leave from CommunicationService', () => {
+    //     component.leave();
+    //     expect(communicationServiceSpy.leave).toHaveBeenCalled();
+    // });
+
+    // it('start should call start from CommunicationService', () => {
+    //     component.start();
+    //     expect(communicationServiceSpy.start).toHaveBeenCalled();
+    // });
+
+    // it('kick should call kick from CommunicationService', () => {
+    //     component.kick();
+    //     expect(communicationServiceSpy.kick).toHaveBeenCalled();
+    // });
 });

@@ -8,10 +8,10 @@ import { MenusStatesService } from '@app/services/menus-states.service';
 })
 export class MainPageComponent {
     constructor(public state: MenusStatesService) {}
-    sendTimeToServer() {
-        throw new Error('Method not implemented.');
-    }
-    getMessagesFromServer() {
-        throw new Error('Method not implemented.');
-    }
+    // sendTimeToServer() {
+    //     throw new Error('Method not implemented.');
+    // }
+    // getMessagesFromServer() {
+    //     throw new Error('Method not implemented.');
+    // }
 }
