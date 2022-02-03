@@ -8,7 +8,7 @@ const boutonMainPage = [
 ];
 const boutonModeChoisi = [
     { route: '', toolTip: '', texte: 'Solo' },
-    { route: '', toolTip: '', texte: 'Muiltijoueur' },
+    { route: '', toolTip: '', texte: 'Multijoueur' },
     { route: '/joining-room', toolTip: '', texte: 'Rejoindre une partie' },
 ];
 @Component({
