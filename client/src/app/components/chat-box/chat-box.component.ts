@@ -50,4 +50,5 @@ export class ChatBoxComponent implements OnInit {
     echanger(commande: string) {
         /* TODO: vérifie si la commande echanger a la bonne synthaxe*/
     }
+    passer(commande: string) {}
 }
