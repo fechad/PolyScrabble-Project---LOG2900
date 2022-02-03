@@ -8,7 +8,7 @@ import { CommunicationService } from '@app/services/communication.service';
 @Component({
     selector: 'app-game-setup-dialog',
     templateUrl: './game-setup-dialog.component.html',
-    styleUrls: ['./game-setup-dialog.component.scss'],
+    styleUrls: ['../../styles/dialogs.scss'],
 })
 export class GameSetupDialogComponent implements OnInit {
     gameParametersForm: FormGroup;
@@ -20,7 +20,7 @@ export class GameSetupDialogComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 
-    onNoClick(): void {
+    closeDialog(): void {
         this.dialogRef.close();
     }
 

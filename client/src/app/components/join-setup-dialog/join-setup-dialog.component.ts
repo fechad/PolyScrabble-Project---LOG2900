@@ -7,17 +7,17 @@ import { CommunicationService } from '@app/services/communication.service';
 @Component({
     selector: 'app-join-setup-dialog',
     templateUrl: './join-setup-dialog.component.html',
-    styleUrls: ['./join-setup-dialog.component.scss'],
+    styleUrls: ['../../styles/dialogs.scss'],
 })
 export class JoinSetupDialogComponent implements OnInit {
     joiningRoomForm: FormGroup;
 
     constructor(
-        private dialogRef: MatDialogRef<JoinSetupDialogComponent>,
+        public dialogRef: MatDialogRef<JoinSetupDialogComponent>,
         private formBuilder: FormBuilder,
         private router: Router,
         public communicationService: CommunicationService,
-        @Inject(MAT_DIALOG_DATA) public data: any
+        @Inject(MAT_DIALOG_DATA) public data: any,
     ) {}
 
     ngOnInit(): void {
@@ -26,7 +26,7 @@ export class JoinSetupDialogComponent implements OnInit {
         });
     }
 
-    onNoClick() {
+    closeDialog() {
         this.dialogRef.close();
     }
 
