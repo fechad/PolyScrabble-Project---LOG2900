@@ -1,4 +1,5 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
@@ -12,11 +13,18 @@ export class MatDialogRefMock {
 describe('JoinSetupDialogComponent', () => {
     let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;
+    let formBuilder: FormBuilder;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [JoinSetupDialogComponent],
-            providers: [{ provide: MatDialogRef, useClass: MatDialogRefMock }],
+            providers: [
+                { provide: MatDialogRef, useClass: MatDialogRefMock },
+                {
+                    provide: FormBuilder,
+                    useValue: formBuilder,
+                },
+            ],
         }).compileComponents();
     });
 
