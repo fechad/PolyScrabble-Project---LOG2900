@@ -26,14 +26,14 @@
             </div>
         </div>
         <div class="center">
-            <section class="play-area-container">
+            <div class="play-area-container">
                 <app-play-area class="play-area" tabindex="0"></app-play-area>
-            </section>
-            <section class="rackArea">
-                <button id="quit-game" (click)="quitGame()">Quit</button>
+            </div>
+            <div class="rackArea">
+                <button id="quit-game" (click)="quitGame()"><fa-icon [icon]="faSignOutAlt" size="3x"></fa-icon></button>
                 <app-letter-rack></app-letter-rack>
-                <button id="skip-turn" (click)="skipMyTurn()">Skip Turn</button>
-            </section>
+                <button id="skip-turn" (click)="skipMyTurn()"><fa-icon [icon]="faAngleDoubleRight" size="3x"></fa-icon></button>
+            </div>
         </div>
         <div class="chatArea">
             <app-chat-box></app-chat-box>

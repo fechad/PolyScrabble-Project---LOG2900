@@ -95,11 +95,6 @@ body {
     justify-content: space-between;
     height: 80vh;
 }
-.center {
-    display: flex;
-    flex-direction: column;
-    width: 75vw;
-}
 .play-area-container {
     height: 40vh;
 }
@@ -107,19 +102,4 @@ body {
     margin-right: 10vw;
     flex-direction: column;
     justify-content: space-evenly;
-}
-.rackArea {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    background-color: #5a5a5a;
-}
-#quit-game,
-#skip-turn {
-    margin-top: 30px;
-    height: 6vh;
-    width: 8vh;
-    border-radius: 15px;
-    border-width: thin;
-    border-style: solid;
 }

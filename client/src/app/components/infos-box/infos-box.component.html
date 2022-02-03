@@ -9,7 +9,9 @@
     </div>
     <div class="game-infos">
         <p>mode de jeu</p>
-        <p>temps restants</p>
+        <div class="backChrono">
+            <p>0:{{ chronoService.time | async }}</p>
+        </div>
         <p>lettes restantes en reserve</p>
     </div>
     <div class="player" [ngClass]="{ player: true, tour: !skipTurn.isYourTurn }">
