@@ -1,4 +1,23 @@
 <div id="wholeBox">
-    <div class="chat-log"></div>
-    <textarea rows="10" id="writingBox" type="text" placeholder="Entrez une commande ou un message ici !" minlength="1" maxlength="512"></textarea>
+    <div id="nonWritingBox" #scroll [scrollTop]="scroll.scrollHeight">
+        <!--<div class="chat-log-opponent"></div>-->
+        <div *ngFor="let message of messages">
+            <div *ngIf="yourMessage" class="chat-log">
+                <p class="message">{{ message }}</p>
+            </div>
+            <div *ngIf="!yourMessage" class="chat-log-opponent">
+                <p class="message">{{ message }}</p>
+            </div>
+        </div>
+    </div>
+    <textarea
+        rows="10"
+        id="writingBox"
+        type="text"
+        placeholder="Entrez une commande ou un message ici !"
+        minlength="1"
+        maxlength="512"
+        (keydown.enter)="sendMessage()"
+        [(ngModel)]="textValue"
+    ></textarea>
 </div>
