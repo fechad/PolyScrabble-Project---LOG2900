@@ -1,4 +1,6 @@
+import { PlayerId } from './room';
+
 export interface Message {
-    title: string;
-    body: string;
+    emitter: PlayerId;
+    text: string;
 }

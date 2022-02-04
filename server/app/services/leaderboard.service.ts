@@ -10,13 +10,13 @@ export class LeaderBoardService {
 
     about(): Message {
         return {
-            title: 'Basic Server About Page',
-            body: 'Try calling /api/docs to get the documentation',
+            emitter: 'Basic Server About Page',
+            text: 'Try calling /api/docs to get the documentation',
         };
     }
 
     async helloWorld(): Promise<Message> {
-        return { title: 'Hello World', body: 'Time is now' };
+        return { emitter: 'Hello World', text: 'Time is now' };
     }
 
     // TODO : ceci est à titre d'exemple. À enlever pour la remise

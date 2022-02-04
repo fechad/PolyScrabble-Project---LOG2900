@@ -1,4 +1,6 @@
+import { PlayerId } from './classes/room';
+
 export interface Message {
-    title: string;
-    body: string;
+    emitter: PlayerId;
+    text: string;
 }

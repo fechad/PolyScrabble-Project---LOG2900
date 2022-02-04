@@ -1,5 +1,6 @@
 import { Parameters } from '@app/classes/parameters';
-import { Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { Message } from '@app/message';
 import * as http from 'http';
 import * as io from 'socket.io';
 import { isDeepStrictEqual } from 'util';
@@ -52,6 +53,7 @@ export class SocketManager {
                         next(Error('Invalid token for room'));
                     }
                 });
+                const messages: Message[] = []; // TODO
                 namespace.on('connect', (namespaceSocket) => {
                     const isMainPlayer = namespaceSocket.handshake.auth.token === 0;
 
@@ -71,6 +73,16 @@ export class SocketManager {
                             }
                         });
                     }
+                    namespaceSocket.on('message', (message: string) => {
+                        const otherPlayer = room.getOtherPlayer()?.id;
+                        if (otherPlayer === undefined) {
+                            return;
+                        }
+                        const playerId: PlayerId = isMainPlayer ? room.mainPlayer.id : otherPlayer;
+                        messages.push({ emitter: playerId, text: message });
+                        namespace.emit('message', messages);
+                    });
+
                     namespaceSocket.on('disconnect', () => {
                         room.quit(isMainPlayer);
                         Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));

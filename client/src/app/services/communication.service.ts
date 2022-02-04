@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { Room, RoomId } from '@app/classes/room';
 import { EventEmitter } from 'events';
@@ -15,6 +16,7 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly isCreator: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined as boolean | undefined);
+    readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
 
     private readonly roomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
@@ -49,6 +51,10 @@ export class CommunicationService {
         } else {
             throw new Error('Tried to start when not room creator');
         }
+    }
+
+    sendMessage(message: string) {
+        this.gameSocket?.emit('message', message);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -117,6 +123,10 @@ export class CommunicationService {
         this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
         this.gameSocket.on('error', (e) => this.handleError(e));
         this.gameSocket.on('start', () => this.events.emit('start'));
+        this.gameSocket.on('message', (messages: Message[]) => {
+            console.log(messages);
+            this.messages.next(messages);
+        });
 
         this.isCreator.next(this.isCreator.value === true);
     }
