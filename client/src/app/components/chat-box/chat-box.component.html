@@ -1,12 +1,12 @@
 <div id="wholeBox">
     <div id="nonWritingBox" #scroll [scrollTop]="scroll.scrollHeight">
         <!--<div class="chat-log-opponent"></div>-->
-        <div *ngFor="let message of messages">
-            <div *ngIf="yourMessage" class="chat-log">
-                <p class="message">{{ message }}</p>
+        <div *ngFor="let message of communicationService.messages | async">
+            <div *ngIf="message.emitter === myId" class="chat-log">
+                <p class="message">{{ message.text }}</p>
             </div>
-            <div *ngIf="!yourMessage" class="chat-log-opponent">
-                <p class="message">{{ message }}</p>
+            <div *ngIf="message.emitter !== myId" class="chat-log-opponent">
+                <p class="message">{{ message.text }}</p>
             </div>
         </div>
     </div>

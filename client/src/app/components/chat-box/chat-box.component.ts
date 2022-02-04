@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-chat-box',
@@ -7,16 +8,19 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 })
 export class ChatBoxComponent implements OnInit {
     @ViewChild('scroll') private scroller: ElementRef;
-    messages: string[] = [];
     textValue: string = '';
     yourMessage: boolean = true;
-    constructor() {}
+    myId: string | undefined;
+    constructor(public communicationService: CommunicationService) {
+        this.myId = this.communicationService.getId();
+        console.log(this.myId);
+    }
 
     ngOnInit(): void {}
 
     sendMessage() {
         if (this.validSyntax()) {
-            this.messages.push(this.textValue);
+            this.communicationService.sendMessage(this.textValue);
             this.textValue = '';
             this.scrollToBottom();
         }

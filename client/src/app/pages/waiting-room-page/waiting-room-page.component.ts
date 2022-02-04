@@ -12,6 +12,7 @@ export class WaitingRoomPageComponent {
         if (communicationService.selectedRoom.value === undefined) {
             this.router.navigate(['/home']);
         }
+        this.communicationService.events.once('start', async () => this.router.navigate(['/game']));
     }
 
     leave() {
