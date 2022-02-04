@@ -18,10 +18,11 @@ export class ChatBoxComponent implements OnInit {
     ngOnInit(): void {}
 
     sendMessage() {
-        if (this.validSyntax()) {
+        if (this.validateSyntax()) {
             this.messages.push(this.textValue);
             this.textValue = '';
             this.scrollToBottom();
+            /* TODO: Send this message to server */
         }
     }
 
@@ -32,7 +33,7 @@ export class ChatBoxComponent implements OnInit {
     scrollToBottom() {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
-    validSyntax(): boolean {
+    validateSyntax(): boolean {
         if (this.textValue.trim() === '') {
             return false;
         } else if (this.textValue[0] == '!') {
@@ -55,10 +56,24 @@ export class ChatBoxComponent implements OnInit {
     }
     placer(command: string) {
         /* TODO: vérifie si la commande placer a la bonne synthaxe*/
+        this.commandStructure = command.split(' ');
+        if (this.commandStructure[-1].match(/[0-9]/g)) {
+            this.syntaxIsValid = false;
+        } else if (this.commandStructure[0] === '!placer') {
+            if (
+                this.commandStructure[1][0].match(/[a-o]/g) &&
+                (this.commandStructure[1][1].match(/[0-9]/g) ||
+                    (this.commandStructure[1][1].match(/[1]/g) && this.commandStructure[1][2].match(/[0-4]/g))) &&
+                (this.commandStructure[1][2].match(/[hv]/g) ||
+                    (this.commandStructure[1][3].match(/[hv]/g) && this.commandStructure[2][-1].match(/[a-z]/g)))
+            ) {
+                this.syntaxIsValid = true;
+            }
+        }
+
         console.log(command);
     }
     echanger(command: string) {
-        /* TODO: vérifie si la commande echanger a la bonne synthaxe*/
         this.commandStructure = command.split(' ');
         if (this.commandStructure[1].match(/[A-Z0-9]/g)) {
             this.syntaxIsValid = false;
