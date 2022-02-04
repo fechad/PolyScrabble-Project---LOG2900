@@ -5,6 +5,7 @@
     "ignorePatterns": ["projects/**/*"],
     "extends": ["../.eslintrc.json"],
     "rules": {
+        "no-console": "off",
         "jsdoc/check-indentation": "off"
     },
     "globals": {

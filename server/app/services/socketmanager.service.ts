@@ -1,5 +1,5 @@
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { Room, RoomId } from '@app/classes/room';
 import { Message } from '@app/message';
 import * as http from 'http';
 import * as io from 'socket.io';
@@ -12,6 +12,7 @@ export class SocketManager {
     private rooms: Room[];
     private prevRooms: Room[];
     private nextRoomId = 0;
+    private messages: { [room: number]: Message[] } = {}; // number is RoomId, but typescript does not allow this
 
     constructor(server: http.Server) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
@@ -42,61 +43,6 @@ export class SocketManager {
                 const room = new Room(roomId, socket.id, playerName, parameters);
                 socket.emit('join', roomId, 0);
                 console.log(`Created room ${roomId} for player ${playerName}`);
-
-                const namespace = this.io.of(`/rooms/${roomId}`);
-                namespace.use((s, next) => {
-                    const token = s.handshake.auth.token;
-                    if (token === 0 || token === 1) {
-                        // valid token
-                        next();
-                    } else {
-                        next(Error('Invalid token for room'));
-                    }
-                });
-                const messages: Message[] = []; // TODO
-                namespace.on('connect', (namespaceSocket) => {
-                    const isMainPlayer = namespaceSocket.handshake.auth.token === 0;
-
-                    const events: { [key: string]: () => void } = { updateRoom: () => namespaceSocket.emit('updateRoom', room) };
-                    if (!isMainPlayer) events.kick = () => namespaceSocket.emit('kick');
-                    Object.entries(events).forEach(([name, handler]) => room.events.on(name, handler));
-
-                    if (isMainPlayer) {
-                        namespaceSocket.on('kick', () => room.kickOtherPlayer());
-
-                        namespaceSocket.on('start', () => {
-                            if (room.hasOtherPlayer()) {
-                                console.log('start'); // TODO
-                                namespace.emit('start');
-                            } else {
-                                namespaceSocket.emit('error', 'No other player');
-                            }
-                        });
-                    }
-                    namespaceSocket.on('message', (message: string) => {
-                        const otherPlayer = room.getOtherPlayer()?.id;
-                        if (otherPlayer === undefined) {
-                            return;
-                        }
-                        const playerId: PlayerId = isMainPlayer ? room.mainPlayer.id : otherPlayer;
-                        messages.push({ emitter: playerId, text: message });
-                        namespace.emit('message', messages);
-                    });
-
-                    namespaceSocket.on('disconnect', () => {
-                        room.quit(isMainPlayer);
-                        Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));
-                        if (isMainPlayer) {
-                            // swap remove
-                            const idx = this.rooms.indexOf(room);
-                            if (idx === -1) throw Error('Current room does not exist?');
-                            this.rooms[idx] = this.rooms[this.rooms.length - 1];
-                            this.rooms.pop();
-                        }
-                    });
-
-                    namespaceSocket.emit('updateRoom', room);
-                });
                 this.rooms.push(room);
             });
 
@@ -104,6 +50,61 @@ export class SocketManager {
                 console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
                 console.log(`Raison de deconnexion : ${reason}`);
             });
+        });
+
+        const rooms = this.io.of(/^\/rooms\/\d+$/);
+        rooms.use((s, next) => {
+            const roomId = Number.parseInt(s.nsp.name.substring('/rooms/'.length), 10);
+            const idx = this.rooms.findIndex((room) => room.id === roomId);
+            const NOT_FOUND = -1;
+            if (idx === NOT_FOUND) {
+                next(Error('Invalid room number'));
+                return;
+            }
+            s.data.roomId = roomId;
+            s.data.roomIdx = idx;
+
+            const token = s.handshake.auth.token;
+            if (token === 0 || token === 1) {
+                // valid token
+                next();
+            } else {
+                next(Error('Invalid token for room'));
+            }
+        });
+        rooms.on('connect', (socket) => {
+            const isMainPlayer = socket.handshake.auth.token === 0;
+            if (this.messages[socket.data.roomId] === undefined) this.messages[socket.data.roomId] = [];
+            const messages: Message[] = this.messages[socket.data.roomId];
+            const room = this.rooms[socket.data.roomIdx];
+            socket.join(`room-${room.id}`);
+
+            const events: { [key: string]: () => void } = { updateRoom: () => socket.emit('updateRoom', room) };
+            if (!isMainPlayer) events.kick = () => socket.emit('kick');
+            Object.entries(events).forEach(([name, handler]) => room.events.on(name, handler));
+
+            if (isMainPlayer) {
+                socket.on('kick', () => room.kickOtherPlayer());
+                socket.on('start', () => room.start());
+            }
+            socket.on('message', (message: string) => {
+                const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
+                if (playerId === undefined) throw new Error('Undefined player tried to send a message');
+                messages.push({ emitter: playerId, text: message });
+                rooms.to(`room-${room.id}`).emit('message', messages);
+            });
+
+            socket.on('disconnect', () => {
+                room.quit(isMainPlayer);
+                Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));
+                if (isMainPlayer) {
+                    // swap remove
+                    this.rooms[socket.data.roomId] = this.rooms[this.rooms.length - 1];
+                    this.rooms.pop();
+                }
+            });
+
+            socket.emit('updateRoom', room);
         });
 
         const waitingRoom = this.io.of('/waitingRoom');

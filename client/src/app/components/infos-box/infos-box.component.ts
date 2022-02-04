@@ -12,14 +12,19 @@ export class InfosBoxComponent implements AfterViewInit {
     // @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
     @ViewChild('countdown') cd: CountdownComponent;
     timeData = 60;
-    constructor(public skipTurn: SkipTurnService) {}
+    turnChange: boolean;
+    private _subscription: any;
+    constructor(public skipTurn: SkipTurnService) {
+        this.turnChange = skipTurn.isYourTurn;
+        this._subscription = skipTurn.turnChange.subscribe((value) => {
+            this.reset();
+        });
+    }
 
     ngAfterViewInit(): void {
         this.cd.begin();
     }
-    startTimer() {
-        // this.countDown.begin();
-    }
+
     handleEvent(e: CountdownEvent) {
         if (e.action === 'done') {
             this.reset();
@@ -28,7 +33,9 @@ export class InfosBoxComponent implements AfterViewInit {
     reset() {
         this.cd.restart();
         this.cd.begin();
-        this.skipTurn.skipTurn();
+    }
+    ngOnDestroy() {
+        this._subscription.unsubscribe();
     }
 }
 Injector.create({

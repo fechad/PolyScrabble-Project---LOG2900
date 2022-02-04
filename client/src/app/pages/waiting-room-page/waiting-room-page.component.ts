@@ -8,11 +8,17 @@ import { CommunicationService } from '@app/services/communication.service';
     styleUrls: ['./waiting-room-page.component.scss'],
 })
 export class WaitingRoomPageComponent {
+    canControl: boolean;
+
     constructor(public communicationService: CommunicationService, private router: Router) {
-        if (communicationService.selectedRoom.value === undefined) {
-            this.router.navigate(['/home']);
-        }
-        this.communicationService.events.once('start', async () => this.router.navigate(['/game']));
+        this.communicationService.selectedRoom.subscribe(async room => {
+            if (room === undefined) await this.router.navigate(['/home']);
+            else if (room.started) this.router.navigate(['/game']);
+
+            const hasOtherPlayer = (room?.otherPlayer !== undefined);
+            const isMainPlayer = this.communicationService.getId() === room?.mainPlayer.id;
+            this.canControl = hasOtherPlayer && isMainPlayer;
+        });
     }
 
     leave() {

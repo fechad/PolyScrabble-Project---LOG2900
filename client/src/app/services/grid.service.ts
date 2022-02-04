@@ -10,7 +10,7 @@ export const DEFAULT_HEIGHT = 500;
 })
 export class GridService {
     gridContext: CanvasRenderingContext2D;
-    fontSize = '7px system-ui';
+    fontSize = '9px system-ui';
 
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -21,7 +21,7 @@ export class GridService {
         this.gridContext.lineWidth = offset;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
-        this.drawNumbers('0 1 2 3 4 5 6 7 8 9 10 11 12 13 14');
+        this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
 
         this.gridContext.fillStyle = '#c4c4c4';
         this.gridContext.strokeStyle = '#B1ACAC';
@@ -84,26 +84,26 @@ export class GridService {
     drawTripleWord(canvasX: number, canvasY: number) {
         this.gridContext.fillStyle = '#c93de0';
         this.gridContext.fill();
-        this.drawMessage('TRIPLE WORD', canvasX, canvasY);
+        this.drawMessage('WORD x3', canvasX, canvasY);
     }
 
     drawTripleLetter(canvasX: number, canvasY: number) {
         this.gridContext.fillStyle = '#54bd9d';
         this.gridContext.fill();
-        this.drawMessage('TRIPLE LETTER', canvasX, canvasY);
+        this.drawMessage('LETTER x3', canvasX, canvasY);
     }
 
     drawDoubleWord(canvasX: number, canvasY: number) {
         this.gridContext.fillStyle = '#e1adf3';
         this.gridContext.fill();
-        this.drawMessage('DOUBLE WORD', canvasX, canvasY);
+        this.drawMessage('WORD x2', canvasX, canvasY);
     }
 
     drawDoubleLetter(canvasX: number, canvasY: number) {
         this.gridContext.fillStyle = '#b7ffe5';
         this.gridContext.fill();
 
-        this.drawMessage('DOUBLE LETTER', canvasX, canvasY);
+        this.drawMessage('LETTER x2', canvasX, canvasY);
     }
 
     drawStar(canvasX: number, canvasY: number) {
@@ -123,18 +123,18 @@ export class GridService {
     }
 
     drawWord(word: string) {
-        const startPosition: Vec2 = { x: 30, y: 16 };
-        const step = 33;
+        const startPosition: Vec2 = { x: -4, y: 40 };
+        const step = 33.5;
         this.gridContext.font = '20px system-ui';
         for (let i = 0; i < word.length; i++) {
             this.gridContext.fillStyle = '#000000';
-            this.gridContext.fillText(word[i], startPosition.x + step * i, startPosition.y);
+            this.gridContext.fillText(word[i], startPosition.x + 4, startPosition.y + step * i);
         }
     }
 
     drawNumbers(numbers: string) {
-        const startPosition: Vec2 = { x: -4, y: 40 };
-        const step = 34;
+        const startPosition: Vec2 = { x: 28, y: 10 };
+        const step = 33.5;
         this.gridContext.fillStyle = '#000000';
         this.gridContext.font = '20px system-ui';
         const numberList = numbers.split(' ', 15);
@@ -142,9 +142,9 @@ export class GridService {
         for (let i = 0; i < numberList.length; i++) {
             const number: number = +numberList[i];
             if (number < 10) {
-                this.gridContext.fillText(number.toString(), startPosition.x + 4, startPosition.y + step * i);
+                this.gridContext.fillText(number.toString(), startPosition.x + step * i, startPosition.y + 4);
             } else {
-                this.gridContext.fillText(number.toString(), startPosition.x, startPosition.y + step * i);
+                this.gridContext.fillText(number.toString(), startPosition.x + (step - 0.5) * i, startPosition.y + 4);
             }
         }
     }
