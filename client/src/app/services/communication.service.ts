@@ -43,6 +43,21 @@ export class CommunicationService {
         }
     }
 
+    sendMessage(message: Message) {
+        this.gameSocket?.emit('sendMessage');
+    }
+
+    receiveMessage(message: Message) {
+        console.log(message.message);
+    }
+
+    private _joinGame(gameId: GameId, token: number) {
+        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token, bob: 'Lennon' } });
+        this.gameSocket.on('receiveMessage', (message: Message) => {
+            this.receiveMessage(message);
+        });
+    }
+
     start() {
         if (this.selectedRoom.value !== undefined && this.isCreator.value) {
             this.gameSocket?.emit('start');

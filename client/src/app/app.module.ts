@@ -18,7 +18,10 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
 import { CountdownModule } from 'ngx-countdown';
+<<<<<<< HEAD
 import { ButtonsOptionsComponent } from './components/buttons-options/buttons-options.component';
+=======
+>>>>>>> 39467d45b2bd5e08825818a9d3a6b65f5e4ae063
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
