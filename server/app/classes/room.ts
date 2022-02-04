@@ -14,6 +14,7 @@ export class Room {
     readonly id: RoomId;
     readonly mainPlayer: Player;
     private otherPlayer: Player | undefined;
+    private started: boolean = false;
 
     constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters) {
         this.id = id;
@@ -49,8 +50,15 @@ export class Room {
         }
     }
 
+    start() {
+        if (this.otherPlayer && !this.started) {
+            this.started = true;
+            this.events.emit('updateRoom');
+        }
+    }
+
     kickOtherPlayer() {
-        if (this.otherPlayer) {
+        if (this.otherPlayer && !this.started) {
             console.log(`Kicked player from room ${this.id}`);
             this.otherPlayer = undefined;
             this.events.emit('kick');
@@ -64,5 +72,9 @@ export class Room {
 
     getOtherPlayer(): Player | undefined {
         return this.otherPlayer;
+    }
+
+    isStarted(): boolean {
+        return this.started;
     }
 }

@@ -10,4 +10,5 @@ export class Room {
     readonly id: RoomId;
     readonly mainPlayer: Player;
     readonly otherPlayer: Player | undefined;
+    readonly started: boolean;
 }
