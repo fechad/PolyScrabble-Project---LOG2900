@@ -54,9 +54,10 @@ export class SocketManager {
 
         const rooms = this.io.of(/^\/rooms\/\d+$/);
         rooms.use((s, next) => {
-            const roomId = Number.parseInt(s.nsp.name.substring('/rooms/'.length));
-            const idx = this.rooms.findIndex(room => room.id === roomId);
-            if (idx === -1) {
+            const roomId = Number.parseInt(s.nsp.name.substring('/rooms/'.length), 10);
+            const idx = this.rooms.findIndex((room) => room.id === roomId);
+            const NOT_FOUND = -1;
+            if (idx === NOT_FOUND) {
                 next(Error('Invalid room number'));
                 return;
             }

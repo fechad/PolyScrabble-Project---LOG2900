@@ -31,6 +31,7 @@ describe('Game', () => {
         game.sendMessage(message);
         setTimeout(() => {
             assert(stub.calledWith(message));
+            // eslint-disable-next-line dot-notation
             assert(game['messages'][0] === message);
             done();
         }, RESPONSE_DELAY);
