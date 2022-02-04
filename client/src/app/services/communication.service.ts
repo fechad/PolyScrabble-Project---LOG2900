@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { EventEmitter } from 'events';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -57,6 +57,9 @@ export class CommunicationService {
         this.gameSocket?.emit('message', message);
     }
 
+    getId(): PlayerId | undefined {
+        return this.gameSocket?.id;
+    }
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 

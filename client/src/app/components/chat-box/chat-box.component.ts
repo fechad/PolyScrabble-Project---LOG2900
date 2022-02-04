@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { PlayerId } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
@@ -10,7 +11,10 @@ export class ChatBoxComponent implements OnInit {
     @ViewChild('scroll') private scroller: ElementRef;
     textValue: string = '';
     yourMessage: boolean = true;
-    constructor(public communicationService: CommunicationService) {}
+    myId: PlayerId | undefined;
+    constructor(public communicationService: CommunicationService) {
+        this.myId = this.communicationService.getId();
+    }
 
     ngOnInit(): void {}
 
