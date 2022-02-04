@@ -21,7 +21,7 @@ export class SocketManager {
     init(): void {
         this.io.on('connection', (socket) => {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
-
+            socket.emit('id', socket.id);
             // message initial
             socket.on('joinRoom', (id: RoomId, playerName: string) => {
                 const room = this.rooms.find((r) => r.id === id);

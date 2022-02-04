@@ -18,6 +18,7 @@ export class CommunicationService {
     readonly isCreator: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined as boolean | undefined);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
 
+    private anId: PlayerId | undefined;
     private readonly roomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
     private gameSocket: Socket | undefined = undefined;
@@ -27,6 +28,10 @@ export class CommunicationService {
         this.mainSocket.on('join', (room, token) => this.joinHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.roomsSocket.on('broadcastRooms', (rooms) => this.rooms.next(rooms));
+        this.mainSocket.on('id', (id: string) => {
+            console.log(id);
+            this.anId = id;
+        });
     }
 
     kick() {
@@ -57,8 +62,8 @@ export class CommunicationService {
         this.gameSocket?.emit('message', message);
     }
 
-    getId(): PlayerId | undefined {
-        return this.gameSocket?.id;
+    getId(): string | undefined {
+        return this.anId;
     }
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
@@ -129,6 +134,9 @@ export class CommunicationService {
         this.gameSocket.on('message', (messages: Message[]) => {
             console.log(messages);
             this.messages.next(messages);
+        });
+        this.gameSocket.on('id', (id: PlayerId) => {
+            this.anId = id;
         });
 
         this.isCreator.next(this.isCreator.value === true);
