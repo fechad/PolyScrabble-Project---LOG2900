@@ -17,11 +17,8 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
-<<<<<<< HEAD
-import { ButtonsOptionsComponent } from './components/buttons-options/buttons-options.component';
-=======
 import { CountdownModule } from 'ngx-countdown';
->>>>>>> 801488b... chrono fonctionnel
+import { ButtonsOptionsComponent } from './components/buttons-options/buttons-options.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
