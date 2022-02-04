@@ -1,4 +1,5 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import { CommunicationService } from '@app/services/communication.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 
 @Component({
@@ -8,18 +9,22 @@ import { SkipTurnService } from '@app/services/skip-turn.service';
 })
 export class ChatBoxComponent implements OnInit {
     @ViewChild('scroll') private scroller: ElementRef;
-    messages: string[] = [];
     textValue: string = '';
     yourMessage: boolean = true;
     syntaxIsValid: boolean = true;
     commandStructure: string[] = [];
-    constructor(private skipTurnService: SkipTurnService) {}
+    myId: string | undefined;
+    
+    constructor(public communicationService: CommunicationService, private skipTurnService: SkipTurnService) {
+        this.myId = this.communicationService.getId();
+        console.log(this.myId);
+    }
 
     ngOnInit(): void {}
 
     sendMessage() {
         if (this.validateSyntax()) {
-            this.messages.push(this.textValue);
+            this.communicationService.sendMessage(this.textValue);
             this.textValue = '';
             this.scrollToBottom();
             /* TODO: Send this message to server */

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { EventEmitter } from 'events';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
@@ -10,10 +12,13 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class CommunicationService {
+    readonly events: EventEmitter = new EventEmitter();
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly isCreator: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined as boolean | undefined);
+    readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
 
+    private anId: PlayerId | undefined;
     private readonly roomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
     private gameSocket: Socket | undefined = undefined;
@@ -23,8 +28,10 @@ export class CommunicationService {
         this.mainSocket.on('join', (room, token) => this.joinHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.roomsSocket.on('broadcastRooms', (rooms) => this.rooms.next(rooms));
-        (window as any)['communication'] = this; // TODO: wack
-        (window as any)['io'] = io; // TODO: wack
+        this.mainSocket.on('id', (id: string) => {
+            console.log(id);
+            this.anId = id;
+        });
     }
 
     kick() {
@@ -51,6 +58,13 @@ export class CommunicationService {
         }
     }
 
+    sendMessage(message: string) {
+        this.gameSocket?.emit('message', message);
+    }
+
+    getId(): string | undefined {
+        return this.anId;
+    }
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
@@ -116,6 +130,14 @@ export class CommunicationService {
         this.gameSocket.on('kick', () => this.leaveGame());
         this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
         this.gameSocket.on('error', (e) => this.handleError(e));
+        this.gameSocket.on('start', () => this.events.emit('start'));
+        this.gameSocket.on('message', (messages: Message[]) => {
+            console.log(messages);
+            this.messages.next(messages);
+        });
+        this.gameSocket.on('id', (id: PlayerId) => {
+            this.anId = id;
+        });
 
         this.isCreator.next(this.isCreator.value === true);
     }
