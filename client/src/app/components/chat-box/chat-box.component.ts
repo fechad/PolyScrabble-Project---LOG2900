@@ -32,9 +32,10 @@ export class ChatBoxComponent implements OnInit {
     validSyntax(): boolean {
         if (this.textValue.trim() === '') {
             return false;
-        } else {
-            return true;
+        } else if (this.textValue[0] == '!') {
+            this.guessCommand(this.textValue);
         }
+        return true;
     }
     systemError(error: string) {
         /* TODO: Envoi un message rétroactif dans la boite selon l'ereur*/
@@ -44,6 +45,7 @@ export class ChatBoxComponent implements OnInit {
         cas 3: Entrée invalide
         */
     }
+    guessCommand(text: string) {}
     placer(commande: string) {
         /* TODO: vérifie si la commande placer a la bonne synthaxe*/
     }
