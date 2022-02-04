@@ -1,6 +1,7 @@
+import { Message } from '@app/message';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
-import { Game, Message } from './game';
+import { Game } from './game';
 import { Parameters } from './parameters';
 import { Player } from './room';
 
@@ -26,7 +27,7 @@ describe('Game', () => {
 
     it('should get a message and broadcast it', (done) => {
         const stub = sinon.stub();
-        const message: Message = { text: 'test message', playerId: players[0].id };
+        const message: Message = { text: 'test message', emitter: players[0].id };
         game.eventEmitter.on('message', stub);
         game.sendMessage(message);
         setTimeout(() => {

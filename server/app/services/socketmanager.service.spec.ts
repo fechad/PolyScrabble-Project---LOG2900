@@ -139,5 +139,28 @@ describe('SocketManager service tests', () => {
         }, RESPONSE_DELAY);
     });
 
+    it('should create a game', (done) => {
+        const stub = sinon.stub();
+        const token: number = 0;
+        playersSocket[0].on('joinGame', stub);
+        const parameters = new Parameters();
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        setTimeout(() => {
+            const stub2 = sinon.stub();
+            playersSocket[1].on('join', stub2)
+            playersSocket[1].emit('joinRoom', 0);
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            roomSocket.on('joinGame', stub);
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+                roomSocket.emit('start');
+                setTimeout(() => {
+                    assert(stub.calledWith(0));
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
     // TODO add tests
 });
