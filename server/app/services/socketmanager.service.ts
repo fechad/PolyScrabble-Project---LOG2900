@@ -85,15 +85,7 @@ export class SocketManager {
 
             if (isMainPlayer) {
                 socket.on('kick', () => room.kickOtherPlayer());
-
-                socket.on('start', () => {
-                    if (room.hasOtherPlayer()) {
-                        console.log('start'); // TODO: create room
-                        rooms.to(`room-${room.id}`).emit('start');
-                    } else {
-                        socket.emit('error', 'No other player');
-                    }
-                });
+                socket.on('start', () => room.start());
             }
             socket.on('message', (message: string) => {
                 const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;

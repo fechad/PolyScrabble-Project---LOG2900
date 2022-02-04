@@ -3,7 +3,7 @@
 <div class="ring">
     <h1 id="txt">En attente...</h1>
     <div class="options">
-        <button class="start" [disabled]="(communicationService.selectedRoom | async)?.otherPlayer === undefined" (click)="start()">Démarrer</button>
-        <button class="reject" [disabled]="(communicationService.selectedRoom | async)?.otherPlayer === undefined" (click)="kick()">Rejeter</button>
+        <button class="start" [disabled]="!canControl" (click)="start()">Démarrer</button>
+        <button class="reject" [disabled]="!canControl" (click)="kick()">Rejeter</button>
     </div>
 </div>
