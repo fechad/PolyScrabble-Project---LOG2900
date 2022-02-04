@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300;400;500;600;700&display=swap');
+
+.container {
+    min-height: 100vh;
+    height: auto;
+    background-color: rgb(249, 246, 248);
+    width: 100%;
+}
+
+.title {
+    align-items: center;
+    vertical-align: middle;
+    text-align: center;
+    margin: 100px;
+    color: rgb(103, 11, 63);
+    font-family: 'Signika Negative';
+    font-size: 70px;
+    text-shadow: 2px 2px 0 red;
+}
+
+.apropos {
+    font-family: 'Signika Negative';
+    font-size: 30px;
+    width: max-content;
+    padding: 15px;
+}
+
+.justified {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button {
+    font-family: 'Signika Negative', sans-serif;
+    font-size: 30px;
+    margin: 10px;
+    text-align: center;
+    padding: 10px;
+    border-color: white;
+    border-radius: 5px;
+    transition: box-shadow 0.1s ease-in-out;
+    transition: transform 0.3s ease-in-out;
+}
+
+.button:hover {
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
+}
+
+.team-name {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    color: green;
+}
+
+.header-container {
+    height: 40px;
+}
+
+.header-item {
+    justify-content: center;
+    text-align: center;
+}
+
+.server-message {
+    margin: auto;
+    justify-content: center;
+    width: 20%;
+    min-width: min-content;
+}
+
+::ng-deep .mat-tooltip {
+    white-space: pre-line; // Allow line break
+}
+
+.material-icons {
+    color: black;
+    font-size: 36px;
+}
+
+// .material-icons:hover {
+//     font-size: 55px;
+//     transition: font-size 0.2s ease-in-out;
+//     cursor: pointer;
+// }

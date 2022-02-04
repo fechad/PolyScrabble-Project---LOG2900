@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="header-container">
+        <a routerLink="/home" class="home-button">
+            <i class="material-icons">home</i>
+        </a>
+    </div>
+
+    <div class="justified">
+        <h1 class="title">SCRABBLE</h1>
+        <h2 class="subtitle">Mode {{ state.mode }}</h2>
+        <app-buttons-options [donneesBoutons]="state.boutonModeChoisi"></app-buttons-options>
+    </div>
+</div>

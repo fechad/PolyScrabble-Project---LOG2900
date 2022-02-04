@@ -78,3 +78,28 @@ body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+.container {
+    display: flex;
+
+    flex-direction: column;
+}
+.infosArea {
+    margin-left: 30%;
+    margin-right: 30%;
+    display: flex;
+    justify-content: space-around;
+}
+.game-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 80vh;
+}
+.play-area-container {
+    height: 40vh;
+}
+.chatArea {
+    margin-right: 10vw;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
