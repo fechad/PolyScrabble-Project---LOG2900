@@ -57,21 +57,32 @@ export class ChatBoxComponent implements OnInit {
     placer(command: string) {
         /* TODO: vérifie si la commande placer a la bonne synthaxe*/
         this.commandStructure = command.split(' ');
-        if (this.commandStructure[-1].match(/[0-9]/g)) {
+        if (this.commandStructure[this.commandStructure.length - 1].match(/[0-9]/g) || this.commandStructure.length < 3) {
             this.syntaxIsValid = false;
-        } else if (this.commandStructure[0] === '!placer') {
-            if (
-                this.commandStructure[1][0].match(/[a-o]/g) &&
-                (this.commandStructure[1][1].match(/[0-9]/g) ||
-                    (this.commandStructure[1][1].match(/[1]/g) && this.commandStructure[1][2].match(/[0-4]/g))) &&
-                (this.commandStructure[1][2].match(/[hv]/g) ||
-                    (this.commandStructure[1][3].match(/[hv]/g) && this.commandStructure[2][-1].match(/[a-z]/g)))
-            ) {
-                this.syntaxIsValid = true;
+        } else if (
+            this.commandStructure[0] === '!placer' &&
+            this.commandStructure.length != 1 &&
+            this.commandStructure[2][this.commandStructure[2].length - 1].match(/[a-zA-Z]/g)
+        ) {
+            if (this.commandStructure[1].length === 3) {
+                if (this.commandStructure[1][0].match(/[a-o]/g) && this.commandStructure[1][1].match(/[0-9]/g)) {
+                    this.syntaxIsValid = true;
+                    console.log('entered');
+                }
+            } else if (this.commandStructure[1].length === 4) {
+                if (
+                    this.commandStructure[1][0].match(/[a-o]/g) &&
+                    this.commandStructure[1][1].match(/[1]/g) &&
+                    this.commandStructure[1][2].match(/[0-4]/g)
+                    /*(this.commandStructure[1][3].match(/[hv]/g))*/
+                ) {
+                    this.syntaxIsValid = true;
+                    console.log('entered');
+                }
+            } else {
+                this.syntaxIsValid = false;
             }
         }
-
-        console.log(command);
     }
     echanger(command: string) {
         this.commandStructure = command.split(' ');
