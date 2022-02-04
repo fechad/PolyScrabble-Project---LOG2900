@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import { SkipTurnService } from '@app/services/skip-turn.service';
 
 @Component({
     selector: 'app-chat-box',
@@ -10,7 +11,8 @@ export class ChatBoxComponent implements OnInit {
     messages: string[] = [];
     textValue: string = '';
     yourMessage: boolean = true;
-    constructor() {}
+    syntaxIsValid: boolean = true;
+    constructor(private skipTurnService: SkipTurnService) {}
 
     ngOnInit(): void {}
 
@@ -35,7 +37,7 @@ export class ChatBoxComponent implements OnInit {
         } else if (this.textValue[0] == '!') {
             this.guessCommand(this.textValue);
         }
-        return true;
+        return this.syntaxIsValid;
     }
     systemError(error: string) {
         /* TODO: Envoi un message rétroactif dans la boite selon l'ereur*/
@@ -45,12 +47,25 @@ export class ChatBoxComponent implements OnInit {
         cas 3: Entrée invalide
         */
     }
-    guessCommand(text: string) {}
+    guessCommand(text: string) {
+        if (text.includes('placer')) this.placer(text);
+        if (text.includes('échanger')) this.echanger(text);
+        if (text.includes('passer')) this.passer(text);
+    }
     placer(commande: string) {
         /* TODO: vérifie si la commande placer a la bonne synthaxe*/
+        console.log(commande);
     }
     echanger(commande: string) {
         /* TODO: vérifie si la commande echanger a la bonne synthaxe*/
+        console.log(commande);
     }
-    passer(commande: string) {}
+    passer(commande: string) {
+        this.skipTurnService.skipTurn();
+        console.log(commande);
+        this.syntaxIsValid = false;
+    }
 }
+Injector.create({
+    providers: [{ provide: ChatBoxComponent, deps: [SkipTurnService] }],
+});
