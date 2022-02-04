@@ -65,6 +65,7 @@ export class SocketManager {
                         namespaceSocket.on('start', () => {
                             if (room.hasOtherPlayer()) {
                                 console.log('start'); // TODO
+                                namespace.emit('start');
                             } else {
                                 namespaceSocket.emit('error', 'No other player');
                             }

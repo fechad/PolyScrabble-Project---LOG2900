@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Parameters } from '@app/classes/parameters';
 import { Room, RoomId } from '@app/classes/room';
+import { EventEmitter } from 'events';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
@@ -10,6 +11,7 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class CommunicationService {
+    readonly events: EventEmitter = new EventEmitter();
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly isCreator: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined as boolean | undefined);
@@ -23,8 +25,6 @@ export class CommunicationService {
         this.mainSocket.on('join', (room, token) => this.joinHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.roomsSocket.on('broadcastRooms', (rooms) => this.rooms.next(rooms));
-        (window as any)['communication'] = this; // TODO: wack
-        (window as any)['io'] = io; // TODO: wack
     }
 
     kick() {
@@ -116,6 +116,7 @@ export class CommunicationService {
         this.gameSocket.on('kick', () => this.leaveGame());
         this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
         this.gameSocket.on('error', (e) => this.handleError(e));
+        this.gameSocket.on('start', () => this.events.emit('start'));
 
         this.isCreator.next(this.isCreator.value === true);
     }
