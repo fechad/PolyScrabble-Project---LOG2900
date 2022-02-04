@@ -12,6 +12,7 @@ export class ChatBoxComponent implements OnInit {
     textValue: string = '';
     yourMessage: boolean = true;
     syntaxIsValid: boolean = true;
+    commandStructure: string[] = [];
     constructor(private skipTurnService: SkipTurnService) {}
 
     ngOnInit(): void {}
@@ -52,18 +53,32 @@ export class ChatBoxComponent implements OnInit {
         if (text.includes('échanger')) this.echanger(text);
         if (text.includes('passer')) this.passer(text);
     }
-    placer(commande: string) {
+    placer(command: string) {
         /* TODO: vérifie si la commande placer a la bonne synthaxe*/
-        console.log(commande);
+        console.log(command);
     }
-    echanger(commande: string) {
+    echanger(command: string) {
         /* TODO: vérifie si la commande echanger a la bonne synthaxe*/
-        console.log(commande);
+        this.commandStructure = command.split(' ');
+        if (this.commandStructure[1].match(/[A-Z0-9]/g)) {
+            this.syntaxIsValid = false;
+        } else if (this.commandStructure.length > 1) {
+            if (
+                this.commandStructure[0] === '!échanger' &&
+                (this.commandStructure[1].match(/[^A-Z^0-9]/g) || this.commandStructure[1].includes('*'))
+            ) {
+                this.syntaxIsValid = true;
+                console.log(this.commandStructure);
+            }
+        } else {
+            this.syntaxIsValid = false;
+        }
     }
-    passer(commande: string) {
-        this.skipTurnService.skipTurn();
-        console.log(commande);
-        this.syntaxIsValid = false;
+    passer(command: string) {
+        if (command === '!passer') {
+            this.skipTurnService.skipTurn();
+            this.syntaxIsValid = false;
+        }
     }
 }
 Injector.create({
