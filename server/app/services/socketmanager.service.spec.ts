@@ -1,5 +1,6 @@
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
+import { Message } from '@app/message';
 import { Server } from 'app/server';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
@@ -7,7 +8,7 @@ import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketManager } from './socketmanager.service';
 
-const RESPONSE_DELAY = 400;
+const RESPONSE_DELAY = 800;
 
 describe('SocketManager service tests', () => {
     let service: SocketManager;
@@ -148,7 +149,7 @@ describe('SocketManager service tests', () => {
         setTimeout(() => {
             const stub2 = sinon.stub();
             playersSocket[1].on('join', stub2)
-            playersSocket[1].emit('joinRoom', 0);
+            playersSocket[1].emit('joinRoom', 0, 'NotDummy');
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             roomSocket.on('joinGame', stub);
             setTimeout(() => {
@@ -156,11 +157,155 @@ describe('SocketManager service tests', () => {
                 roomSocket.emit('start');
                 setTimeout(() => {
                     assert(stub.calledWith(0));
+                    roomSocket.close();
                     done();
                 }, RESPONSE_DELAY);
             }, RESPONSE_DELAY);
         }, RESPONSE_DELAY);
     });
+
+    it('should send and receive a message in game', (done) => {
+        const token: number = 0;
+        const parameters = new Parameters();
+        const message: Message = {text:'this is a test message', emitter:'0'};
+
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        const stub = sinon.stub();
+        playersSocket[1].on('join', stub)
+        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        setTimeout(() => {
+            assert(stub.calledWith(0));
+
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            const stub2 = sinon.stub();
+            roomSocket.on('joinGame', stub2);
+            roomSocket.emit('start');
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+
+                const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
+                const stub3 = sinon.stub();
+                gameSocket.on('message', stub3);
+                gameSocket.emit('message', message);
+                setTimeout(() => {
+                    assert(stub3.calledWith(message));
+                    assert(service['games'][0]['messages'][0].text === message.text);
+                    assert(service['games'][0]['messages'][0].emitter === message.emitter);
+                    
+                    roomSocket.close();
+                    gameSocket.close();
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should get parameters', (done) => {
+        const token: number = 0;
+        const parameters = new Parameters();
+        const parametersSerialized = JSON.parse(JSON.stringify(parameters));
+        
+
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        const stub = sinon.stub();
+        playersSocket[1].on('join', stub)
+        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        setTimeout(() => {
+            assert(stub.calledWith(0));
+
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            const stub2 = sinon.stub();
+            roomSocket.on('joinGame', stub2);
+            roomSocket.emit('start');
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+
+                const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
+                const stub3 = sinon.stub();
+                gameSocket.on('parameters', stub3);
+                gameSocket.emit('parameters');
+                setTimeout(() => {
+                    assert(stub3.calledWith(parametersSerialized));
+                    
+                    roomSocket.close();
+                    gameSocket.close();
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should skip turn', (done) => {
+        const token: number = 0;
+        const parameters = new Parameters();
+
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        const stub = sinon.stub();
+        playersSocket[1].on('join', stub)
+        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        setTimeout(() => {
+            assert(stub.calledWith(0));
+
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            const stub2 = sinon.stub();
+            roomSocket.on('joinGame', stub2);
+            roomSocket.emit('start');
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+
+                const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
+                const stub3 = sinon.stub();
+                gameSocket.on('turn', stub3);
+                gameSocket.emit('skipTurn', service['games'][0]['players'][0].id);
+                setTimeout(() => {
+                    assert(!service['games'][0]['isPlayer0Turn']);
+                    assert(stub3.calledWith(false));
+
+                    roomSocket.close();
+                    gameSocket.close();
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should send an error on wrong player skipping turn', (done) => {
+        const token: number = 0;
+        const parameters = new Parameters();
+
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        const stub = sinon.stub();
+        playersSocket[1].on('join', stub)
+        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        setTimeout(() => {
+            assert(stub.calledWith(0));
+
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            const stub2 = sinon.stub();
+            roomSocket.on('joinGame', stub2);
+            roomSocket.emit('start');
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+
+                const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
+                const stub3 = sinon.stub();
+                const stub4 = sinon.stub()
+                gameSocket.on('gameError', stub3);
+                gameSocket.on('turn', stub4);
+                gameSocket.emit('skipTurn', service['games'][0]['players'][1].id);
+                setTimeout(() => {
+                    assert(service['games'][0]['isPlayer0Turn']);
+                    assert(stub4.notCalled);
+                    assert(stub3.calledWith('Ce n\'est pas votre tour'));
+
+                    roomSocket.close();
+                    gameSocket.close();
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
 
     // TODO add tests
 });

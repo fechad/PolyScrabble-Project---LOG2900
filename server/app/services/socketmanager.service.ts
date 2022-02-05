@@ -95,6 +95,8 @@ export class SocketManager {
                     rooms.to(`room-${room.id}`).emit('joinGame', game.gameId);
                 });
             }
+
+            //ne plus utiliser, envoyer messages par la game
             socket.on('message', (message: string) => {
                 const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
                 if (playerId === undefined) throw new Error('Undefined player tried to send a message');
@@ -117,10 +119,7 @@ export class SocketManager {
 
         const waitingRoom = this.io.of('/waitingRoom');
         waitingRoom.on('connect', (socket) => {
-            socket.emit(
-                'broadcastRooms',
-                this.rooms.filter((room) => !room.hasOtherPlayer()),
-            );
+            socket.emit('broadcastRooms', this.rooms.filter((room) => !room.hasOtherPlayer()));
         });
         setInterval(() => {
             const newRooms = this.rooms.filter((room) => !room.hasOtherPlayer());
@@ -151,16 +150,26 @@ export class SocketManager {
                 next(Error('Invalid token for game'));
             }
         });
-        games.on('connectGame', (socket) => {
+        games.on('connect', (socket) => {
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
+            console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
             
-            socket.on('message', (message: Message) => game.sendMessage(message));
-            socket.on('skipTurn', (playerId: PlayerId) => {
-                const error = game.skipTurn(playerId);
-                if(error !== undefined){
-                    games.to(`game-${game.gameId}`).emit('gameError', playerId, error.message);
-                }
+            socket.on('message', (message: Message) => game.message(message));
+            socket.on('skipTurn', (playerId: PlayerId) => game.skipTurn(playerId));
+            socket.on('parameters', () => game.getParameters());
+
+            game.eventEmitter.on('message', (message) => {
+                games.to(`game-${game.gameId}`).emit('message', message);
+            });
+            game.eventEmitter.on('turn', (isPlayer0Turn: boolean) => {
+                games.to(`game-${game.gameId}`).emit('turn', isPlayer0Turn);
+            });
+            game.eventEmitter.on('parameters', (parameters) => {
+                games.to(`game-${game.gameId}`).emit('parameters', parameters);
+            });
+            game.eventEmitter.on('gameError', (gameError: Error) => {
+                games.to(`game-${game.gameId}`).emit('gameError', gameError.message);
             });
         });
 
