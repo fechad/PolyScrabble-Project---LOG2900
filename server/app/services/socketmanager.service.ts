@@ -87,11 +87,11 @@ export class SocketManager {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => room.start());
             }
-            socket.on('message', (message: string) => {
+            socket.on('message', (message: string, no: number) => {
                 const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
                 if (playerId === undefined) throw new Error('Undefined player tried to send a message');
                 messages.push({ emitter: playerId, text: message });
-                rooms.to(`room-${room.id}`).emit('message', messages);
+                rooms.to(`room-${room.id}`).emit('message', messages[messages.length - 1], no, playerId);
             });
 
             socket.on('disconnect', () => {

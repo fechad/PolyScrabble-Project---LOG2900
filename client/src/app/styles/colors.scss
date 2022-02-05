@@ -1,0 +1,6 @@
+$primary: #E1AC01;
+$accent: #0B5092;
+$secondary: #E18601;
+
+$bkg: darken(desaturate($primary, 70%), 35%);
+$text: lighten(desaturate($primary, 70%), 35%);

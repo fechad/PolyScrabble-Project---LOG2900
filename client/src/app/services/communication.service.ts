@@ -13,13 +13,15 @@ import { environment } from 'src/environments/environment';
 export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
-    readonly isCreator: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined as boolean | undefined);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
+    readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
 
-    private anId: PlayerId | undefined;
+    private myId: PlayerId | undefined;
     private readonly roomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
     private gameSocket: Socket | undefined = undefined;
+
+    private msgCount: number = 0;
 
     constructor() {
         this.listenRooms();
@@ -27,13 +29,16 @@ export class CommunicationService {
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.roomsSocket.on('broadcastRooms', (rooms) => this.rooms.next(rooms));
         this.mainSocket.on('id', (id: string) => {
-            console.log(id);
-            this.anId = id;
+            this.myId = id;
         });
     }
 
+    isMainPlayer() {
+        return this.selectedRoom.value?.mainPlayer.id === this.myId;
+    }
+
     kick() {
-        if (this.selectedRoom.value !== undefined && this.isCreator.value) {
+        if (this.isMainPlayer()) {
             this.gameSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
@@ -49,28 +54,34 @@ export class CommunicationService {
     }
 
     start() {
-        if (this.selectedRoom.value !== undefined && this.isCreator.value) {
+        if (this.isMainPlayer()) {
             this.gameSocket?.emit('start');
         } else {
             throw new Error('Tried to start when not room creator');
         }
     }
 
-    sendMessage(message: string) {
-        this.gameSocket?.emit('message', message);
+    sendLocalMessage(message: string) {
+        this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);
     }
 
-    getId(): string | undefined {
-        return this.anId;
+    sendMessage(message: string) {
+        this.gameSocket?.emit('message', message, this.msgCount++);
+        this.tempMessages.next([...this.tempMessages.value, message]);
     }
+
+    getId(): PlayerId | undefined {
+        return this.myId;
+    }
+
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
         this.mainSocket.emit('joinRoom', roomId, playerName);
-        await this.waitForRoom(false);
+        await this.waitForRoom();
     }
 
-    async waitForRoom(creator: boolean) {
+    async waitForRoom() {
         await new Promise((resolve, reject) => {
             let ended = false;
             this.mainSocket.once('join', () => {
@@ -86,7 +97,6 @@ export class CommunicationService {
                 }
             });
         });
-        this.isCreator.next(creator);
         await this.selectedRoom.pipe(take(2)).toPromise();
     }
 
@@ -94,7 +104,7 @@ export class CommunicationService {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
         this.mainSocket.emit('createRoom', playerName, parameters);
-        await this.waitForRoom(true);
+        await this.waitForRoom();
     }
 
     async listenRooms() {
@@ -128,14 +138,15 @@ export class CommunicationService {
         this.gameSocket.on('kick', () => this.leaveGame());
         this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
         this.gameSocket.on('error', (e) => this.handleError(e));
-        this.gameSocket.on('message', (messages: Message[]) => {
-            console.log(messages);
-            this.messages.next(messages);
+        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
+            this.messages.next([...this.messages.value, message]);
+            if (this.msgCount < msgCount && id === this.myId) {
+                this.tempMessages.value.splice(0, msgCount - this.msgCount);
+                this.msgCount = msgCount;
+            }
         });
         this.gameSocket.on('id', (id: PlayerId) => {
-            this.anId = id;
+            this.myId = id;
         });
-
-        this.isCreator.next(this.isCreator.value === true);
     }
 }
