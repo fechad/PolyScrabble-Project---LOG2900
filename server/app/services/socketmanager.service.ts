@@ -101,7 +101,7 @@ export class SocketManager {
                 const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
                 if (playerId === undefined) throw new Error('Undefined player tried to send a message');
                 messages.push({ emitter: playerId, text: message });
-                rooms.to(`room-${room.id}`).emit('message', messages);
+                rooms.to(`room-${room.id}`).emit('message', messages[messages.length - 1], playerId);
             });
 
             socket.on('disconnect', () => {
