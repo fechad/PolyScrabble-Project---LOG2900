@@ -1,2 +1,13 @@
+@import '../../styles/menus.scss';
+@import '../../styles/colors.scss';
 
-
+.apropos {
+    position: absolute;
+    bottom: 1em;
+    left: 50%;
+    transform: translate(-50%); // fix centering
+    font-size: 1.4em;
+    line-height: 1em;
+    color: $grey-1;
+    text-transform: uppercase;
+}

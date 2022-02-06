@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container main-container">
     <div class="header-container">
         <div
             class="apropos"
@@ -8,16 +8,23 @@
                 Xavier L'Heureux&#13;
                 Justin St-Arnaud&#13;
                 Francois Tourigny"
-            matTooltipPosition="left"
-            matTooltipClass="authors"
+            matTooltipPosition="above"
         >
             Auteurs
-            <span class="material-icons">groups</span>
         </div>
     </div>
 
-    <div class="justified">
-        <h1 class="title">SCRABBLE</h1>
-        <app-buttons-options [donneesBoutons]="state.boutonMainPage"></app-buttons-options>
+    <div class="vertical">
+        <img class="logo" src="assets/logo.svg" alt="Scrabble">
+        <button
+            mat-raised-button
+            *ngFor="let champ of boutonMainPage"
+            class="button"
+            matTooltip="{{ champ.toolTip }}"
+            matTooltipPosition="right"
+            routerLink="{{ champ.route }}"
+        >
+            {{ champ.texte }}
+        </button>
     </div>
 </div>

@@ -1,9 +1,9 @@
+import { Location } from "@angular/common";
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Room } from '@app/classes/room';
 import { JoinSetupDialogComponent } from '@app/components/join-setup-dialog/join-setup-dialog.component';
 import { CommunicationService } from '@app/services/communication.service';
-import { MenusStatesService } from '@app/services/menus-states.service';
 
 @Component({
     selector: 'app-joining-room-page',
@@ -11,7 +11,7 @@ import { MenusStatesService } from '@app/services/menus-states.service';
     styleUrls: ['./joining-room-page.component.scss'],
 })
 export class JoiningRoomPageComponent {
-    constructor(public dialog: MatDialog, public state: MenusStatesService, public communicationService: CommunicationService) {}
+    constructor(public dialog: MatDialog, public communicationService: CommunicationService, public location: Location) {}
 
     openDialog(room: Room) {
         this.dialog.open(JoinSetupDialogComponent, {
