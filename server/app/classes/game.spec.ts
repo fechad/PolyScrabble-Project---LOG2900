@@ -1,6 +1,7 @@
+import { Message } from '@app/message';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
-import { Game, Message } from './game';
+import { Game } from './game';
 import { Parameters } from './parameters';
 import { Player } from './room';
 
@@ -10,6 +11,7 @@ describe('Game', () => {
     let players: Player[];
     let parameters: Parameters;
     let game: Game;
+    let stubError: sinon.SinonStub;
 
     beforeEach(async () => {
         players = [
@@ -18,6 +20,8 @@ describe('Game', () => {
         ];
         parameters = new Parameters();
         game = new Game(0, players, parameters);
+        stubError = sinon.stub();
+        game.eventEmitter.on('gameError', stubError);
     });
 
     afterEach(() => {
@@ -26,9 +30,9 @@ describe('Game', () => {
 
     it('should get a message and broadcast it', (done) => {
         const stub = sinon.stub();
-        const message: Message = { text: 'test message', playerId: players[0].id };
+        const message: Message = { text: 'test message', emitter: '0' };
         game.eventEmitter.on('message', stub);
-        game.sendMessage(message);
+        game.message(message);
         setTimeout(() => {
             assert(stub.calledWith(message));
             // eslint-disable-next-line dot-notation
@@ -45,5 +49,23 @@ describe('Game', () => {
             assert(stub.calledWith(parameters));
             done();
         }, RESPONSE_DELAY);
+    });
+
+    it('should skip turn', (done) => {
+        assert(game['isPlayer0Turn']);
+        game.skipTurn(game['players'][0].id);
+        assert(!game['isPlayer0Turn']);
+        game.skipTurn(game['players'][1].id);
+        assert(game['isPlayer0Turn']);
+        assert(stubError.notCalled);
+        done();
+    });
+
+    it('should not skip turn if it is not your turn', (done) => {
+        assert(game['isPlayer0Turn']);
+        game.skipTurn(game['players'][1].id);
+        assert(game['isPlayer0Turn']);
+        assert(stubError.called);
+        done();
     });
 });
