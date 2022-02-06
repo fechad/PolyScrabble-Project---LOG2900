@@ -156,11 +156,19 @@ export class SocketManager {
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
             
             socket.on('message', (message: Message) => game.message(message));
+            socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
+            socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
             socket.on('skipTurn', (playerId: PlayerId) => game.skipTurn(playerId));
             socket.on('parameters', () => game.getParameters());
 
             game.eventEmitter.on('message', (message) => {
                 games.to(`game-${game.gameId}`).emit('message', message);
+            });
+            game.eventEmitter.on('rack', (letters: string, playerId: PlayerId) => {
+                games.to(`game-${game.gameId}`).emit('rack', letters, playerId);
+            });
+            game.eventEmitter.on('placed', (letters: string, position: string, points:number, playerId: PlayerId) => {
+                games.to(`game-${game.gameId}`).emit('placed', letters, position, points, playerId);
             });
             game.eventEmitter.on('turn', (isPlayer0Turn: boolean) => {
                 games.to(`game-${game.gameId}`).emit('turn', isPlayer0Turn);
@@ -168,8 +176,8 @@ export class SocketManager {
             game.eventEmitter.on('parameters', (parameters) => {
                 games.to(`game-${game.gameId}`).emit('parameters', parameters);
             });
-            game.eventEmitter.on('gameError', (gameError: Error) => {
-                games.to(`game-${game.gameId}`).emit('gameError', gameError.message);
+            game.eventEmitter.on('game-error', (gameError: Error) => {
+                games.to(`game-${game.gameId}`).emit('game-error', gameError.message);
             });
         });
 

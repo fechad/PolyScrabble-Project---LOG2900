@@ -122,6 +122,41 @@ describe('Room', () => {
         done();
     });
 
+    it('should start a game', (done) => {
+        const stub = sinon.stub();
+        room.events.on('updateRoom', stub);
+
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.start();
+        assert(stub.called);
+        assert(room['started']);
+        done();
+    });
+
+    it('should not start a game with only 1 player', (done) => {
+        const stub = sinon.stub();
+        room.events.on('updateRoom', stub);
+
+        room.start();
+        assert(stub.notCalled);
+        assert(!room['started']);
+        done();
+    });
+
+    it('should return if game is started', (done)=>{
+        assert(!room['started']);
+        assert(!room.isStarted());
+
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
+        expect(result).to.be.undefined;
+        room.start();
+        
+        assert(room['started']);
+        assert(room.isStarted());
+        done();
+    });
+
     it('should let someone else join after someone else quit', (done) => {
         const stub = sinon.stub();
         room.events.on('updateRoom', stub);
