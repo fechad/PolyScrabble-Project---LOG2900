@@ -18,12 +18,17 @@ export class GamePageComponent {
     faSignOutAlt = faSignOutAlt;
     faAngleDoubleRight = faAngleDoubleRight;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
+<<<<<<< HEAD
     constructor(
         private router: Router,
         public gridService: GridService,
         public gameContextService: GameContextService,
         public communicationService: CommunicationService,
     ) {}
+=======
+
+    constructor(private router: Router, public gridService: GridService, private skipTurn: SkipTurnService) {}
+>>>>>>> 5ed970e (restructuration des communications)
 
     quitGame() {
         this.router.navigateByUrl('http://localhost:4200/#/home');
