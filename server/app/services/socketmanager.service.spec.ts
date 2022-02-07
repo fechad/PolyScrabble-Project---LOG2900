@@ -290,13 +290,85 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 const stub4 = sinon.stub()
-                gameSocket.on('gameError', stub3);
+                gameSocket.on('game-error', stub3);
                 gameSocket.on('turn', stub4);
                 gameSocket.emit('skipTurn', service['games'][0]['players'][1].id);
                 setTimeout(() => {
                     assert(service['games'][0]['isPlayer0Turn']);
                     assert(stub4.notCalled);
                     assert(stub3.calledWith('Ce n\'est pas votre tour'));
+
+                    roomSocket.close();
+                    gameSocket.close();
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should change letters', (done) => {
+        const token: number = 0;
+        const letters: string = 'abcd';
+        const parameters = new Parameters();
+
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        const stub = sinon.stub();
+        playersSocket[1].on('join', stub)
+        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        setTimeout(() => {
+            assert(stub.calledWith(0));
+
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            const stub2 = sinon.stub();
+            roomSocket.on('joinGame', stub2);
+            roomSocket.emit('start');
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+
+                const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
+                const stub3 = sinon.stub();
+                gameSocket.on('rack', stub3);
+                gameSocket.emit('change-letters', letters, service['games'][0]['players'][0].id);
+                setTimeout(() => {
+                    //TODO: adapter avec integration service
+                    assert(stub3.calledWith(letters, service['games'][0]['players'][0].id));
+
+                    roomSocket.close();
+                    gameSocket.close();
+                    done();
+                }, RESPONSE_DELAY);
+            }, RESPONSE_DELAY);
+        }, RESPONSE_DELAY);
+    });
+
+    it('should place letters', (done) => {
+        const token: number = 0;
+        const letters: string = 'abcd';
+        const position: string = 'c8h';
+        const expectedPoints = 26;
+        const parameters = new Parameters();
+
+        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        const stub = sinon.stub();
+        playersSocket[1].on('join', stub)
+        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        setTimeout(() => {
+            assert(stub.calledWith(0));
+
+            const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
+            const stub2 = sinon.stub();
+            roomSocket.on('joinGame', stub2);
+            roomSocket.emit('start');
+            setTimeout(() => {
+                assert(stub2.calledWith(0));
+
+                const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
+                const stub3 = sinon.stub();
+                gameSocket.on('placed', stub3);
+                gameSocket.emit('place-letters', letters, position, service['games'][0]['players'][0].id);
+                setTimeout(() => {
+                    //TODO: adapter avec integration validation mots et calcul de points
+                    assert(stub3.calledWith(letters, position, expectedPoints, service['games'][0]['players'][0].id));
 
                     roomSocket.close();
                     gameSocket.close();
