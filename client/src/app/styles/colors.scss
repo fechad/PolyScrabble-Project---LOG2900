@@ -4,3 +4,5 @@ $secondary: #E18601;
 
 $bkg: darken(desaturate($primary, 70%), 35%);
 $text: lighten(desaturate($primary, 70%), 35%);
+
+$grey-1: lighten(desaturate($primary, 70%), 20%)

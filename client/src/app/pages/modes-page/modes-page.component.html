@@ -1,13 +1,17 @@
-<div class="container">
-    <div class="header-container">
-        <a routerLink="/home" class="home-button">
-            <i class="material-icons">home</i>
-        </a>
-    </div>
-
-    <div class="justified">
-        <h1 class="title">SCRABBLE</h1>
-        <h2 class="subtitle">Mode {{ state.mode }}</h2>
-        <app-buttons-options [donneesBoutons]="state.boutonModeChoisi"></app-buttons-options>
+<div class="container main-container">
+    <div class="vertical">
+        <img class="logo" src="assets/logo.svg" alt="Scrabble">
+        <h2 class="subtitle">Mode {{ route.snapshot.url[0] }}</h2>
+        <button
+            mat-raised-button
+            class="button"
+            *ngFor="let champ of boutons"
+            (click)="champ.promptsDialog && openDialog()"
+            routerLink="{{ champ.promptsDialog ? undefined : champ.route }}"
+            matTooltip="{{ champ.toolTip }}"
+            matTooltipPosition="right"
+        >
+            {{ champ.texte }}
+        </button>
     </div>
 </div>

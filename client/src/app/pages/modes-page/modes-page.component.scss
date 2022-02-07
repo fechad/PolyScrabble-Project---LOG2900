@@ -1,0 +1,9 @@
+@import '../../styles/colors.scss';
+@import '../../styles/menus.scss';
+
+.subtitle {
+    color: $primary;
+    font-size: 2em;
+    text-align: right;
+    margin-top: -2em;
+}

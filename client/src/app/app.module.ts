@@ -14,11 +14,9 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteui-angular';
 import { CountdownModule } from 'ngx-countdown';
-import { ButtonsOptionsComponent } from './components/buttons-options/buttons-options.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
@@ -41,7 +39,6 @@ import { CommunicationService } from './services/communication.service';
         AppComponent,
         GamePageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
         WaitingRoomPageComponent,
@@ -53,7 +50,6 @@ import { CommunicationService } from './services/communication.service';
         InfosBoxComponent,
         SingleLetterComponent,
         ModesPageComponent,
-        ButtonsOptionsComponent,
     ],
     imports: [
         AppMaterialModule,
