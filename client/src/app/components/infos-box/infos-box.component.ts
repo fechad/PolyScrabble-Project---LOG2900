@@ -2,7 +2,6 @@ import { AfterViewInit, Component, Injectable, Injector, ViewChild } from '@angu
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
-
 @Component({
     selector: 'app-infos-box',
     templateUrl: './infos-box.component.html',

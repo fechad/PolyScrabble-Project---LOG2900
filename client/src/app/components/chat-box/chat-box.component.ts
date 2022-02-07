@@ -40,6 +40,7 @@ export class ChatBoxComponent implements OnInit {
                 const error = this.validateCommand();
                 if (error !== undefined) {
                     console.log(error.message); // TODO: push dans le chat-box locale
+                    this.communicationService.sendLocalMessage(error.message);
                 }
             } else {
                 this.communicationService.sendMessage(this.textValue);
