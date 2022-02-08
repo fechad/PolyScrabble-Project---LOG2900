@@ -36,6 +36,20 @@ describe('Game Tile', () => {
         done();
     });
 
+    it('should get the char of the letter', (done) => {
+        assert(gameTile['letter'] === undefined);
+        assert(gameTile.empty);
+        let char = gameTile.getChar();
+        assert(char === '!');
+        gameTile.setLetter('a');
+        assert(gameTile['letter'] === 'a');
+        assert(gameTile['letterValue'] === 1);
+        assert(!gameTile.empty);
+        char = gameTile.getChar();
+        assert(char === 'a');
+        done();
+    });
+
     it('should not set something else then a letter as letter', (done) => {
         gameTile.setLetter('4');
         assert(gameTile['letter'] === undefined);

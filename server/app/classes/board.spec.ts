@@ -91,6 +91,18 @@ describe('Board', () => {
         done();
     });
 
+    it('should validate valid positions', (done) => {
+        let positionArray = ['g', '12', 'h'];
+        let result = board['validatePositionSyntax'](positionArray);
+        assert(result);
+
+        positionArray = ['c', '9', 'v'];
+        result = board['validatePositionSyntax'](positionArray);
+        assert(result);
+        done();
+    });
+
+
     it('should not let positions out of bound or invalid orientation in the string', (done) => {
         let positionArray = ['v', '12', 'h'];
         let result = board['validatePositionSyntax'](positionArray);
@@ -131,6 +143,22 @@ describe('Board', () => {
         positionArray = ['n', '9', 'v'];
         result = board['isWordInBound'](word.length, positionArray);
         assert(!result);
+
+
+        positionArray = ['d', '12', 'h'];
+        result = board['isWordInBound'](word.length, positionArray);
+        assert(result);
+        board['board'][3][12].setLetter('a');
+        result = board['isWordInBound'](word.length, positionArray);
+        assert(!result);
+
+        positionArray = ['k', '10', 'v'];
+        result = board['isWordInBound'](word.length, positionArray);
+        assert(result);
+        board['board'][11][9].setLetter('a');
+        board['board'][13][9].setLetter('t');
+        result = board['isWordInBound'](word.length, positionArray);
+        assert(!result);
         done();
     });
 
@@ -150,6 +178,15 @@ describe('Board', () => {
         done();
     });
 
+    it('should let not first word not touch the star', (done) => {
+        let word = 'test';
+        let positionArray = ['m', '5', 'h'];
+        board['board'][7][7].setLetter('a');
+        let result = board['firstWordValidation'](word.length, positionArray);
+        assert(result);
+        done();
+    });
+
     it('should not let a placement not on the star for first word', (done) => {
         let word = 'test';
         let positionArray = ['i', '6', 'h'];
@@ -165,7 +202,6 @@ describe('Board', () => {
         assert(!result);
         done();
     });
-    //TODO: verify star placement after words on the board
 
     it('should get an empty array for no contact except first word', (done) => {
         let word = 'test';
@@ -194,8 +230,97 @@ describe('Board', () => {
         assert(contacts.length === 2);
         assert(contacts[0][0] === 8);
         assert(contacts[0][1] === 6);
+        assert(contacts[0][2] === 1);
+        
         assert(contacts[1][0] === 8);
         assert(contacts[1][1] === 7);
+        assert(contacts[1][2] === 2);
+
+        board['board'][8][6].setLetter('i');
+
+        positionArray = ['i', '6', 'h'];
+        contacts = board['getContacts'](word.length, positionArray);
+        assert(contacts.length === 2);
+        assert(contacts[0][0] === 8);
+        assert(contacts[0][1] === 6);
+        assert(contacts[0][2] === -1);
+
+        assert(contacts[1][0] === 8);
+        assert(contacts[1][1] === 7);
+        assert(contacts[1][2] === 1);
+
+
+        positionArray = ['e', '7', 'v'];
+        contacts = board['getContacts'](word.length, positionArray);
+        assert(contacts.length === 2);
+        assert(contacts[0][0] === 7);
+        assert(contacts[0][1] === 6);
+        assert(contacts[0][2] === -1);
+
+        assert(contacts[1][0] === 8);
+        assert(contacts[1][1] === 6);
+        assert(contacts[1][2] === -1);
+        done();
+    });
+
+    it('should get the attempted word', (done) => {
+        let word = 'test';
+        let positionArray = ['e', '6', 'h'];
+        let contacts = [[-1]];
+        let words = board['getWords'](word, positionArray, contacts);
+        assert(words.length === 1);
+        assert(words[0] === word);
+
+        positionArray = ['e', '8', 'v'];
+        contacts = [[-1]];
+        words = board['getWords'](word, positionArray, contacts);
+        assert(words.length === 1);
+        assert(words[0] === word);
+
+
+        board['board'][7][7].setLetter('a');
+        let expectedWord = 'teast';
+        positionArray = ['h', '6', 'h'];
+        contacts = [[-1]];
+        words = board['getWords'](word, positionArray, contacts);
+        assert(words.length === 1);
+        assert(words[0] === expectedWord);
+
+        expectedWord = 'tesat';
+        positionArray = ['e', '8', 'v'];
+        contacts = [[-1]];
+        words = board['getWords'](word, positionArray, contacts);
+        assert(words.length === 1);
+        assert(words[0] === expectedWord);
+        done();
+    });
+
+    it('should get the words by contact', (done) => {
+        let word = 'test';
+        board['board'][7][6].setLetter('i');
+        board['board'][7][7].setLetter('a');
+        board['board'][9][6].setLetter('s');
+        board['board'][9][7].setLetter('t');
+        
+        let expectedWord1 = 'ies';
+        let expectedWord2 = 'ast';
+        let positionArray = ['i', '6', 'h'];
+        let contacts = [[8, 6, 1], [8, 7, 2]];
+        let words = board['getWords'](word, positionArray, contacts);
+        assert(words.length === 3);
+        assert(words[0] === word);
+        assert(words[1] === expectedWord1);
+        assert(words[2] === expectedWord2);
+
+        expectedWord1 = 'eia';
+        expectedWord2 = 'tst';
+        positionArray = ['g', '6', 'v'];
+        contacts = [[7, 5, 1], [9, 5, 3]];
+        words = board['getWords'](word, positionArray, contacts);
+        assert(words.length === 3);
+        assert(words[0] === word);
+        assert(words[1] === expectedWord1);
+        assert(words[2] === expectedWord2);
         done();
     });
     

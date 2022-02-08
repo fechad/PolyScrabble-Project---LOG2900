@@ -31,4 +31,8 @@ export class GameTile{
         return -1;
     }
 
+    getChar(): string{
+        return this.empty ? '!' : this.letter;
+    }
+
 }
