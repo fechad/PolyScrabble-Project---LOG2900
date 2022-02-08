@@ -1,8 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
+import { routes } from '@app/modules/app-routing.module';
 import { GamePageComponent } from './game-page.component';
 
 // import SpyObj = jasmine.SpyObj;
@@ -16,15 +18,13 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent],
-            providers: [{ provide: Router, useValue: router }],
+            imports: [RouterTestingModule.withRoutes(routes)],
         }).compileComponents();
-    });
-
-    beforeEach(() => {
+        router = TestBed.inject(Router);
         fixture = TestBed.createComponent(GamePageComponent);
         // skipTurnService = TestBed.inject(SkipTurnService);
+        router.initialNavigation();
         component = fixture.componentInstance;
-        router = TestBed.inject(Router);
         fixture.detectChanges();
     });
 
