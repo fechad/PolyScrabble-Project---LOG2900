@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
@@ -14,24 +13,13 @@ import { GamePageComponent } from './game-page.component';
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    let httpClient: HttpClient;
-    let gameService: GameContextService;
-    let communicationService: CommunicationService;
-    let router: Router;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent],
-            imports: [RouterTestingModule.withRoutes(routes)],
-            providers: [
-                { provide: HttpClient, useValue: httpClient },
-                { provide: GameContextService, useValue: gameService },
-                { provide: CommunicationService, useValue: communicationService },
-                { provide: Router, useValue: router },
-            ],
+            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule],
+            providers: [{ provide: GameContextService }, { provide: CommunicationService }],
         }).compileComponents();
-        router = TestBed.inject(Router);
-        gameService = TestBed.inject(GameContextService);
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -43,7 +31,7 @@ describe('GamePageComponent', () => {
 
     it('should call quitGame() when quit-game button clicked ', async () => {
         const quitGameSpy = spyOn(component, 'quitGame').and.callThrough();
-        let button = fixture.debugElement.nativeElement.querySelector('#quit-game');
+        const button = fixture.debugElement.nativeElement.querySelector('#quit-game');
         button.click();
         fixture.whenStable().then(() => {
             expect(quitGameSpy).toHaveBeenCalled();

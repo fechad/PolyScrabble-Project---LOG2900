@@ -78,7 +78,7 @@
     background-color: #c93de0;
     height: 6vh;
     width: 8vh;
-    font-size: 3em;
+    font-size: 2em;
     margin-right: 0.5vh;
     margin-left: 0.5vh;
     border-radius: 15px;
@@ -86,6 +86,12 @@
     border-style: solid;
     transition: transform 0.3s ease-in-out;
 }
+
+#quit-game{
+    margin-top: 19vh;
+    margin-left: 4vh;
+}
+
 .rackArea {
     display: flex;
     justify-content: space-around;

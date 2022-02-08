@@ -25,6 +25,13 @@ export class GamePageComponent {
         public communicationService: CommunicationService,
     ) {}
 
+    openConfirmation() {
+        if (confirm('Voulez-vous abandonner la partie?')) {
+            this.communicationService.forfeit();
+            this.quitGame();
+        }
+    }
+
     quitGame() {
         this.router.navigateByUrl('http://localhost:4200/#/home');
     }

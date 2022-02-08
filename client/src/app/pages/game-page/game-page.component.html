@@ -24,15 +24,16 @@
                     <progress id="personal-goal" value="30" max="100"></progress>
                 </div>
             </div>
+            <button id="quit-game" title="Abandonner la partie" (click)="openConfirmation()"><fa-icon [icon]="faSignOutAlt"></fa-icon></button>
         </div>
         <div class="center">
             <div class="play-area-container">
                 <app-play-area class="play-area" tabindex="0"></app-play-area>
             </div>
             <div class="rackArea">
-                <button id="quit-game" (click)="quitGame()"><fa-icon [icon]="faSignOutAlt"></fa-icon></button>
+                
                 <app-letter-rack></app-letter-rack>
-                <button id="skip-turn" (click)="skipMyTurn()"><fa-icon [icon]="faAngleDoubleRight"></fa-icon></button>
+                <button id="skip-turn" title="Passer votre tour" (click)="skipMyTurn()"><fa-icon [icon]="faAngleDoubleRight"></fa-icon></button>
             </div>
         </div>
         <div class="chatArea">
