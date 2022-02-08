@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { GameContextService } from './game-context.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,8 +14,6 @@ import { environment } from 'src/environments/environment';
 export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
-    readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
-    readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
 
     private myId: PlayerId | undefined;
     private readonly roomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
@@ -23,7 +22,7 @@ export class CommunicationService {
 
     private msgCount: number = 0;
 
-    constructor() {
+    constructor(public gameContextService: GameContextService) {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this.joinHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
@@ -62,12 +61,12 @@ export class CommunicationService {
     }
 
     sendLocalMessage(message: string) {
-        this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);
+        this.gameContextService.addMessage(message, true);
     }
 
     sendMessage(message: string) {
         this.gameSocket?.emit('message', message, this.msgCount++);
-        this.tempMessages.next([...this.tempMessages.value, message]);
+        this.gameContextService.addMessage(message, false);
     }
 
     getId(): PlayerId | undefined {
@@ -139,11 +138,7 @@ export class CommunicationService {
         this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
         this.gameSocket.on('error', (e) => this.handleError(e));
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
-            this.messages.next([...this.messages.value, message]);
-            if (this.msgCount < msgCount && id === this.myId) {
-                this.tempMessages.value.splice(0, msgCount - this.msgCount);
-                this.msgCount = msgCount;
-            }
+            this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
         this.gameSocket.on('id', (id: PlayerId) => {
             this.myId = id;
