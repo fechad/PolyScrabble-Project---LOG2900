@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
@@ -7,8 +8,6 @@ import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GamePageComponent } from './game-page.component';
-
-// import SpyObj = jasmine.SpyObj;
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -21,6 +20,8 @@ describe('GamePageComponent', () => {
             providers: [{ provide: GameContextService }, { provide: CommunicationService }],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
+        const router = TestBed.inject(Router);
+        router.initialNavigation();
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

@@ -16,23 +16,23 @@ export class ActivatedRouteMock {
 }
 
 describe('ModesPageComponent', () => {
-    // let component: ModesPageComponent;
+    let component: ModesPageComponent;
     let fixture: ComponentFixture<ModesPageComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ModesPageComponent],
             providers: [
-                { provide: MatDialog, useValue: MatDialogMock },
+                { provide: MatDialog, useClass: MatDialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(ModesPageComponent);
-        // component = fixture.componentInstance;
+        component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-    // it('should create', () => {
-    //     expect(component).toBeTruthy();
-    // });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });
