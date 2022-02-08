@@ -10,6 +10,8 @@ type Board = Tile[][];
     providedIn: 'root',
 })
 export class GameContextService {
+    // BehaviorSubject<> = new BehaviorSubject();
+    readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);

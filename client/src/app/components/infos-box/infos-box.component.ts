@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, Injectable, Injector, ViewChild } from '@angular/core';
+import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
 
@@ -11,12 +13,9 @@ import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
 export class InfosBoxComponent implements AfterViewInit {
     // @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
     @ViewChild('countdown') cd: CountdownComponent;
-    timeData = 60;
-    turnChange: boolean;
-    private _subscription: any;
-    constructor(public skipTurn: SkipTurnService) {
-        this.turnChange = skipTurn.isYourTurn;
-        this._subscription = skipTurn.turnChange.subscribe((value) => {
+    private subscription: any;
+    constructor(public skipTurn: SkipTurnService, public gameContextService: GameContextService, public communicationService: CommunicationService) {
+        this.subscription = gameContextService.isMyTurn.subscribe(() => {
             this.reset();
         });
     }
@@ -26,6 +25,9 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     handleEvent(e: CountdownEvent) {
+        if (this.gameContextService.isMyTurn) {
+            this.communicationService.switchTurn();
+        }
         if (e.action === 'done') {
             this.reset();
         }
@@ -35,7 +37,7 @@ export class InfosBoxComponent implements AfterViewInit {
         this.cd.begin();
     }
     ngOnDestroy() {
-        this._subscription.unsubscribe();
+        this.subscription.unsubscribe();
     }
 }
 Injector.create({

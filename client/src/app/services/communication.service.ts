@@ -73,6 +73,10 @@ export class CommunicationService {
         return this.myId;
     }
 
+    switchTurn() {
+        this.gameSocket?.emit('switch-turn');
+    }
+
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
