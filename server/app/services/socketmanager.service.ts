@@ -97,7 +97,7 @@ export class SocketManager {
 =======
 >>>>>>> bd134f9 (envoie d'erreur dans la boite locale, étoile ajouté au plateau)
                     this.games.push(game);
-                    rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
+                    rooms.to(`room-${room.id}`).emit('joinGame', game.gameId);
                 });
             }
 
@@ -167,6 +167,7 @@ export class SocketManager {
             socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
             socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
 <<<<<<< HEAD
+<<<<<<< HEAD
             socket.on('switch-turn', (playerId: PlayerId) => {
                 game.skipTurn(playerId, false);
             });
@@ -177,6 +178,9 @@ export class SocketManager {
 =======
             socket.on('skip-turn', (playerId: PlayerId) => game.skipTurn(playerId));
 >>>>>>> 5ed970e (restructuration des communications)
+=======
+            socket.on('skipTurn', (playerId: PlayerId) => game.skipTurn(playerId));
+>>>>>>> 71c73dd (Revert "restructuration des communications")
             socket.on('parameters', () => game.getParameters());
 
 <<<<<<< HEAD

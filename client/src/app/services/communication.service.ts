@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Game } from '@app/classes/game';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
@@ -19,9 +18,8 @@ export class CommunicationService {
     private myId: PlayerId | undefined;
     private readonly waitingRoomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
-    private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
-    private game: Game;
+
     private msgCount: number = 0;
 
     constructor(public gameContextService: GameContextService) {
@@ -32,7 +30,6 @@ export class CommunicationService {
         this.mainSocket.on('id', (id: string) => {
             this.myId = id;
         });
-        this.game = new Game();
     }
 
     isMainPlayer() {
@@ -41,7 +38,7 @@ export class CommunicationService {
 
     kick() {
         if (this.isMainPlayer()) {
-            this.roomSocket?.emit('kick');
+            this.gameSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
         }
@@ -57,7 +54,7 @@ export class CommunicationService {
 
     start() {
         if (this.isMainPlayer()) {
-            this.roomSocket?.emit('start');
+            this.gameSocket?.emit('start');
         } else {
             throw new Error('Tried to start when not room creator');
         }
@@ -68,7 +65,7 @@ export class CommunicationService {
     }
 
     sendMessage(message: string) {
-        this.roomSocket?.emit('message', message, this.msgCount++);
+        this.gameSocket?.emit('message', message, this.msgCount++);
         this.tempMessages.next([...this.tempMessages.value, message]);
     }
 
@@ -136,32 +133,26 @@ export class CommunicationService {
     }
 
     private leaveGame() {
-        this.roomSocket?.close();
-        this.roomSocket = undefined;
+        this.gameSocket?.close();
+        this.gameSocket = undefined;
         this.selectedRoom.next(undefined);
     }
 
     private joinRoomHandler(room: string, token: number) {
         console.log(`Join room ${room} with token ${token}`);
-        this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
-        this.roomSocket.on('kick', () => this.leaveGame());
-        this.roomSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
-        this.roomSocket.on('error', (e) => this.handleError(e));
-        this.roomSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
+        this.gameSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
+        this.gameSocket.on('kick', () => this.leaveGame());
+        this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
+        this.gameSocket.on('error', (e) => this.handleError(e));
+        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.messages.next([...this.messages.value, message]);
             if (this.msgCount < msgCount && id === this.myId) {
                 this.tempMessages.value.splice(0, msgCount - this.msgCount);
                 this.msgCount = msgCount;
             }
         });
-        this.roomSocket.on('id', (id: PlayerId) => {
+        this.gameSocket.on('id', (id: PlayerId) => {
             this.myId = id;
         });
-        this.roomSocket.on('join-game', (gameId: string) => this.gameHandler(gameId, token));
-    }
-    private gameHandler(game: string, token: number) {
-        console.log(`Joined game ${game} with token ${token}`);
-        this.gameSocket = io(`${environment.socketUrl}/games/${game}`, { auth: { token } });
-        this.gameSocket.on('turn', (playerId: PlayerId) => this.game.skipTurn(playerId));
     }
 }
