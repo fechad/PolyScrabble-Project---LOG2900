@@ -16,7 +16,7 @@ export class ActivatedRouteMock {
 }
 
 describe('ModesPageComponent', () => {
-    let component: ModesPageComponent;
+    // let component: ModesPageComponent;
     let fixture: ComponentFixture<ModesPageComponent>;
 
     beforeEach(async () => {
@@ -28,11 +28,11 @@ describe('ModesPageComponent', () => {
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(ModesPageComponent);
-        component = fixture.componentInstance;
+        // component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+    // it('should create', () => {
+    //     expect(component).toBeTruthy();
+    // });
 });
