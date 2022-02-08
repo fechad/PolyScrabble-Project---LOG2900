@@ -27,7 +27,7 @@ export class GamePageComponent {
 
     openConfirmation() {
         if (confirm('Voulez-vous abandonner la partie?')) {
-            this.communicationService.forfeit();
+            this.communicationService.confirmForfeit();
             this.quitGame();
         }
     }

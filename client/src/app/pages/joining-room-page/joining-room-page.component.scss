@@ -1,5 +1,8 @@
 .material-icons{
     text-align: center;
+    font-size: 65px;
+    width: 50px;
+    color: #E1AC01;
 }
 
 .home-button:hover{
@@ -14,21 +17,44 @@
     max-width: 30%;
     flex-wrap: wrap;
     border: 1px solid #999;
-    border-radius: 4px;
-    margin-top: 20px;
+    border-radius: 10px;
+    
     margin-bottom: 9px;
-      
+    transition: box-shadow 0.1s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
+      
 
 .clickable:hover{
     cursor: pointer;
     box-shadow: 0 5px 5px rgba(0,0,0,0.15);
-    transition: box-shadow 0.1s ease-in-out;
     transform: scale(1.1);
-    transition: transform 0.3s ease-in-out;
 }
 
 .toolbar {
     justify-content: center;
     max-width: 95%;
+    color: #576877;
 }
+
+#title{
+    font-style: Signika Negative;
+}
+
+.title-container{
+    background-color: #E1AC01;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    width: 60%;
+    height: 5%;
+    margin-left: 17vw;
+}
+
+.header{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+

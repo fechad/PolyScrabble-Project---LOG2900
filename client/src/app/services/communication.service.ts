@@ -105,10 +105,10 @@ export class CommunicationService {
         return this.loserId;
     }
 
-    forfeit() {
+    confirmForfeit() {
         if (this.selectedRoom.value !== undefined) {
-            this.gameSocket?.emit('forfeit', this.getId());
-            console.log(this.getId());
+            this.gameSocket?.emit('confirmForfeit', this.getId());
+            console.log('loser emission', this.getId());
         }
     }
 
@@ -200,9 +200,8 @@ export class CommunicationService {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
 
-        this.gameSocket.on('confirmForfeit', (id) => {
-            this.loserId = id;
-            alert('Votre adversaire a abandonné.');
+        this.gameSocket.on('forfeit', () => {
+            console.log('Votre adversaire a abandonné.');
         });
     }
 }
