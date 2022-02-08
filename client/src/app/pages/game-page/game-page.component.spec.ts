@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -38,7 +39,6 @@ describe('GamePageComponent', () => {
             expect(quitGameSpy).toHaveBeenCalled();
         });
     });
-});
 /*
     it('skipMyTurn should call skipTurn', () => {
         const skipTurnSpy = spyOn(skipTurnService, 'skipTurn').and.callThrough();
@@ -54,3 +54,11 @@ describe('GamePageComponent', () => {
         expect(skipTurnSpy).toHaveBeenCalled();
     }));
 */
+    it('should call openConfirmation() when quit-game button clicked ', fakeAsync(() => {
+        const quitGameSpy = spyOn(component, 'openConfirmation').and.callThrough();
+        const button = fixture.debugElement.query(By.css('#quit-game'));
+        button.nativeElement.click();
+        tick();
+        expect(quitGameSpy).toHaveBeenCalled();
+    }));
+});
