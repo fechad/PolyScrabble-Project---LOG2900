@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -7,8 +8,15 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
+import { of } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
+
+// import SpyObj = jasmine.SpyObj;
+export class MatDialogMock {
+    open() {
+        return { afterClosed: () => of({}) };
+    }
+}
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -18,7 +26,7 @@ describe('GamePageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent],
             imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule],
-            providers: [{ provide: GameContextService }, { provide: CommunicationService }],
+            providers: [{ provide: CommunicationService }, { provide: MatDialog, useClass: MatDialogMock }],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
         const router = TestBed.inject(Router);

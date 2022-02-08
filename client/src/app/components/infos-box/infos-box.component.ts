@@ -24,6 +24,7 @@ export class InfosBoxComponent implements AfterViewInit {
             this.reset();
         });
 
+        // TO-DO: does not update
         this.mainPlayer = this.communicationService.selectedRoom.value?.mainPlayer.name;
         this.otherPlayer = this.communicationService.selectedRoom.value?.otherPlayer?.name;
     }

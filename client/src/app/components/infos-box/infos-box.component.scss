@@ -9,7 +9,8 @@
     display: inline-flex;
     flex-direction: row;
     height: 10vh;
-    width: 99.5vw;
+    width: 100vw;
+    box-sizing: border-box;
     margin-bottom: 2vh;
 }
 .game-infos,

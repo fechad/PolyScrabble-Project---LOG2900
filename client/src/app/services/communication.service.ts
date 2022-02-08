@@ -108,7 +108,6 @@ export class CommunicationService {
     confirmForfeit() {
         if (this.selectedRoom.value !== undefined) {
             this.gameSocket?.emit('confirmForfeit', this.getId());
-            console.log('loser emission', this.getId());
         }
     }
 
@@ -200,8 +199,7 @@ export class CommunicationService {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
 
-        this.gameSocket.on('forfeit', () => {
-            console.log('Votre adversaire a abandonné.');
-        });
+        // TO-DO: does not receive forfeit event from server
+        this.gameSocket.on('forfeit', () => {});
     }
 }
