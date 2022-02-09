@@ -11,7 +11,7 @@ describe('Dictionnary service', () => {
         assert(dictionnaryService !== undefined);
         done();
     });
-    it('should have dictionnaries', (done) => {
+    it('should have dictionnaries', async (done) => {
         assert(dictionnaryService.getDictionnaries().length > 0);
         done();
     });

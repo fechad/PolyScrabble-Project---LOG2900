@@ -1,16 +1,18 @@
 import { DictionnaryService } from './dictionnary.service';
 
 export class WordValidation {
-    constructor(private dictionnaries: DictionnaryService) {}
+    constructor(private dictionnaries: DictionnaryService) {
+        dictionnaries.init();
+    }
 
     isWord(expression: string): boolean {
         return expression.match(/[a-z]+/i) !== null;
     }
 
-    async isValid(playedWord: string): Promise<boolean> {
+    isValid(playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;
         }
-        return (await this.dictionnaries[0]).words.has(playedWord);
+        return this.dictionnaries.getDictionnaries()[0].words.includes(playedWord);
     }
 }
