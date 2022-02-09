@@ -17,7 +17,7 @@ export class InfosBoxComponent implements AfterViewInit {
             this.reset();
         });
     }
-
+    ///lolol
     ngAfterViewInit(): void {
         this.cd.begin();
     }
