@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Injectable, Injector, ViewChild } from '@angu
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
+import { Subscription } from 'rxjs';
 @Component({
     selector: 'app-infos-box',
     templateUrl: './infos-box.component.html',
@@ -11,7 +12,7 @@ import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
 export class InfosBoxComponent implements AfterViewInit {
     // @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
     @ViewChild('countdown') cd: CountdownComponent;
-    private subscription: any;
+    private subscription: Subscription;
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.subscription = gameContextService.isMainPlayerTurn.subscribe(() => {
             this.reset();

@@ -9,18 +9,16 @@ export class Game {
     readonly gameId: GameId;
     readonly eventEmitter = new EventEmitter();
 
-    private messages: Message[];
     readonly players: Player[];
+    readonly messages: Message[] = [];
     private parameters: Parameters;
-    private isPlayer0Turn;
+    private isPlayer0Turn = true;
 
     constructor(id: GameId, players: Player[], parameters: Parameters) {
         console.log('game Instance!');
         this.gameId = id;
         this.parameters = parameters;
-        this.messages = [];
         this.players = players;
-        this.isPlayer0Turn = true;
     }
 
     message(message: Message) {
@@ -29,7 +27,11 @@ export class Game {
     }
 
     placeLetters(letters: string, position: string, playerId: PlayerId) {
+<<<<<<< HEAD
         if (this.checkTurn(playerId, false)) {
+=======
+        if (this.checkTurn(playerId)) {
+>>>>>>> dev
             // TODO: make verifications (probably return game-error)
             // TODO: calculate points
             // TODO: emit the result
@@ -39,7 +41,11 @@ export class Game {
     }
 
     changeLetters(letters: string, playerId: PlayerId) {
+<<<<<<< HEAD
         if (this.checkTurn(playerId, false)) {
+=======
+        if (this.checkTurn(playerId)) {
+>>>>>>> dev
             // TODO: change the letters in the service
             // TODO: emit the new rack
             this.eventEmitter.emit('rack', letters, playerId);
@@ -50,14 +56,21 @@ export class Game {
         this.eventEmitter.emit('parameters', this.parameters);
     }
 
+<<<<<<< HEAD
     skipTurn(playerId: PlayerId, timerRequest: boolean) {
         if (this.checkTurn(playerId, timerRequest)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
             console.log('emmiting turn');
+=======
+    skipTurn(playerId: PlayerId) {
+        if (this.checkTurn(playerId)) {
+            this.isPlayer0Turn = !this.isPlayer0Turn;
+>>>>>>> dev
             this.eventEmitter.emit('turn', this.isPlayer0Turn);
         }
     }
 
+<<<<<<< HEAD
     private checkTurn(playerId: PlayerId, timerRequest: boolean) {
         const validTurn = playerId === (this.isPlayer0Turn ? this.players[0].id : this.players[1].id);
         if (!validTurn && timerRequest === false) {
@@ -65,6 +78,12 @@ export class Game {
         } else if (!validTurn && timerRequest === true) {
             console.log('invalid timer try');
             return false;
+=======
+    private checkTurn(playerId: PlayerId) {
+        const validTurn = playerId === (this.isPlayer0Turn ? this.players[0].id : this.players[1].id);
+        if (!validTurn) {
+            this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
+>>>>>>> dev
         }
         return validTurn;
     }

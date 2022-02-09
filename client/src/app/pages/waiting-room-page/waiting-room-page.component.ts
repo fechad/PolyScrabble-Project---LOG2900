@@ -11,11 +11,11 @@ export class WaitingRoomPageComponent {
     canControl: boolean;
 
     constructor(public communicationService: CommunicationService, private router: Router) {
-        this.communicationService.selectedRoom.subscribe(async room => {
+        this.communicationService.selectedRoom.subscribe(async (room) => {
             if (room === undefined) await this.router.navigate(['/home']);
             else if (room.started) this.router.navigate(['/game']);
 
-            const hasOtherPlayer = (room?.otherPlayer !== undefined);
+            const hasOtherPlayer = room?.otherPlayer !== undefined;
             const isMainPlayer = this.communicationService.getId() === room?.mainPlayer.id;
             this.canControl = hasOtherPlayer && isMainPlayer;
         });

@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
@@ -14,6 +16,7 @@ import { GameContextService } from './game-context.service';
 export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
+    readonly dictionnaries: Promise<Dictionnary[]>;
 
     private myId: PlayerId | undefined;
     private readonly waitingRoomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
@@ -23,7 +26,7 @@ export class CommunicationService {
 
     // private msgCount: number = 0;
 
-    constructor(public gameContextService: GameContextService) {
+    constructor(public gameContextService: GameContextService, httpClient: HttpClient) {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this.joinRoomHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
@@ -31,6 +34,7 @@ export class CommunicationService {
         this.mainSocket.on('id', (id: string) => {
             this.myId = id;
         });
+        this.dictionnaries = httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
     }
 
     isMainPlayer() {

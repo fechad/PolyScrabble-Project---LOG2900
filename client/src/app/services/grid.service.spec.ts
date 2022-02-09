@@ -1,6 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { GridService } from '@app/services/grid.service';
+
+export class CanvasTestHelper {
+    static createCanvas(width: number, height: number): HTMLCanvasElement {
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        return canvas;
+    }
+}
 
 describe('GridService', () => {
     let service: GridService;

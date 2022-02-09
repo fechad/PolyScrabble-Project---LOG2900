@@ -1,21 +1,19 @@
 import { expect } from 'chai';
+import { DictionnaryService } from './dictionnary.service';
 import { WordValidation } from './word-validation.service';
 
 describe('Word Validation', () => {
     const timeout = 5000; // ms
     let service: WordValidation;
+    let dictionnaryService: DictionnaryService;
 
     beforeEach(() => {
-        service = new WordValidation();
+        dictionnaryService = new DictionnaryService();
+        service = new WordValidation(dictionnaryService);
     });
 
     it('should wait for words to be populated', async (done) => {
-        service.words.then((words) => {
-            const serviceTest = new WordValidation();
-            serviceTest.words.then((wordsTest) => {
-                expect(words).to.equal(wordsTest);
-            });
-        });
+        service.isValid('a');
         done();
     }).timeout(timeout);
 

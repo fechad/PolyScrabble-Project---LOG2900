@@ -20,5 +20,7 @@ describe('CommunicationService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+        let dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionnaries');
+        dictionnaries.flush([]);       
     });
 });

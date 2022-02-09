@@ -1,5 +1,4 @@
 import { HttpException } from '@app/classes/http.exception';
-// import { LeaderBoardController } from '@app/controllers/leaderboard.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -8,6 +7,7 @@ import * as logger from 'morgan';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
+import { HttpController } from './controllers/http.controller';
 
 @Service()
 export class Application {
@@ -15,7 +15,7 @@ export class Application {
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
-    constructor(/* private readonly leaderBoardController: LeaderBoardController*/) {
+    constructor(private readonly httpController: HttpController) {
         this.app = express();
 
         this.swaggerOptions = {
@@ -36,7 +36,7 @@ export class Application {
 
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
-        // this.app.use('/api/leaderboard', this.leaderBoardController.router);
+        this.app.use('/api', this.httpController.router);
         /* this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });*/ // TODO: decide if interesting
