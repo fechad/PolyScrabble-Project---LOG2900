@@ -101,6 +101,7 @@ export class SocketManager {
                 const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
                 if (playerId === undefined) throw new Error('Undefined player tried to send a message');
                 messages.push({ emitter: playerId, text: message });
+                console.log('devrait pu etre call');
                 rooms.to(`room-${room.id}`).emit('message', messages[messages.length - 1], playerId);
             });
 
@@ -163,23 +164,12 @@ export class SocketManager {
             socket.on('switch-turn', (playerId: PlayerId) => game.skipTurn(playerId));
             socket.on('parameters', () => game.getParameters());
 
-            game.eventEmitter.on('message', (message) => {
-                games.to(`game-${game.gameId}`).emit('message', message);
-            });
-            game.eventEmitter.on('rack', (letters: string, playerId: PlayerId) => {
-                games.to(`game-${game.gameId}`).emit('rack', letters, playerId);
-            });
-            game.eventEmitter.on('placed', (letters: string, position: string, points: number, playerId: PlayerId) => {
-                games.to(`game-${game.gameId}`).emit('placed', letters, position, points, playerId);
-            });
-            game.eventEmitter.on('turn', (isPlayer0Turn: boolean) => {
-                games.to(`game-${game.gameId}`).emit('turn', isPlayer0Turn);
-            });
-            game.eventEmitter.on('parameters', (parameters) => {
-                games.to(`game-${game.gameId}`).emit('parameters', parameters);
-            });
-            game.eventEmitter.on('game-error', (gameError: Error) => {
-                games.to(`game-${game.gameId}`).emit('game-error', gameError.message);
+            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error'];
+            const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
+            handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
+
+            socket.on('disconnect', () => {
+                handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
             });
         });
     }

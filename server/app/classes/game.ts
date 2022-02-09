@@ -15,6 +15,7 @@ export class Game {
     private isPlayer0Turn;
 
     constructor(id: GameId, players: Player[], parameters: Parameters) {
+        console.log('game Instance!');
         this.gameId = id;
         this.parameters = parameters;
         this.messages = [];
