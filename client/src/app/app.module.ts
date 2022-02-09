@@ -1,10 +1,6 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -59,17 +55,13 @@ import { CommunicationService } from './services/communication.service';
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
-        MatDialogModule,
-        MatCardModule,
-        MatIconModule,
-        MatToolbarModule,
         IgxTimePickerModule,
         IgxInputGroupModule,
         IgxIconModule,
         FontAwesomeModule,
         CountdownModule,
     ],
-    providers: [CommunicationService],
+    providers: [CommunicationService, HttpClient],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

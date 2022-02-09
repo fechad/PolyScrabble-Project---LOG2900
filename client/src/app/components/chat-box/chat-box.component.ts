@@ -14,7 +14,7 @@ export class ChatBoxComponent implements OnInit {
     syntaxIsValid: boolean = true;
     commandStructure: string[] = [];
     myId: string | undefined;
-    
+
     constructor(public communicationService: CommunicationService, private skipTurnService: SkipTurnService) {
         this.myId = this.communicationService.getId();
         console.log(this.myId);
@@ -79,7 +79,7 @@ export class ChatBoxComponent implements OnInit {
                     this.commandStructure[1][0].match(/[a-o]/g) &&
                     this.commandStructure[1][1].match(/[1]/g) &&
                     this.commandStructure[1][2].match(/[0-4]/g)
-                    /*(this.commandStructure[1][3].match(/[hv]/g))*/
+                    /* (this.commandStructure[1][3].match(/[hv]/g))*/
                 ) {
                     this.syntaxIsValid = true;
                     console.log('entered');

@@ -16,7 +16,7 @@
             <div class="container">
                 <span>
                     <p id="firstPlayer">Nom du joueur: {{ game.name }}</p>
-                    <p id="dictChoice">Dictionnaire: {{ game.parameters.dictionnary }}</p>
+                    <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[game.parameters.dictionnary].name : '…' }}</p>
                 </span>
             </div>
         </mat-card-content>
