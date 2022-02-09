@@ -10,16 +10,14 @@ export class Game {
     readonly eventEmitter = new EventEmitter();
 
     readonly players: Player[];
-    private messages: Message[];
+    readonly messages: Message[] = [];
     private parameters: Parameters;
-    private isPlayer0Turn;
+    private isPlayer0Turn = true;
 
     constructor(id: GameId, players: Player[], parameters: Parameters) {
         this.gameId = id;
         this.parameters = parameters;
-        this.messages = [];
         this.players = players;
-        this.isPlayer0Turn = true;
     }
 
     message(message: Message) {

@@ -9,17 +9,14 @@ import { isDeepStrictEqual } from 'util';
 const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
 
 export class SocketManager {
+    readonly rooms: Room[] = [];
+    readonly games: Game[] = [];
     private io: io.Server;
-    private rooms: Room[];
-    private games: Game[];
-    private prevRooms: Room[];
     private nextRoomId = 0;
     private messages: { [room: number]: Message[] } = {}; // number is RoomId, but typescript does not allow this
 
     constructor(server: http.Server) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
-        this.rooms = [];
-        this.games = [];
     }
 
     init(): void {
@@ -124,11 +121,12 @@ export class SocketManager {
                 this.rooms.filter((room) => !room.hasOtherPlayer()),
             );
         });
+        let prevRooms: Room[];
         setInterval(() => {
             const newRooms = this.rooms.filter((room) => !room.hasOtherPlayer());
-            if (!isDeepStrictEqual(newRooms, this.prevRooms)) {
+            if (!isDeepStrictEqual(newRooms, prevRooms)) {
                 waitingRoom.emit('broadcastRooms', newRooms);
-                this.prevRooms = newRooms;
+                prevRooms = newRooms;
             }
         }, ROOMS_LIST_UPDATE_TIMEOUT);
 

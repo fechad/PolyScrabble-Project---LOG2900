@@ -257,7 +257,8 @@ describe('SocketManager service tests', () => {
                 gameSocket.on('turn', stub3);
                 gameSocket.emit('skipTurn', service.games[0].players[0].id);
                 setTimeout(() => {
-                    assert(!service.games[0].isPlayer0Turn);
+                    // eslint-disable-next-line dot-notation
+                    assert(!service.games[0]['isPlayer0Turn']);
                     assert(stub3.calledWith(false));
 
                     roomSocket.close();
@@ -293,7 +294,8 @@ describe('SocketManager service tests', () => {
                 gameSocket.on('turn', stub4);
                 gameSocket.emit('skipTurn', service.games[0].players[1].id);
                 setTimeout(() => {
-                    assert(service.games[0].isPlayer0Turn);
+                    // eslint-disable-next-line dot-notation
+                    assert(service.games[0]['isPlayer0Turn']);
                     assert(stub4.notCalled);
                     assert(stub3.calledWith("Ce n'est pas votre tour"));
 
