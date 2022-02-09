@@ -1,4 +1,4 @@
-import { WordValidation } from "@app/services/word-validation.service";
+//import { WordValidation } from "@app/services/word-validation.service";
 import { GameTile } from "./gameTile";
 
 const BOARD_LENGTH = 15;
@@ -40,8 +40,11 @@ const MULT_LETTERS_3 = [
     [5, 9],
     [5, 13],
     [7, 1],
-    [7, 5],
     [7, 9],
+    [9, 1],
+    [9, 5],
+    [9, 9],
+    [9, 13],
     [7, 13],
     [13, 5],
     [13, 9]
@@ -75,10 +78,10 @@ const MULT_LETTERS_2 = [
 
 export class Board{
     private board: GameTile[][];
-    private wordValidation: WordValidation
+    //private wordValidation: WordValidation
     
     constructor(){
-        this.wordValidation = new WordValidation();
+        //this.wordValidation = new WordValidation();
         this.board = [];
         for(let i: number = 0; i < BOARD_LENGTH; i++){
             this.board[i] = [];
@@ -102,37 +105,73 @@ export class Board{
                     let contacts = this.getContacts(word.length, positionArray);
                     if(contacts.length !== 0){
                         let words = this.getWords(word, positionArray, contacts);
-                        this.validateWords(words);
-                        //TODO: get score()
-                        console.log(words);
-                    } else {
-                        error = new Error('Placement invalide vous devez toucher un autre mot');
-                    }
-                } else {
-                    error = new Error('Placement invalide pour le premier mot');
-                }
-            } else {
-                error = new Error('Le mot ne rentre pas dans la grille')
-            }
-        } else {
-            error = new Error('Erreur de syntaxe dans le placement d\'un mot');
-        }
+                        if(this.validateWords(words)){
+                            score = this.placeWithScore(words);
+                        } else error = new Error('Un des mots crees ne fait pas partie du dictionnaire');
+                    } else error = new Error('Placement invalide vous devez toucher un autre mot');
+                } else error = new Error('Placement invalide pour le premier mot');
+            } else error = new Error('Placement invalide le mot ne rentre pas dans la grille');
+        } else error = new Error('Erreur de syntaxe dans le placement d\'un mot');
         return error !== undefined ? error : score;
+    }
+
+    private placeWithScore(words: string[]): number{
+        let score = 0;
+        
+        words.forEach((word) => {
+            let wordScore = 0;
+            let wordMultiplier = 1;
+            let wordAndPos = word.split(';');
+            let currentRow = parseInt(wordAndPos[1]);
+            let currentCol = parseInt(wordAndPos[2]);
+            
+            for(let i = 0; i < wordAndPos[3].length; i++){
+                if(this.board[currentRow][currentCol].empty){
+                    this.board[currentRow][currentCol].setLetter(wordAndPos[3].charAt(i));
+                }
+                //console.log(this.board[currentRow][currentCol].getPoints())
+                wordScore += this.board[currentRow][currentCol].getPoints();
+                if(wordMultiplier === 1){
+                    wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
+                }
+                if(wordAndPos[0] === 'h'){
+                    currentCol++;
+                } else if(wordAndPos[0] === 'v'){
+                    currentRow++;
+                }
+            }
+            score += wordScore * wordMultiplier;
+            //console.log(`${wordAndPos[3]} : ${wordScore}\ntotal: ${score}`)
+        });
+
+        this.changeNewlyPlaced(words[0].split(';'));
+        return score;
+    }
+
+    private changeNewlyPlaced(wordAndPos: string[]){
+        let currentRow = parseInt(wordAndPos[1]);
+        let currentCol = parseInt(wordAndPos[2]);
+        for(let i = 0; i < wordAndPos[3].length; i++){
+            this.board[currentRow][currentCol].newlyPlaced = false;
+            if(wordAndPos[0] === 'h'){
+                currentCol++;
+            } else if(wordAndPos[0] === 'v'){
+                currentRow++;
+            }
+        }
     }
 
     //TODO: update with new word-validation
     private validateWords(wordList: string[]): boolean{
         let isValid = true;
-        wordList.forEach((word) => {
+        /*wordList.forEach((word) => {
             let separatedWord = word.split(';');
             this.wordValidation.isValid(separatedWord[separatedWord.length - 1]).then((valid) => {
-                console.log(valid);
-                console.log('entered');
                 if(!valid){
                     isValid = false;
                 }
             });
-        });
+        });*/
         return isValid;
     }
 

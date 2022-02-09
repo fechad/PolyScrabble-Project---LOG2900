@@ -1,7 +1,10 @@
+import { alphabetTemplate } from "@app/alphabet-template";
+
 export class GameTile{
     empty: boolean;
     private letter: string;
     private letterValue: number;
+    public newlyPlaced: boolean;
     readonly multiplier: number;
     readonly wordMultiplier: number;
 
@@ -11,15 +14,16 @@ export class GameTile{
         this.wordMultiplier = (wordMultiplier === undefined ? 1 : wordMultiplier);
     }
 
-    setLetter(letter: string): number{
+    setLetter(letter: string){
         if(letter.length === 1 && letter >= 'a' && letter <= 'z'){
             this.letter = letter;
             this.empty = false;
-            this.letterValue = 1;
-            //TODO: get letter score for letterValue
+            this.newlyPlaced = true;
+            this.letterValue = this.getLetterValue(this.letter);
         } else if(letter.length === 1 && letter >= 'A' && letter <= 'Z'){
             this.letter = letter.toLowerCase();
             this.empty = false;
+            this.newlyPlaced = true;
             this.letterValue = 0;
         }
         return this.letterValue * this.multiplier;
@@ -27,6 +31,9 @@ export class GameTile{
 
     getPoints(): number{
         if(this.letter !== undefined){
+            if(this.newlyPlaced){
+                return this.letterValue * this.multiplier;
+            }
             return this.letterValue;
         }
         return -1;
@@ -34,6 +41,15 @@ export class GameTile{
 
     getChar(): string{
         return this.empty ? '!' : this.letter;
+    }
+
+    private getLetterValue(char: string): number{
+        for(let i=0; i < alphabetTemplate.length; i++){
+            if(alphabetTemplate[i].name === char.toUpperCase()){
+                return alphabetTemplate[i].score;
+            }
+        }
+        return -1;
     }
 
 }

@@ -29,10 +29,11 @@ describe('Game Tile', () => {
         assert(gameTile['letter'] === undefined);
         assert(gameTile['letterValue'] === undefined);
         assert(gameTile.empty);
-        const value = gameTile.setLetter('a');
+
+        gameTile.setLetter('a');
+
         assert(gameTile['letter'] === 'a');
         assert(gameTile['letterValue'] === 1);
-        assert(value === 1);
         assert(!gameTile.empty);
         done();
     });
@@ -42,7 +43,9 @@ describe('Game Tile', () => {
         assert(gameTile.empty);
         let char = gameTile.getChar();
         assert(char === '!');
+
         gameTile.setLetter('a');
+
         assert(gameTile['letter'] === 'a');
         assert(gameTile['letterValue'] === 1);
         assert(!gameTile.empty);
@@ -93,6 +96,8 @@ describe('Game Tile', () => {
 
         assert(gameTileMult2['letter'] === 'i');
         assert(gameTileMult2['letterValue'] === 1);
+        assert(gameTileMult2.getPoints() === 2);
+        gameTileMult2.newlyPlaced = false;
         assert(gameTileMult2.getPoints() === 1);
         assert(!gameTileMult2.empty);
 
@@ -121,5 +126,20 @@ describe('Game Tile', () => {
         
         done();
     });
+
+    it('should get letter value', (done) => {
+        let letter = 'a';
+        let score = gameTile['getLetterValue'](letter);
+        assert(score === 1);
+
+        letter = 'b';
+        score = gameTile['getLetterValue'](letter);
+        assert(score === 3);
+
+        letter = 'B';
+        score = gameTile['getLetterValue'](letter);
+        assert(score === 3);
+        done();
+    })
 
 });

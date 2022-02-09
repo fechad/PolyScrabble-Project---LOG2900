@@ -328,6 +328,8 @@ describe('Board', () => {
         done();
     });
     
+    //TODO: update with new word-validation service
+    /*
     it('should validate words', (done) => {
         let wordList = ['test', 'valide', 'essai'];
         let result = board['validateWords'](wordList);
@@ -350,6 +352,78 @@ describe('Board', () => {
         assert(!result);
   
         done();
+    });*/
+
+    it('should change newly placed word', (done) => {
+        board['board'][7][6].setLetter('a');
+        board['board'][7][7].setLetter('s');
+        board['board'][9][6].setLetter('v');
+        board['board'][10][6].setLetter('u');
+
+        let wordAndPos = ['h', '7', '6', 'as'];
+        board['changeNewlyPlaced'](wordAndPos);
+
+        assert(!board['board'][7][6].newlyPlaced);
+        assert(!board['board'][7][7].newlyPlaced);
+        assert(board['board'][9][6].newlyPlaced);
+        assert(board['board'][10][6].newlyPlaced);
+
+        wordAndPos = ['v', '9', '6', 'vu'];
+        board['changeNewlyPlaced'](wordAndPos);
+
+        assert(!board['board'][7][6].newlyPlaced);
+        assert(!board['board'][7][7].newlyPlaced);
+        assert(!board['board'][9][6].newlyPlaced);
+        assert(!board['board'][10][6].newlyPlaced);
+        done();
     });
 
+    it('should place the letters on the board and get the score', (done) => {
+        let wordAndPos = ['h;7;6;as', 'v;9;6;vu'];
+        let expectedScore = 7;
+        let score = board['placeWithScore'](wordAndPos);
+        
+        assert(!board['board'][7][6].newlyPlaced);
+        assert(!board['board'][7][7].newlyPlaced);
+        expect(score).to.equal(expectedScore);
+
+
+        wordAndPos = ['v;4;5;test','h;7;5;tas'];
+        expectedScore = 9;
+        score = board['placeWithScore'](wordAndPos);
+        
+        assert(!board['board'][4][5].newlyPlaced);
+        assert(!board['board'][5][5].newlyPlaced);
+        assert(!board['board'][6][5].newlyPlaced);
+        assert(!board['board'][7][5].newlyPlaced);
+        expect(score).to.equal(expectedScore);
+
+
+        wordAndPos = ['h;5;4;metro','v;4;5;test'];
+        expectedScore = 10;
+        score = board['placeWithScore'](wordAndPos);
+        
+        assert(!board['board'][5][4].newlyPlaced);
+        assert(!board['board'][5][5].newlyPlaced);
+        assert(!board['board'][5][6].newlyPlaced);
+        assert(!board['board'][5][7].newlyPlaced);
+        assert(!board['board'][5][8].newlyPlaced);
+        expect(score).to.equal(expectedScore);
+
+
+        wordAndPos = ['v;7;7;speciale','h;7;5;tas'];
+        expectedScore = 42;
+        score = board['placeWithScore'](wordAndPos);
+        
+        assert(!board['board'][7][7].newlyPlaced);
+        assert(!board['board'][7][8].newlyPlaced);
+        assert(!board['board'][7][9].newlyPlaced);
+        assert(!board['board'][7][10].newlyPlaced);
+        assert(!board['board'][7][11].newlyPlaced);
+        assert(!board['board'][7][12].newlyPlaced);
+        assert(!board['board'][7][13].newlyPlaced);
+        assert(!board['board'][7][14].newlyPlaced);
+        expect(score).to.equal(expectedScore);
+        done();
+    });
 });
