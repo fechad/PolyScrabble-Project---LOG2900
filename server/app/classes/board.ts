@@ -1,5 +1,5 @@
-//import { WordValidation } from "@app/services/word-validation.service";
-import { GameTile } from "./gameTile";
+// import { WordValidation } from "@app/services/word-validation.service";
+import { GameTile } from './gameTile';
 
 const BOARD_LENGTH = 15;
 const A_ASCII = 'a'.charCodeAt(0);
@@ -76,16 +76,15 @@ const MULT_LETTERS_2 = [
     [14, 11]
 ];
 
-export class Board{
-    private board: GameTile[][];
-    //private wordValidation: WordValidation
-    
+export class Board {
+    board: GameTile[][];
+    // private wordValidation: WordValidation
     constructor(){
-        //this.wordValidation = new WordValidation();
+        // this.wordValidation = new WordValidation();
         this.board = [];
-        for(let i: number = 0; i < BOARD_LENGTH; i++){
+        for( let i: number = 0; i < BOARD_LENGTH; i++) {
             this.board[i] = [];
-            for(let j: number = 0; j < BOARD_LENGTH; j++){
+            for (let j: number = 0; j < BOARD_LENGTH; j++) {
                 this.board[i][j] = new GameTile(1);
             }
         }
@@ -95,17 +94,17 @@ export class Board{
         this.initList(MULT_LETTERS_2, 2);
     }
 
-    placeWord(word: string, position: string): number | Error{
+    placeWord(word: string, position: string): number | Error {
         let score = 0;
         let error;
         let positionArray = this.separatePosition(position);
-        if(this.validatePositionSyntax(positionArray)){
-            if(this.isWordInBound(word.length, positionArray)){
-                if(this.firstWordValidation(word.length, positionArray)){
+        if(this.validatePositionSyntax(positionArray)) {
+            if(this.isWordInBound(word.length, positionArray)) {
+                if(this.firstWordValidation(word.length, positionArray)) {
                     let contacts = this.getContacts(word.length, positionArray);
-                    if(contacts.length !== 0){
+                    if(contacts.length !== 0) {
                         let words = this.getWords(word, positionArray, contacts);
-                        if(this.validateWords(words)){
+                        if(this.validateWords(words)) {
                             score = this.placeWithScore(words);
                         } else error = new Error('Un des mots crees ne fait pas partie du dictionnaire');
                     } else error = new Error('Placement invalide vous devez toucher un autre mot');
@@ -115,7 +114,7 @@ export class Board{
         return error !== undefined ? error : score;
     }
 
-    private placeWithScore(words: string[]): number{
+    private placeWithScore(words: string[]): number {
         let score = 0;
         
         words.forEach((word) => {
@@ -125,18 +124,18 @@ export class Board{
             let currentRow = parseInt(wordAndPos[1]);
             let currentCol = parseInt(wordAndPos[2]);
             
-            for(let i = 0; i < wordAndPos[3].length; i++){
-                if(this.board[currentRow][currentCol].empty){
+            for (let i = 0; i < wordAndPos[3].length; i++) {
+                if (this.board[currentRow][currentCol].empty) {
                     this.board[currentRow][currentCol].setLetter(wordAndPos[3].charAt(i));
                 }
                 //console.log(this.board[currentRow][currentCol].getPoints())
                 wordScore += this.board[currentRow][currentCol].getPoints();
-                if(wordMultiplier === 1){
+                if (wordMultiplier === 1) {
                     wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
                 }
-                if(wordAndPos[0] === 'h'){
+                if (wordAndPos[0] === 'h') {
                     currentCol++;
-                } else if(wordAndPos[0] === 'v'){
+                } else if (wordAndPos[0] === 'v') {
                     currentRow++;
                 }
             }
@@ -148,21 +147,21 @@ export class Board{
         return score;
     }
 
-    private changeNewlyPlaced(wordAndPos: string[]){
+    private changeNewlyPlaced(wordAndPos: string[]) {
         let currentRow = parseInt(wordAndPos[1]);
         let currentCol = parseInt(wordAndPos[2]);
-        for(let i = 0; i < wordAndPos[3].length; i++){
+        for (let i = 0; i < wordAndPos[3].length; i++) {
             this.board[currentRow][currentCol].newlyPlaced = false;
-            if(wordAndPos[0] === 'h'){
+            if (wordAndPos[0] === 'h') {
                 currentCol++;
-            } else if(wordAndPos[0] === 'v'){
+            } else if (wordAndPos[0] === 'v') {
                 currentRow++;
             }
         }
     }
 
     //TODO: update with new word-validation
-    private validateWords(wordList: string[]): boolean{
+    private validateWords(wordList: string[]): boolean {
         let isValid = true;
         /*wordList.forEach((word) => {
             let separatedWord = word.split(';');
@@ -175,7 +174,7 @@ export class Board{
         return isValid;
     }
 
-    private getWords(word: string, position: string[], contacts: number[][]): string[]{
+    private getWords(word: string, position: string[], contacts: number[][]): string[] {
         let words: string[] = [];
         let row = position[0].charCodeAt(0) - A_ASCII;
         let col = parseInt(position[1]) - 1;
@@ -186,13 +185,13 @@ export class Board{
         let currentCol = col;
 
         //get attempted word
-        if(position[2] === 'h'){
-            while(currentCol - 1 >= 0 && !this.board[currentRow][currentCol - 1].empty) currentCol--;
+        if (position[2] === 'h') {
+            while (currentCol - 1 >= 0 && !this.board[currentRow][currentCol - 1].empty) currentCol--;
             tempWord += position[2] + ';';
             tempWord += currentRow.toString() + ';';
             tempWord += currentCol.toString() + ';';
-            while(currentCol < BOARD_LENGTH && (letterCount < word.length || !this.board[currentRow][currentCol + 1].empty)){
-                if(this.board[currentRow][currentCol].empty){
+            while (currentCol < BOARD_LENGTH && (letterCount < word.length || !this.board[currentRow][currentCol + 1].empty)) {
+                if (this.board[currentRow][currentCol].empty) {
                     tempWord += word.charAt(letterCount);
                     letterCount++;
                 } else {
@@ -201,13 +200,13 @@ export class Board{
                 currentCol++;
             }
             words.push(`${tempWord}`);
-        }else if(position[2] === 'v'){
-            while(currentRow - 1 >= 0 && !this.board[currentRow - 1][currentCol].empty) currentRow--;
+        } else if (position[2] === 'v') {
+            while (currentRow - 1 >= 0 && !this.board[currentRow - 1][currentCol].empty) currentRow--;
             tempWord += position[2] + ';';
             tempWord += currentRow.toString() + ';';
             tempWord += currentCol.toString() + ';';
-            while(currentRow < BOARD_LENGTH && (letterCount < word.length || !this.board[currentRow + 1][currentCol].empty)){
-                if(this.board[currentRow][currentCol].empty){
+            while (currentRow < BOARD_LENGTH && (letterCount < word.length || !this.board[currentRow + 1][currentCol].empty)) {
+                if (this.board[currentRow][currentCol].empty){
                     tempWord += word.charAt(letterCount);
                     letterCount++;
                 } else {
@@ -219,39 +218,39 @@ export class Board{
         }
 
         //get words by contact
-        if(contacts[0][0] !== -1){
-            for(let i=0; i < contacts.length; i++){
+        if (contacts[0][0] !== -1) {
+            for (let i=0; i < contacts.length; i++) {
                 letterCount = 0;
                 tempWord = '';
                 currentRow = contacts[i][0];
                 currentCol = contacts[i][1];
 
-                if(position[2] === 'h'){
-                    while(currentRow - 1 >= 0 && !this.board[currentRow - 1][currentCol].empty) currentRow--;
+                if (position[2] === 'h') {
+                    while (currentRow - 1 >= 0 && !this.board[currentRow - 1][currentCol].empty) currentRow--;
                     tempWord += 'v;';
                     tempWord += currentRow.toString() + ';';
                     tempWord += currentCol.toString() + ';';
-                    while(currentRow < BOARD_LENGTH && (!this.board[currentRow][currentCol].empty || currentRow <= contacts[i][0])){
-                        if(!this.board[currentRow][currentCol].empty){
+                    while (currentRow < BOARD_LENGTH && (!this.board[currentRow][currentCol].empty || currentRow <= contacts[i][0])){
+                        if (!this.board[currentRow][currentCol].empty) {
                             tempWord += `${this.board[currentRow][currentCol].getChar()}`;
-                        } else if(currentRow === contacts[i][0] && currentCol === contacts[i][1]){
-                            if(contacts[i][2] !== -1){
+                        } else if (currentRow === contacts[i][0] && currentCol === contacts[i][1]) {
+                            if (contacts[i][2] !== -1) {
                                 tempWord += `${word.charAt(contacts[i][2])}`;
                             }
                         }
                         currentRow++;
                     }
                     words.push(`${tempWord}`);
-                }else if(position[2] === 'v'){
-                    while(currentCol - 1 >= 0 && !this.board[currentRow][currentCol - 1].empty) currentCol--;
+                } else if (position[2] === 'v') {
+                    while (currentCol - 1 >= 0 && !this.board[currentRow][currentCol - 1].empty) currentCol--;
                     tempWord += 'h;';
                     tempWord += currentRow.toString() + ';';
                     tempWord += currentCol.toString() + ';';
-                    while(currentCol < BOARD_LENGTH && (!this.board[currentRow][currentCol].empty || currentCol <= contacts[i][1])){
-                        if(!this.board[currentRow][currentCol].empty){
+                    while (currentCol < BOARD_LENGTH && (!this.board[currentRow][currentCol].empty || currentCol <= contacts[i][1])) {
+                        if (!this.board[currentRow][currentCol].empty) {
                             tempWord += this.board[currentRow][currentCol].getChar();
-                        } else if(currentRow === contacts[i][0] && currentCol === contacts[i][1]){
-                            if(contacts[i][2] !== -1){
+                        } else if (currentRow === contacts[i][0] && currentCol === contacts[i][1]) {
+                            if (contacts[i][2] !== -1) {
                                 tempWord += word.charAt(contacts[i][2]);
                             }
                         }
@@ -264,28 +263,28 @@ export class Board{
         return words;
     }
 
-    private getContacts(wordLength: number, position: string[]): number[][]{
+    private getContacts(wordLength: number, position: string[]): number[][] {
         let contacts: number[][] = [];
         let row = position[0].charCodeAt(0) - A_ASCII;
         let col = parseInt(position[1]) - 1;
         let collisions = 0;
-        if(this.board[Math.floor(BOARD_LENGTH/2)][Math.floor(BOARD_LENGTH/2)].empty){
+        if (this.board[Math.floor(BOARD_LENGTH/2)][Math.floor(BOARD_LENGTH/2)].empty) {
             contacts = [[-1]];
-        } else if(position[2] === 'h') {
-            for(let i=0; i < wordLength + collisions; i++){
-                if(!this.board[row][col + i].empty){
+        } else if (position[2] === 'h') {
+            for(let i=0; i < wordLength + collisions; i++) {
+                if (!this.board[row][col + i].empty) {
                     collisions++;
                     contacts.push([row, col + i, -1]);
-                } else if(!this.board[row - 1][col + i].empty || !this.board[row + 1][col + i].empty){
+                } else if (!this.board[row - 1][col + i].empty || !this.board[row + 1][col + i].empty) {
                     contacts.push([row, col + i, i - collisions]);
                 }
             }
-        } else if(position[2] === 'v') {
-            for(let i=0; i < wordLength + collisions; i++){
-                if(!this.board[row + i][col].empty){
+        } else if (position[2] === 'v') {
+            for (let i=0; i < wordLength + collisions; i++) {
+                if (!this.board[row + i][col].empty) {
                     collisions++;
                     contacts.push([row+i, col, -1]);
-                } else if(!this.board[row + i][col-1].empty || !this.board[row + i][col+1].empty){
+                } else if (!this.board[row + i][col-1].empty || !this.board[row + i][col+1].empty) {
                     contacts.push([row+i, col, i - collisions]);
                 }
             }
@@ -293,13 +292,13 @@ export class Board{
         return contacts;
     }
 
-    private firstWordValidation(wordLength: number, position: string[]): boolean{
-        if(!this.board[Math.floor(BOARD_LENGTH/2)][Math.floor(BOARD_LENGTH/2)].empty){
+    private firstWordValidation(wordLength: number, position: string[]): boolean {
+        if (!this.board[Math.floor(BOARD_LENGTH/2)][Math.floor(BOARD_LENGTH/2)].empty) {
             return true;
         } else {
             let row = position[0].charCodeAt(0) - A_ASCII;
             let col = parseInt(position[1]) - 1;
-            switch(position[2]){
+            switch (position[2]) {
                 case 'h': {
                     if(row === Math.floor(BOARD_LENGTH/2) && col <= Math.floor(BOARD_LENGTH/2) && (col + wordLength - 1) >= Math.floor(BOARD_LENGTH/2)){
                         return true;
@@ -317,28 +316,28 @@ export class Board{
         return false;
     }
 
-    private isWordInBound(wordLength: number, position: string[]){
+    private isWordInBound(wordLength: number, position: string[]) {
         let row = position[0].charCodeAt(0) - A_ASCII;
         let col = parseInt(position[1]) - 1;
         let collisionsCol = 0;
         let collisionsRow = 0;
-        if(row < 0 || col < 0) return false;
+        if (row < 0 || col < 0) return false;
 
-        if(position[2] === 'h'){
-            for(let i=0; i < wordLength + collisionsCol; i++){
-                if(col + i >= BOARD_LENGTH){ 
+        if (position[2] === 'h') {
+            for (let i=0; i < wordLength + collisionsCol; i++) {
+                if (col + i >= BOARD_LENGTH) { 
                     return false;
                 }
-                if(!this.board[row][col + i].empty){
+                if (!this.board[row][col + i].empty) {
                     collisionsCol++;
                 }
             }
-        } else if(position[2] === 'v'){
-            for(let i=0; i < wordLength+ collisionsRow; i++){
-                if(row + i >= BOARD_LENGTH){ 
+        } else if (position[2] === 'v') {
+            for (let i=0; i < wordLength+ collisionsRow; i++) {
+                if (row + i >= BOARD_LENGTH) { 
                     return false;
                 }
-                if(!this.board[row + i][col].empty){
+                if (!this.board[row + i][col].empty) {
                     collisionsRow++;
                 }
             }
@@ -346,15 +345,15 @@ export class Board{
         return true;
     }
 
-    private validatePositionSyntax(position: string[]): boolean{
-        if(position[0].match(/[a-o]/g) !== null){
-            if(position[2].match(/[hv]/g) !== null){
-                if(position[1].length == 1){
-                    if(position[1].match(/[1-9]/g) !== null){
+    private validatePositionSyntax(position: string[]): boolean {
+        if (position[0].match(/[a-o]/g) !== null) {
+            if (position[2].match(/[hv]/g) !== null) {
+                if (position[1].length == 1) {
+                    if (position[1].match(/[1-9]/g) !== null) {
                         return true;
                     }
-                }if(position[1].length == 2){
-                    if(position[1][1].match(/[0-5]/g) !== null && position[1][0] === '1'){
+                } if(position[1].length == 2) {
+                    if (position[1][1].match(/[0-5]/g) !== null && position[1][0] === '1') {
                         return true;
                     }
                 }
@@ -366,7 +365,7 @@ export class Board{
     private separatePosition(position: string): string[] {
         let positionArray: string[] = [];
             positionArray[0] = position.charAt(0);
-        if(position.length === 3){
+        if (position.length === 3) {
             positionArray[1] = position.charAt(1);
             positionArray[2] = position.charAt(2);
         } else {
@@ -376,10 +375,9 @@ export class Board{
         return positionArray;
     }
 
-    private initList(array:number[][], multLetter:number, multWord?:number){
-        for(let i = 0; i < array.length; i++){
+    private initList (array:number[][], multLetter:number, multWord?:number) {
+        for (let i = 0; i < array.length; i++) {
             this.board[array[i][0]] [array[i][1]] = new GameTile(multLetter, multWord);
         }
     }
-
 }

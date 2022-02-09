@@ -1,26 +1,26 @@
-import { alphabetTemplate } from "@app/alphabet-template";
+import { alphabetTemplate } from '@app/alphabet-template';
 
-export class GameTile{
+export class GameTile {
     empty: boolean;
-    private letter: string;
-    private letterValue: number;
-    public newlyPlaced: boolean;
+    newlyPlaced: boolean;
     readonly multiplier: number;
     readonly wordMultiplier: number;
+    private letter: string;
+    private letterValue: number;
 
-    constructor(multiplier: number, wordMultiplier?: number){
+    constructor(multiplier: number, wordMultiplier?: number) {
         this.empty = true;
         this.multiplier = multiplier;
-        this.wordMultiplier = (wordMultiplier === undefined ? 1 : wordMultiplier);
+        this.wordMultiplier = wordMultiplier === undefined ? 1 : wordMultiplier;
     }
 
-    setLetter(letter: string){
-        if(letter.length === 1 && letter >= 'a' && letter <= 'z'){
+    setLetter(letter: string) {
+        if (letter.length === 1 && letter >= 'a' && letter <= 'z') {
             this.letter = letter;
             this.empty = false;
             this.newlyPlaced = true;
             this.letterValue = this.getLetterValue(this.letter);
-        } else if(letter.length === 1 && letter >= 'A' && letter <= 'Z'){
+        } else if (letter.length === 1 && letter >= 'A' && letter <= 'Z') {
             this.letter = letter.toLowerCase();
             this.empty = false;
             this.newlyPlaced = true;
@@ -29,9 +29,9 @@ export class GameTile{
         return this.letterValue * this.multiplier;
     }
 
-    getPoints(): number{
-        if(this.letter !== undefined){
-            if(this.newlyPlaced){
+    getPoints(): number {
+        if (this.letter !== undefined) {
+            if (this.newlyPlaced) {
                 return this.letterValue * this.multiplier;
             }
             return this.letterValue;
@@ -39,17 +39,16 @@ export class GameTile{
         return -1;
     }
 
-    getChar(): string{
+    getChar(): string {
         return this.empty ? '!' : this.letter;
     }
 
-    private getLetterValue(char: string): number{
-        for(let i=0; i < alphabetTemplate.length; i++){
-            if(alphabetTemplate[i].name === char.toUpperCase()){
-                return alphabetTemplate[i].score;
+    private getLetterValue(char: string): number {
+        for(let letter of alphabetTemplate){
+            if (letter.name === char.toUpperCase()) {
+                return letter.score;
             }
         }
         return -1;
     }
-
 }

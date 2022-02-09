@@ -1,5 +1,5 @@
-import { assert } from "console";
-import { GameTile } from "./gameTile";
+import { assert } from 'console';
+import { GameTile } from './gameTile';
 
 describe('Game Tile', () => {
     let gameTile: GameTile;
@@ -12,7 +12,6 @@ describe('Game Tile', () => {
         gameTileWordMult3 = new GameTile(1, 3);
     });
 
-    
     it('should be initialised with the good multipliers', (done) => {
         assert(gameTile.multiplier === 1);
         assert(gameTile.wordMultiplier === 1);

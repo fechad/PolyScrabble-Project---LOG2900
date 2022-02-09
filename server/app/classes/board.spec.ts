@@ -13,9 +13,9 @@ describe('Board', () => {
 
     it('should create 165 tiles', (done) => {
         const expectedCount = BOARD_LENGTH * BOARD_LENGTH;
-        assert(board['board'] !== undefined);
+        assert(board.board !== undefined);
         let count = 0;
-        board['board'].forEach((row) => {
+        board.board.forEach((row) => {
             row.forEach((tile) => {
                 if(tile !== undefined) count++;
             });
@@ -25,52 +25,50 @@ describe('Board', () => {
     });
 
     it('should add a list of multipliers on the board', (done) => {
-        const gameBoard = board['board'];
         //let multiplierList = [[1, 2], [3, 4], [5, 6]];
 
         let testRef = [0, 0, 1, 3];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [1, 13, 1, 2];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [5, 1, 3, 1];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [0, 3, 2, 1];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [2, 4, 1, 1];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
         done();
     });
 
     it('should have all type of multipliers', (done) => {
-        const gameBoard = board['board'];
         let testRef = [0, 0, 1, 3];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [1, 13, 1, 2];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [5, 1, 3, 1];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [0, 3, 2, 1];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
 
         testRef = [2, 4, 1, 1];
-        assert(gameBoard[testRef[0]][testRef[1]].multiplier === testRef[2]);
-        assert(gameBoard[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
+        assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
+        assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
         done();
     });
 
@@ -148,15 +146,15 @@ describe('Board', () => {
         positionArray = ['d', '12', 'h'];
         result = board['isWordInBound'](word.length, positionArray);
         assert(result);
-        board['board'][3][12].setLetter('a');
+        board.board[3][12].setLetter('a');
         result = board['isWordInBound'](word.length, positionArray);
         assert(!result);
 
         positionArray = ['k', '10', 'v'];
         result = board['isWordInBound'](word.length, positionArray);
         assert(result);
-        board['board'][11][9].setLetter('a');
-        board['board'][13][9].setLetter('t');
+        board.board[11][9].setLetter('a');
+        board.board[13][9].setLetter('t');
         result = board['isWordInBound'](word.length, positionArray);
         assert(!result);
         done();
@@ -181,7 +179,7 @@ describe('Board', () => {
     it('should let not first word not touch the star', (done) => {
         let word = 'test';
         let positionArray = ['m', '5', 'h'];
-        board['board'][7][7].setLetter('a');
+        board.board[7][7].setLetter('a');
         let result = board['firstWordValidation'](word.length, positionArray);
         assert(result);
         done();
@@ -211,8 +209,8 @@ describe('Board', () => {
         assert(contacts.length === 1);
         assert(contacts[0][0] === -1);
 
-        board['board'][7][6].setLetter('a');
-        board['board'][7][7].setLetter('s');
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
         
         positionArray = ['i', '6', 'v'];
         contacts = board['getContacts'](word.length, positionArray);
@@ -222,8 +220,8 @@ describe('Board', () => {
 
     it('should get all the points of contact of the word', (done) => {
         let word = 'test';
-        board['board'][7][6].setLetter('a');
-        board['board'][7][7].setLetter('s');
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
 
         let positionArray = ['i', '6', 'h'];
         let contacts = board['getContacts'](word.length, positionArray);
@@ -236,7 +234,7 @@ describe('Board', () => {
         assert(contacts[1][1] === 7);
         assert(contacts[1][2] === 2);
 
-        board['board'][8][6].setLetter('i');
+        board.board[8][6].setLetter('i');
 
         positionArray = ['i', '6', 'h'];
         contacts = board['getContacts'](word.length, positionArray);
@@ -280,7 +278,7 @@ describe('Board', () => {
         assert(words[0] === expectedWord);
 
 
-        board['board'][7][7].setLetter('a');
+        board.board[7][7].setLetter('a');
         expectedWord = 'h;7;5;teast';
         positionArray = ['h', '6', 'h'];
         contacts = [[-1]];
@@ -299,10 +297,10 @@ describe('Board', () => {
 
     it('should get the words by contact', (done) => {
         let word = 'test';
-        board['board'][7][6].setLetter('i');
-        board['board'][7][7].setLetter('a');
-        board['board'][9][6].setLetter('s');
-        board['board'][9][7].setLetter('t');
+        board.board[7][6].setLetter('i');
+        board.board[7][7].setLetter('a');
+        board.board[9][6].setLetter('s');
+        board.board[9][7].setLetter('t');
         
         let expectedWord = 'h;8;5;test';
         let expectedWord1 = 'v;7;6;ies';
@@ -355,26 +353,26 @@ describe('Board', () => {
     });*/
 
     it('should change newly placed word', (done) => {
-        board['board'][7][6].setLetter('a');
-        board['board'][7][7].setLetter('s');
-        board['board'][9][6].setLetter('v');
-        board['board'][10][6].setLetter('u');
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+        board.board[9][6].setLetter('v');
+        board.board[10][6].setLetter('u');
 
         let wordAndPos = ['h', '7', '6', 'as'];
         board['changeNewlyPlaced'](wordAndPos);
 
-        assert(!board['board'][7][6].newlyPlaced);
-        assert(!board['board'][7][7].newlyPlaced);
-        assert(board['board'][9][6].newlyPlaced);
-        assert(board['board'][10][6].newlyPlaced);
+        assert(!board.board[7][6].newlyPlaced);
+        assert(!board.board[7][7].newlyPlaced);
+        assert(board.board[9][6].newlyPlaced);
+        assert(board.board[10][6].newlyPlaced);
 
         wordAndPos = ['v', '9', '6', 'vu'];
         board['changeNewlyPlaced'](wordAndPos);
 
-        assert(!board['board'][7][6].newlyPlaced);
-        assert(!board['board'][7][7].newlyPlaced);
-        assert(!board['board'][9][6].newlyPlaced);
-        assert(!board['board'][10][6].newlyPlaced);
+        assert(!board.board[7][6].newlyPlaced);
+        assert(!board.board[7][7].newlyPlaced);
+        assert(!board.board[9][6].newlyPlaced);
+        assert(!board.board[10][6].newlyPlaced);
         done();
     });
 
@@ -383,8 +381,8 @@ describe('Board', () => {
         let expectedScore = 7;
         let score = board['placeWithScore'](wordAndPos);
         
-        assert(!board['board'][7][6].newlyPlaced);
-        assert(!board['board'][7][7].newlyPlaced);
+        assert(!board.board[7][6].newlyPlaced);
+        assert(!board.board[7][7].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
 
@@ -392,10 +390,10 @@ describe('Board', () => {
         expectedScore = 9;
         score = board['placeWithScore'](wordAndPos);
         
-        assert(!board['board'][4][5].newlyPlaced);
-        assert(!board['board'][5][5].newlyPlaced);
-        assert(!board['board'][6][5].newlyPlaced);
-        assert(!board['board'][7][5].newlyPlaced);
+        assert(!board.board[4][5].newlyPlaced);
+        assert(!board.board[5][5].newlyPlaced);
+        assert(!board.board[6][5].newlyPlaced);
+        assert(!board.board[7][5].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
 
@@ -403,11 +401,11 @@ describe('Board', () => {
         expectedScore = 10;
         score = board['placeWithScore'](wordAndPos);
         
-        assert(!board['board'][5][4].newlyPlaced);
-        assert(!board['board'][5][5].newlyPlaced);
-        assert(!board['board'][5][6].newlyPlaced);
-        assert(!board['board'][5][7].newlyPlaced);
-        assert(!board['board'][5][8].newlyPlaced);
+        assert(!board.board[5][4].newlyPlaced);
+        assert(!board.board[5][5].newlyPlaced);
+        assert(!board.board[5][6].newlyPlaced);
+        assert(!board.board[5][7].newlyPlaced);
+        assert(!board.board[5][8].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
 
@@ -415,14 +413,14 @@ describe('Board', () => {
         expectedScore = 42;
         score = board['placeWithScore'](wordAndPos);
         
-        assert(!board['board'][7][7].newlyPlaced);
-        assert(!board['board'][7][8].newlyPlaced);
-        assert(!board['board'][7][9].newlyPlaced);
-        assert(!board['board'][7][10].newlyPlaced);
-        assert(!board['board'][7][11].newlyPlaced);
-        assert(!board['board'][7][12].newlyPlaced);
-        assert(!board['board'][7][13].newlyPlaced);
-        assert(!board['board'][7][14].newlyPlaced);
+        assert(!board.board[7][7].newlyPlaced);
+        assert(!board.board[7][8].newlyPlaced);
+        assert(!board.board[7][9].newlyPlaced);
+        assert(!board.board[7][10].newlyPlaced);
+        assert(!board.board[7][11].newlyPlaced);
+        assert(!board.board[7][12].newlyPlaced);
+        assert(!board.board[7][13].newlyPlaced);
+        assert(!board.board[7][14].newlyPlaced);
         expect(score).to.equal(expectedScore);
         done();
     });
