@@ -109,7 +109,7 @@ export class GridService {
         const step = 33.5;
         this.gridContext.font = '20px system-ui';
         for (let i = 0; i < word.length; i++) {
-            this.gridContext.fillStyle = '#000000';
+            this.gridContext.fillStyle = '#E1AC01';
             this.gridContext.fillText(word[i], startPosition.x + 4, startPosition.y + step * i);
         }
     }
@@ -117,7 +117,7 @@ export class GridService {
     drawNumbers(numbers: string) {
         const startPosition: Vec2 = { x: 28, y: 10 };
         const step = 33.5;
-        this.gridContext.fillStyle = '#000000';
+        this.gridContext.fillStyle = '#E1AC01';
         this.gridContext.font = '20px system-ui';
         const numberList = numbers.split(' ', 15);
 

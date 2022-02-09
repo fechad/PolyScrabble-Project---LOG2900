@@ -363,14 +363,14 @@ describe('SocketManager service tests', () => {
         playersSocket[1].on('join', stub);
         playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
-            assert(stub.calledWith(0));
+            expect(stub.args).to.deep.equal([[0, 1]]);
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
             roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
-                assert(stub2.calledWith(0));
+                expect(stub2.args).to.deep.equal([[0]]);
 
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
@@ -380,7 +380,7 @@ describe('SocketManager service tests', () => {
                 setTimeout(() => {
                     // TODO: adapter avec integration validation mots et calcul de points
                     // eslint-disable-next-line dot-notation
-                    assert(stub3.calledWith(letters, position, expectedPoints, service['games'][0].players[0].id));
+                    expect(stub3.args).to.deep.equal([[letters, position, expectedPoints, service['games'][0].players[0].id]]);
 
                     roomSocket.close();
                     gameSocket.close();

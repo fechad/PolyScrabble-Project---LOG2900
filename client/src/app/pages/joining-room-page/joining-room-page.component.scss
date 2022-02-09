@@ -3,6 +3,15 @@
     font-size: 65px;
     width: 50px;
     color: #E1AC01;
+    margin-top: 20px;
+    margin-left: 20px;
+    transition: transform 0.3s ease-in-out;
+  
+}
+
+.material-icons:hover{
+  transform: scale(1.2);
+  
 }
 
 .home-button:hover{
@@ -18,7 +27,6 @@
     flex-wrap: wrap;
     border: 1px solid #999;
     border-radius: 10px;
-    
     margin-bottom: 9px;
     transition: box-shadow 0.1s ease-in-out;
     transition: transform 0.3s ease-in-out;
@@ -39,6 +47,7 @@
 
 #title{
     font-style: Signika Negative;
+    margin-left: -20px;
 }
 
 .title-container{
