@@ -18,9 +18,10 @@ export class CommunicationService {
     private myId: PlayerId | undefined;
     private readonly waitingRoomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
+    private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
 
-    private msgCount: number = 0;
+    // private msgCount: number = 0;
 
     constructor(public gameContextService: GameContextService) {
         this.listenRooms();
@@ -38,7 +39,7 @@ export class CommunicationService {
 
     kick() {
         if (this.isMainPlayer()) {
-            this.gameSocket?.emit('kick');
+            this.roomSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
         }
@@ -54,7 +55,7 @@ export class CommunicationService {
 
     start() {
         if (this.isMainPlayer()) {
-            this.gameSocket?.emit('start');
+            this.roomSocket?.emit('start');
         } else {
             throw new Error('Tried to start when not room creator');
         }
@@ -65,8 +66,9 @@ export class CommunicationService {
     }
 
     sendMessage(message: string) {
-        this.gameSocket?.emit('message', message, this.msgCount++);
-        this.tempMessages.next([...this.tempMessages.value, message]);
+        this.gameSocket?.emit('message', { emitter: this.getId(), text: message });
+        // this.msgCount++;
+        this.gameContextService.addMessage(message, false);
     }
 
     getId(): PlayerId | undefined {
@@ -133,26 +135,39 @@ export class CommunicationService {
     }
 
     private leaveGame() {
-        this.gameSocket?.close();
-        this.gameSocket = undefined;
+        this.roomSocket?.close();
+        this.roomSocket = undefined;
         this.selectedRoom.next(undefined);
     }
 
     private joinRoomHandler(room: string, token: number) {
         console.log(`Join room ${room} with token ${token}`);
-        this.gameSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
-        this.gameSocket.on('kick', () => this.leaveGame());
-        this.gameSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
-        this.gameSocket.on('error', (e) => this.handleError(e));
-        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
-            this.messages.next([...this.messages.value, message]);
-            if (this.msgCount < msgCount && id === this.myId) {
-                this.tempMessages.value.splice(0, msgCount - this.msgCount);
-                this.msgCount = msgCount;
+        this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
+        this.roomSocket.on('kick', () => this.leaveGame());
+        this.roomSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
+        this.roomSocket.on('error', (e) => this.handleError(e));
+        this.roomSocket.on('id', (id: PlayerId) => {
+            this.myId = id;
+        });
+        this.roomSocket.on('you-start', (number) => {
+            if (number === token) {
+                this.gameContextService.iStart();
+                console.log('you-start');
             }
         });
-        this.gameSocket.on('id', (id: PlayerId) => {
-            this.myId = id;
+        this.roomSocket.on('join-game', (gameId) => {
+            this.joinGameHandler(gameId, token);
+        });
+    }
+
+    private joinGameHandler(gameId: string, token: number) {
+        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token } });
+
+        this.gameSocket.on('turn', (isMainPlayerTurn: boolean) => {
+            this.gameContextService.setPlayerTurn(isMainPlayerTurn);
+        });
+        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
+            this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
     }
 }

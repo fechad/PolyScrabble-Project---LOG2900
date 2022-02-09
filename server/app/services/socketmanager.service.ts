@@ -91,13 +91,10 @@ export class SocketManager {
                 socket.on('start', () => {
                     room.start();
                     const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
-<<<<<<< HEAD
                     socket.emit('you-start', 0);
                     console.log(game.players[0].id);
-=======
->>>>>>> bd134f9 (envoie d'erreur dans la boite locale, étoile ajouté au plateau)
                     this.games.push(game);
-                    rooms.to(`room-${room.id}`).emit('joinGame', game.gameId);
+                    rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
             }
 
@@ -166,49 +163,21 @@ export class SocketManager {
             socket.on('message', (message: Message) => game.message(message));
             socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
             socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
-<<<<<<< HEAD
-<<<<<<< HEAD
             socket.on('switch-turn', (playerId: PlayerId) => {
                 game.skipTurn(playerId, false);
             });
             socket.on('reset-timer', (id: PlayerId) => {
-                //console.log('received timer-request');
+                // console.log('received timer-request');
                 game.skipTurn(id, true);
             });
-=======
-            socket.on('skip-turn', (playerId: PlayerId) => game.skipTurn(playerId));
->>>>>>> 5ed970e (restructuration des communications)
-=======
-            socket.on('skipTurn', (playerId: PlayerId) => game.skipTurn(playerId));
->>>>>>> 71c73dd (Revert "restructuration des communications")
             socket.on('parameters', () => game.getParameters());
 
-<<<<<<< HEAD
             const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
-=======
-            game.eventEmitter.on('message', (message) => {
-                games.to(`game-${game.gameId}`).emit('message', message);
-            });
-            game.eventEmitter.on('rack', (letters: string, playerId: PlayerId) => {
-                games.to(`game-${game.gameId}`).emit('rack', letters, playerId);
-            });
-            game.eventEmitter.on('placed', (letters: string, position: string, points: number, playerId: PlayerId) => {
-                games.to(`game-${game.gameId}`).emit('placed', letters, position, points, playerId);
-            });
-            game.eventEmitter.on('turn', (isPlayer0Turn: boolean) => {
-                games.to(`game-${game.gameId}`).emit('turn', isPlayer0Turn);
-            });
-            game.eventEmitter.on('parameters', (parameters) => {
-                games.to(`game-${game.gameId}`).emit('parameters', parameters);
-            });
-            game.eventEmitter.on('game-error', (gameError: Error) => {
-                games.to(`game-${game.gameId}`).emit('game-error', gameError.message);
->>>>>>> bd134f9 (envoie d'erreur dans la boite locale, étoile ajouté au plateau)
             });
         });
     }

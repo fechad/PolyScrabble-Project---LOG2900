@@ -1,5 +1,6 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 
 @Component({
@@ -16,7 +17,7 @@ export class ChatBoxComponent implements OnInit {
     commandStructure: string[] = [];
     myId: string | undefined;
 
-    constructor(public communicationService: CommunicationService, private skipTurnService: SkipTurnService) {
+    constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
         this.myId = this.communicationService.getId();
         console.log(this.myId);
     }
@@ -94,7 +95,7 @@ export class ChatBoxComponent implements OnInit {
         return error;
     }
     passer(): Error | undefined {
-        this.skipTurnService.skipTurn();
+        this.communicationService.switchTurn();
         /* TODO: envoyer au serveur que le tour a été passé */
         return;
     }
