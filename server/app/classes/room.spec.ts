@@ -130,6 +130,7 @@ describe('Room', () => {
         expect(result).to.be.undefined;
         room.start();
         assert(stub.called);
+        // eslint-disable-next-line dot-notation
         assert(room['started']);
         done();
     });
@@ -140,18 +141,21 @@ describe('Room', () => {
 
         room.start();
         assert(stub.notCalled);
+        // eslint-disable-next-line dot-notation
         assert(!room['started']);
         done();
     });
 
-    it('should return if game is started', (done)=>{
+    it('should return if game is started', (done) => {
+        // eslint-disable-next-line dot-notation
         assert(!room['started']);
         assert(!room.isStarted());
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
         room.start();
-        
+
+        // eslint-disable-next-line dot-notation
         assert(room['started']);
         assert(room.isStarted());
         done();

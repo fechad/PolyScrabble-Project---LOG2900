@@ -1,5 +1,7 @@
 import { alphabetTemplate } from '@app/alphabet-template';
 
+const INVALID = -1;
+
 export class GameTile {
     empty: boolean;
     newlyPlaced: boolean;
@@ -36,7 +38,7 @@ export class GameTile {
             }
             return this.letterValue;
         }
-        return -1;
+        return INVALID;
     }
 
     getChar(): string {
@@ -44,11 +46,11 @@ export class GameTile {
     }
 
     private getLetterValue(char: string): number {
-        for(let letter of alphabetTemplate){
+        for (const letter of alphabetTemplate) {
             if (letter.name === char.toUpperCase()) {
                 return letter.score;
             }
         }
-        return -1;
+        return INVALID;
     }
 }

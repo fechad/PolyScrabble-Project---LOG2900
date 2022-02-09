@@ -90,13 +90,13 @@ export class SocketManager {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => {
                     room.start();
-                    const game = new Game(room.id, [room.mainPlayer, (room.getOtherPlayer() as Player)], room.parameters);
+                    const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
                     this.games.push(game);
                     rooms.to(`room-${room.id}`).emit('joinGame', game.gameId);
                 });
             }
 
-            //ne plus utiliser, envoyer messages par la game
+            // ne plus utiliser, envoyer messages par la game
             socket.on('message', (message: string) => {
                 const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
                 if (playerId === undefined) throw new Error('Undefined player tried to send a message');
@@ -119,7 +119,10 @@ export class SocketManager {
 
         const waitingRoom = this.io.of('/waitingRoom');
         waitingRoom.on('connect', (socket) => {
-            socket.emit('broadcastRooms', this.rooms.filter((room) => !room.hasOtherPlayer()));
+            socket.emit(
+                'broadcastRooms',
+                this.rooms.filter((room) => !room.hasOtherPlayer()),
+            );
         });
         setInterval(() => {
             const newRooms = this.rooms.filter((room) => !room.hasOtherPlayer());
@@ -128,7 +131,6 @@ export class SocketManager {
                 this.prevRooms = newRooms;
             }
         }, ROOMS_LIST_UPDATE_TIMEOUT);
-
 
         const games = this.io.of(/^\/games\/\d+$/);
         games.use((s, next) => {
@@ -154,7 +156,7 @@ export class SocketManager {
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
-            
+
             socket.on('message', (message: Message) => game.message(message));
             socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
             socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
@@ -167,7 +169,7 @@ export class SocketManager {
             game.eventEmitter.on('rack', (letters: string, playerId: PlayerId) => {
                 games.to(`game-${game.gameId}`).emit('rack', letters, playerId);
             });
-            game.eventEmitter.on('placed', (letters: string, position: string, points:number, playerId: PlayerId) => {
+            game.eventEmitter.on('placed', (letters: string, position: string, points: number, playerId: PlayerId) => {
                 games.to(`game-${game.gameId}`).emit('placed', letters, position, points, playerId);
             });
             game.eventEmitter.on('turn', (isPlayer0Turn: boolean) => {
@@ -180,8 +182,6 @@ export class SocketManager {
                 games.to(`game-${game.gameId}`).emit('game-error', gameError.message);
             });
         });
-
-
     }
 
     getNewRoomId(): RoomId {
