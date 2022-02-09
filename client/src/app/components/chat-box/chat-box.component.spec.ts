@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatBoxComponent } from './chat-box.component';
 
@@ -7,6 +8,7 @@ describe('ChatBoxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
             declarations: [ChatBoxComponent],
         }).compileComponents();
     });

@@ -16,7 +16,7 @@ export class GameSetupDialogComponent implements OnInit {
         private router: Router,
         private formBuilder: FormBuilder,
         private dialogRef: MatDialogRef<GameSetupDialogComponent>,
-        private communicationService: CommunicationService,
+        public communicationService: CommunicationService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 

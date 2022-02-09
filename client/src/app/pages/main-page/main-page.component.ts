@@ -19,5 +19,4 @@ export class MainPageComponent {
         },
         { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores' },
     ];
-
 }

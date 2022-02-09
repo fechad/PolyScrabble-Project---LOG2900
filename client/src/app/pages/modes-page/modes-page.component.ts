@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
 
 @Component({
