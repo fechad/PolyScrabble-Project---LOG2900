@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { WordValidation } from './word-validation.service';
 
-describe('Word Validation', () => {
+describe('a Word Validation', () => {
     const timeout = 5000; // ms
     let service: WordValidation;
 

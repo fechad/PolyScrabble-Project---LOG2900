@@ -29,9 +29,10 @@ describe('Game Tile', () => {
         assert(gameTile['letter'] === undefined);
         assert(gameTile['letterValue'] === undefined);
         assert(gameTile.empty);
-        gameTile.setLetter('a');
+        const value = gameTile.setLetter('a');
         assert(gameTile['letter'] === 'a');
         assert(gameTile['letterValue'] === 1);
+        assert(value === 1);
         assert(!gameTile.empty);
         done();
     });
@@ -92,7 +93,7 @@ describe('Game Tile', () => {
 
         assert(gameTileMult2['letter'] === 'i');
         assert(gameTileMult2['letterValue'] === 1);
-        assert(gameTileMult2.getPoints() === 2);
+        assert(gameTileMult2.getPoints() === 1);
         assert(!gameTileMult2.empty);
 
         assert(gameTileWordMult3['letter'] === 'o');

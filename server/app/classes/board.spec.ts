@@ -265,28 +265,30 @@ describe('Board', () => {
 
     it('should get the attempted word', (done) => {
         let word = 'test';
+        let expectedWord = 'h;4;5;test'
         let positionArray = ['e', '6', 'h'];
         let contacts = [[-1]];
         let words = board['getWords'](word, positionArray, contacts);
         assert(words.length === 1);
-        assert(words[0] === word);
+        assert(words[0] === expectedWord);
 
         positionArray = ['e', '8', 'v'];
+        expectedWord = 'v;4;7;test'
         contacts = [[-1]];
         words = board['getWords'](word, positionArray, contacts);
         assert(words.length === 1);
-        assert(words[0] === word);
+        assert(words[0] === expectedWord);
 
 
         board['board'][7][7].setLetter('a');
-        let expectedWord = 'teast';
+        expectedWord = 'h;7;5;teast';
         positionArray = ['h', '6', 'h'];
         contacts = [[-1]];
         words = board['getWords'](word, positionArray, contacts);
         assert(words.length === 1);
         assert(words[0] === expectedWord);
 
-        expectedWord = 'tesat';
+        expectedWord = 'v;4;7;tesat';
         positionArray = ['e', '8', 'v'];
         contacts = [[-1]];
         words = board['getWords'](word, positionArray, contacts);
@@ -302,26 +304,52 @@ describe('Board', () => {
         board['board'][9][6].setLetter('s');
         board['board'][9][7].setLetter('t');
         
-        let expectedWord1 = 'ies';
-        let expectedWord2 = 'ast';
+        let expectedWord = 'h;8;5;test';
+        let expectedWord1 = 'v;7;6;ies';
+        let expectedWord2 = 'v;7;7;ast';
         let positionArray = ['i', '6', 'h'];
         let contacts = [[8, 6, 1], [8, 7, 2]];
         let words = board['getWords'](word, positionArray, contacts);
         assert(words.length === 3);
-        assert(words[0] === word);
+        assert(words[0] === expectedWord);
         assert(words[1] === expectedWord1);
         assert(words[2] === expectedWord2);
 
-        expectedWord1 = 'eia';
-        expectedWord2 = 'tst';
+        expectedWord = 'v;6;5;test';
+        expectedWord1 = 'h;7;5;eia';
+        expectedWord2 = 'h;9;5;tst';
         positionArray = ['g', '6', 'v'];
         contacts = [[7, 5, 1], [9, 5, 3]];
         words = board['getWords'](word, positionArray, contacts);
         assert(words.length === 3);
-        assert(words[0] === word);
+        assert(words[0] === expectedWord);
         assert(words[1] === expectedWord1);
         assert(words[2] === expectedWord2);
         done();
     });
     
+    it('should validate words', (done) => {
+        let wordList = ['test', 'valide', 'essai'];
+        let result = board['validateWords'](wordList);
+        assert(result);
+
+        wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zythums']
+        result = board['validateWords'](wordList);
+        assert(result);
+        done();
+    });
+
+    it('should not validate words that are not in the dictionnary', (done) => {
+        let wordList = ['testary', 'valide', 'essai'];
+        let result = board['validateWords'](wordList);
+        assert(!result);
+        
+
+        wordList = ['v;6;5;test', 'h;12;8;validary', 'v;2;10;zythums']
+        result = board['validateWords'](wordList);
+        assert(!result);
+  
+        done();
+    });
+
 });

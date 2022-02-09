@@ -11,7 +11,7 @@ export class GameTile{
         this.wordMultiplier = (wordMultiplier === undefined ? 1 : wordMultiplier);
     }
 
-    setLetter(letter: string){
+    setLetter(letter: string): number{
         if(letter.length === 1 && letter >= 'a' && letter <= 'z'){
             this.letter = letter;
             this.empty = false;
@@ -22,11 +22,12 @@ export class GameTile{
             this.empty = false;
             this.letterValue = 0;
         }
+        return this.letterValue * this.multiplier;
     }
 
     getPoints(): number{
         if(this.letter !== undefined){
-            return this.letterValue * this.multiplier;
+            return this.letterValue;
         }
         return -1;
     }

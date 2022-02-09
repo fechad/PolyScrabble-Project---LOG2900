@@ -1,3 +1,4 @@
+import { WordValidation } from "@app/services/word-validation.service";
 import { GameTile } from "./gameTile";
 
 const BOARD_LENGTH = 15;
@@ -74,8 +75,10 @@ const MULT_LETTERS_2 = [
 
 export class Board{
     private board: GameTile[][];
+    private wordValidation: WordValidation
     
     constructor(){
+        this.wordValidation = new WordValidation();
         this.board = [];
         for(let i: number = 0; i < BOARD_LENGTH; i++){
             this.board[i] = [];
@@ -99,6 +102,7 @@ export class Board{
                     let contacts = this.getContacts(word.length, positionArray);
                     if(contacts.length !== 0){
                         let words = this.getWords(word, positionArray, contacts);
+                        this.validateWords(words);
                         //TODO: get score()
                         console.log(words);
                     } else {
@@ -116,7 +120,23 @@ export class Board{
         return error !== undefined ? error : score;
     }
 
-    private getWords(word: string, position: string[], contacts: number[][]){
+    //TODO: update with new word-validation
+    private validateWords(wordList: string[]): boolean{
+        let isValid = true;
+        wordList.forEach((word) => {
+            let separatedWord = word.split(';');
+            this.wordValidation.isValid(separatedWord[separatedWord.length - 1]).then((valid) => {
+                console.log(valid);
+                console.log('entered');
+                if(!valid){
+                    isValid = false;
+                }
+            });
+        });
+        return isValid;
+    }
+
+    private getWords(word: string, position: string[], contacts: number[][]): string[]{
         let words: string[] = [];
         let row = position[0].charCodeAt(0) - A_ASCII;
         let col = parseInt(position[1]) - 1;
@@ -129,6 +149,9 @@ export class Board{
         //get attempted word
         if(position[2] === 'h'){
             while(currentCol - 1 >= 0 && !this.board[currentRow][currentCol - 1].empty) currentCol--;
+            tempWord += position[2] + ';';
+            tempWord += currentRow.toString() + ';';
+            tempWord += currentCol.toString() + ';';
             while(currentCol < BOARD_LENGTH && (letterCount < word.length || !this.board[currentRow][currentCol + 1].empty)){
                 if(this.board[currentRow][currentCol].empty){
                     tempWord += word.charAt(letterCount);
@@ -141,6 +164,9 @@ export class Board{
             words.push(`${tempWord}`);
         }else if(position[2] === 'v'){
             while(currentRow - 1 >= 0 && !this.board[currentRow - 1][currentCol].empty) currentRow--;
+            tempWord += position[2] + ';';
+            tempWord += currentRow.toString() + ';';
+            tempWord += currentCol.toString() + ';';
             while(currentRow < BOARD_LENGTH && (letterCount < word.length || !this.board[currentRow + 1][currentCol].empty)){
                 if(this.board[currentRow][currentCol].empty){
                     tempWord += word.charAt(letterCount);
@@ -163,6 +189,9 @@ export class Board{
 
                 if(position[2] === 'h'){
                     while(currentRow - 1 >= 0 && !this.board[currentRow - 1][currentCol].empty) currentRow--;
+                    tempWord += 'v;';
+                    tempWord += currentRow.toString() + ';';
+                    tempWord += currentCol.toString() + ';';
                     while(currentRow < BOARD_LENGTH && (!this.board[currentRow][currentCol].empty || currentRow <= contacts[i][0])){
                         if(!this.board[currentRow][currentCol].empty){
                             tempWord += `${this.board[currentRow][currentCol].getChar()}`;
@@ -176,6 +205,9 @@ export class Board{
                     words.push(`${tempWord}`);
                 }else if(position[2] === 'v'){
                     while(currentCol - 1 >= 0 && !this.board[currentRow][currentCol - 1].empty) currentCol--;
+                    tempWord += 'h;';
+                    tempWord += currentRow.toString() + ';';
+                    tempWord += currentCol.toString() + ';';
                     while(currentCol < BOARD_LENGTH && (!this.board[currentRow][currentCol].empty || currentCol <= contacts[i][1])){
                         if(!this.board[currentRow][currentCol].empty){
                             tempWord += this.board[currentRow][currentCol].getChar();
