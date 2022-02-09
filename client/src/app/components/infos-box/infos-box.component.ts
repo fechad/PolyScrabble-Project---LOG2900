@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, Injectable, Injector, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
-import { SkipTurnService } from '@app/services/skip-turn.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
 
 @Component({
@@ -14,7 +13,7 @@ export class InfosBoxComponent implements AfterViewInit {
     // @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
     @ViewChild('countdown') cd: CountdownComponent;
     private subscription: any;
-    constructor(public skipTurn: SkipTurnService, public gameContextService: GameContextService, public communicationService: CommunicationService) {
+    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.subscription = gameContextService.isMyTurn.subscribe(() => {
             this.reset();
         });
@@ -25,8 +24,10 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     handleEvent(e: CountdownEvent) {
-        this.communicationService.switchTurn();
         if (e.action === 'done') {
+            if (this.gameContextService.isMyTurn) {
+                this.communicationService.switchTurn();
+            }
             this.reset();
         }
     }
@@ -39,5 +40,5 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 }
 Injector.create({
-    providers: [{ provide: InfosBoxComponent, deps: [SkipTurnService] }],
+    providers: [{ provide: InfosBoxComponent, deps: [GameContextService] }],
 });

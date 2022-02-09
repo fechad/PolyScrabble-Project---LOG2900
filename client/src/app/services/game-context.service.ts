@@ -35,6 +35,7 @@ export class GameContextService {
     }
 
     setPlayerTurn(isMyTurn: boolean) {
+        console.log('entered in setPlayerTurn');
         this.isMyTurn.next(isMyTurn);
     }
 

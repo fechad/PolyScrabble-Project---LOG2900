@@ -60,6 +60,7 @@ export class Game {
     private checkTurn(playerId: PlayerId) {
         const validTurn = playerId === (this.isPlayer0Turn ? this.players[0].id : this.players[1].id);
         if (!validTurn) {
+            console.log('entered in invalid');
             this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
         }
         return validTurn;

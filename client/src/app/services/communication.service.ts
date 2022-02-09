@@ -76,7 +76,8 @@ export class CommunicationService {
     }
 
     switchTurn() {
-        this.gameSocket?.emit('switch-turn');
+        console.log('intered in switch');
+        this.gameSocket?.emit('switch-turn', this.myId);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
