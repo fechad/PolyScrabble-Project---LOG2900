@@ -25,9 +25,7 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     handleEvent(e: CountdownEvent) {
-        if (this.gameContextService.isMyTurn) {
-            this.communicationService.switchTurn();
-        }
+        this.communicationService.switchTurn();
         if (e.action === 'done') {
             this.reset();
         }

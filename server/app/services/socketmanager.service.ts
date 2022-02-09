@@ -92,7 +92,7 @@ export class SocketManager {
                     room.start();
                     const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
                     this.games.push(game);
-                    rooms.to(`room-${room.id}`).emit('joinGame', game.gameId);
+                    rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
             }
 

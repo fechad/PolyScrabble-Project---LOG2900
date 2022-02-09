@@ -11,11 +11,11 @@ type Board = Tile[][];
 })
 export class GameContextService {
     // BehaviorSubject<> = new BehaviorSubject();
-    readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
+    readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private msgCount: number = 0;
 
     receiveMessages(message: Message, msgCount: number, myself: boolean) {
@@ -32,6 +32,10 @@ export class GameContextService {
         } else {
             this.tempMessages.next([...this.tempMessages.value, message]);
         }
+    }
+
+    setPlayerTurn(isMyTurn: boolean) {
+        this.isMyTurn.next(isMyTurn);
     }
 
     constructor() {}
