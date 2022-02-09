@@ -21,7 +21,7 @@ export class ChatBoxComponent implements OnInit {
         this.myId = this.communicationService.getId();
         console.log(this.myId);
     }
-
+    //pre-dev
     ngOnInit(): void {}
 
     clearText() {
