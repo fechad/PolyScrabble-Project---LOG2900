@@ -14,7 +14,7 @@ export class InfosBoxComponent implements AfterViewInit {
     @ViewChild('countdown') cd: CountdownComponent;
     private subscription: any;
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
-        this.subscription = gameContextService.isMyTurn.subscribe(() => {
+        this.subscription = gameContextService.isMainPlayerTurn.subscribe(() => {
             this.reset();
         });
     }
@@ -25,9 +25,7 @@ export class InfosBoxComponent implements AfterViewInit {
 
     handleEvent(e: CountdownEvent) {
         if (e.action === 'done') {
-            if (this.gameContextService.isMyTurn) {
-                this.communicationService.switchTurn();
-            }
+            this.communicationService.resetTimer();
             this.reset();
         }
     }

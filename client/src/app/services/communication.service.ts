@@ -79,6 +79,9 @@ export class CommunicationService {
         console.log('intered in switch');
         this.gameSocket?.emit('switch-turn', this.myId);
     }
+    resetTimer() {
+        this.gameSocket?.emit('reset-timer', this.myId);
+    }
 
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
@@ -108,7 +111,6 @@ export class CommunicationService {
 
     async createRoom(playerName: string, parameters: Parameters) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-
         this.mainSocket.emit('createRoom', playerName, parameters);
         await this.waitForRoom();
     }
@@ -147,6 +149,12 @@ export class CommunicationService {
         this.roomSocket.on('id', (id: PlayerId) => {
             this.myId = id;
         });
+        this.roomSocket.on('you-start', (number) => {
+            if (number === token) {
+                this.gameContextService.iStart();
+                console.log('you-start');
+            }
+        });
         this.roomSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId, token);
         });
@@ -154,12 +162,9 @@ export class CommunicationService {
 
     private joinGameHandler(gameId: string, token: number) {
         this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token } });
+
         this.gameSocket.on('turn', (isMainPlayerTurn: boolean) => {
-            if (this.isMainPlayer()) {
-                this.gameContextService.setPlayerTurn(isMainPlayerTurn);
-            } else {
-                this.gameContextService.setPlayerTurn(!isMainPlayerTurn);
-            }
+            this.gameContextService.setPlayerTurn(isMainPlayerTurn);
         });
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);

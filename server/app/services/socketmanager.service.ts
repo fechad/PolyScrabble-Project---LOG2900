@@ -26,6 +26,7 @@ export class SocketManager {
         this.io.on('connection', (socket) => {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
             socket.emit('id', socket.id);
+
             // message initial
             socket.on('joinRoom', (id: RoomId, playerName: string) => {
                 const room = this.rooms.find((r) => r.id === id);
@@ -81,7 +82,6 @@ export class SocketManager {
             const messages: Message[] = this.messages[socket.data.roomId];
             const room = this.rooms[socket.data.roomIdx];
             socket.join(`room-${room.id}`);
-
             const events: { [key: string]: () => void } = { updateRoom: () => socket.emit('updateRoom', room) };
             if (!isMainPlayer) events.kick = () => socket.emit('kick');
             Object.entries(events).forEach(([name, handler]) => room.events.on(name, handler));
@@ -91,6 +91,8 @@ export class SocketManager {
                 socket.on('start', () => {
                     room.start();
                     const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
+                    socket.emit('you-start', 0);
+                    console.log(game.players[0].id);
                     this.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
@@ -162,7 +164,11 @@ export class SocketManager {
             socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
             socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
             socket.on('switch-turn', (playerId: PlayerId) => {
-                game.skipTurn(playerId);
+                game.skipTurn(playerId, false);
+            });
+            socket.on('reset-timer', (id: PlayerId) => {
+                //console.log('received timer-request');
+                game.skipTurn(id, true);
             });
             socket.on('parameters', () => game.getParameters());
 
