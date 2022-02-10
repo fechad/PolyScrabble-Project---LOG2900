@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { alphabet } from '@app/services/Alphabet';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'app-single-letter',
@@ -7,8 +6,8 @@ import { alphabet } from '@app/services/Alphabet';
     styleUrls: ['./single-letter.component.scss'],
 })
 export class SingleLetterComponent implements OnInit {
-    alphabet = alphabet;
-    selectedLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+    @Input()
+    selectedLetter: string;
 
     constructor() {}
 
