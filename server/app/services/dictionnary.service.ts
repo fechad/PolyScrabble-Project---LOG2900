@@ -22,7 +22,22 @@ export class DictionnaryService {
         if (!this.isWord(playedWord)) {
             return false;
         }
+        console.log(playedWord);
         return this.dictionnaries[0].words.includes(playedWord.toLowerCase());
+    }
+
+    validateWords(wordList: string[]): boolean {
+        let isValid = true;
+        let valid: boolean;
+        for(let word of wordList){
+            let separatedWord = word.split(';');
+            valid = this.isValidWord(separatedWord[separatedWord.length - 1]);
+            if(!valid){
+                isValid = false;
+            }
+        }
+        console.log(isValid);
+        return isValid;
     }
 
     private isWord(expression: string): boolean {

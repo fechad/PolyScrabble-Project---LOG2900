@@ -1,4 +1,4 @@
-// import { WordValidation } from "@app/services/word-validation.service";
+import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameTile } from './gameTile';
 import * as Multipliers from './multipliers';
 
@@ -9,9 +9,11 @@ const A_ASCII = 'a'.charCodeAt(0);
 
 export class Board {
     board: GameTile[][];
-    // private wordValidation: WordValidation
+    private dictionnary: DictionnaryService;
+    
     constructor() {
-        // this.wordValidation = new WordValidation();
+        this.dictionnary = new DictionnaryService();
+        this.dictionnary.init();
         this.board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             this.board[i] = [];
@@ -33,11 +35,12 @@ export class Board {
             if (this.isWordInBound(word.length, positionArray)) {
                 if (this.firstWordValidation(word.length, positionArray)) {
                     const contacts = this.getContacts(word.length, positionArray);
+                    console.log(contacts);
                     if (contacts.length !== 0) {
                         const words = this.getWords(word, positionArray, contacts);
-                        if (this.validateWords(words)) {
+                        //if (this.dictionnary.validateWords(words)) {
                             score = this.placeWithScore(words);
-                        } else error = new Error('Un des mots crees ne fait pas partie du dictionnaire');
+                        //} else error = new Error('Un des mots crees ne fait pas partie du dictionnaire');
                     } else error = new Error('Placement invalide vous devez toucher un autre mot');
                 } else error = new Error('Placement invalide pour le premier mot');
             } else error = new Error('Placement invalide le mot ne rentre pas dans la grille');
@@ -89,20 +92,6 @@ export class Board {
                 currentRow++;
             }
         }
-    }
-
-    // TODO: update with new word-validation
-    private validateWords(wordList: string[]): boolean {
-        const isValid = true;
-        /* wordList.forEach((word) => {
-            let separatedWord = word.split(';');
-            this.wordValidation.isValid(separatedWord[separatedWord.length - 1]).then((valid) => {
-                if(!valid){
-                    isValid = false;
-                }
-            });
-        });*/
-        return isValid;
     }
 
     private getWords(word: string, position: string[], contacts: number[][]): string[] {
@@ -200,6 +189,7 @@ export class Board {
             contacts = [[INVALID]];
         } else if (position[2] === 'h') {
             for (let i = 0; i < wordLength + collisions; i++) {
+                console.log(`row: ${row}, col: ${col + i}, collisions: ${collisions}`);
                 if (!this.board[row][col + i].empty) {
                     collisions++;
                     contacts.push([row, col + i, INVALID]);

@@ -364,32 +364,6 @@ describe('Board', () => {
         done();
     });
 
-    // TODO: update with new word-validation service
-    /*
-    it('should validate words', (done) => {
-        let wordList = ['test', 'valide', 'essai'];
-        let result = board['validateWords'](wordList);
-        assert(result);
-
-        wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zythums']
-        result = board['validateWords'](wordList);
-        assert(result);
-        done();
-    });
-
-    it('should not validate words that are not in the dictionnary', (done) => {
-        let wordList = ['testary', 'valide', 'essai'];
-        let result = board['validateWords'](wordList);
-        assert(!result);
-        
-
-        wordList = ['v;6;5;test', 'h;12;8;validary', 'v;2;10;zythums']
-        result = board['validateWords'](wordList);
-        assert(!result);
-  
-        done();
-    });*/
-
     it('should change newly placed word', (done) => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
@@ -463,6 +437,26 @@ describe('Board', () => {
         assert(!board.board[7][13].newlyPlaced);
         assert(!board.board[7][14].newlyPlaced);
         expect(score).to.equal(expectedScore);
+        done();
+    });
+
+    it('should place a word on the board', (done) => {
+        let position = 'f8v';
+        let attemptedWord = 'testeur';
+        let expectedScore = 8;
+
+        let result = board.placeWord(attemptedWord, position);
+        expect(result).to.equals(expectedScore);
+
+        console.log(board.board[5][7])
+
+        position = 'f6h';
+        attemptedWord = 'ars';
+        expectedScore = 13;
+        
+        result = board.placeWord(attemptedWord, position);
+        console.log(result);
+        expect(result).to.equals(expectedScore);
         done();
     });
 });
