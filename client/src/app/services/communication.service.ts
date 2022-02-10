@@ -176,8 +176,9 @@ export class CommunicationService {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
-            console.log(rack);
-            if (id === this.myId) this.gameContextService.letterRack.next(rack);
+            const goodId = id === this.myId;
+            console.log(goodId);
+            this.gameContextService.updateRack(rack);
         });
     }
 }
