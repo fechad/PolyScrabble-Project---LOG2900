@@ -8,9 +8,13 @@ import { GameContextService } from '@app/services/game-context.service';
 })
 export class LetterRackComponent implements OnInit {
     letters: Letter[];
-    constructor(public gameContextService: GameContextService) {}
-
-    ngOnInit(): void {
-        this.gameContextService.letterRack.subscribe((newLetters) => (this.letters = newLetters));
+    constructor(public gameContextService: GameContextService) {
+        console.log(gameContextService.letterRack.getValue());
+        this.gameContextService.letterRackCast.subscribe((newLetters) => {
+            console.log(newLetters);
+            this.letters = newLetters;
+        });
     }
+
+    ngOnInit(): void {}
 }
