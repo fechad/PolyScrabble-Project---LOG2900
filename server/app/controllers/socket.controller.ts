@@ -2,14 +2,14 @@ import { Game } from '@app/classes/game';
 import { Parameters } from '@app/classes/parameters';
 import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
 import { Message } from '@app/message';
+import { RoomsService } from '@app/services/rooms.service';
+import { WaitingRoomService } from '@app/services/waiting-room.service';
 import * as http from 'http';
 import * as io from 'socket.io';
-import { isDeepStrictEqual } from 'util';
 
-const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
+type Handlers = [string, (params: any[]) => void][];
 
 export class SocketManager {
-    readonly rooms: Room[] = [];
     readonly games: Game[] = [];
     private io: io.Server;
     private nextRoomId = 0;
@@ -20,13 +20,15 @@ export class SocketManager {
     }
 
     init(): void {
+        const roomsService = new RoomsService();
+        
         this.io.on('connection', (socket) => {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
             socket.emit('id', socket.id);
 
             // message initial
             socket.on('joinRoom', (id: RoomId, playerName: string) => {
-                const room = this.rooms.find((r) => r.id === id);
+                const room = roomsService.rooms.find((r) => r.id === id);
                 if (room === undefined) {
                     socket.emit('error', 'Room is no longer available');
                     return;
@@ -44,7 +46,7 @@ export class SocketManager {
                 const room = new Room(roomId, socket.id, playerName, parameters);
                 socket.emit('join', roomId, 0);
                 console.log(`Created room ${roomId} for player ${playerName}`);
-                this.rooms.push(room);
+                roomsService.rooms.push(room);
             });
 
             socket.on('disconnect', (reason) => {
@@ -56,7 +58,7 @@ export class SocketManager {
         const rooms = this.io.of(/^\/rooms\/\d+$/);
         rooms.use((s, next) => {
             const roomId = Number.parseInt(s.nsp.name.substring('/rooms/'.length), 10);
-            const idx = this.rooms.findIndex((room) => room.id === roomId);
+            const idx = roomsService.rooms.findIndex((room) => room.id === roomId);
             const NOT_FOUND = -1;
             if (idx === NOT_FOUND) {
                 next(Error('Invalid room number'));
@@ -77,11 +79,11 @@ export class SocketManager {
             const isMainPlayer = socket.handshake.auth.token === 0;
             if (this.messages[socket.data.roomId] === undefined) this.messages[socket.data.roomId] = [];
             const messages: Message[] = this.messages[socket.data.roomId];
-            const room = this.rooms[socket.data.roomIdx];
+            const room = roomsService.rooms[socket.data.roomIdx];
             socket.join(`room-${room.id}`);
             const events: { [key: string]: () => void } = { updateRoom: () => socket.emit('updateRoom', room) };
             if (!isMainPlayer) events.kick = () => socket.emit('kick');
-            Object.entries(events).forEach(([name, handler]) => room.events.on(name, handler));
+            Object.entries(events).forEach(([name, handler]) => room.on(name, handler));
 
             if (isMainPlayer) {
                 socket.on('kick', () => room.kickOtherPlayer());
@@ -106,32 +108,30 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                Object.entries(events).forEach(([name, handler]) => room.events.off(name, handler));
+                Object.entries(events).forEach(([name, handler]) => room.off(name, handler));
                 if (isMainPlayer) {
                     // swap remove
-                    this.rooms[socket.data.roomId] = this.rooms[this.rooms.length - 1];
-                    this.rooms.pop();
+                    roomsService.rooms[socket.data.roomId] = roomsService.rooms[roomsService.rooms.length - 1];
+                    roomsService.rooms.pop();
                 }
             });
 
             socket.emit('updateRoom', room);
         });
 
+        const waitingRoomService = new WaitingRoomService(roomsService);
         const waitingRoom = this.io.of('/waitingRoom');
         waitingRoom.on('connect', (socket) => {
-            socket.emit(
-                'broadcastRooms',
-                this.rooms.filter((room) => !room.hasOtherPlayer()),
-            );
+            const handlers: Handlers = WaitingRoomService.EVENTS.map(event => (
+                [event, (...params: any[]) => socket.emit(event, ...params)]
+            ));
+            handlers.forEach(([event, handler]) => waitingRoomService.on(event, handler));
+            waitingRoomService.connect(socket);
+
+            socket.on('disconnect', () => {
+                handlers.forEach(([event, handler]) => waitingRoomService.on(event, handler));
+            });
         });
-        let prevRooms: Room[];
-        setInterval(() => {
-            const newRooms = this.rooms.filter((room) => !room.hasOtherPlayer());
-            if (!isDeepStrictEqual(newRooms, prevRooms)) {
-                waitingRoom.emit('broadcastRooms', newRooms);
-                prevRooms = newRooms;
-            }
-        }, ROOMS_LIST_UPDATE_TIMEOUT);
 
         const games = this.io.of(/^\/games\/\d+$/);
         games.use((s, next) => {

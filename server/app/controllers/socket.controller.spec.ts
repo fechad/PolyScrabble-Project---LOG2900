@@ -1,14 +1,15 @@
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
 import { Message } from '@app/message';
+import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/services/waiting-room.service';
 import { Server } from 'app/server';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
-import { SocketManager } from './socketmanager.service';
+import { SocketManager } from './socket.controller';
 
-const RESPONSE_DELAY = 800;
+const RESPONSE_DELAY = ROOMS_LIST_UPDATE_TIMEOUT + 10;
 
 describe('SocketManager service tests', () => {
     let service: SocketManager;
@@ -44,9 +45,11 @@ describe('SocketManager service tests', () => {
 
     it('should broadcast available rooms on connect', (done) => {
         const stub = sinon.stub();
-        broadcastSocket.on('broadcastRooms', stub);
+        broadcastSocket.disconnect();
+        broadcastSocket.on('broadcast-rooms', stub);
+        broadcastSocket.connect();
         setTimeout(() => {
-            assert(stub.callCount === 1);
+            expect(stub.callCount).to.equal(1);
             assert(stub.alwaysCalledWith([]));
             done();
         }, RESPONSE_DELAY);
@@ -54,7 +57,7 @@ describe('SocketManager service tests', () => {
 
     it('should create a room', (done) => {
         const stub = sinon.stub();
-        broadcastSocket.on('broadcastRooms', stub);
+        broadcastSocket.on('broadcast-rooms', stub);
         const parameters = new Parameters();
         playersSocket[0].emit('createRoom', 'Dummy', parameters);
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters);
@@ -67,7 +70,7 @@ describe('SocketManager service tests', () => {
 
     it('should join a room', (done) => {
         const stub = sinon.stub();
-        broadcastSocket.on('broadcastRooms', stub);
+        broadcastSocket.on('broadcast-rooms', stub);
         const parameters = new Parameters();
         playersSocket[0].emit('createRoom', 'Dummy', parameters);
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters);
@@ -90,7 +93,7 @@ describe('SocketManager service tests', () => {
         let connected = false;
         const parameters = new Parameters();
         playersSocket[0].emit('createRoom', 'Dummy', parameters);
-        broadcastSocket.on('broadcastRooms', (rooms) => {
+        broadcastSocket.on('broadcast-rooms', (rooms) => {
             assert(!full || connected || rooms.length !== 0); // TODO check if logical
             if (full) {
                 done();
@@ -189,10 +192,8 @@ describe('SocketManager service tests', () => {
                 gameSocket.emit('message', message);
                 setTimeout(() => {
                     assert(stub3.calledWith(message));
-                    // eslint-disable-next-line dot-notation
-                    assert(service['games'][0]['messages'][0].text === message.text);
-                    // eslint-disable-next-line dot-notation
-                    assert(service['games'][0]['messages'][0].emitter === message.emitter);
+                    expect(service.games[0].messages[0].text).to.equal(message.text);
+                    expect(service.games[0].messages[0].emitter).to.equal(message.emitter);
 
                     roomSocket.close();
                     gameSocket.close();

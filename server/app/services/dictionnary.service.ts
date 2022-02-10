@@ -9,13 +9,9 @@ export class DictionnaryService {
     private dictionnaries: Dictionnary[] = [];
 
     async init() {
-        const fileBuffer = await this.readFile('./assets/dictionnary.json');
+        const fileBuffer = await promises.readFile('./assets/dictionnary.json');
         const readDicitonnary = JSON.parse(fileBuffer.toString());
         this.dictionnaries.push({ id: 0, name: 'français', words: readDicitonnary.words });
-    }
-
-    async readFile(path: string) {
-        return await promises.readFile(path);
     }
 
     getDictionnaries() {
