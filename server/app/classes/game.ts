@@ -15,6 +15,7 @@ export class Game {
     private isPlayer0Turn = true;
 
     constructor(id: GameId, players: Player[], parameters: Parameters) {
+        console.log('game Instance!');
         this.gameId = id;
         this.parameters = parameters;
         this.players = players;
@@ -26,7 +27,7 @@ export class Game {
     }
 
     placeLetters(letters: string, position: string, playerId: PlayerId) {
-        if (this.checkTurn(playerId)) {
+        if (this.checkTurn(playerId, false)) {
             // TODO: make verifications (probably return game-error)
             // TODO: calculate points
             // TODO: emit the result
@@ -36,7 +37,7 @@ export class Game {
     }
 
     changeLetters(letters: string, playerId: PlayerId) {
-        if (this.checkTurn(playerId)) {
+        if (this.checkTurn(playerId, false)) {
             // TODO: change the letters in the service
             // TODO: emit the new rack
             this.eventEmitter.emit('rack', letters, playerId);
@@ -47,17 +48,21 @@ export class Game {
         this.eventEmitter.emit('parameters', this.parameters);
     }
 
-    skipTurn(playerId: PlayerId) {
-        if (this.checkTurn(playerId)) {
+    skipTurn(playerId: PlayerId, timerRequest: boolean) {
+        if (this.checkTurn(playerId, timerRequest)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
+            console.log('emmiting turn');
             this.eventEmitter.emit('turn', this.isPlayer0Turn);
         }
     }
 
-    private checkTurn(playerId: PlayerId) {
+    private checkTurn(playerId: PlayerId, timerRequest: boolean) {
         const validTurn = playerId === (this.isPlayer0Turn ? this.players[0].id : this.players[1].id);
-        if (!validTurn) {
+        if (!validTurn && timerRequest === false) {
             this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
+        } else if (!validTurn && timerRequest === true) {
+            console.log('invalid timer try');
+            return false;
         }
         return validTurn;
     }

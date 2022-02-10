@@ -109,7 +109,8 @@ export class GridService {
     drawStar(canvasX: number, canvasY: number) {
         this.gridContext.fillStyle = '#e1adf3';
         this.gridContext.fill();
-        this.drawMessage('STAR', canvasX, canvasY);
+        this.gridContext.font = '30px system-ui';
+        this.gridContext.fillText('⭐', canvasX - 5, canvasY + 10);
     }
 
     drawMessage(word: string, posX: number, posY: number) {
