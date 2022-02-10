@@ -1,6 +1,7 @@
 // import { WordValidation } from "@app/services/word-validation.service";
 import { GameTile } from './gameTile';
-import { Multipliers } from './multipliers';
+import * as Multipliers from './multipliers';
+
 const INVALID = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
@@ -18,11 +19,10 @@ export class Board {
                 this.board[i][j] = new GameTile(1);
             }
         }
-        const multipliers = new Multipliers();
-        this.initList(multipliers.MULT_WORDS_3, 1, 3);
-        this.initList(multipliers.MULT_WORDS_2, 1, 2);
-        this.initList(multipliers.MULT_LETTERS_3, 3);
-        this.initList(multipliers.MULT_LETTERS_2, 2);
+        this.initList(Multipliers.MULT_WORDS_3, 1, 3);
+        this.initList(Multipliers.MULT_WORDS_2, 1, 2);
+        this.initList(Multipliers.MULT_LETTERS_3, 3);
+        this.initList(Multipliers.MULT_LETTERS_2, 2);
     }
 
     placeWord(word: string, position: string): number | Error {

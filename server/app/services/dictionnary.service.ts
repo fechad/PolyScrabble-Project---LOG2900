@@ -17,12 +17,14 @@ export class DictionnaryService {
     getDictionnaries() {
         return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
     }
+
     isValidWord(playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;
         }
         return this.dictionnaries[0].words.includes(playedWord.toLowerCase());
     }
+
     private isWord(expression: string): boolean {
         return expression.match(/[a-z]+/i) !== null;
     }
