@@ -26,8 +26,8 @@ export class Game {
     playerReady() {
         this.nbOfPlayersReady++;
         if (this.nbOfPlayersReady === STANDARD_GAME_PLAYER_NUMBER) {
-            this.eventEmitter.emit('rack', this.reserve.racks[MAIN_PLAYER], this.players[MAIN_PLAYER]);
-            this.eventEmitter.emit('rack', this.reserve.racks[OTHER_PLAYER], this.players[OTHER_PLAYER]);
+            this.eventEmitter.emit('rack', this.reserve.letterRacks[MAIN_PLAYER], this.players[MAIN_PLAYER]);
+            this.eventEmitter.emit('rack', this.reserve.letterRacks[OTHER_PLAYER], this.players[OTHER_PLAYER]);
         }
     }
 

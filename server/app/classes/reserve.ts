@@ -2,7 +2,7 @@ import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
 
 export class Reserve {
-    racks: Letter[][] = [];
+    letterRacks: Letter[][] = [];
     private reserve: Letter[] = [];
 
     constructor() {
@@ -35,7 +35,7 @@ export class Reserve {
             rack1 = rack1.concat(this.drawLetters(1));
             rack2 = rack2.concat(this.drawLetters(1));
         }
-        this.racks.push(rack1);
-        this.racks.push(rack2);
+        this.letterRacks.push(rack1);
+        this.letterRacks.push(rack2);
     }
 }

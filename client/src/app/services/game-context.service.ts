@@ -11,7 +11,7 @@ type Board = Tile[][];
 })
 export class GameContextService {
     // BehaviorSubject<> = new BehaviorSubject();
-    readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
+    readonly letterRack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);

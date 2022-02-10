@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { Letter } from './Alphabet';
 import { GameContextService } from './game-context.service';
 
 @Injectable({
@@ -173,6 +174,9 @@ export class CommunicationService {
         });
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
+        });
+        this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
+            if (id === this.myId) this.gameContextService.letterRack.next(rack);
         });
     }
 }
