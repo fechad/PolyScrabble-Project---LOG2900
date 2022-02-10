@@ -88,11 +88,8 @@ export class SocketManager {
                 socket.on('start', () => {
                     room.start();
                     const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
-<<<<<<< HEAD
                     socket.emit('you-start', 0);
                     console.log(game.players[0].id);
-=======
->>>>>>> dev
                     this.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
