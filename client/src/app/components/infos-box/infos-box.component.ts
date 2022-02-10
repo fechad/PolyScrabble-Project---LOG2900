@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, Injectable, Injector, ViewChild } from '@angular/core';
 import { SkipTurnService } from '@app/services/skip-turn.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-infos-box',
@@ -13,7 +14,7 @@ export class InfosBoxComponent implements AfterViewInit {
     @ViewChild('countdown') cd: CountdownComponent;
     timeData = 60;
     turnChange: boolean;
-    private _subscription: any;
+    private _subscription: Subscription;
     constructor(public skipTurn: SkipTurnService) {
         this.turnChange = skipTurn.isYourTurn;
         this._subscription = skipTurn.turnChange.subscribe((value) => {

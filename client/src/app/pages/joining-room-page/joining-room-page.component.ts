@@ -1,6 +1,7 @@
-import { Location } from "@angular/common";
+import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { Room } from '@app/classes/room';
 import { JoinSetupDialogComponent } from '@app/components/join-setup-dialog/join-setup-dialog.component';
 import { CommunicationService } from '@app/services/communication.service';
@@ -11,7 +12,15 @@ import { CommunicationService } from '@app/services/communication.service';
     styleUrls: ['./joining-room-page.component.scss'],
 })
 export class JoiningRoomPageComponent {
+    dictionnaries: Dictionnary[] | undefined = undefined;
+
     constructor(public dialog: MatDialog, public communicationService: CommunicationService, public location: Location) {}
+
+    ngOnInit() {
+        this.communicationService.dictionnaries.then((dictionnaries) => {
+            this.dictionnaries = dictionnaries;
+        });
+    }
 
     openDialog(room: Room) {
         this.dialog.open(JoinSetupDialogComponent, {

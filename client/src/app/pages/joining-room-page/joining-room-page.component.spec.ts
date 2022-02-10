@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { CommunicationService } from '@app/services/communication.service';
-import { MenusStatesService } from '@app/services/menus-states.service';
 import { of } from 'rxjs';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
@@ -25,7 +24,6 @@ describe('JoiningRoomPageComponent', () => {
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialog, useValue: MatDialogMock },
-                { provide: MenusStatesService, useValue: {} },
             ],
         }).compileComponents();
     });
