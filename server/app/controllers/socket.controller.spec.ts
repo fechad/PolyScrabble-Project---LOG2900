@@ -59,7 +59,7 @@ describe('SocketManager service tests', () => {
         const stub = sinon.stub();
         broadcastSocket.on('broadcast-rooms', stub);
         const parameters = new Parameters();
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters);
         const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
         setTimeout(() => {
@@ -72,7 +72,7 @@ describe('SocketManager service tests', () => {
         const stub = sinon.stub();
         broadcastSocket.on('broadcast-rooms', stub);
         const parameters = new Parameters();
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters);
         const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
         setTimeout(() => {
@@ -80,7 +80,7 @@ describe('SocketManager service tests', () => {
 
             const stub2 = sinon.stub();
             playersSocket[1].on('join', stub2);
-            playersSocket[1].emit('joinRoom', 0);
+            playersSocket[1].emit('join-room', 0);
             setTimeout(() => {
                 assert(stub2.calledWith(0));
                 done();
@@ -92,7 +92,7 @@ describe('SocketManager service tests', () => {
         let full = false;
         let connected = false;
         const parameters = new Parameters();
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         broadcastSocket.on('broadcast-rooms', (rooms) => {
             assert(!full || connected || rooms.length !== 0); // TODO check if logical
             if (full) {
@@ -104,7 +104,7 @@ describe('SocketManager service tests', () => {
             playersSocket[1].on('join', () => {
                 full = true;
             });
-            playersSocket[1].emit('joinRoom', 0);
+            playersSocket[1].emit('join-room', 0);
         }, RESPONSE_DELAY);
     });
 
@@ -112,7 +112,7 @@ describe('SocketManager service tests', () => {
         const stub = sinon.stub();
         setTimeout(() => {
             playersSocket[0].on('error', stub);
-            playersSocket[0].emit('joinRoom', 0);
+            playersSocket[0].emit('join-room', 0);
             setTimeout(() => {
                 assert(stub.calledWith('Room is no longer available'));
                 done();
@@ -124,17 +124,17 @@ describe('SocketManager service tests', () => {
         playersSocket.push(ioClient(`${urlString}/`, { forceNew: true }));
         const stub = sinon.stub();
         const parameters = new Parameters();
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         new Room(0, playersSocket[0].id, 'Dummy', parameters);
         setTimeout(() => {
             playersSocket[1].on('join', stub);
-            playersSocket[1].emit('joinRoom', 0);
+            playersSocket[1].emit('join-room', 0);
             setTimeout(() => {
                 assert(stub.calledWith(0));
 
                 const stub2 = sinon.stub();
                 playersSocket[2].on('error', stub2);
-                playersSocket[2].emit('joinRoom', 0);
+                playersSocket[2].emit('join-room', 0);
                 setTimeout(() => {
                     assert(stub2.calledWith('already 2 players in the game'));
                     done();
@@ -148,11 +148,11 @@ describe('SocketManager service tests', () => {
         const token = 0;
         playersSocket[0].on('joinGame', stub);
         const parameters = new Parameters();
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         setTimeout(() => {
             const stub2 = sinon.stub();
             playersSocket[1].on('join', stub2);
-            playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+            playersSocket[1].emit('join-room', 0, 'NotDummy');
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             roomSocket.on('join-game', stub);
             setTimeout(() => {
@@ -172,10 +172,10 @@ describe('SocketManager service tests', () => {
         const parameters = new Parameters();
         const message: Message = { text: 'this is a test message', emitter: '0' };
 
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
             assert(stub.calledWith(0));
 
@@ -208,10 +208,10 @@ describe('SocketManager service tests', () => {
         const parameters = new Parameters();
         const parametersSerialized = JSON.parse(JSON.stringify(parameters));
 
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
             assert(stub.calledWith(0));
 
@@ -241,10 +241,10 @@ describe('SocketManager service tests', () => {
         const token = 0;
         const parameters = new Parameters();
 
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
             assert(stub.calledWith(0));
 
@@ -277,10 +277,10 @@ describe('SocketManager service tests', () => {
         const token = 0;
         const parameters = new Parameters();
 
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
             assert(stub.calledWith(0));
 
@@ -317,10 +317,10 @@ describe('SocketManager service tests', () => {
         const letters = 'abcd';
         const parameters = new Parameters();
 
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
             assert(stub.calledWith(0));
 
@@ -356,10 +356,10 @@ describe('SocketManager service tests', () => {
         const expectedPoints = 26;
         const parameters = new Parameters();
 
-        playersSocket[0].emit('createRoom', 'Dummy', parameters);
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('joinRoom', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
         setTimeout(() => {
             assert(stub.calledWith(0));
 

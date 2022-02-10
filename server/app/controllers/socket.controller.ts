@@ -1,7 +1,7 @@
 import { Game } from '@app/classes/game';
-import { Parameters } from '@app/classes/parameters';
-import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
+import { Player, PlayerId } from '@app/classes/room';
 import { Message } from '@app/message';
+import { MainLobbyService } from '@app/services/main-lobby.service';
 import { RoomsService } from '@app/services/rooms.service';
 import { WaitingRoomService } from '@app/services/waiting-room.service';
 import * as http from 'http';
@@ -12,7 +12,6 @@ type Handlers = [string, (params: any[]) => void][];
 export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
-    private nextRoomId = 0;
     private messages: { [room: number]: Message[] } = {}; // number is RoomId, but typescript does not allow this
 
     constructor(server: http.Server) {
@@ -22,32 +21,9 @@ export class SocketManager {
     init(): void {
         const roomsService = new RoomsService();
         
+        const mainLobby = new MainLobbyService(roomsService);
         this.io.on('connection', (socket) => {
-            console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
-            socket.emit('id', socket.id);
-
-            // message initial
-            socket.on('joinRoom', (id: RoomId, playerName: string) => {
-                const room = roomsService.rooms.find((r) => r.id === id);
-                if (room === undefined) {
-                    socket.emit('error', 'Room is no longer available');
-                    return;
-                }
-                const error = room.addPlayer(socket.id, playerName);
-                if (error !== undefined) {
-                    socket.emit('error', error.message);
-                    return;
-                }
-                socket.emit('join', id, 1);
-            });
-
-            socket.on('createRoom', (playerName: string, parameters: Parameters) => {
-                const roomId = this.getNewRoomId();
-                const room = new Room(roomId, socket.id, playerName, parameters);
-                socket.emit('join', roomId, 0);
-                console.log(`Created room ${roomId} for player ${playerName}`);
-                roomsService.rooms.push(room);
-            });
+            mainLobby.connect(socket, socket.id);
 
             socket.on('disconnect', (reason) => {
                 console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
@@ -178,11 +154,5 @@ export class SocketManager {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
             });
         });
-    }
-
-    getNewRoomId(): RoomId {
-        const roomId = this.nextRoomId;
-        this.nextRoomId += 1;
-        return roomId;
     }
 }
