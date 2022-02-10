@@ -28,10 +28,10 @@ export class DictionnaryService {
     validateWords(wordList: string[]): boolean {
         let isValid = true;
         let valid: boolean;
-        for(let word of wordList){
+        for (const word of wordList) {
             let separatedWord = word.split(';');
             valid = this.isValidWord(separatedWord[separatedWord.length - 1]);
-            if(!valid){
+            if (!valid) {
                 isValid = false;
             }
         }

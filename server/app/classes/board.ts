@@ -1,5 +1,6 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { GameTile } from './gameTile';
+import { SyntaxValidator } from '@app/services/syntax-validator';
+import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
 const INVALID = -1;
@@ -10,10 +11,12 @@ const A_ASCII = 'a'.charCodeAt(0);
 export class Board {
     board: GameTile[][];
     private dictionnary: DictionnaryService;
+    private syntaxValidator: SyntaxValidator;
 
     constructor() {
         this.dictionnary = new DictionnaryService();
         this.dictionnary.init();
+        this.syntaxValidator = new SyntaxValidator();
         this.board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             this.board[i] = [];
@@ -28,8 +31,8 @@ export class Board {
     }
 
     placeWord(word: string, position: string): number | Error {
-        const positionArray = this.separatePosition(position);
-        if (!this.validatePositionSyntax(positionArray)) {
+        const positionArray = this.syntaxValidator.separatePosition(position);
+        if (!this.syntaxValidator.validatePositionSyntax(positionArray)) {
             return new Error("Erreur de syntaxe dans le placement d'un mot");
         }
         if (!this.isWordInBound(word.length, positionArray)) {
@@ -230,37 +233,6 @@ export class Board {
             }
         }
         return true;
-    }
-
-    private validatePositionSyntax(position: string[]): boolean {
-        if (position[0].match(/[a-o]/g) !== null) {
-            if (position[2].match(/[hv]/g) !== null) {
-                if (position[1].length === 1) {
-                    if (position[1].match(/[1-9]/g) !== null) {
-                        return true;
-                    }
-                }
-                if (position[1].length === 2) {
-                    if (position[1][1].match(/[0-5]/g) !== null && position[1][0] === '1') {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private separatePosition(position: string): string[] {
-        const positionArray: string[] = [];
-        positionArray[0] = position.charAt(0);
-        if (position.length === 3) {
-            positionArray[1] = position.charAt(1);
-            positionArray[2] = position.charAt(2);
-        } else {
-            positionArray[1] = position.charAt(1) + position.charAt(2);
-            positionArray[2] = position.charAt(3);
-        }
-        return positionArray;
     }
 
     private initList(array: number[][], multLetter: number, multWord?: number) {
