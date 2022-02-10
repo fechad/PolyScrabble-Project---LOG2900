@@ -19,9 +19,8 @@ export class ChatBoxComponent implements OnInit {
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
         this.myId = this.communicationService.getId();
-        console.log(this.myId);
     }
-    //pre-dev
+
     ngOnInit(): void {}
 
     clearText() {
@@ -40,7 +39,6 @@ export class ChatBoxComponent implements OnInit {
             if (this.commandStructure[0][0] === '!') {
                 const error = this.validateCommand();
                 if (error !== undefined) {
-                    console.log(error.message); // TODO: push dans le chat-box locale
                     this.communicationService.sendLocalMessage(error.message);
                 }
             } else {
@@ -67,7 +65,6 @@ export class ChatBoxComponent implements OnInit {
             if (this.commandStructure[1][0].match(/[a-o]/g) && this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g)) {
                 if (this.commandStructure[1].length === 3) {
                     if (this.commandStructure[1][1].match(/[0-9]/g)) {
-                        console.log(this.commandStructure); // TODO: Envoyer commande
                         this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
                     }
                 } else if (
@@ -75,7 +72,6 @@ export class ChatBoxComponent implements OnInit {
                     this.commandStructure[1][1].match(/[1]/g) &&
                     this.commandStructure[1][2].match(/[0-4]/g)
                 ) {
-                    console.log(this.commandStructure); // TODO: Envoyer commande
                     this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
                 }
             } else {
@@ -89,7 +85,6 @@ export class ChatBoxComponent implements OnInit {
         if (this.commandStructure[1].match(/[^a-z*]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         } else {
-            console.log(this.commandStructure);
             /* TODO:checker si c dans le chevalet */
             this.communicationService.echanger(this.commandStructure[1]);
         }
