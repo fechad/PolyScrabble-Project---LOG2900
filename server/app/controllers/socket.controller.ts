@@ -131,6 +131,7 @@ export class SocketManager {
         games.on('connect', (socket) => {
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
+            game.playerReady();
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
 
             socket.on('message', (message: Message) => game.message(message));
