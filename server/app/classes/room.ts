@@ -16,7 +16,7 @@ export class Room extends EventEmitter {
 
     constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters) {
         super();
-        
+
         this.id = id;
         this.parameters = parameters;
         this.mainPlayer = {
@@ -37,7 +37,7 @@ export class Room extends EventEmitter {
             return Error('already 2 players in the game');
         }
         this.otherPlayer = { id: playerId, name: playerName };
-        this.emit('updateRoom');
+        this.emit('update-room');
         return undefined;
     }
 
@@ -46,14 +46,14 @@ export class Room extends EventEmitter {
             this.emit('kick');
         } else {
             this.otherPlayer = undefined;
-            this.emit('updateRoom');
+            this.emit('update-room');
         }
     }
 
     start() {
         if (this.otherPlayer && !this.started) {
             this.started = true;
-            this.emit('updateRoom');
+            this.emit('update-room');
         }
     }
 
@@ -62,7 +62,7 @@ export class Room extends EventEmitter {
             console.log(`Kicked player from room ${this.id}`);
             this.otherPlayer = undefined;
             this.emit('kick');
-            this.emit('updateRoom');
+            this.emit('update-room');
         }
     }
 

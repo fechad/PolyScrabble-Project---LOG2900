@@ -47,7 +47,7 @@ describe('MainLobby service tests', () => {
 
         expect(stub.callCount).to.equal(1);
         assert(stub.calledWith(0));
-        
+
         const expectedRoom2 = new Room(0, 'DummyId', 'Dummy', parameters);
         expectedRoom2.addPlayer('NotDummyId', 'NotDummy');
         expect(rooms.rooms).to.deep.equal([expectedRoom2]);

@@ -1,6 +1,6 @@
 // import { WordValidation } from "@app/services/word-validation.service";
-import { Multipliers } from 'assets/multipliers';
 import { GameTile } from './gameTile';
+import { Multipliers } from './multipliers';
 const INVALID = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;

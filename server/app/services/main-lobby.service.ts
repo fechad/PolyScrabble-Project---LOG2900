@@ -9,13 +9,13 @@ export const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
 @Service()
 export class MainLobbyService {
     private nextRoomId = 0;
-    
+
     constructor(private roomsService: RoomsService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
         console.log(`Connexion par l'utilisateur avec id : ${id}`);
         socket.emit('id', id);
-        
+
         // message initial
         socket.on('join-room', (roomId: RoomId, playerName: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);

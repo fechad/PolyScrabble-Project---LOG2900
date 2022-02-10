@@ -6,22 +6,28 @@ import { RoomsService } from '@app/services/rooms.service';
 import { WaitingRoomService } from '@app/services/waiting-room.service';
 import * as http from 'http';
 import * as io from 'socket.io';
+import { Service } from 'typedi';
 
-type Handlers = [string, (params: any[]) => void][];
+type Handlers = [string, (params: unknown[]) => void][];
 
+@Service()
 export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
-    private messages: { [room: number]: Message[] } = {}; // number is RoomId, but typescript does not allow this
 
-    constructor(server: http.Server) {
+    constructor(server: http.Server, public roomsService: RoomsService) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
     init(): void {
-        const roomsService = new RoomsService();
-        
-        const mainLobby = new MainLobbyService(roomsService);
+        this.initLobby();
+        this.initWaitingRoom();
+        this.initRooms();
+        this.initGames();
+    }
+
+    private initLobby(): void {
+        const mainLobby = new MainLobbyService(this.roomsService);
         this.io.on('connection', (socket) => {
             mainLobby.connect(socket, socket.id);
 
@@ -30,20 +36,39 @@ export class SocketManager {
                 console.log(`Raison de deconnexion : ${reason}`);
             });
         });
+    }
 
+    private initWaitingRoom(): void {
+        const waitingRoomService = new WaitingRoomService(this.roomsService);
+        const waitingRoom = this.io.of('/waitingRoom');
+        waitingRoom.on('connect', (socket) => {
+            const handlers: Handlers = WaitingRoomService.globalEvents.map((event) => [
+                event,
+                (...params: unknown[]) => socket.emit(event, ...params),
+            ]);
+            handlers.forEach(([event, handler]) => waitingRoomService.on(event, handler));
+            waitingRoomService.connect(socket);
+
+            socket.on('disconnect', () => {
+                handlers.forEach(([event, handler]) => waitingRoomService.off(event, handler));
+            });
+        });
+    }
+
+    private initRooms(): void {
         const rooms = this.io.of(/^\/rooms\/\d+$/);
-        rooms.use((s, next) => {
-            const roomId = Number.parseInt(s.nsp.name.substring('/rooms/'.length), 10);
-            const idx = roomsService.rooms.findIndex((room) => room.id === roomId);
+        rooms.use((socket, next) => {
+            const roomId = Number.parseInt(socket.nsp.name.substring('/rooms/'.length), 10);
+            const idx = this.roomsService.rooms.findIndex((room) => room.id === roomId);
             const NOT_FOUND = -1;
             if (idx === NOT_FOUND) {
                 next(Error('Invalid room number'));
                 return;
             }
-            s.data.roomId = roomId;
-            s.data.roomIdx = idx;
+            socket.data.roomIdx = idx;
 
-            const token = s.handshake.auth.token;
+            // TODO: use real tokens
+            const token = socket.handshake.auth.token;
             if (token === 0 || token === 1) {
                 // valid token
                 next();
@@ -53,13 +78,12 @@ export class SocketManager {
         });
         rooms.on('connect', (socket) => {
             const isMainPlayer = socket.handshake.auth.token === 0;
-            if (this.messages[socket.data.roomId] === undefined) this.messages[socket.data.roomId] = [];
-            const messages: Message[] = this.messages[socket.data.roomId];
-            const room = roomsService.rooms[socket.data.roomIdx];
+            const room = this.roomsService.rooms[socket.data.roomIdx];
             socket.join(`room-${room.id}`);
-            const events: { [key: string]: () => void } = { updateRoom: () => socket.emit('updateRoom', room) };
-            if (!isMainPlayer) events.kick = () => socket.emit('kick');
-            Object.entries(events).forEach(([name, handler]) => room.on(name, handler));
+
+            const events: [string, () => void][] = [['update-room', () => socket.emit('update-room', room)]];
+            if (!isMainPlayer) events.push(['kick', () => socket.emit('kick')]);
+            events.forEach(([name, handler]) => room.on(name, handler));
 
             if (isMainPlayer) {
                 socket.on('kick', () => room.kickOtherPlayer());
@@ -73,42 +97,19 @@ export class SocketManager {
                 });
             }
 
-            // ne plus utiliser, envoyer messages par la game
-            socket.on('message', (message: string) => {
-                const playerId = isMainPlayer ? room.mainPlayer.id : room.getOtherPlayer()?.id;
-                if (playerId === undefined) throw new Error('Undefined player tried to send a message');
-                messages.push({ emitter: playerId, text: message });
-                console.log('devrait pu etre call');
-                rooms.to(`room-${room.id}`).emit('message', messages[messages.length - 1], playerId);
-            });
-
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                Object.entries(events).forEach(([name, handler]) => room.off(name, handler));
                 if (isMainPlayer) {
-                    // swap remove
-                    roomsService.rooms[socket.data.roomId] = roomsService.rooms[roomsService.rooms.length - 1];
-                    roomsService.rooms.pop();
+                    this.roomsService.rooms.splice(socket.data.roomIdx, 1);
                 }
+                events.forEach(([name, handler]) => room.off(name, handler));
             });
 
-            socket.emit('updateRoom', room);
+            socket.emit('update-room', room);
         });
+    }
 
-        const waitingRoomService = new WaitingRoomService(roomsService);
-        const waitingRoom = this.io.of('/waitingRoom');
-        waitingRoom.on('connect', (socket) => {
-            const handlers: Handlers = WaitingRoomService.EVENTS.map(event => (
-                [event, (...params: any[]) => socket.emit(event, ...params)]
-            ));
-            handlers.forEach(([event, handler]) => waitingRoomService.on(event, handler));
-            waitingRoomService.connect(socket);
-
-            socket.on('disconnect', () => {
-                handlers.forEach(([event, handler]) => waitingRoomService.on(event, handler));
-            });
-        });
-
+    private initGames() {
         const games = this.io.of(/^\/games\/\d+$/);
         games.use((s, next) => {
             const gameId = Number.parseInt(s.nsp.name.substring('/games/'.length), 10);

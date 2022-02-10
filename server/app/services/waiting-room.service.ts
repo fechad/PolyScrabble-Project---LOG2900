@@ -8,7 +8,7 @@ export const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
 
 @Service()
 export class WaitingRoomService extends EventEmitter {
-    static EVENTS: string[] = ['broadcast-rooms'];
+    static globalEvents: string[] = ['broadcast-rooms'];
 
     private prevRooms: Room[] = [];
 
@@ -24,6 +24,9 @@ export class WaitingRoomService extends EventEmitter {
     }
 
     connect(socket: EventEmitter) {
-        socket.emit('broadcast-rooms', this.roomsService.rooms.filter((room) => !room.hasOtherPlayer()));
+        socket.emit(
+            'broadcast-rooms',
+            this.roomsService.rooms.filter((room) => !room.hasOtherPlayer()),
+        );
     }
 }

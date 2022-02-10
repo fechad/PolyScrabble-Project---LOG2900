@@ -3,6 +3,7 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { SocketManager } from './controllers/socket.controller';
+import { RoomsService } from './services/rooms.service';
 
 @Service()
 export class Server {
@@ -12,7 +13,7 @@ export class Server {
     private server: http.Server;
     private socketManager: SocketManager;
 
-    constructor(private readonly application: Application) {}
+    constructor(private readonly application: Application, private readonly roomsService: RoomsService) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -29,7 +30,7 @@ export class Server {
 
         this.server = http.createServer(this.application.app);
 
-        this.socketManager = new SocketManager(this.server);
+        this.socketManager = new SocketManager(this.server, this.roomsService);
         this.socketManager.init();
 
         this.server.listen(Server.appPort);

@@ -1,6 +1,7 @@
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
 import { Message } from '@app/message';
+import { RoomsService } from '@app/services/rooms.service';
 import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/services/waiting-room.service';
 import { Server } from 'app/server';
 import { assert, expect } from 'chai';
@@ -20,6 +21,7 @@ describe('SocketManager service tests', () => {
     const urlString = 'http://localhost:3000';
     beforeEach(async () => {
         server = Container.get(Server);
+        Container.get(RoomsService).rooms.splice(0);
         server.init();
         // eslint-disable-next-line dot-notation
         service = server['socketManager'];
@@ -63,7 +65,7 @@ describe('SocketManager service tests', () => {
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters);
         const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
         setTimeout(() => {
-            assert(stub.calledWith([expectedRoomSerialized]));
+            expect(stub.args).to.deep.equal([[[expectedRoomSerialized]]]);
             done();
         }, RESPONSE_DELAY);
     });
@@ -76,7 +78,7 @@ describe('SocketManager service tests', () => {
         const expectedRoom = new Room(0, playersSocket[0].id, 'Dummy', parameters);
         const expectedRoomSerialized = JSON.parse(JSON.stringify(expectedRoom));
         setTimeout(() => {
-            assert(stub.calledWith([expectedRoomSerialized]));
+            expect(stub.args).to.deep.equal([[[expectedRoomSerialized]]]);
 
             const stub2 = sinon.stub();
             playersSocket[1].on('join', stub2);
@@ -114,7 +116,7 @@ describe('SocketManager service tests', () => {
             playersSocket[0].on('error', stub);
             playersSocket[0].emit('join-room', 0);
             setTimeout(() => {
-                assert(stub.calledWith('Room is no longer available'));
+                expect(stub.args).to.deep.equal([['Room is no longer available']]);
                 done();
             }, RESPONSE_DELAY);
         }, RESPONSE_DELAY);
@@ -146,7 +148,7 @@ describe('SocketManager service tests', () => {
     it('should create a game', (done) => {
         const stub = sinon.stub();
         const token = 0;
-        playersSocket[0].on('joinGame', stub);
+        playersSocket[0].on('join-game', stub);
         const parameters = new Parameters();
         playersSocket[0].emit('create-room', 'Dummy', parameters);
         setTimeout(() => {

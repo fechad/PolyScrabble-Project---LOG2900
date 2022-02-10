@@ -45,7 +45,7 @@ describe('WaitingRoom service tests', () => {
         const localEvents = new EventEmitter();
         const eventStub = sinon.stub(localEvents, 'emit');
         service.connect(localEvents);
-        
+
         expect(stub.callCount).to.equal(0);
         expect(eventStub.callCount).to.equal(1);
         assert(eventStub.alwaysCalledWith('broadcast-rooms', [room]));
@@ -61,7 +61,7 @@ describe('WaitingRoom service tests', () => {
         const localEvents2 = new EventEmitter();
         const eventStub2 = sinon.stub(localEvents2, 'emit');
         service.connect(localEvents2);
-        
+
         expect(stub.callCount).to.equal(0);
         expect(eventStub.callCount).to.equal(1);
         assert(eventStub.alwaysCalledWith('broadcast-rooms', []));
@@ -87,7 +87,7 @@ describe('WaitingRoom service tests', () => {
 
         setTimeout(() => {
             expect(stub.callCount).to.equal(1);
-            assert(stub.alwaysCalledWith([room]))
+            assert(stub.alwaysCalledWith([room]));
             expect(eventStub.callCount).to.equal(1);
             assert(eventStub.alwaysCalledWith('broadcast-rooms', []));
             expect(eventStub2.callCount).to.equal(1);
