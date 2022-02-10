@@ -69,14 +69,15 @@ export class ChatBoxComponent implements OnInit {
                 if (this.commandStructure[1].length === 3) {
                     if (this.commandStructure[1][1].match(/[0-9]/g)) {
                         console.log(this.commandStructure); // TODO: Envoyer commande
+                        this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
                     }
-                    //
                 } else if (
                     this.commandStructure[1].length === 4 &&
                     this.commandStructure[1][1].match(/[1]/g) &&
                     this.commandStructure[1][2].match(/[0-4]/g)
                 ) {
                     console.log(this.commandStructure); // TODO: Envoyer commande
+                    this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
                 }
             } else {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
