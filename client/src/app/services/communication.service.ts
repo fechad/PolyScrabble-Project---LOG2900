@@ -24,8 +24,6 @@ export class CommunicationService {
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
 
-    // private msgCount: number = 0;
-
     constructor(public gameContextService: GameContextService, httpClient: HttpClient) {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this.joinRoomHandler(room, token));
@@ -80,7 +78,6 @@ export class CommunicationService {
     }
 
     switchTurn() {
-        console.log('intered in switch');
         this.gameSocket?.emit('switch-turn', this.myId);
     }
     resetTimer() {
@@ -151,7 +148,6 @@ export class CommunicationService {
     }
 
     private joinRoomHandler(room: string, token: number) {
-        console.log(`Join room ${room} with token ${token}`);
         this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
         this.roomSocket.on('kick', () => this.leaveGame());
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
@@ -162,7 +158,6 @@ export class CommunicationService {
         this.roomSocket.on('you-start', (number) => {
             if (number === token) {
                 this.gameContextService.iStart();
-                console.log('you-start');
             }
         });
         this.roomSocket.on('join-game', (gameId) => {

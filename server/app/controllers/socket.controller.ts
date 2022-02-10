@@ -90,8 +90,6 @@ export class SocketManager {
                 socket.on('start', () => {
                     room.start();
                     const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
-                    socket.emit('you-start', 0);
-                    console.log(game.players[0].id);
                     this.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
@@ -142,7 +140,6 @@ export class SocketManager {
                 game.skipTurn(playerId, false);
             });
             socket.on('reset-timer', (id: PlayerId) => {
-                // console.log('received timer-request');
                 game.skipTurn(id, true);
             });
             socket.on('parameters', () => game.getParameters());

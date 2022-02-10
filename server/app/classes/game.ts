@@ -15,7 +15,6 @@ export class Game {
     private isPlayer0Turn = true;
 
     constructor(id: GameId, players: Player[], parameters: Parameters) {
-        console.log('game Instance!');
         this.gameId = id;
         this.parameters = parameters;
         this.players = players;
@@ -51,7 +50,6 @@ export class Game {
     skipTurn(playerId: PlayerId, timerRequest: boolean) {
         if (this.checkTurn(playerId, timerRequest)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
-            console.log('emmiting turn');
             this.eventEmitter.emit('turn', this.isPlayer0Turn);
         }
     }
@@ -61,7 +59,6 @@ export class Game {
         if (!validTurn && timerRequest === false) {
             this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
         } else if (!validTurn && timerRequest === true) {
-            console.log('invalid timer try');
             return false;
         }
         return validTurn;

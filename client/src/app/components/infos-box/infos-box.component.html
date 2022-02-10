@@ -10,7 +10,7 @@
     <div class="game-infos">
         <p>mode de jeu</p>
         <div class="backChrono">
-            <countdown #countdown [config]="{ format: 'mm:ss', leftTime: 10, demand: true }" (event)="handleEvent($event)"></countdown>
+            <countdown #countdown [config]="{ format: 'mm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }" (event)="handleEvent($event)"></countdown>
         </div>
         <p>lettes restantes en reserve</p>
     </div>
