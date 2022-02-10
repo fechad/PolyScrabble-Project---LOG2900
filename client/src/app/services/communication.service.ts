@@ -90,6 +90,9 @@ export class CommunicationService {
     placer(letters: string, position: string) {
         this.gameSocket.emit('place-letters', letters, position, this.myId);
     }
+    echanger(letters: string) {
+        this.gameSocket.emit('change-letters', letters);
+    }
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 

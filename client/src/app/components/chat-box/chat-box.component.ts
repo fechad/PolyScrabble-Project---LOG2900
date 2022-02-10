@@ -63,7 +63,6 @@ export class ChatBoxComponent implements OnInit {
         if (this.commandStructure[2].match(/[^a-zA-Z]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         } else {
-            // imbriquer si test chevalet est vrai
             /* TODO:checker si c dans le chevalet */
             if (this.commandStructure[1][0].match(/[a-o]/g) && this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g)) {
                 if (this.commandStructure[1].length === 3) {
@@ -92,12 +91,12 @@ export class ChatBoxComponent implements OnInit {
         } else {
             console.log(this.commandStructure);
             /* TODO:checker si c dans le chevalet */
+            this.communicationService.echanger(this.commandStructure[1]);
         }
         return error;
     }
     passer(): Error | undefined {
         this.communicationService.switchTurn();
-        /* TODO: envoyer au serveur que le tour a été passé */
         return;
     }
 }
