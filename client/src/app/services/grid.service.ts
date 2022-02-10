@@ -69,52 +69,27 @@ export class GridService {
             '1411',
         ];
         if (tripleWord.includes(coord)) {
-            this.drawTripleWord(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, '#c93de0', 'WORD x3');
         } else if (tripleLetter.includes(coord)) {
-            this.drawTripleLetter(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, '#54bd9d', 'LETTER x3');
         } else if (doubleWord.includes(coord)) {
-            this.drawDoubleWord(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, '#E1ADF3', 'WORD x2');
         } else if (doubleLetter.includes(coord) || (posX === 11 && posY === 0)) {
-            this.drawDoubleLetter(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, '#B7FFE5', 'LETTER x2');
         } else if (posX === 7 && posY === 7) {
-            this.drawStar(canvasX, canvasY);
+            this.drawBonus(canvasX - 4, canvasY + 10, '#e1adf3', '⭐');
         }
     }
 
-    drawTripleWord(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#c93de0';
+    drawBonus(canvasX: number, canvasY: number, color: string, word: string) {
+        this.gridContext.fillStyle = color;
         this.gridContext.fill();
-        this.drawMessage('WORD x3', canvasX, canvasY);
-    }
-
-    drawTripleLetter(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#54bd9d';
-        this.gridContext.fill();
-        this.drawMessage('LETTER x3', canvasX, canvasY);
-    }
-
-    drawDoubleWord(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#e1adf3';
-        this.gridContext.fill();
-        this.drawMessage('WORD x2', canvasX, canvasY);
-    }
-
-    drawDoubleLetter(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#b7ffe5';
-        this.gridContext.fill();
-
-        this.drawMessage('LETTER x2', canvasX, canvasY);
-    }
-
-    drawStar(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#e1adf3';
-        this.gridContext.fill();
-        this.drawMessage('STAR', canvasX, canvasY);
+        this.drawMessage(word, canvasX, canvasY);
     }
 
     drawMessage(word: string, posX: number, posY: number) {
         this.gridContext.fillStyle = '#000000';
-        this.gridContext.font = this.fontSize;
+        word === '⭐' ? (this.gridContext.font = '30px system-ui') : (this.gridContext.font = this.fontSize);
         const sentence = word.split(' ');
         const step = 10;
         for (let i = 0; i < sentence.length; i++) {
