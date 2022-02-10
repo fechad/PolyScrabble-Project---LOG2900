@@ -23,6 +23,7 @@ import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { CommunicationService } from './services/communication.service';
+import { HelpInfoComponent } from './components/help-info/help-info.component';
 
 /**
  * Main module that is used in main.ts.
@@ -46,6 +47,7 @@ import { CommunicationService } from './services/communication.service';
         InfosBoxComponent,
         SingleLetterComponent,
         ModesPageComponent,
+        HelpInfoComponent,
     ],
     imports: [
         AppMaterialModule,

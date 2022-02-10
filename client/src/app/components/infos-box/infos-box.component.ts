@@ -13,14 +13,24 @@ import { Subscription } from 'rxjs';
 export class InfosBoxComponent implements AfterViewInit {
     @ViewChild('countdown') cd: CountdownComponent;
     private subscription: Subscription;
+
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
-        this.subscription = gameContextService.isMainPlayerTurn.subscribe(() => {
+        this.subscription = gameContextService.isMainPlayerTurn.subscribe((value) => {
             this.reset();
         });
+        
     }
 
     ngAfterViewInit(): void {
         this.cd.begin();
+    }
+
+    getMainPlayer(): string | undefined {
+        return this.communicationService.selectedRoom.value?.mainPlayer.name;
+    }
+
+    getOtherPlayer(): string | undefined {
+        return this.communicationService.selectedRoom.value?.otherPlayer?.name;
     }
 
     handleEvent(e: CountdownEvent) {
