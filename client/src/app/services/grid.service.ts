@@ -5,6 +5,13 @@ import { Vec2 } from '@app/classes/vec2';
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
 
+enum Colors {
+    Mustard = '#E1AC01',
+    Yellow = '#FFE454',
+    Green = '#54bd9d',
+    Blue = '#65CCD2',
+    Grey = '#838383',
+}
 @Injectable({
     providedIn: 'root',
 })
@@ -33,7 +40,7 @@ export class GridService {
                 this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
                 this.gridContext.fill();
                 this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.gridContext.fillStyle = '#838383';
+                this.gridContext.fillStyle = '#353535';
             }
         }
     }
@@ -69,15 +76,15 @@ export class GridService {
             '1411',
         ];
         if (tripleWord.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, '#c93de0', 'WORD x3');
+            this.drawBonus(canvasX, canvasY, Colors.Mustard, 'WORD x3');
         } else if (tripleLetter.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, '#54bd9d', 'LETTER x3');
+            this.drawBonus(canvasX, canvasY, Colors.Green, 'LETTER x3');
         } else if (doubleWord.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, '#E1ADF3', 'WORD x2');
+            this.drawBonus(canvasX, canvasY, Colors.Yellow, 'WORD x2');
         } else if (doubleLetter.includes(coord) || (posX === 11 && posY === 0)) {
-            this.drawBonus(canvasX, canvasY, '#B7FFE5', 'LETTER x2');
+            this.drawBonus(canvasX, canvasY, Colors.Blue, 'LETTER x2');
         } else if (posX === 7 && posY === 7) {
-            this.drawBonus(canvasX - 4, canvasY + 10, '#e1adf3', '⭐');
+            this.drawBonus(canvasX - 4, canvasY + 10, Colors.Grey, '⭐');
         }
     }
 

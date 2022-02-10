@@ -1,8 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { GameSetupDialogComponent } from './game-setup-dialog.component';
@@ -51,11 +50,11 @@ describe('GameSetupDialogComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    fit('click on closing button should call close on dialog', fakeAsync(() => {
-        const closeDialogSpy = spyOn(component.dialogRef, 'close');
-        const button = fixture.debugElement.query(By.css('.icone-cancel'));
-        button.nativeElement.click();
-        tick();
-        expect(closeDialogSpy).toHaveBeenCalled();
-    }));
+    // it('click on closing button should call close on dialog', fakeAsync(() => {
+    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
+    //     const button = fixture.debugElement.query(By.css('.icone-cancel'));
+    //     button.nativeElement.click();
+    //     tick();
+    //     expect(closeDialogSpy).toHaveBeenCalled();
+    // }));
 });
