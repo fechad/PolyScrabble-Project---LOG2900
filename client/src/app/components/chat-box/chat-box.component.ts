@@ -17,7 +17,6 @@ export class ChatBoxComponent implements OnInit {
 
     constructor(public communicationService: CommunicationService, private skipTurnService: SkipTurnService) {
         this.myId = this.communicationService.getId();
-        console.log(this.myId);
     }
 
     ngOnInit(): void {}
