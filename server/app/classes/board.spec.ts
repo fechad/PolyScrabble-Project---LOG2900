@@ -448,14 +448,12 @@ describe('Board', () => {
         let result = board.placeWord(attemptedWord, position);
         expect(result).to.equals(expectedScore);
 
-        console.log(board.board[5][7])
-
         position = 'f6h';
+        // arts avec la collision avec le premier t de testeur
         attemptedWord = 'ars';
         expectedScore = 13;
-        
+
         result = board.placeWord(attemptedWord, position);
-        console.log(result);
         expect(result).to.equals(expectedScore);
         done();
     });

@@ -22,7 +22,6 @@ export class DictionnaryService {
         if (!this.isWord(playedWord)) {
             return false;
         }
-        console.log(playedWord);
         return this.dictionnaries[0].words.includes(playedWord.toLowerCase());
     }
 
@@ -36,7 +35,6 @@ export class DictionnaryService {
                 isValid = false;
             }
         }
-        console.log(isValid);
         return isValid;
     }
 
