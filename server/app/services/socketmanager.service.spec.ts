@@ -189,8 +189,10 @@ describe('SocketManager service tests', () => {
                 gameSocket.emit('message', message);
                 setTimeout(() => {
                     assert(stub3.calledWith(message));
-                    assert(service.games[0].messages[0].text === message.text);
-                    assert(service.games[0].messages[0].emitter === message.emitter);
+                    // eslint-disable-next-line dot-notation
+                    assert(service['games'][0]['messages'][0].text === message.text);
+                    // eslint-disable-next-line dot-notation
+                    assert(service['games'][0]['messages'][0].emitter === message.emitter);
 
                     roomSocket.close();
                     gameSocket.close();
@@ -255,10 +257,11 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('turn', stub3);
-                gameSocket.emit('skipTurn', service.games[0].players[0].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('skipTurn', service['games'][0].players[0].id);
                 setTimeout(() => {
                     // eslint-disable-next-line dot-notation
-                    assert(!service.games[0]['isPlayer0Turn']);
+                    assert(!service['games'][0]['isPlayer0Turn']);
                     assert(stub3.calledWith(false));
 
                     roomSocket.close();
@@ -292,10 +295,11 @@ describe('SocketManager service tests', () => {
                 const stub4 = sinon.stub();
                 gameSocket.on('game-error', stub3);
                 gameSocket.on('turn', stub4);
-                gameSocket.emit('skipTurn', service.games[0].players[1].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('skipTurn', service['games'][0].players[1].id);
                 setTimeout(() => {
                     // eslint-disable-next-line dot-notation
-                    assert(service.games[0]['isPlayer0Turn']);
+                    assert(service['games'][0]['isPlayer0Turn']);
                     assert(stub4.notCalled);
                     assert(stub3.calledWith("Ce n'est pas votre tour"));
 
@@ -329,10 +333,12 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('rack', stub3);
-                gameSocket.emit('change-letters', letters, service.games[0].players[0].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('change-letters', letters, service['games'][0].players[0].id);
                 setTimeout(() => {
                     // TODO: adapter avec integration service
-                    assert(stub3.calledWith(letters, service.games[0].players[0].id));
+                    // eslint-disable-next-line dot-notation
+                    assert(stub3.calledWith(letters, service['games'][0].players[0].id));
 
                     roomSocket.close();
                     gameSocket.close();
@@ -366,10 +372,12 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('placed', stub3);
-                gameSocket.emit('place-letters', letters, position, service.games[0].players[0].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('place-letters', letters, position, service['games'][0].players[0].id);
                 setTimeout(() => {
                     // TODO: adapter avec integration validation mots et calcul de points
-                    assert(stub3.calledWith(letters, position, expectedPoints, service.games[0].players[0].id));
+                    // eslint-disable-next-line dot-notation
+                    assert(stub3.calledWith(letters, position, expectedPoints, service['games'][0].players[0].id));
 
                     roomSocket.close();
                     gameSocket.close();
