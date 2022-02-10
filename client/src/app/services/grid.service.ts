@@ -5,6 +5,13 @@ import { Vec2 } from '@app/classes/vec2';
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
 
+enum Colors {
+    Mustard = '#E1AC01',
+    Yellow = '#FFE454',
+    Green = '#54bd9d',
+    Blue = '#65CCD2',
+    Grey = '#838383',
+}
 @Injectable({
     providedIn: 'root',
 })
@@ -33,7 +40,7 @@ export class GridService {
                 this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
                 this.gridContext.fill();
                 this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.gridContext.fillStyle = '#838383';
+                this.gridContext.fillStyle = '#353535';
             }
         }
     }
@@ -69,53 +76,27 @@ export class GridService {
             '1411',
         ];
         if (tripleWord.includes(coord)) {
-            this.drawTripleWord(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Mustard, 'WORD x3');
         } else if (tripleLetter.includes(coord)) {
-            this.drawTripleLetter(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Green, 'LETTER x3');
         } else if (doubleWord.includes(coord)) {
-            this.drawDoubleWord(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Yellow, 'WORD x2');
         } else if (doubleLetter.includes(coord) || (posX === 11 && posY === 0)) {
-            this.drawDoubleLetter(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Blue, 'LETTER x2');
         } else if (posX === 7 && posY === 7) {
-            this.drawStar(canvasX, canvasY);
+            this.drawBonus(canvasX - 4, canvasY + 10, Colors.Grey, '⭐');
         }
     }
 
-    drawTripleWord(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#c93de0';
+    drawBonus(canvasX: number, canvasY: number, color: string, word: string) {
+        this.gridContext.fillStyle = color;
         this.gridContext.fill();
-        this.drawMessage('WORD x3', canvasX, canvasY);
-    }
-
-    drawTripleLetter(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#54bd9d';
-        this.gridContext.fill();
-        this.drawMessage('LETTER x3', canvasX, canvasY);
-    }
-
-    drawDoubleWord(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#e1adf3';
-        this.gridContext.fill();
-        this.drawMessage('WORD x2', canvasX, canvasY);
-    }
-
-    drawDoubleLetter(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#b7ffe5';
-        this.gridContext.fill();
-
-        this.drawMessage('LETTER x2', canvasX, canvasY);
-    }
-
-    drawStar(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#e1adf3';
-        this.gridContext.fill();
-        this.gridContext.font = '30px system-ui';
-        this.gridContext.fillText('⭐', canvasX - 5, canvasY + 10);
+        this.drawMessage(word, canvasX, canvasY);
     }
 
     drawMessage(word: string, posX: number, posY: number) {
         this.gridContext.fillStyle = '#000000';
-        this.gridContext.font = this.fontSize;
+        word === '⭐' ? (this.gridContext.font = '30px system-ui') : (this.gridContext.font = this.fontSize);
         const sentence = word.split(' ');
         const step = 10;
         for (let i = 0; i < sentence.length; i++) {
