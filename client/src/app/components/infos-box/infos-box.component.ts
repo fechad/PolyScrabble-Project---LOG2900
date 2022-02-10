@@ -15,18 +15,13 @@ export class InfosBoxComponent implements AfterViewInit {
     private subscription: Subscription;
     timeData = 60;
     turnChange: boolean;
-    private mainPlayer: string | undefined;
-    private otherPlayer: string | undefined;
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.subscription = gameContextService.isMainPlayerTurn.subscribe((value) => {
             this.turnChange = value;
             this.reset();
         });
-
-        // TO-DO: does not update
-        this.mainPlayer = this.communicationService.selectedRoom.value?.mainPlayer.name;
-        this.otherPlayer = this.communicationService.selectedRoom.value?.otherPlayer?.name;
+        
     }
 
     ngAfterViewInit(): void {
@@ -34,11 +29,11 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     getMainPlayer(): string | undefined {
-        return this.mainPlayer;
+        return this.communicationService.selectedRoom.value?.mainPlayer.name;
     }
 
     getOtherPlayer(): string | undefined {
-        return this.otherPlayer;
+        return this.communicationService.selectedRoom.value?.otherPlayer?.name;
     }
 
     handleEvent(e: CountdownEvent) {
