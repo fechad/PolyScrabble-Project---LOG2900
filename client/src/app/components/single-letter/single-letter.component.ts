@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Letter } from '@app/services/Alphabet';
 
 @Component({
     selector: 'app-single-letter',
@@ -7,8 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class SingleLetterComponent implements OnInit {
     @Input()
-    selectedLetter: string;
-
+    selectedLetter: Letter;
     constructor() {}
 
     ngOnInit(): void {}

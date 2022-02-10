@@ -1,4 +1,3 @@
 <div class="rack-container">
-    <!-- <app-single-letter *ngFor="let letter of gameContextService.letterRack.value" selectedLetter="ooo"> </app-single-letter> -->
-    <div *ngFor="let letter of letters">{{ letter.name }}</div>
+    <app-single-letter *ngFor="let letter of gameContextService.letterRack | async" [selectedLetter]="letter"> </app-single-letter>
 </div>

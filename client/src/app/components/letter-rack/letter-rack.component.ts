@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Letter } from '@app/services/Alphabet';
 import { GameContextService } from '@app/services/game-context.service';
 @Component({
     selector: 'app-letter-rack',
@@ -7,13 +6,12 @@ import { GameContextService } from '@app/services/game-context.service';
     styleUrls: ['./letter-rack.component.scss'],
 })
 export class LetterRackComponent implements OnInit {
-    letters: Letter[];
     constructor(public gameContextService: GameContextService) {
-        console.log(gameContextService.letterRack.getValue());
-        this.gameContextService.letterRackCast.subscribe((newLetters) => {
-            console.log(newLetters);
-            this.letters = newLetters;
-        });
+        // console.log(gameContextService.letterRack.getValue());
+        // this.gameContextService.letterRackCast.subscribe((newLetters) => {
+        //     console.log(newLetters);
+        //     this.letters = newLetters;
+        // });
     }
 
     ngOnInit(): void {}
