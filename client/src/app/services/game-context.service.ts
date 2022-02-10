@@ -20,7 +20,6 @@ export class GameContextService {
 
     iStart() {
         this.isMainPlayerTurn.next(true);
-        console.log(this.isMainPlayerTurn.value);
     }
 
     receiveMessages(message: Message, msgCount: number, myself: boolean) {
@@ -40,9 +39,7 @@ export class GameContextService {
     }
 
     setPlayerTurn(isMainPlayerTurn: boolean) {
-        console.log('entered in setPlayerTurn');
         this.isMainPlayerTurn.next(isMainPlayerTurn);
-        console.log(this.isMainPlayerTurn.value);
     }
 
     constructor() {}
