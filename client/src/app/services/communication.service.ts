@@ -30,7 +30,7 @@ export class CommunicationService {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this.joinRoomHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
-        this.waitingRoomsSocket.on('broadcastRooms', (rooms) => this.rooms.next(rooms));
+        this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
         this.mainSocket.on('id', (id: string) => {
             this.myId = id;
         });
@@ -96,7 +96,7 @@ export class CommunicationService {
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
-        this.mainSocket.emit('joinRoom', roomId, playerName);
+        this.mainSocket.emit('join-room', roomId, playerName);
         await this.waitForRoom();
     }
 
@@ -121,7 +121,7 @@ export class CommunicationService {
 
     async createRoom(playerName: string, parameters: Parameters) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-        this.mainSocket.emit('createRoom', playerName, parameters);
+        this.mainSocket.emit('create-room', playerName, parameters);
         await this.waitForRoom();
     }
 
@@ -154,7 +154,7 @@ export class CommunicationService {
         console.log(`Join room ${room} with token ${token}`);
         this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
         this.roomSocket.on('kick', () => this.leaveGame());
-        this.roomSocket.on('updateRoom', (room) => this.selectedRoom.next(room));
+        this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (e) => this.handleError(e));
         this.roomSocket.on('id', (id: PlayerId) => {
             this.myId = id;
