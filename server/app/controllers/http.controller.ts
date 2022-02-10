@@ -16,8 +16,8 @@ export class HttpController {
 
     private configureRouter(): void {
         this.router = Router();
-        this.router.get('/dictionnaries', async (req: Request, res: Response) => {
-            const dictionnaries = await Promise.all(this.dictionnaryService.getDictionnaries());
+        this.router.get('/dictionnaries', (req: Request, res: Response) => {
+            const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
     }

@@ -1,5 +1,5 @@
 import { Application } from '@app/app';
-import { Dictionnary, DictionnaryService } from '@app/services/dictionnary.service';
+import { DictionnaryInfo, DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -7,13 +7,13 @@ import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
 describe('DictionnaryController', () => {
-    const dictionnaries = [{ id: 0, name: 'français', words: ['a', 'b', 'c'] }] as Dictionnary[];
+    const dictionnaries = [{ id: 0, name: 'français', words: ['a', 'b', 'c'] }] as DictionnaryInfo[];
     let dictionnaryService: SinonStubbedInstance<DictionnaryService>;
     let expressApp: Express.Application;
 
     beforeEach(async () => {
         dictionnaryService = createStubInstance(DictionnaryService);
-        dictionnaryService.getDictionnaries.returns(dictionnaries.map(async (dict) => Promise.resolve(dict)));
+        dictionnaryService.getDictionnaries.returns(dictionnaries);
         const app = Container.get(Application);
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['httpController'], 'dictionnaryService', { value: dictionnaryService });

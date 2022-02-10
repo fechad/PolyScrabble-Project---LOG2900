@@ -151,7 +151,7 @@ describe('SocketManager service tests', () => {
             playersSocket[1].on('join', stub2);
             playersSocket[1].emit('joinRoom', 0, 'NotDummy');
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
-            roomSocket.on('joinGame', stub);
+            roomSocket.on('join-game', stub);
             setTimeout(() => {
                 assert(stub2.calledWith(0));
                 roomSocket.emit('start');
@@ -178,7 +178,7 @@ describe('SocketManager service tests', () => {
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
-            roomSocket.on('joinGame', stub2);
+            roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
                 assert(stub2.calledWith(0));
@@ -189,8 +189,10 @@ describe('SocketManager service tests', () => {
                 gameSocket.emit('message', message);
                 setTimeout(() => {
                     assert(stub3.calledWith(message));
-                    assert(service.games[0].messages[0].text === message.text);
-                    assert(service.games[0].messages[0].emitter === message.emitter);
+                    // eslint-disable-next-line dot-notation
+                    assert(service['games'][0]['messages'][0].text === message.text);
+                    // eslint-disable-next-line dot-notation
+                    assert(service['games'][0]['messages'][0].emitter === message.emitter);
 
                     roomSocket.close();
                     gameSocket.close();
@@ -214,7 +216,7 @@ describe('SocketManager service tests', () => {
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
-            roomSocket.on('joinGame', stub2);
+            roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
                 assert(stub2.calledWith(0));
@@ -247,7 +249,7 @@ describe('SocketManager service tests', () => {
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
-            roomSocket.on('joinGame', stub2);
+            roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
                 assert(stub2.calledWith(0));
@@ -255,10 +257,11 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('turn', stub3);
-                gameSocket.emit('skipTurn', service.games[0].players[0].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('switch-turn', service['games'][0].players[0].id);
                 setTimeout(() => {
                     // eslint-disable-next-line dot-notation
-                    assert(!service.games[0]['isPlayer0Turn']);
+                    assert(!service['games'][0]['isPlayer0Turn']);
                     assert(stub3.calledWith(false));
 
                     roomSocket.close();
@@ -282,7 +285,7 @@ describe('SocketManager service tests', () => {
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
-            roomSocket.on('joinGame', stub2);
+            roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
                 assert(stub2.calledWith(0));
@@ -292,12 +295,13 @@ describe('SocketManager service tests', () => {
                 const stub4 = sinon.stub();
                 gameSocket.on('game-error', stub3);
                 gameSocket.on('turn', stub4);
-                gameSocket.emit('skipTurn', service.games[0].players[1].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('switch-turn', service['games'][0].players[1].id);
                 setTimeout(() => {
                     // eslint-disable-next-line dot-notation
-                    assert(service.games[0]['isPlayer0Turn']);
+                    assert(service['games'][0]['isPlayer0Turn']);
                     assert(stub4.notCalled);
-                    assert(stub3.calledWith("Ce n'est pas votre tour"));
+                    assert(stub3.called);
 
                     roomSocket.close();
                     gameSocket.close();
@@ -321,7 +325,7 @@ describe('SocketManager service tests', () => {
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
-            roomSocket.on('joinGame', stub2);
+            roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
                 assert(stub2.calledWith(0));
@@ -329,10 +333,12 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('rack', stub3);
-                gameSocket.emit('change-letters', letters, service.games[0].players[0].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('change-letters', letters, service['games'][0].players[0].id);
                 setTimeout(() => {
                     // TODO: adapter avec integration service
-                    assert(stub3.calledWith(letters, service.games[0].players[0].id));
+                    // eslint-disable-next-line dot-notation
+                    assert(stub3.calledWith(letters, service['games'][0].players[0].id));
 
                     roomSocket.close();
                     gameSocket.close();
@@ -358,7 +364,7 @@ describe('SocketManager service tests', () => {
 
             const roomSocket = ioClient(`${urlString}/rooms/0`, { auth: { token } });
             const stub2 = sinon.stub();
-            roomSocket.on('joinGame', stub2);
+            roomSocket.on('join-game', stub2);
             roomSocket.emit('start');
             setTimeout(() => {
                 assert(stub2.calledWith(0));
@@ -366,10 +372,12 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('placed', stub3);
-                gameSocket.emit('place-letters', letters, position, service.games[0].players[0].id);
+                // eslint-disable-next-line dot-notation
+                gameSocket.emit('place-letters', letters, position, service['games'][0].players[0].id);
                 setTimeout(() => {
                     // TODO: adapter avec integration validation mots et calcul de points
-                    assert(stub3.calledWith(letters, position, expectedPoints, service.games[0].players[0].id));
+                    // eslint-disable-next-line dot-notation
+                    assert(stub3.calledWith(letters, position, expectedPoints, service['games'][0].players[0].id));
 
                     roomSocket.close();
                     gameSocket.close();
