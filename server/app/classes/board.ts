@@ -114,7 +114,6 @@ export class Board {
     }
 
     private getWord(row: number, col: number, attemptedWord: string, horizontal: boolean, word: string, letterPlace?: number): string {
-        let letterCount = 0;
         const referenceRow = row;
         const referenceCol = col;
 
@@ -124,24 +123,30 @@ export class Board {
             while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
         }
         word += ';' + row.toString() + ';' + col.toString() + ';';
+        const letters = this.getLetters(row, referenceRow, col, referenceCol, attemptedWord, horizontal, letterPlace);
+        return (word += letters);
+    }
 
+    private getLetters(row:number, refRow:number, col: number, refCol:number, testedWord: string, horizontal: boolean, letterPlace?: number): string {
+        let letterCount = 0;
+        let letters = '';
         while (col < BOARD_LENGTH && row < BOARD_LENGTH) {
             if (
                 letterPlace === undefined &&
-                (letterCount < attemptedWord.length || (horizontal ? !this.board[row][col + 1].empty : !this.board[row + 1][col].empty))
+                (letterCount < testedWord.length || (horizontal ? !this.board[row][col + 1].empty : !this.board[row + 1][col].empty))
             ) {
                 if (this.board[row][col].empty) {
-                    word += attemptedWord.charAt(letterCount);
+                    letters += testedWord.charAt(letterCount);
                     letterCount++;
                 } else {
-                    word += this.board[row][col].getChar();
+                    letters += this.board[row][col].getChar();
                 }
-            } else if (!this.board[row][col].empty || (col <= referenceCol && row <= referenceRow)) {
+            } else if (!this.board[row][col].empty || (col <= refCol && row <= refRow)) {
                 if (!this.board[row][col].empty) {
-                    word += this.board[row][col].getChar();
-                } else if (row === referenceRow && col === referenceCol) {
+                    letters += this.board[row][col].getChar();
+                } else if (row === refRow && col === refCol) {
                     if (letterPlace !== undefined && letterPlace !== INVALID) {
-                        word += attemptedWord.charAt(letterPlace);
+                        letters += testedWord.charAt(letterPlace);
                     }
                 }
             } else {
@@ -150,7 +155,7 @@ export class Board {
             if (horizontal) col++;
             else row++;
         }
-        return word;
+        return letters;
     }
 
     private getContacts(wordLength: number, position: string[]): number[][] {
