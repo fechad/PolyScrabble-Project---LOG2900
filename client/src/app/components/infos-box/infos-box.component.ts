@@ -13,12 +13,9 @@ import { Subscription } from 'rxjs';
 export class InfosBoxComponent implements AfterViewInit {
     @ViewChild('countdown') cd: CountdownComponent;
     private subscription: Subscription;
-    timeData = 60;
-    turnChange: boolean;
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.subscription = gameContextService.isMainPlayerTurn.subscribe((value) => {
-            this.turnChange = value;
             this.reset();
         });
         
