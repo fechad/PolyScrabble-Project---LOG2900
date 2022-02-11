@@ -19,6 +19,8 @@ const AJUSTSTEP = 0.5;
 const EXCEPTIONX = 11;
 const EXCEPTIONY = 0;
 const AMOUNTOFNUMBER = 15;
+const DEFAULT_SIZE = 9;
+const TILE_SIZE = 30;
 enum Colors {
     Mustard = '#E1AC01',
     Yellow = '#FFE454',
@@ -26,12 +28,14 @@ enum Colors {
     Blue = '#65CCD2',
     Grey = '#838383',
 }
+
 @Injectable({
     providedIn: 'root',
 })
 export class GridService {
     gridContext: CanvasRenderingContext2D;
-    fontSize = '9px system-ui';
+    fontSize = '';
+    multiplier = 1;
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private gameContext: GameContextService) {}
@@ -65,7 +69,7 @@ export class GridService {
             const tile = this.gameContext.board.value[posX][posY] as Letter;
             this.gridContext.fillStyle = 'burlywood';
             this.gridContext.fill();
-            this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, '30');
+            this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, TILE_SIZE);
         }
     }
 
@@ -115,12 +119,12 @@ export class GridService {
     drawBonus(canvasX: number, canvasY: number, color: string, word: string) {
         this.gridContext.fillStyle = color;
         this.gridContext.fill();
-        this.drawMessage(word, canvasX, canvasY, '9');
+        this.drawMessage(word, canvasX, canvasY, DEFAULT_SIZE);
     }
 
-    drawMessage(word: string, posX: number, posY: number, size: string) {
+    drawMessage(word: string, posX: number, posY: number, size: number) {
         this.gridContext.fillStyle = '#000000';
-        this.gridContext.font = word === '⭐' ? '30px system-ui' : size + 'px system-ui';
+        this.gridContext.font = word === '⭐' ? '30px system-ui' : this.multiplier * size + 'px system-ui';
         const sentence = word.split(' ');
         const step = 10;
         if (sentence.length === 2) {
