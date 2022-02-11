@@ -1,5 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { ModesPageComponent } from './modes-page.component';
@@ -35,4 +36,18 @@ describe('ModesPageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    fit('click on solo mode should open dialog', fakeAsync(() => {
+        const openDialogSpy = spyOn(component, 'openDialog').and.callThrough();
+        fixture.debugElement.query(By.css('.Solo')).nativeElement.click();
+        tick();
+        expect(openDialogSpy).toHaveBeenCalled();
+    }));
+
+    it('click on multiplayer mode should open dialog', fakeAsync(() => {
+        const openDialogSpy = spyOn(component, 'openDialog').and.callThrough();
+        fixture.debugElement.query(By.css('.Multijoueur')).nativeElement.click();
+        tick();
+        expect(openDialogSpy).toHaveBeenCalled();
+    }));
 });
