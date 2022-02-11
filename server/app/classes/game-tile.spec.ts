@@ -28,9 +28,9 @@ describe('Game Tile', () => {
         gameTile.setLetter('a');
 
         // eslint-disable-next-line dot-notation
-        assert(gameTile['letter'] === 'a');
+        assert(gameTile['letter'].name === 'A');
         // eslint-disable-next-line dot-notation
-        assert(gameTile['letterValue'] === 1);
+        assert(gameTile['letter'].score === 1);
         assert(!gameTile.empty);
         done();
     });
@@ -39,30 +39,12 @@ describe('Game Tile', () => {
         gameTile.setLetter('a');
 
         // eslint-disable-next-line dot-notation
-        assert(gameTile['letter'] === 'a');
+        assert(gameTile['letter'].name === 'A');
         // eslint-disable-next-line dot-notation
-        assert(gameTile['letterValue'] === 1);
+        assert(gameTile['letter'].score === 1);
         assert(!gameTile.empty);
         const char = gameTile.getChar();
         assert(char === 'a');
-        done();
-    });
-
-    it('should not set something else then a letter as letter', (done) => {
-        gameTile.setLetter('4');
-        // eslint-disable-next-line dot-notation
-        assert(gameTile['letter'] === undefined);
-        assert(gameTile.empty);
-
-        gameTile.setLetter('*');
-        // eslint-disable-next-line dot-notation
-        assert(gameTile['letter'] === undefined);
-        assert(gameTile.empty);
-
-        gameTile.setLetter('word');
-        // eslint-disable-next-line dot-notation
-        assert(gameTile['letter'] === undefined);
-        assert(gameTile.empty);
         done();
     });
 
@@ -73,13 +55,13 @@ describe('Game Tile', () => {
 
         assert(gameTile.getChar() === 'b');
         // eslint-disable-next-line dot-notation
-        assert(gameTile['letterValue'] === 3);
+        assert(gameTile['letter'].score === 3);
         assert(gameTile.getPoints() === 3);
         assert(!gameTile.empty);
 
         assert(gameTileMult2.getChar() === 'i');
         // eslint-disable-next-line dot-notation
-        assert(gameTileMult2['letterValue'] === 1);
+        assert(gameTileMult2['letter'].score === 1);
         assert(gameTileMult2.getPoints() === 2);
         gameTileMult2.newlyPlaced = false;
         assert(gameTileMult2.getPoints() === 1);
@@ -87,7 +69,7 @@ describe('Game Tile', () => {
 
         assert(gameTileWordMult3.getChar() === 'o');
         // eslint-disable-next-line dot-notation
-        assert(gameTileWordMult3['letterValue'] === 1);
+        assert(gameTileWordMult3['letter'].score === 1);
         assert(!gameTileWordMult3.empty);
         done();
     });
@@ -96,8 +78,6 @@ describe('Game Tile', () => {
         const invalid = -1;
         // eslint-disable-next-line dot-notation
         assert(gameTile['letter'] === undefined);
-        // eslint-disable-next-line dot-notation
-        assert(gameTile['letterValue'] === undefined);
         assert(gameTile.getPoints() === invalid);
         done();
     });
@@ -106,7 +86,7 @@ describe('Game Tile', () => {
         gameTile.setLetter('A');
         assert(gameTile.getChar() === 'a');
         // eslint-disable-next-line dot-notation
-        assert(gameTile['letterValue'] === 0);
+        assert(gameTile['letter'].score === 0);
         assert(gameTile.getPoints() === 0);
         done();
     });
