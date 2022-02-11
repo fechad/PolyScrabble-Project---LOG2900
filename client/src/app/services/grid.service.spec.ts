@@ -43,7 +43,7 @@ describe('GridService', () => {
 
     it(' drawMessage should call fillText on the canvas', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-        service.drawMessage('test', 0, 0, '9');
+        service.drawMessage('test', 0, 0, 9);
         expect(fillTextSpy).toHaveBeenCalled();
     });
 
@@ -63,7 +63,7 @@ describe('GridService', () => {
     it(' drawMessage should call fillText as many times as words in a message', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
         const message = 'test';
-        service.drawMessage(message, 0, 0, '9');
+        service.drawMessage(message, 0, 0, 9);
         expect(fillTextSpy).toHaveBeenCalledTimes(message.split(' ').length);
     });
 
