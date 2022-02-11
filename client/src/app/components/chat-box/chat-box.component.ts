@@ -108,6 +108,8 @@ export class ChatBoxComponent {
             } else {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
             }
+        } else {
+            error = new Error('Ces lettres ne sont pas dans le rack');
         }
         return error;
     }
@@ -117,6 +119,8 @@ export class ChatBoxComponent {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX])) {
             this.communicationService.echanger(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
+        } else {
+            error = new Error('Ces lettres ne sont pas dans le rack');
         }
         return error;
     }

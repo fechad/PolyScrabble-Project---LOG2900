@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { alphabet } from '@app/services/Alphabet';
 import { ChatBoxComponent } from './chat-box.component';
 
 import SpyObj = jasmine.SpyObj;
@@ -9,12 +10,18 @@ describe('ChatBoxComponent', () => {
     let component: ChatBoxComponent;
     let fixture: ComponentFixture<ChatBoxComponent>;
     let elemRef: SpyObj<ElementRef>;
-    const placerCommands = ['!placer g9h adant', '!placer g9h adanT', '!placer g13h s', '!placer g13v s', '!placer g13 s'];
+    const placerCommands = ['!placer g9h baf', '!placer g9h abc', '!placer g13h def', '!placer g13v a', '!placer g13 g'];
     const invalidPlacerCommands = ['!placer gz adant', '!placer g9h adan*', '!placer g16h s', '!placer g13v ', '!placer g13 5'];
-    const echangerCommands = ['!échanger mwb', '!échanger e*', ' !échanger eew'];
-    const invalidEchangerCommands = ['!échanger', '!échanger eT', ' !échanger e23'];
+    const echangerCommands = ['!échanger ab', '!échanger e', ' !échanger cdg'];
+    const invalidEchangerCommands = ['!échanger', '!échanger eT', ' !échanger e23', '!échanger e*'];
     beforeEach(() => {
         elemRef = jasmine.createSpyObj('ElementRef', ['nativeElement', 'nativeElement.focus']);
+        const rackStub = [];
+        const RACKS_LENGTH = 7;
+        for (let i = 0; i < RACKS_LENGTH; i++) {
+            rackStub.push(alphabet[i]); // adds 'abcdefg'
+        }
+        component.gameContextService.rack.next(rackStub);
     });
 
     beforeEach(async () => {
