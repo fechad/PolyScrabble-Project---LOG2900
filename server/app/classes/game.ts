@@ -37,6 +37,7 @@ export class Game {
             this.eventEmitter.emit('rack', this.reserve.letterRacks[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
             this.eventEmitter.emit('rack', this.reserve.letterRacks[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
             this.eventEmitter.emit('turn', this.getPlayerTurnId());
+            this.eventEmitter.emit('players', this.players);
         }
     }
 
@@ -70,7 +71,7 @@ export class Game {
     skipTurn(playerId: PlayerId, timerRequest: boolean) {
         if (this.checkTurn(playerId, timerRequest)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
-            this.eventEmitter.emit('turn', this.getPlayerTurnId);
+            this.eventEmitter.emit('turn', this.getPlayerTurnId());
         }
     }
 
@@ -79,7 +80,7 @@ export class Game {
     }
 
     private checkTurn(playerId: PlayerId, timerRequest: boolean) {
-        const validTurn = playerId === (this.isPlayer0Turn ? this.players[0].id : this.players[1].id);
+        const validTurn = playerId === this.getPlayerTurnId();
         if (!validTurn && timerRequest === false) {
             this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
         } else if (!validTurn && timerRequest === true) {

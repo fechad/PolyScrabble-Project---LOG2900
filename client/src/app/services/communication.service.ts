@@ -11,6 +11,8 @@ import { environment } from 'src/environments/environment';
 import { Letter } from './Alphabet';
 import { GameContextService } from './game-context.service';
 
+export type Player = { name: string; id: PlayerId };
+
 @Injectable({
     providedIn: 'root',
 })
@@ -92,6 +94,7 @@ export class CommunicationService {
     switchTurn() {
         this.gameSocket?.emit('switch-turn', this.myId);
     }
+
     resetTimer() {
         this.gameSocket?.emit('reset-timer', this.myId);
     }
@@ -197,6 +200,11 @@ export class CommunicationService {
         });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
             if (id === this.myId) this.gameContextService.updateRack(rack);
+        });
+        this.gameSocket.on('players', (players: Player[]) => {
+            for (const player of players) {
+                this.gameContextService.setName(player.name, player.id === this.myId);
+            }
         });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});

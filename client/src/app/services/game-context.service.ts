@@ -15,8 +15,8 @@ export class GameContextService {
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
     readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    readonly myName: string;
-    readonly opponentName: string;
+    myName: string;
+    opponentName: string;
     private msgCount: number = 0;
 
     receiveMessages(message: Message, msgCount: number, myself: boolean) {
@@ -39,6 +39,10 @@ export class GameContextService {
         this.isMyTurn.next(isYourTurn);
     }
 
+    setName(name: string, isMe: boolean) {
+        if (isMe) this.myName = name;
+        else this.opponentName = name;
+    }
     updateRack(newRack: Letter[]) {
         this.letterRack.next(newRack);
     }
