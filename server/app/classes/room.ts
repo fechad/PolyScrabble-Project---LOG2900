@@ -66,12 +66,6 @@ export class Room extends EventEmitter {
         }
     }
 
-    forfeit() {
-        if (this.started) {
-            this.emit('forfeit');
-        }
-    }
-
     hasOtherPlayer(): boolean {
         return this.otherPlayer !== undefined;
     }

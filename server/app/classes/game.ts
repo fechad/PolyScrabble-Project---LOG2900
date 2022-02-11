@@ -75,6 +75,11 @@ export class Game {
         }
     }
 
+    forfeit(idLoser: string | undefined) {
+        console.log('game');
+        this.eventEmitter.emit('forfeit', idLoser);
+    }
+
     private getPlayerTurnId() {
         return this.isPlayer0Turn ? this.players[MAIN_PLAYER].id : this.players[OTHER_PLAYER].id;
     }

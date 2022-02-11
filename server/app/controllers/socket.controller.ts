@@ -95,7 +95,6 @@ export class SocketManager {
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
             }
-            socket.on('confirmForfeit', () => room.forfeit());
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
@@ -136,7 +135,7 @@ export class SocketManager {
 
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
 
-            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error', 'players'];
+            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error', 'players', 'forfeit'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
@@ -150,6 +149,10 @@ export class SocketManager {
                 game.skipTurn(id, true);
             });
             socket.on('parameters', () => game.getParameters());
+            socket.on('confirm-forfeit', (idLoser) => {
+                game.forfeit(idLoser);
+                console.log('sock');
+            });
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));

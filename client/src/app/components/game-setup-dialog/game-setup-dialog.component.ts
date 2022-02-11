@@ -34,7 +34,7 @@ export class GameSetupDialogComponent implements OnInit {
             playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
             minutes: new FormControl(1, [Validators.required]),
             seconds: new FormControl(0, [Validators.required]),
-            dictionary: [''],
+            dictionary: new FormControl(0, [Validators.required]),
         });
     }
 
