@@ -14,7 +14,7 @@ export class WaitingRoomPageComponent {
 
     constructor(public communicationService: CommunicationService, private router: Router) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
-            if (room === undefined) await this.router.navigate(['/home']);
+            if (room === undefined) await this.router.navigate(['/joining-room']);
             else if (room.started) this.router.navigate(['/game']);
 
             this.isMainPlayer = this.communicationService.getId() === room?.mainPlayer.id;

@@ -19,7 +19,6 @@ export class ChatBoxComponent implements OnInit {
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
         this.myId = this.communicationService.getId();
-        console.log(this.myId);
     }
     //pre-dev
     ngOnInit(): void {}
