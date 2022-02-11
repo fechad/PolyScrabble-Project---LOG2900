@@ -16,7 +16,7 @@ describe('Game', () => {
     let dictionnary: DictionnaryService;
 
     before(async () => {
-        dictionnary = new DictionnaryService;
+        dictionnary = new DictionnaryService();
         await dictionnary.init();
     });
 
@@ -84,14 +84,13 @@ describe('Game', () => {
 
     it('should place letters', (done) => {
         const stub = sinon.stub();
-        const expectedPoints = 26;
         const position = 'c8h';
         const letters = 'abcd';
-        game.eventEmitter.on('placed', stub);
+        game.eventEmitter.on('score', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.placeLetters(letters, position, '0');
-        assert(stub.calledWith(letters, position, expectedPoints, '0'));
+        assert(stub.called);
         assert(stubError.notCalled);
         done();
     });

@@ -1,14 +1,14 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import { Letter } from '@app/letter';
 
 const INVALID = -1;
 
 export class GameTile {
     empty: boolean;
     newlyPlaced: boolean;
+    letter: Letter;
     readonly multiplier: number;
     readonly wordMultiplier: number;
-    private letter: string;
-    private letterValue: number;
 
     constructor(multiplier: number, wordMultiplier?: number) {
         this.empty = true;
@@ -17,40 +17,35 @@ export class GameTile {
     }
 
     setLetter(letter: string) {
-        if (letter.length === 1 && letter >= 'a' && letter <= 'z') {
-            this.letter = letter;
-            this.empty = false;
-            this.newlyPlaced = true;
-            this.letterValue = this.getLetterValue(this.letter);
-        } else if (letter.length === 1 && letter >= 'A' && letter <= 'Z') {
-            this.letter = letter.toLowerCase();
-            this.empty = false;
-            this.newlyPlaced = true;
-            this.letterValue = 0;
+        this.empty = false;
+        this.newlyPlaced = true;
+        this.letter = this.getLetter(letter);
+        if (letter.length === 1 && letter >= 'A' && letter <= 'Z') {
+            // this is considered a * letter
+            this.letter.score = 0;
         }
-        return this.letterValue * this.multiplier;
     }
 
     getPoints(): number {
         if (this.letter !== undefined) {
             if (this.newlyPlaced) {
-                return this.letterValue * this.multiplier;
+                return this.letter.score * this.multiplier;
             }
-            return this.letterValue;
+            return this.letter.score;
         }
         return INVALID;
     }
 
     getChar(): string {
-        return this.empty ? '!' : this.letter;
+        return this.empty ? '!' : this.letter.name.toLowerCase();
     }
 
-    private getLetterValue(char: string): number {
+    private getLetter(char: string): Letter {
         for (const letter of alphabetTemplate) {
             if (letter.name === char.toUpperCase()) {
-                return letter.score;
+                return letter;
             }
         }
-        return INVALID;
+        return alphabetTemplate[alphabetTemplate.length - 1];
     }
 }

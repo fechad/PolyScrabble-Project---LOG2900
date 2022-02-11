@@ -359,9 +359,9 @@ describe('SocketManager service tests', () => {
 
     it('should place letters', (done) => {
         const token = 0;
-        const letters = 'abcd';
-        const position = 'c8h';
-        const expectedPoints = 26;
+        const letters = 'test';
+        const position = 'h7h';
+        const expectedPoints = 6;
         const parameters = new Parameters();
 
         playersSocket[0].emit('create-room', 'Dummy', parameters);
@@ -380,7 +380,7 @@ describe('SocketManager service tests', () => {
 
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
-                gameSocket.on('placed', stub3);
+                gameSocket.on('score', stub3);
                 // eslint-disable-next-line dot-notation
                 service['games'][0]['isPlayer0Turn'] = true;
                 // eslint-disable-next-line dot-notation
@@ -388,7 +388,7 @@ describe('SocketManager service tests', () => {
                 setTimeout(() => {
                     // TODO: adapter avec integration validation mots et calcul de points
                     // eslint-disable-next-line dot-notation
-                    expect(stub3.args).to.deep.equal([[letters, position, expectedPoints, service['games'][0].players[0].id]]);
+                    expect(stub3.args).to.deep.equal([[expectedPoints, service['games'][0].players[0].id]]);
 
                     roomSocket.close();
                     gameSocket.close();

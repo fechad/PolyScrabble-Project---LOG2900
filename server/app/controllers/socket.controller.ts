@@ -136,7 +136,7 @@ export class SocketManager {
 
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
 
-            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error', 'players'];
+            const events: string[] = ['message', 'rack', 'score', 'turn', 'parameters', 'game-error', 'players', 'board'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 

@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 import { Letter } from './Alphabet';
 import { Board, GameContextService } from './game-context.service';
 
-export type Player = { name: string; id: PlayerId };
+export type Player = { name: string; id: PlayerId; score: number };
 
 @Injectable({
     providedIn: 'root',
@@ -203,11 +203,16 @@ export class CommunicationService {
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setName(player.name, player.id === this.myId);
+                this.gameContextService.setInfos(player, player.id === this.myId);
             }
         });
         this.gameSocket.on('board', (board: Board) => {
+            console.log(board);
             this.gameContextService.setBoard(board);
+        });
+        this.gameSocket.on('score', (score: Number, player: PlayerId) => {
+            console.log(player === this.myId);
+            console.log(score);
         });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});

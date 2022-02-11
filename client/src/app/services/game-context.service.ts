@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Letter } from './Alphabet';
+import { Player } from './communication.service';
 
 const BOARD_LENGTH = 15;
-
-export type Tile = Letter | undefined;
+export type Tile = Letter | null;
 export type Board = Tile[][];
 
 @Injectable({
@@ -22,18 +22,20 @@ export class GameContextService {
     readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     myName: string;
     opponentName: string;
+    myScore: number;
+    opponentScore: number;
     private msgCount: number = 0;
 
     constructor() {
-        const board = [];
+        const grid = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             const row = [];
             for (let j = 0; j < BOARD_LENGTH; j++) {
-                row.push(undefined);
+                row.push(null);
             }
-            board.push(row);
+            grid.push(row);
         }
-        this.board.next(board);
+        this.board.next(grid);
     }
 
     setBoard(board: Board) {
@@ -60,9 +62,12 @@ export class GameContextService {
         this.isMyTurn.next(isYourTurn);
     }
 
-    setName(name: string, isMe: boolean) {
-        if (isMe) this.myName = name;
-        else this.opponentName = name;
+    setInfos(player: Player, isMe: boolean) {
+        if (isMe) {
+            this.myName = player.name;
+        } else {
+            this.opponentName = player.name;
+        }
     }
     updateRack(newRack: Letter[]) {
         this.letterRack.next(newRack);

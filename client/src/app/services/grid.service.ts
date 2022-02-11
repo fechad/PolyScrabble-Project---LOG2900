@@ -21,6 +21,8 @@ const EXCEPTIONY = 0;
 const AMOUNTOFNUMBER = 15;
 const DEFAULT_SIZE = 9;
 const TILE_SIZE = 30;
+const BOARD_LENGTH = 15;
+
 enum Colors {
     Mustard = '#E1AC01',
     Yellow = '#FFE454',
@@ -41,9 +43,8 @@ export class GridService {
     constructor(private gameContext: GameContextService) {}
 
     drawGrid() {
-        const dimension = 15;
-        const offset = dimension / dimension;
-        const squareSize = DEFAULT_WIDTH / dimension - offset;
+        const offset = BOARD_LENGTH / BOARD_LENGTH;
+        const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
         this.gridContext.lineWidth = offset;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
@@ -52,8 +53,8 @@ export class GridService {
         this.gridContext.fillStyle = '#c4c4c4';
         this.gridContext.strokeStyle = '#B1ACAC';
         const gridOrigin = 20;
-        for (let i = 0; i < dimension; i++) {
-            for (let j = 0; j < dimension; j++) {
+        for (let i = 0; i < BOARD_LENGTH; i++) {
+            for (let j = 0; j < BOARD_LENGTH; j++) {
                 this.gridContext.beginPath();
                 this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
                 this.gridContext.fill();
@@ -64,8 +65,8 @@ export class GridService {
         }
     }
 
-    drawTiles(posX: number, posY: number, canvasX: number, canvasY: number) {
-        if (this.gameContext.board.value[posX][posY] !== undefined) {
+    drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
+        if (this.gameContext.board.value[posX][posY] !== undefined && this.gameContext.board.value[posX][posY] !== null) {
             const tile = this.gameContext.board.value[posX][posY] as Letter;
             this.gridContext.fillStyle = 'burlywood';
             this.gridContext.fill();
