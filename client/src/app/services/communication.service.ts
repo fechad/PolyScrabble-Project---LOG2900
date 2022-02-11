@@ -198,6 +198,9 @@ export class CommunicationService {
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
+        this.gameSocket.on('turn-error', (error: string) => {
+            this.sendLocalMessage(error);
+        });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
             if (id === this.myId) this.gameContextService.updateRack(rack);
         });
