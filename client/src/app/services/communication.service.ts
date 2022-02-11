@@ -210,13 +210,9 @@ export class CommunicationService {
             }
         });
         this.gameSocket.on('board', (board: Board) => {
-            console.log(board);
             this.gameContextService.setBoard(board);
         });
-        this.gameSocket.on('score', (score: Number, player: PlayerId) => {
-            console.log(player === this.myId);
-            console.log(score);
-        });
+        this.gameSocket.on('score', (score: Number, player: PlayerId) => {});
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});
     }

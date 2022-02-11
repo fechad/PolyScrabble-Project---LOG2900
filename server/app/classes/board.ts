@@ -49,7 +49,6 @@ export class Board {
             return new Error('Un des mots crees ne fait pas partie du dictionnaire');
         }
         const score = this.placeWithScore(words);
-        console.log(words);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
@@ -68,7 +67,6 @@ export class Board {
                     this.board[currentRow][currentCol].setLetter(wordAndPos[3].charAt(i));
                 }
                 wordScore += this.board[currentRow][currentCol].getPoints();
-                console.log(wordScore);
                 if (wordMultiplier === 1) {
                     wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
                 }
@@ -79,7 +77,6 @@ export class Board {
                 }
             }
             score += wordScore * wordMultiplier;
-            console.log(score);
         });
 
         this.changeNewlyPlaced(words[0].split(';'));
