@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
@@ -29,7 +30,7 @@ export class CommunicationService {
 
     private loserId: string | undefined = undefined;
 
-    constructor(public gameContextService: GameContextService, httpClient: HttpClient) {
+    constructor(public gameContextService: GameContextService, httpClient: HttpClient, private router: Router) {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this.joinRoomHandler(room, token));
         this.mainSocket.on('error', (e) => this.handleError(e));
@@ -110,9 +111,8 @@ export class CommunicationService {
     }
 
     confirmForfeit() {
-        if (this.selectedRoom.value !== undefined) {
-            this.gameSocket?.emit('confirmForfeit', this.getId());
-        }
+        this.loserId = this.myId;
+        this.gameSocket?.emit('confirm-forfeit', this.loserId);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -192,6 +192,13 @@ export class CommunicationService {
     private joinGameHandler(gameId: string, token: number) {
         this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token } });
 
+        this.gameSocket.on('forfeit', (idLoser) => {
+            if (idLoser !== this.myId) {
+                this.router.navigate(['/home']);
+                setTimeout("alert('Votre adversaire à abandonner, vous avez gagné! 👑👑👑');", 1);
+            }
+        });
+
         this.gameSocket.on('turn', (id: PlayerId) => {
             this.gameContextService.setMyTurn(id === this.myId);
         });
@@ -214,6 +221,5 @@ export class CommunicationService {
         });
         this.gameSocket.on('score', (score: Number, player: PlayerId) => {});
         // TO-DO: does not receive forfeit event from server
-        this.gameSocket.on('forfeit', () => {});
     }
 }

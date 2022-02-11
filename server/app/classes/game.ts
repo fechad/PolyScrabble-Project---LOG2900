@@ -1,4 +1,3 @@
-import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
@@ -8,13 +7,10 @@ import { Reserve } from './reserve';
 import { Player, PlayerId } from './room';
 
 export type GameId = number;
-type Tile = Letter | undefined;
-type SendableBoard = Tile[][];
 const STANDARD_GAME_PLAYER_NUMBER = 2;
 const MAIN_PLAYER = 0;
 const OTHER_PLAYER = 1;
 const PLAYER_0_TURN_PROBABILITY = 0.5;
-const BOARD_LENGTH = 15;
 
 export class Game {
     readonly gameId: GameId;
@@ -55,15 +51,8 @@ export class Game {
             // TODO: make verifications (probably return game-error)
             // TODO: calculate points
             // TODO: emit the result
-            const response = this.board.placeWord(letters, position);
-            if (typeof response !== typeof Error) {
-                const board = this.formatSendableBoard();
-                this.eventEmitter.emit('board', board);
-                this.eventEmitter.emit('score', response, playerId);
-            } else {
-                const error = response as Error;
-                this.eventEmitter.emit('game-error', error.message, playerId);
-            }
+            const points = 26;
+            this.eventEmitter.emit('placed', letters, position, points, playerId);
         }
     }
 
@@ -86,6 +75,10 @@ export class Game {
         }
     }
 
+    forfeit(idLoser: string | undefined) {
+        this.eventEmitter.emit('forfeit', idLoser);
+    }
+
     private getPlayerTurnId() {
         return this.isPlayer0Turn ? this.players[MAIN_PLAYER].id : this.players[OTHER_PLAYER].id;
     }
@@ -98,24 +91,5 @@ export class Game {
             return false;
         }
         return validTurn;
-    }
-
-    private formatSendableBoard(): SendableBoard {
-        const board: SendableBoard = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
-            const row = [];
-            for (let j = 0; j < BOARD_LENGTH; j++) {
-                const gameTile = this.board.board[i][j];
-                let tile: Tile;
-                if (!gameTile.empty) {
-                    tile = gameTile.letter;
-                } else {
-                    tile = undefined;
-                }
-                row.push(tile);
-            }
-            board.push(row);
-        }
-        return board;
     }
 }
