@@ -51,5 +51,4 @@ describe('syntax validator', () => {
         assert(!result);
         done();
     });
-    
 });

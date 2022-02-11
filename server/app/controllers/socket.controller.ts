@@ -1,7 +1,7 @@
 import { Game } from '@app/classes/game';
 import { Player, PlayerId } from '@app/classes/room';
-import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { LoginsService } from '@app/services/logins.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
 import { RoomsService } from '@app/services/rooms.service';
 import { WaitingRoomService } from '@app/services/waiting-room.service';
@@ -15,6 +15,7 @@ type Handlers = [string, (params: unknown[]) => void][];
 export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
+    private logins: LoginsService = new LoginsService();
 
     constructor(server: http.Server, public roomsService: RoomsService, private dictionnaryService: DictionnaryService) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
@@ -30,11 +31,13 @@ export class SocketManager {
     private initLobby(): void {
         const mainLobby = new MainLobbyService(this.roomsService);
         this.io.on('connection', (socket) => {
-            mainLobby.connect(socket, socket.id);
+            const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
+            socket.emit('id', id, token);
+            mainLobby.connect(socket, id);
 
             socket.on('disconnect', (reason) => {
-                console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
                 console.log(`Raison de deconnexion : ${reason}`);
+                this.logins.logout(id);
             });
         });
     }
@@ -68,18 +71,16 @@ export class SocketManager {
             }
             socket.data.roomIdx = idx;
 
-            // TODO: use real tokens
-            const token = socket.handshake.auth.token;
-            if (token === 0 || token === 1) {
-                // valid token
+            const { id, token } = socket.handshake.auth;
+            if (this.logins.verify(id, token)) {
                 next();
             } else {
                 next(Error('Invalid token for room'));
             }
         });
         rooms.on('connect', (socket) => {
-            const isMainPlayer = socket.handshake.auth.token === 0;
             const room = this.roomsService.rooms[socket.data.roomIdx];
+            const isMainPlayer = room.mainPlayer.id === socket.handshake.auth.id;
             socket.join(`room-${room.id}`);
 
             const events: [string, () => void][] = [['update-room', () => socket.emit('update-room', room)]];
@@ -110,48 +111,50 @@ export class SocketManager {
 
     private initGames() {
         const games = this.io.of(/^\/games\/\d+$/);
-        games.use((s, next) => {
-            const gameId = Number.parseInt(s.nsp.name.substring('/games/'.length), 10);
+        games.use((socket, next) => {
+            const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
             const idx = this.games.findIndex((game) => game.gameId === gameId);
             const NOT_FOUND = -1;
             if (idx === NOT_FOUND) {
                 next(Error('Invalid game number'));
                 return;
             }
-            s.data.gameId = gameId;
-            s.data.gameIdx = idx;
+            socket.data.gameId = gameId;
+            socket.data.gameIdx = idx;
 
-            const token = s.handshake.auth.token;
-            if (token === 0 || token === 1) {
-                // valid token
+            const { id, token } = socket.handshake.auth;
+            if (this.logins.verify(id, token)) {
                 next();
             } else {
                 next(Error('Invalid token for game'));
             }
         });
         games.on('connect', (socket) => {
+            const id = socket.handshake.auth.id;
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
 
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
 
-            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error', 'players', 'forfeit', 'board'];
+            const events: string[] = ['message', 'score', 'turn', 'parameters', 'game-error', 'players', 'forfeit', 'board'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
+            handlers.push([
+                'rack',
+                (targetId: PlayerId, ...params: unknown[]) => {
+                    if (targetId === id) socket.emit('rack', ...params);
+                },
+            ]);
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
-            socket.on('message', (message: Message) => game.message(message));
-            socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
-            socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
-            socket.on('switch-turn', (playerId: PlayerId) => {
-                game.skipTurn(playerId, false);
+            socket.on('message', (message: string) => {
+                game.message({ text: message, emitter: id });
             });
-            socket.on('reset-timer', (id: PlayerId) => {
-                game.skipTurn(id, true);
-            });
-            socket.on('parameters', () => game.getParameters());
             socket.on('confirm-forfeit', (idLoser) => {
                 game.forfeit(idLoser);
             });
+            socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
+            socket.on('place-letters', (letters: string, position: string) => game.placeLetters(letters, position, id));
+            socket.on('switch-turn', () => game.skipTurn(id));
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));

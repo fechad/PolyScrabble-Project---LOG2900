@@ -13,9 +13,6 @@ export class MainLobbyService {
     constructor(private roomsService: RoomsService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
-        console.log(`Connexion par l'utilisateur avec id : ${id}`);
-        socket.emit('id', id);
-
         // message initial
         socket.on('join-room', (roomId: RoomId, playerName: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);
@@ -28,13 +25,13 @@ export class MainLobbyService {
                 socket.emit('error', error.message);
                 return;
             }
-            socket.emit('join', roomId, 1);
+            socket.emit('join', roomId);
         });
 
         socket.on('create-room', (playerName: string, parameters: Parameters) => {
             const roomId = this.getNewRoomId();
             const room = new Room(roomId, id, playerName, parameters);
-            socket.emit('join', roomId, 0);
+            socket.emit('join', roomId);
             console.log(`Created room ${roomId} for player ${playerName}`);
             this.roomsService.rooms.push(room);
         });

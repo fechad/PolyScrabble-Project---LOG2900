@@ -17,8 +17,8 @@ describe('Board', () => {
     before(async () => {
         dictionnary = new DictionnaryService();
         await dictionnary.init();
-    })
-    
+    });
+
     beforeEach(() => {
         board = new Board(dictionnary);
         word = 'test';
