@@ -6,6 +6,8 @@ import * as Multipliers from './multipliers';
 const INVALID = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
+const WORD_LENGTH_BONUS = 7;
+const BONUS_POINTS = 50;
 const A_ASCII = 'a'.charCodeAt(0);
 
 export class Board {
@@ -49,7 +51,8 @@ export class Board {
         // if (!this.dictionnary.validateWords(words)) {
         // return new Error('Un des mots crees ne fait pas partie du dictionnaire');
         // }
-        return this.placeWithScore(words);
+        let score = this.placeWithScore(words);
+        return word.length === WORD_LENGTH_BONUS ? (score + BONUS_POINTS) : score;
     }
 
     private placeWithScore(words: string[]): number {

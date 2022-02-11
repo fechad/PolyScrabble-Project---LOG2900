@@ -326,7 +326,7 @@ describe('Board', () => {
     it('should place a word on the board', (done) => {
         let position = 'f8v';
         let attemptedWord = 'testeur';
-        let expectedScore = 8;
+        let expectedScore = 58;
 
         let result = board.placeWord(attemptedWord, position);
         expect(result).to.equals(expectedScore);

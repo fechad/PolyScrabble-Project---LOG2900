@@ -29,4 +29,19 @@ export class SyntaxValidator {
         }
         return false;
     }
+
+    /*
+    validateWordSyntax(words: string[]): string[] {
+        for(let word of words){
+            let separatedWord = word.split(';');
+            if(separatedWord[separatedWord.length -1].length < 2){
+                return [];
+            }
+            for(let letter of separatedWord[separatedWord.length -1]){
+                // TODO: remplacer accents par lettre normale
+                console.log(letter);
+            }
+        }
+        return words;
+    }*/
 }

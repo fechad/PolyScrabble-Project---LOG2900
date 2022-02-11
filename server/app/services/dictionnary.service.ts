@@ -18,6 +18,7 @@ export class DictionnaryService {
         return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
     }
 
+    // TODO: valider au moins 2 lettres
     isValidWord(playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;
@@ -26,16 +27,7 @@ export class DictionnaryService {
     }
 
     validateWords(wordList: string[]): boolean {
-        let isValid = true;
-        let valid: boolean;
-        for (const word of wordList) {
-            let separatedWord = word.split(';');
-            valid = this.isValidWord(separatedWord[separatedWord.length - 1]);
-            if (!valid) {
-                isValid = false;
-            }
-        }
-        return isValid;
+        return wordList.map(word => word.split(';')).every(words => this.isValidWord(words[words.length - 1]));
     }
 
     private isWord(expression: string): boolean {
