@@ -21,6 +21,7 @@
         placeholder="Entrez une commande ou un message ici !"
         maxlength="512"
         (keydown.enter)="validateSyntax()"
+        (keydown.enter)="$event.preventDefault()"
         [(ngModel)]="textValue"
     ></textarea>
 </div>

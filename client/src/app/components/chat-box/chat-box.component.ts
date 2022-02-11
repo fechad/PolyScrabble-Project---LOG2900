@@ -34,8 +34,7 @@ export class ChatBoxComponent implements OnInit {
     ngOnInit() {}
 
     clearText() {
-        this.textValue = ' ';
-        this.textValue = undefined!;
+        this.textValue = '';
     }
     isMyMessage() {
         this.yourMessage = false;

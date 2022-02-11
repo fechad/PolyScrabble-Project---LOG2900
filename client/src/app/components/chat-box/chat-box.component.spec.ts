@@ -131,7 +131,7 @@ describe('ChatBoxComponent', () => {
     it('clear text should empty the chatBox textValue', () => {
         component.textValue = 'oejnien  eoij ini eo jo';
         component.clearText();
-        expect(component.textValue).toBeUndefined();
+        expect(component.textValue).toEqual('');
     });
     it('validateSyntax should not call communicationService.sendLocalMessage for the accepted characters', () => {
         const sendLocalMessage = spyOn(component.communicationService, 'sendLocalMessage').and.callThrough();
