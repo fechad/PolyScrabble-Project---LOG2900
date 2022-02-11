@@ -20,12 +20,13 @@ export class ChatBoxComponent implements OnInit {
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
         this.myId = this.communicationService.getId();
     }
-    //pre-dev
+    // pre-dev
     ngOnInit(): void {}
 
     clearText() {
         this.textValue = '';
     }
+
     isMyMessage() {
         this.yourMessage = false;
     }
