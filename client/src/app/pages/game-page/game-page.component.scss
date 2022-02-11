@@ -1,7 +1,7 @@
 .container {
     height: 100%;
     display: flex;
-    background-color: #f9f6f8;
+    background-color: darken(desaturate(#E1AC01, 70%), 35%);
 }
 
 .play-area-container {
@@ -42,6 +42,7 @@
     background-color: transparent;
     margin-left: 2vh;
     transition: transform 0.3s ease-in-out;
+    color: #E1AC01;
 }
 
 #left-container {
@@ -70,27 +71,38 @@
     margin: 2vh;
 }
 .goals {
+    font-style: Signika Negative;
+    font-size: 20px;
     margin-top: 10vh;
+    color: #E1AC01;
 }
 
 #quit-game,
 #skip-turn {
-    background-color: #c93de0;
+    background-color: #E1AC01;
     height: 6vh;
     width: 8vh;
-    font-size: 3em;
+    font-size: 2em;
     margin-right: 0.5vh;
     margin-left: 0.5vh;
     border-radius: 15px;
     border-width: thin;
     border-style: solid;
+    border-color: #000000;
     transition: transform 0.3s ease-in-out;
 }
+
+#quit-game{
+    margin-top: 19vh;
+    margin-left: 4vh;
+}
+
 .rackArea {
     display: flex;
     justify-content: space-around;
     flex-direction: row;
-    background-color: #f9f6f8;
+    background-color: darken(desaturate(#E1AC01, 70%), 35%);
+    
 }
 
 .sizing:hover,

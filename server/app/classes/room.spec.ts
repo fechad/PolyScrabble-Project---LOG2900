@@ -75,7 +75,7 @@ describe('Room', () => {
 
     it('should send event when kicking player', (done) => {
         const stub = sinon.stub();
-        room.events.on('kick', stub);
+        room.on('kick', stub);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
@@ -87,7 +87,7 @@ describe('Room', () => {
 
     it('should stop the game when the main player quits', (done) => {
         const stub = sinon.stub();
-        room.events.on('kick', stub);
+        room.on('kick', stub);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
@@ -98,7 +98,7 @@ describe('Room', () => {
 
     it('should remove the other player when they quit', (done) => {
         const stub = sinon.stub();
-        room.events.on('updateRoom', stub);
+        room.on('update-room', stub);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
@@ -110,7 +110,7 @@ describe('Room', () => {
 
     it('should let someone join after they quit', (done) => {
         const stub = sinon.stub();
-        room.events.on('updateRoom', stub);
+        room.on('update-room', stub);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
@@ -124,42 +124,46 @@ describe('Room', () => {
 
     it('should start a game', (done) => {
         const stub = sinon.stub();
-        room.events.on('updateRoom', stub);
+        room.on('update-room', stub);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
         room.start();
         assert(stub.called);
-        assert(room.isStarted());
+        // eslint-disable-next-line dot-notation
+        assert(room['started']);
         done();
     });
 
     it('should not start a game with only 1 player', (done) => {
         const stub = sinon.stub();
-        room.events.on('updateRoom', stub);
+        room.on('update-room', stub);
 
         room.start();
         assert(stub.notCalled);
-        assert(!room.isStarted());
+        // eslint-disable-next-line dot-notation
+        assert(!room['started']);
         done();
     });
 
     it('should return if game is started', (done) => {
-        assert(!room.isStarted());
+        // eslint-disable-next-line dot-notation
+        assert(!room['started']);
         assert(!room.isStarted());
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;
         room.start();
 
-        assert(room.isStarted());
+        // eslint-disable-next-line dot-notation
+        assert(room['started']);
         assert(room.isStarted());
         done();
     });
 
     it('should let someone else join after someone else quit', (done) => {
         const stub = sinon.stub();
-        room.events.on('updateRoom', stub);
+        room.on('update-room', stub);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy');
         expect(result).to.be.undefined;

@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, Injectable, Injector, ViewChild } from '@angular/core';
-import { SkipTurnService } from '@app/services/skip-turn.service';
+import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
+import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
 import { Subscription } from 'rxjs';
 
@@ -10,24 +11,31 @@ import { Subscription } from 'rxjs';
 })
 @Injectable()
 export class InfosBoxComponent implements AfterViewInit {
-    // @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
     @ViewChild('countdown') cd: CountdownComponent;
-    timeData = 60;
-    turnChange: boolean;
-    private _subscription: Subscription;
-    constructor(public skipTurn: SkipTurnService) {
-        this.turnChange = skipTurn.isYourTurn;
-        this._subscription = skipTurn.turnChange.subscribe((value) => {
+    private subscription: Subscription;
+
+    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
+        this.subscription = gameContextService.isMainPlayerTurn.subscribe((value) => {
             this.reset();
         });
+        
     }
 
     ngAfterViewInit(): void {
         this.cd.begin();
     }
 
+    getMainPlayer(): string | undefined {
+        return this.communicationService.selectedRoom.value?.mainPlayer.name;
+    }
+
+    getOtherPlayer(): string | undefined {
+        return this.communicationService.selectedRoom.value?.otherPlayer?.name;
+    }
+
     handleEvent(e: CountdownEvent) {
         if (e.action === 'done') {
+            this.communicationService.resetTimer();
             this.reset();
         }
     }
@@ -36,9 +44,6 @@ export class InfosBoxComponent implements AfterViewInit {
         this.cd.begin();
     }
     ngOnDestroy() {
-        this._subscription.unsubscribe();
+        this.subscription.unsubscribe();
     }
 }
-Injector.create({
-    providers: [{ provide: InfosBoxComponent, deps: [SkipTurnService] }],
-});
