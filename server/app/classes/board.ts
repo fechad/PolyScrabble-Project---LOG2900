@@ -12,12 +12,9 @@ const A_ASCII = 'a'.charCodeAt(0);
 
 export class Board {
     board: GameTile[][];
-    private dictionnary: DictionnaryService;
     private syntaxValidator: SyntaxValidator;
 
-    constructor() {
-        this.dictionnary = new DictionnaryService();
-        this.dictionnary.init();
+    constructor( private dictionnary: DictionnaryService) {
         this.syntaxValidator = new SyntaxValidator();
         this.board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
@@ -48,9 +45,9 @@ export class Board {
             return new Error('Placement invalide vous devez toucher un autre mot');
         }
         const words = this.getWords(word, positionArray, contacts);
-        // if (!this.dictionnary.validateWords(words)) {
-        // return new Error('Un des mots crees ne fait pas partie du dictionnaire');
-        // }
+        if (!this.dictionnary.validateWords(words)) {
+            return new Error('Un des mots crees ne fait pas partie du dictionnaire');
+        }
         let score = this.placeWithScore(words);
         return word.length === WORD_LENGTH_BONUS ? (score + BONUS_POINTS) : score;
     }

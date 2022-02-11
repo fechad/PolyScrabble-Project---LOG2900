@@ -1,3 +1,4 @@
+import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { assert } from 'console';
 import { Board } from './board';
@@ -11,9 +12,15 @@ const INVALID = -1;
 describe('Board', () => {
     let board: Board;
     let word: string;
+    let dictionnary: DictionnaryService;
 
+    before(async () => {
+        dictionnary = new DictionnaryService();
+        await dictionnary.init();
+    })
+    
     beforeEach(() => {
-        board = new Board();
+        board = new Board(dictionnary);
         word = 'test';
     });
 
