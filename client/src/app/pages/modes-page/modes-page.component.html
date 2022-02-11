@@ -4,7 +4,8 @@
         <h2 class="subtitle">Mode {{ route.snapshot.url[0] }}</h2>
         <button
             mat-raised-button
-            class="button, {{champ.texte}}"
+            class="button"
+            [ngClass]="champ.promptsDialog ? champ.texte : ''"
             *ngFor="let champ of boutons"
             (click)="champ.promptsDialog && openDialog()"
             routerLink="{{ champ.promptsDialog ? undefined : champ.route }}"

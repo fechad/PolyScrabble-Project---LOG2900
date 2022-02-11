@@ -9,7 +9,7 @@ import { WaitingRoomPageComponent } from './waiting-room-page.component';
 import SpyObj = jasmine.SpyObj;
 
 describe('WaitingRoomPageComponent', () => {
-    let component: WaitingRoomPageComponent;
+    // let component: WaitingRoomPageComponent;
     let fixture: ComponentFixture<WaitingRoomPageComponent>;
     let router: Router;
     let communicationServiceSpy: SpyObj<CommunicationService>;
@@ -33,7 +33,7 @@ describe('WaitingRoomPageComponent', () => {
         fixture = TestBed.createComponent(WaitingRoomPageComponent);
         router = TestBed.inject(Router);
         router.initialNavigation();
-        component = fixture.componentInstance;
+        // component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
