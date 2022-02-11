@@ -11,13 +11,7 @@ const DELAY = 10;
 export class LetterRackComponent implements OnInit, OnChanges {
     letters: Letter[];
     timeOut: number;
-    constructor(public gameContextService: GameContextService) {
-        // console.log(gameContextService.letterRack.getValue());
-        // this.gameContextService.letterRackCast.subscribe((newLetters) => {
-        //     console.log(newLetters);
-        //     this.letters = newLetters;
-        // });
-    }
+    constructor(public gameContextService: GameContextService) {}
 
     ngOnInit(): void {
         this.gameContextService.getRackObs().subscribe((newRack) => {

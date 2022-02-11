@@ -131,8 +131,12 @@ export class SocketManager {
         games.on('connect', (socket) => {
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
-            game.playerReady();
+
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
+
+            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error'];
+            const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
+            handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
             socket.on('message', (message: Message) => game.message(message));
             socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
@@ -145,13 +149,11 @@ export class SocketManager {
             });
             socket.on('parameters', () => game.getParameters());
 
-            const events: string[] = ['message', 'rack', 'placed', 'turn', 'parameters', 'game-error'];
-            const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
-            handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
-
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
             });
+
+            game.playerReady();
         });
     }
 }
