@@ -37,7 +37,7 @@ describe('ModesPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    fit('click on solo mode should open dialog', fakeAsync(() => {
+    it('click on solo mode should open dialog', fakeAsync(() => {
         const openDialogSpy = spyOn(component, 'openDialog').and.callThrough();
         fixture.debugElement.query(By.css('.Solo')).nativeElement.click();
         tick();

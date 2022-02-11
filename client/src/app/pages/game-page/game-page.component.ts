@@ -58,7 +58,7 @@ export class GamePageComponent {
         this.gridService.drawGrid();
     }
     increaseFont() {
-        this.gridService.multiplier = 1.15;
+        this.gridService.multiplier = 1.1;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
