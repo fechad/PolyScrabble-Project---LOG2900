@@ -8,7 +8,7 @@
             [ngClass]="champ.promptsDialog ? champ.texte : ''"
             *ngFor="let champ of boutons"
             (click)="champ.promptsDialog && openDialog()"
-            routerLink="{{ champ.promptsDialog ? undefined : champ.route }}"
+            routerLink="{{ champ.promptsDialog ? '/classique' : champ.route }}"
             matTooltip="{{ champ.toolTip }}"
             matTooltipPosition="right"
         >
