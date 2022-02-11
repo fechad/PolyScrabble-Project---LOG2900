@@ -10,6 +10,11 @@ import { SkipTurnService } from '@app/services/skip-turn.service';
 })
 export class ChatBoxComponent implements OnInit {
     @ViewChild('scroll') private scroller: ElementRef;
+    @ViewChild('writingBox') set writingBoxRef(textarea: ElementRef) {
+        if (textarea) {
+            textarea.nativeElement.focus();
+        }
+    }
 
     textValue: string = '';
     yourMessage: boolean = true;
@@ -34,7 +39,9 @@ export class ChatBoxComponent implements OnInit {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
     validateSyntax() {
-        if (this.textValue.trim() !== '') {
+        if (!this.textValue.trim().match(/[A-zÀ-ú0-9*!?]/g)) {
+            this.communicationService.sendLocalMessage('Message ne peut contenir du caractère non textuelle autre que !, ? et *');
+        } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
             if (this.commandStructure[0][0] === '!') {
                 const error = this.validateCommand();
@@ -58,13 +65,13 @@ export class ChatBoxComponent implements OnInit {
     }
     placer(): Error | undefined {
         let error: Error | undefined;
-        if (this.commandStructure[2].match(/[^a-zA-Z]/g)) {
+        if (this.commandStructure[2].match(/[^A-zÀ-ú]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         } else {
             /* TODO:checker si c dans le chevalet */
             if (this.commandStructure[1][0].match(/[a-o]/g) && this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g)) {
                 if (this.commandStructure[1].length === 3) {
-                    if (this.commandStructure[1][1].match(/[0-9]/g)) {
+                    if (this.commandStructure[1][1].match(/[1-9]/g)) {
                         this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
                     }
                 } else if (

@@ -7,11 +7,8 @@ describe('ChatBoxComponent', () => {
     let fixture: ComponentFixture<ChatBoxComponent>;
     const placerCommands = ['!placer g9h adant', '!placer g9h adanT', '!placer g13h s', '!placer g13v s', '!placer g13 s'];
     const invalidPlacerCommands = ['!placer gz adant', '!placer g9h adan*', '!placer g16h s', '!placer g13v ', '!placer g13 5'];
-
     const echangerCommands = ['!échanger mwb', '!échanger e*', ' !échanger eew'];
     const invalidEchangerCommands = ['!échanger', '!échanger eT', ' !échanger e23'];
-
-    // const echangerCommands = ['3'];
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -56,16 +53,7 @@ describe('ChatBoxComponent', () => {
             expect(sendLocalMessage).toHaveBeenCalled();
         }
     });
-    /*
-    it('placer should return an Error type for a list of invalid !placer commands', () => {
-        // const placer = spyOnProperty(component, 'placer', undefined).and.returnValue(typeof Error);
-        for (const i of invalidPlacerCommands) {
-            component.textValue = i;
-            const result = component.placer();
-            expect(result).toBeDefined();
-        }
-    });
-*/
+
     it('validateCommand should call echanger for a list of valid !echanger commands ', () => {
         const echanger = spyOn(component, 'echanger').and.callThrough();
         for (const i of echangerCommands) {
@@ -134,5 +122,11 @@ describe('ChatBoxComponent', () => {
         component.textValue = 'oejnien  eoij ini eo jo';
         component.clearText();
         expect(component.textValue).toEqual('');
+    });
+    it('validateSyntax should not call communicationService.sendLocalMessage for the accepted characters', () => {
+        const sendLocalMessage = spyOn(component.communicationService, 'sendLocalMessage').and.callThrough();
+        component.textValue = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        component.validateSyntax();
+        expect(sendLocalMessage).not.toHaveBeenCalled();
     });
 });
