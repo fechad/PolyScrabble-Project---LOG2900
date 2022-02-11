@@ -9,18 +9,19 @@
                 <p class="message">{{ message.text }}</p>
             </div>
             <div *ngIf="message.emitter === 'local'" class="chat-log-error">
-                <p class="message">{{ message.text }}</p>
+                <p class="message" [innerText]="message.text"></p>
             </div>
         </div>
     </div>
     <textarea
-        rows="10"
+        #writingBox
         id="writingBox"
+        rows="10"
         type="text"
         placeholder="Entrez une commande ou un message ici !"
-        minlength="1"
         maxlength="512"
         (keydown.enter)="validateSyntax()"
+        (keydown.enter)="$event.preventDefault()"
         [(ngModel)]="textValue"
     ></textarea>
 </div>

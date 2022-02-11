@@ -10,9 +10,9 @@ import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { Letter } from './Alphabet';
-import { GameContextService } from './game-context.service';
+import { Board, GameContextService } from './game-context.service';
 
-export type Player = { name: string; id: PlayerId };
+export type Player = { name: string; id: PlayerId; score: number };
 
 @Injectable({
     providedIn: 'root',
@@ -205,14 +205,21 @@ export class CommunicationService {
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
+        this.gameSocket.on('turn-error', (error: string) => {
+            this.sendLocalMessage(error);
+        });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
             if (id === this.myId) this.gameContextService.updateRack(rack);
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setName(player.name, player.id === this.myId);
+                this.gameContextService.setInfos(player, player.id === this.myId);
             }
         });
+        this.gameSocket.on('board', (board: Board) => {
+            this.gameContextService.setBoard(board);
+        });
+        this.gameSocket.on('score', (score: Number, player: PlayerId) => {});
         // TO-DO: does not receive forfeit event from server
     }
 }

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
 
@@ -27,10 +28,14 @@ export class PlayAreaComponent implements AfterViewInit {
     mouseDetectService: MouseService = new MouseService();
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
-
+    private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private readonly gridService: GridService) {}
+    constructor(private readonly gridService: GridService, private gameContextService: GameContextService) {
+        this.gameContextService.board.subscribe(() => {
+            if (this.isLoaded) this.gridService.drawGrid();
+        });
+    }
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
@@ -41,6 +46,7 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gridService.drawGrid();
         this.gridCanvas.nativeElement.focus();
+        this.isLoaded = true;
     }
 
     get width(): number {

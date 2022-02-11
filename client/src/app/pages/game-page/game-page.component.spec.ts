@@ -47,21 +47,7 @@ describe('GamePageComponent', () => {
             expect(quitGameSpy).toHaveBeenCalled();
         });
     });
-/*
-    it('skipMyTurn should call skipTurn', () => {
-        const skipTurnSpy = spyOn(skipTurnService, 'skipTurn').and.callThrough();
-        component.skipMyTurn();
-        expect(skipTurnSpy).toHaveBeenCalled();
-    });
-   
-    it('should call skipTurn() when skip-turn button clicked ', fakeAsync(() => {
-        const skipTurnSpy = spyOn(skipTurnService, 'skipTurn').and.callThrough();
-        const button = fixture.debugElement.query(By.css('#skip-turn'));
-        button.nativeElement.click();
-        tick();
-        expect(skipTurnSpy).toHaveBeenCalled();
-    }));
-*/
+
     it('should call openConfirmation() when quit-game button clicked ', fakeAsync(() => {
         const quitGameSpy = spyOn(component, 'openConfirmation').and.callThrough();
         const button = fixture.debugElement.query(By.css('#quit-game'));
