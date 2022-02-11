@@ -102,6 +102,7 @@ export class CommunicationService {
     placer(letters: string, position: string) {
         this.gameSocket?.emit('place-letters', letters, position, this.myId);
     }
+
     echanger(letters: string) {
         this.gameSocket?.emit('change-letters', letters, this.myId);
     }
@@ -206,13 +207,15 @@ export class CommunicationService {
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setInfos(player, player.id === this.myId);
+                this.gameContextService.setName(player, player.id === this.myId);
             }
         });
         this.gameSocket.on('board', (board: Board) => {
             this.gameContextService.setBoard(board);
         });
-        this.gameSocket.on('score', (score: Number, player: PlayerId) => {});
+        this.gameSocket.on('score', (score: number, player: PlayerId) => {
+            this.gameContextService.setScore(score, this.myId === player);
+        });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});
     }

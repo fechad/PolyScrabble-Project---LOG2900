@@ -15,15 +15,15 @@ export class GameContextService {
     letter: Tile;
     // BehaviorSubject<> = new BehaviorSubject();
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
-    letterRack: Subject<Letter[]> = new Subject();
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
     readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+    readonly myScore: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    readonly opponentScore: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    letterRack: Subject<Letter[]> = new Subject();
     myName: string;
     opponentName: string;
-    myScore: number;
-    opponentScore: number;
     private msgCount: number = 0;
 
     constructor() {
@@ -62,13 +62,22 @@ export class GameContextService {
         this.isMyTurn.next(isYourTurn);
     }
 
-    setInfos(player: Player, isMe: boolean) {
+    setName(player: Player, isMe: boolean) {
         if (isMe) {
             this.myName = player.name;
         } else {
             this.opponentName = player.name;
         }
     }
+
+    setScore(score: number, isMe: boolean) {
+        if (isMe) {
+            this.myScore.next(score);
+        } else {
+            this.opponentScore.next(score);
+        }
+    }
+
     updateRack(newRack: Letter[]) {
         this.letterRack.next(newRack);
     }

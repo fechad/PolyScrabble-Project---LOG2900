@@ -60,6 +60,7 @@ export class Game {
                 const board = this.formatSendableBoard();
                 this.eventEmitter.emit('board', board);
                 this.eventEmitter.emit('score', response, playerId);
+                // this.skipTurn(playerId, false);
             } else {
                 const error = response as Error;
                 this.eventEmitter.emit('game-error', error.message, playerId);
