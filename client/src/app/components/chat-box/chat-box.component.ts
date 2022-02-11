@@ -1,13 +1,23 @@
-import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Injector, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
+
+const COMMAND_INDEX = 0;
+const LETTERS_TO_EXCHANGE_INDEX = 1;
+const POSITION_BLOCK_INDEX = 1;
+const WORD_TO_PLACE_INDEX = 2;
+const POSITION_BLOCK_MAX_LENGTH = 4;
+const POSITION_BLOCK_MIN_LENGTH = 3;
+const MAX_TYPED_WORD_LENGTH = 7;
+const MIN_TYPED_WORD_LENGTH = 1;
+
 @Component({
     selector: 'app-chat-box',
     templateUrl: './chat-box.component.html',
     styleUrls: ['./chat-box.component.scss'],
 })
-export class ChatBoxComponent implements OnInit {
+export class ChatBoxComponent {
     @ViewChild('scroll') private scroller: ElementRef;
     @ViewChild('writingBox') set writingBoxRef(textarea: ElementRef) {
         if (textarea) {
@@ -31,8 +41,6 @@ export class ChatBoxComponent implements OnInit {
         this.myId = this.communicationService.getId();
     }
 
-    ngOnInit() {}
-
     clearText() {
         this.textValue = '';
     }
@@ -49,7 +57,7 @@ export class ChatBoxComponent implements OnInit {
             this.communicationService.sendLocalMessage('Message ne peut contenir du caractère non textuelle autre que !, ? et *');
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
-            if (this.commandStructure[0][0] === '!') {
+            if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
                 const error = this.validateCommand();
                 if (error !== undefined) {
                     this.communicationService.sendLocalMessage(error.message);
@@ -63,14 +71,14 @@ export class ChatBoxComponent implements OnInit {
     }
 
     validateCommand(): Error | undefined {
-        if (this.commandStructure[0] === '!placer' && this.commandStructure.length === 3) return this.placer();
-        if (this.commandStructure[0] === '!échanger' && this.commandStructure.length === 2) return this.echanger();
-        if (this.commandStructure[0] === '!passer' && this.commandStructure.length === 1) return this.passer();
-        if (this.commandStructure[0] === '!aide' && this.commandStructure.length === 1) {
+        if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.placer();
+        if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.echanger();
+        if (this.commandStructure[COMMAND_INDEX] === '!passer' && this.commandStructure.length === 1) return this.passer();
+        if (this.commandStructure[COMMAND_INDEX] === '!aide' && this.commandStructure.length === 1) {
             this.sendHelp();
             return undefined;
         }
-        return new Error(`La commande ${this.commandStructure[0]} n'existe pas`);
+        return new Error(`La commande ${this.commandStructure[COMMAND_INDEX]} n'existe pas`);
     }
     sendHelp() {
         for (const message of this.help) {
@@ -79,21 +87,23 @@ export class ChatBoxComponent implements OnInit {
     }
     placer(): Error | undefined {
         let error: Error | undefined;
-        if (this.commandStructure[2].match(/[^A-Za-zÀ-ú]/g)) {
+        if (this.commandStructure[WORD_TO_PLACE_INDEX].match(/[^A-Za-zÀ-ú]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
-        } else {
-            /* TODO:checker si c dans le chevalet */
-            if (this.commandStructure[1][0].match(/[a-o]/g) && this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g)) {
-                if (this.commandStructure[1].length === 3) {
-                    if (this.commandStructure[1][1].match(/[1-9]/g)) {
-                        this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
+        } else if (this.isInRack(this.commandStructure[WORD_TO_PLACE_INDEX])) {
+            if (
+                this.commandStructure[POSITION_BLOCK_INDEX][0].match(/[a-o]/g) &&
+                this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g)
+            ) {
+                if (this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MIN_LENGTH) {
+                    if (this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1-9]/g)) {
+                        this.communicationService.placer(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
                     }
                 } else if (
-                    this.commandStructure[1].length === 4 &&
-                    this.commandStructure[1][1].match(/[1]/g) &&
-                    this.commandStructure[1][2].match(/[0-4]/g)
+                    this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MAX_LENGTH &&
+                    this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1]/g) &&
+                    this.commandStructure[POSITION_BLOCK_INDEX][2].match(/[0-5]/g)
                 ) {
-                    this.communicationService.placer(this.commandStructure[2], this.commandStructure[1]);
+                    this.communicationService.placer(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
                 }
             } else {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
@@ -103,17 +113,32 @@ export class ChatBoxComponent implements OnInit {
     }
     echanger(): Error | undefined {
         let error: Error | undefined;
-        if (this.commandStructure[1].match(/[^a-z*]/g)) {
+        if (this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].match(/[^a-z*]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
-        } else {
-            /* TODO:checker si c dans le chevalet */
-            this.communicationService.echanger(this.commandStructure[1]);
+        } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX])) {
+            this.communicationService.echanger(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         }
         return error;
     }
+
     passer(): Error | undefined {
         this.communicationService.switchTurn();
         return;
+    }
+    isInRack(mot: string) {
+        const isInBound =
+            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
+            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
+        if (!isInBound) return false;
+
+        let lettersInRack = '';
+        for (const letter of this.gameContextService.rack.value) {
+            lettersInRack += letter.name;
+        }
+        for (const letter of mot) {
+            if (!lettersInRack.includes(letter)) return false;
+        }
+        return true;
     }
 }
 Injector.create({
