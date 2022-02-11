@@ -36,6 +36,7 @@ export class ChatBoxComponent implements OnInit {
     clearText() {
         this.textValue = '';
     }
+
     isMyMessage() {
         this.yourMessage = false;
     }

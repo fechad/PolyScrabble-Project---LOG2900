@@ -9,7 +9,7 @@ export class CanvasTestHelper {
         return canvas;
     }
 }
-
+const CALLNUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
     let ctxStub: CanvasRenderingContext2D;
@@ -43,7 +43,7 @@ describe('GridService', () => {
 
     it(' drawMessage should call fillText on the canvas', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-        service.drawMessage('test', 0, 0);
+        service.drawMessage('test', 0, 0, 9);
         expect(fillTextSpy).toHaveBeenCalled();
     });
 
@@ -63,7 +63,7 @@ describe('GridService', () => {
     it(' drawMessage should call fillText as many times as words in a message', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
         const message = 'test';
-        service.drawMessage(message, 0, 0);
+        service.drawMessage(message, 0, 0, 9);
         expect(fillTextSpy).toHaveBeenCalledTimes(message.split(' ').length);
     });
 
@@ -104,6 +104,6 @@ describe('GridService', () => {
     it('bonusConditions should call drawBonus 61 times', () => {
         const drawTripleWordSpy = spyOn(service, 'drawBonus').and.callThrough();
         service.drawGrid();
-        expect(drawTripleWordSpy).toHaveBeenCalledTimes(61);
+        expect(drawTripleWordSpy).toHaveBeenCalledTimes(CALLNUMBER);
     });
 });

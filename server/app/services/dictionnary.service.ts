@@ -18,11 +18,16 @@ export class DictionnaryService {
         return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
     }
 
+    // TODO: valider au moins 2 lettres
     isValidWord(playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;
         }
         return this.dictionnaries[0].words.includes(playedWord.toLowerCase());
+    }
+
+    validateWords(wordList: string[]): boolean {
+        return wordList.map((word) => word.split(';')).every((words) => this.isValidWord(words[words.length - 1]));
     }
 
     private isWord(expression: string): boolean {

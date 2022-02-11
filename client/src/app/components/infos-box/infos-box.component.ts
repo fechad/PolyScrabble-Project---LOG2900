@@ -1,39 +1,34 @@
-import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-infos-box',
     templateUrl: './infos-box.component.html',
     styleUrls: ['./infos-box.component.scss'],
 })
-@Injectable()
 export class InfosBoxComponent implements AfterViewInit {
     @ViewChild('countdown') cd: CountdownComponent;
-    private subscription: Subscription;
-    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
-        this.subscription = gameContextService.isMainPlayerTurn.subscribe(() => {
+
+    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {}
+
+    ngAfterViewInit(): void {
+        this.reset();
+        this.gameContextService.isMyTurn.asObservable().subscribe(() => {
             this.reset();
         });
     }
 
-    ngAfterViewInit(): void {
-        this.cd.begin();
-    }
-
     handleEvent(e: CountdownEvent) {
-        if (e.action === 'done') {
-            this.communicationService.resetTimer();
-            this.reset();
+        if (this.gameContextService.isMyTurn.value) {
+            if (e.action === 'done') {
+                this.communicationService.resetTimer();
+            }
         }
     }
     reset() {
         this.cd.restart();
         this.cd.begin();
-    }
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
     }
 }

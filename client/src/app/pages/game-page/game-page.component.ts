@@ -1,5 +1,7 @@
 import { Component, Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
@@ -21,9 +23,21 @@ export class GamePageComponent {
     constructor(
         private router: Router,
         public gridService: GridService,
-        public gameContextService: GameContextService,
         public communicationService: CommunicationService,
+        public dialog: MatDialog,
+        public gameContextService: GameContextService,
     ) {}
+
+    helpInfo() {
+        this.dialog.open(HelpInfoComponent);
+    }
+
+    openConfirmation() {
+        if (confirm('Voulez-vous abandonner la partie?')) {
+            this.communicationService.confirmForfeit();
+            this.quitGame();
+        }
+    }
 
     quitGame() {
         this.router.navigateByUrl('http://localhost:4200/#/home');
@@ -32,19 +46,19 @@ export class GamePageComponent {
         this.communicationService.switchTurn();
     }
     resetFont() {
-        this.gridService.fontSize = '9px system-ui';
+        this.gridService.multiplier = 1;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
         this.gridService.drawGrid();
     }
     reduceFont() {
-        this.gridService.fontSize = '8px system-ui';
+        this.gridService.multiplier = 0.9;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
     }
     increaseFont() {
-        this.gridService.fontSize = '10px system-ui';
+        this.gridService.multiplier = 1.1;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();

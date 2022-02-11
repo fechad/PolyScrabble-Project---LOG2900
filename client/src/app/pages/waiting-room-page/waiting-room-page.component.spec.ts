@@ -24,12 +24,12 @@ describe('WaitingRoomPageComponent', () => {
             ],
         }).compileComponents();
 
-        // const selectedRoom = 'selectedRoom';
+        //  const selectedRoom = 'selectedRoom';
         // Object.defineProperty(communicationServiceSpy, selectedRoom, { value: '0' });
     });
 
     beforeEach(() => {
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['leave']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['leave'], ['selectedRoom']);
         fixture = TestBed.createComponent(WaitingRoomPageComponent);
         router = TestBed.inject(Router);
         router.initialNavigation();

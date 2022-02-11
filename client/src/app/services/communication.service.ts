@@ -8,7 +8,10 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { Letter } from './Alphabet';
 import { GameContextService } from './game-context.service';
+
+export type Player = { name: string; id: PlayerId };
 
 @Injectable({
     providedIn: 'root',
@@ -23,6 +26,8 @@ export class CommunicationService {
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
+
+    private loserId: string | undefined = undefined;
 
     constructor(public gameContextService: GameContextService, httpClient: HttpClient) {
         this.listenRooms();
@@ -44,6 +49,15 @@ export class CommunicationService {
             this.roomSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
+        }
+    }
+
+    kickLeave() {
+        if (this.selectedRoom.value !== undefined && this.isMainPlayer()) {
+            this.gameSocket?.emit('kick');
+            this.leaveGame();
+        } else {
+            throw new Error('Tried to leave when not in room');
         }
     }
 
@@ -80,6 +94,7 @@ export class CommunicationService {
     switchTurn() {
         this.gameSocket?.emit('switch-turn', this.myId);
     }
+
     resetTimer() {
         this.gameSocket?.emit('reset-timer', this.myId);
     }
@@ -90,6 +105,16 @@ export class CommunicationService {
     echanger(letters: string) {
         this.gameSocket?.emit('change-letters', letters, this.myId);
     }
+    getLoserId(): string | undefined {
+        return this.loserId;
+    }
+
+    confirmForfeit() {
+        if (this.selectedRoom.value !== undefined) {
+            this.gameSocket?.emit('confirmForfeit', this.getId());
+        }
+    }
+
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
@@ -149,17 +174,16 @@ export class CommunicationService {
 
     private joinRoomHandler(room: string, token: number) {
         this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
-        this.roomSocket.on('kick', () => this.leaveGame());
+        this.roomSocket.on('kick', () => {
+            this.leaveGame();
+            setTimeout("alert('Vous avez été rejeté.');", 1);
+        });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (e) => this.handleError(e));
         this.roomSocket.on('id', (id: PlayerId) => {
             this.myId = id;
         });
-        this.roomSocket.on('you-start', (number) => {
-            if (number === token) {
-                this.gameContextService.iStart();
-            }
-        });
+
         this.roomSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId, token);
         });
@@ -168,8 +192,8 @@ export class CommunicationService {
     private joinGameHandler(gameId: string, token: number) {
         this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token } });
 
-        this.gameSocket.on('turn', (isMainPlayerTurn: boolean) => {
-            this.gameContextService.setPlayerTurn(isMainPlayerTurn);
+        this.gameSocket.on('turn', (id: PlayerId) => {
+            this.gameContextService.setMyTurn(id === this.myId);
         });
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
@@ -177,5 +201,15 @@ export class CommunicationService {
         this.gameSocket.on('turn-error', (error: string) => {
             this.sendLocalMessage(error);
         });
+        this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
+            if (id === this.myId) this.gameContextService.updateRack(rack);
+        });
+        this.gameSocket.on('players', (players: Player[]) => {
+            for (const player of players) {
+                this.gameContextService.setName(player.name, player.id === this.myId);
+            }
+        });
+        // TO-DO: does not receive forfeit event from server
+        this.gameSocket.on('forfeit', () => {});
     }
 }

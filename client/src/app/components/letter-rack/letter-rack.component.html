@@ -1,3 +1,10 @@
 <div class="rack-container">
-    <app-single-letter *ngFor="let letter of letters"> </app-single-letter>
+    <div class="letter-container" *ngFor="let letter of letters">
+        <div class="letter-name">
+            <p>{{ letter.name }}</p>
+        </div>
+        <div class="letter-score">
+            <p>{{ letter.score }}</p>
+        </div>
+    </div>
 </div>

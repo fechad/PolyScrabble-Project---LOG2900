@@ -42,4 +42,16 @@ describe('Dictionnary service', () => {
         assert(!dictionnaryService.isValidWord('*@$^'));
         done();
     });
+    it('should validate a list of words', (done) => {
+        const wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zythums'];
+        const result = dictionnaryService.validateWords(wordList);
+        assert(result);
+        done();
+    });
+    it('should invalidate a list of wrong words', (done) => {
+        const wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zynnjsdc'];
+        const result = dictionnaryService.validateWords(wordList);
+        assert(!result);
+        done();
+    });
 });
