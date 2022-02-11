@@ -46,19 +46,19 @@ export class GamePageComponent {
         this.communicationService.switchTurn();
     }
     resetFont() {
-        this.gridService.fontSize = '9px system-ui';
+        this.gridService.multiplier = 1;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
         this.gridService.drawGrid();
     }
     reduceFont() {
-        this.gridService.fontSize = '8px system-ui';
+        this.gridService.multiplier = 0.9;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
     }
     increaseFont() {
-        this.gridService.fontSize = '10px system-ui';
+        this.gridService.multiplier = 1.15;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
