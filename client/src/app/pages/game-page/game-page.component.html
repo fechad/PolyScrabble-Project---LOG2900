@@ -32,7 +32,12 @@
             </div>
             <div class="rackArea">
                 <app-letter-rack></app-letter-rack>
-                <button id="skip-turn" title="Passer votre tour" [disabled]="!gameContextService.isMyTurn" (click)="skipMyTurn()">
+                <button
+                    class="skip-turn"
+                    title="Passer votre tour"
+                    [disabled]="(gameContextService.isMyTurn | async) === false"
+                    (click)="skipMyTurn()"
+                >
                     <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
                 </button>
             </div>
