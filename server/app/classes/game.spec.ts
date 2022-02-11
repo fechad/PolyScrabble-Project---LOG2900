@@ -1,4 +1,5 @@
 import { Message } from '@app/message';
+import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import { Game } from './game';
@@ -12,14 +13,20 @@ describe('Game', () => {
     let parameters: Parameters;
     let game: Game;
     let stubError: sinon.SinonStub;
+    let dictionnary: DictionnaryService;
 
-    beforeEach(async () => {
+    before(async () => {
+        dictionnary = new DictionnaryService;
+        await dictionnary.init();
+    });
+
+    beforeEach(() => {
         players = [
             { name: 'Bob', id: '0' },
             { name: 'notBob', id: '1' },
         ];
         parameters = new Parameters();
-        game = new Game(0, players, parameters);
+        game = new Game(0, players, parameters, dictionnary);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
     });
@@ -56,7 +63,7 @@ describe('Game', () => {
         game.eventEmitter.on('rack', stub);
         const letters = 'abcd';
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         game.changeLetters(letters, '0');
         assert(stub.calledWith(letters, '0'));
         assert(stubError.notCalled);
@@ -68,7 +75,7 @@ describe('Game', () => {
         game.eventEmitter.on('rack', stub);
         const letters = 'abcd';
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         game.changeLetters(letters, '1');
         assert(stub.notCalled);
         assert(stubError.called);
@@ -82,7 +89,7 @@ describe('Game', () => {
         const letters = 'abcd';
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         game.placeLetters(letters, position, '0');
         assert(stub.calledWith(letters, position, expectedPoints, '0'));
         assert(stubError.notCalled);
@@ -95,7 +102,7 @@ describe('Game', () => {
         const letters = 'abcd';
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         game.placeLetters(letters, position, '1');
         assert(stub.notCalled);
         assert(stubError.called);
@@ -104,7 +111,7 @@ describe('Game', () => {
 
     it('should check turn of player', (done) => {
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         // eslint-disable-next-line dot-notation
         game['checkTurn']('0', false);
         assert(stubError.notCalled);
@@ -118,7 +125,7 @@ describe('Game', () => {
 
     it('should skip turn', (done) => {
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         game.skipTurn(game.players[0].id, false);
         // eslint-disable-next-line dot-notation
         assert(!game['isPlayer0Turn']);
@@ -131,7 +138,7 @@ describe('Game', () => {
 
     it('should not skip turn if it is not your turn', (done) => {
         // eslint-disable-next-line dot-notation
-        assert(game['isPlayer0Turn']);
+        game['isPlayer0Turn'] = true;
         game.skipTurn(game.players[1].id, false);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);

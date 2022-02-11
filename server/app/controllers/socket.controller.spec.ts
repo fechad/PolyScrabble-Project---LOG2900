@@ -261,11 +261,13 @@ describe('SocketManager service tests', () => {
                 const stub3 = sinon.stub();
                 gameSocket.on('turn', stub3);
                 // eslint-disable-next-line dot-notation
+                service['games'][0]['isPlayer0Turn'] = true;
+                // eslint-disable-next-line dot-notation
                 gameSocket.emit('switch-turn', service['games'][0].players[0].id);
                 setTimeout(() => {
                     // eslint-disable-next-line dot-notation
                     assert(!service['games'][0]['isPlayer0Turn']);
-                    assert(stub3.calledWith(false));
+                    assert(stub3.called);
 
                     roomSocket.close();
                     gameSocket.close();
@@ -298,6 +300,8 @@ describe('SocketManager service tests', () => {
                 const stub4 = sinon.stub();
                 gameSocket.on('game-error', stub3);
                 gameSocket.on('turn', stub4);
+                // eslint-disable-next-line dot-notation
+                service['games'][0]['isPlayer0Turn'] = true;
                 // eslint-disable-next-line dot-notation
                 gameSocket.emit('switch-turn', service['games'][0].players[1].id);
                 setTimeout(() => {
@@ -337,6 +341,8 @@ describe('SocketManager service tests', () => {
                 const stub3 = sinon.stub();
                 gameSocket.on('rack', stub3);
                 // eslint-disable-next-line dot-notation
+                service['games'][0]['isPlayer0Turn'] = true;
+                // eslint-disable-next-line dot-notation
                 gameSocket.emit('change-letters', letters, service['games'][0].players[0].id);
                 setTimeout(() => {
                     // TODO: adapter avec integration service
@@ -375,6 +381,8 @@ describe('SocketManager service tests', () => {
                 const gameSocket = ioClient(`${urlString}/games/0`, { auth: { token } });
                 const stub3 = sinon.stub();
                 gameSocket.on('placed', stub3);
+                // eslint-disable-next-line dot-notation
+                service['games'][0]['isPlayer0Turn'] = true;
                 // eslint-disable-next-line dot-notation
                 gameSocket.emit('place-letters', letters, position, service['games'][0].players[0].id);
                 setTimeout(() => {
