@@ -9,7 +9,7 @@ import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { Letter } from './Alphabet';
-import { GameContextService } from './game-context.service';
+import { Board, GameContextService } from './game-context.service';
 
 export type Player = { name: string; id: PlayerId };
 
@@ -205,6 +205,9 @@ export class CommunicationService {
             for (const player of players) {
                 this.gameContextService.setName(player.name, player.id === this.myId);
             }
+        });
+        this.gameSocket.on('board', (board: Board) => {
+            this.gameContextService.setBoard(board);
         });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});

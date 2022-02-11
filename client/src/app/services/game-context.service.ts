@@ -6,7 +6,7 @@ import { Letter } from './Alphabet';
 const BOARD_LENGTH = 15;
 
 export type Tile = Letter | undefined;
-type Board = Tile[][];
+export type Board = Tile[][];
 
 @Injectable({
     providedIn: 'root',
@@ -25,13 +25,19 @@ export class GameContextService {
     private msgCount: number = 0;
 
     constructor() {
+        const board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             const row = [];
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 row.push(undefined);
             }
-            this.board.next([...this.board.value, row]);
+            board.push(row);
         }
+        this.board.next(board);
+    }
+
+    setBoard(board: Board) {
+        this.board.next(board);
     }
 
     receiveMessages(message: Message, msgCount: number, myself: boolean) {
