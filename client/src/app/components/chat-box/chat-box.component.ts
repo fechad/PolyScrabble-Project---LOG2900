@@ -115,9 +115,13 @@ export class ChatBoxComponent {
     }
     echanger(): Error | undefined {
         let error: Error | undefined;
+        const isInBound =
+            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
+            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
+
         if (this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].match(/[^a-z*]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
-        } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX])) {
+        } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.echanger(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         } else {
             error = new Error('Ces lettres ne sont pas dans le rack');
@@ -130,17 +134,12 @@ export class ChatBoxComponent {
         return;
     }
     isInRack(mot: string) {
-        const isInBound =
-            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
-            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
-        if (!isInBound) return false;
-
         let lettersInRack = '';
         for (const letter of this.gameContextService.rack.value) {
             lettersInRack += letter.name;
         }
         for (const letter of mot) {
-            if (!lettersInRack.includes(letter)) return false;
+            if (!lettersInRack.toLowerCase().includes(letter)) return false;
         }
         return true;
     }

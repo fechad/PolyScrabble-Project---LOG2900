@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { alphabet } from '@app/services/Alphabet';
+import { alphabet, Letter } from '@app/services/Alphabet';
 import { ChatBoxComponent } from './chat-box.component';
 
 import SpyObj = jasmine.SpyObj;
@@ -16,12 +16,6 @@ describe('ChatBoxComponent', () => {
     const invalidEchangerCommands = ['!échanger', '!échanger eT', ' !échanger e23', '!échanger e*'];
     beforeEach(() => {
         elemRef = jasmine.createSpyObj('ElementRef', ['nativeElement', 'nativeElement.focus']);
-        const rackStub = [];
-        const RACKS_LENGTH = 7;
-        for (let i = 0; i < RACKS_LENGTH; i++) {
-            rackStub.push(alphabet[i]); // adds 'abcdefg'
-        }
-        component.gameContextService.rack.next(rackStub);
     });
 
     beforeEach(async () => {
@@ -55,6 +49,12 @@ describe('ChatBoxComponent', () => {
 
     it('placer should call communicationService.placer() for a list of valid !placer commands', () => {
         const comPlacer = spyOn(component.communicationService, 'placer').and.callThrough();
+        const rackStub: Letter[] = [];
+        const RACKS_LENGTH = 7;
+        for (let i = 0; i < RACKS_LENGTH; i++) {
+            rackStub.push(alphabet[i]); // adds 'abcdefg'
+        }
+        component.gameContextService.rack.next(rackStub);
         for (const i of placerCommands) {
             component.textValue = i;
             component.validateSyntax();
@@ -82,6 +82,12 @@ describe('ChatBoxComponent', () => {
 
     it('placer should call communicationService.echanger() for a list of valid !echanger commands', () => {
         const comEchanger = spyOn(component.communicationService, 'echanger').and.callThrough();
+        const rackStub: Letter[] = [];
+        const RACKS_LENGTH = 7;
+        for (let i = 0; i < RACKS_LENGTH; i++) {
+            rackStub.push(alphabet[i]); // adds 'abcdefg'
+        }
+        component.gameContextService.rack.next(rackStub);
         for (const i of echangerCommands) {
             component.textValue = i;
             component.validateSyntax();
