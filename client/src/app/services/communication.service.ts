@@ -25,6 +25,8 @@ export class CommunicationService {
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
 
+    private loserId: string | undefined = undefined;
+
     constructor(public gameContextService: GameContextService, httpClient: HttpClient) {
         this.listenRooms();
         this.mainSocket.on('join', (room, token) => this.joinRoomHandler(room, token));
@@ -45,6 +47,15 @@ export class CommunicationService {
             this.roomSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
+        }
+    }
+
+    kickLeave() {
+        if (this.selectedRoom.value !== undefined && this.isMainPlayer()) {
+            this.gameSocket?.emit('kick');
+            this.leaveGame();
+        } else {
+            throw new Error('Tried to leave when not in room');
         }
     }
 
@@ -91,6 +102,16 @@ export class CommunicationService {
     echanger(letters: string) {
         this.gameSocket?.emit('change-letters', letters, this.myId);
     }
+    getLoserId(): string | undefined {
+        return this.loserId;
+    }
+
+    confirmForfeit() {
+        if (this.selectedRoom.value !== undefined) {
+            this.gameSocket?.emit('confirmForfeit', this.getId());
+        }
+    }
+
     async joinRoom(playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
@@ -150,7 +171,10 @@ export class CommunicationService {
 
     private joinRoomHandler(room: string, token: number) {
         this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
-        this.roomSocket.on('kick', () => this.leaveGame());
+        this.roomSocket.on('kick', () => {
+            this.leaveGame();
+            setTimeout("alert('Vous avez été rejeté.');", 1);
+        });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (e) => this.handleError(e));
         this.roomSocket.on('id', (id: PlayerId) => {
@@ -178,5 +202,7 @@ export class CommunicationService {
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
             if (id === this.myId) this.gameContextService.updateRack(rack);
         });
+        // TO-DO: does not receive forfeit event from server
+        this.gameSocket.on('forfeit', () => {});
     }
 }

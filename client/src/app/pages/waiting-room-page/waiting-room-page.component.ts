@@ -9,15 +9,19 @@ import { CommunicationService } from '@app/services/communication.service';
 })
 export class WaitingRoomPageComponent {
     canControl: boolean;
+    isMainPlayer: boolean;
+    otherPlayerName: string | undefined;
 
     constructor(public communicationService: CommunicationService, private router: Router) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
             if (room === undefined) await this.router.navigate(['/home']);
             else if (room.started) this.router.navigate(['/game']);
 
+            this.isMainPlayer = this.communicationService.getId() === room?.mainPlayer.id;
+            this.otherPlayerName = room?.otherPlayer?.name;
+
             const hasOtherPlayer = room?.otherPlayer !== undefined;
-            const isMainPlayer = this.communicationService.getId() === room?.mainPlayer.id;
-            this.canControl = hasOtherPlayer && isMainPlayer;
+            this.canControl = hasOtherPlayer && this.isMainPlayer;
         });
     }
 
@@ -31,5 +35,10 @@ export class WaitingRoomPageComponent {
 
     kick() {
         this.communicationService.kick();
+    }
+
+    kickLeave() {
+        this.communicationService.kickLeave();
+        this.router.navigate(['/classique']);
     }
 }

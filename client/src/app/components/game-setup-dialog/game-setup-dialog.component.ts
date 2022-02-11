@@ -15,10 +15,14 @@ export class GameSetupDialogComponent implements OnInit {
     constructor(
         private router: Router,
         private formBuilder: FormBuilder,
-        private dialogRef: MatDialogRef<GameSetupDialogComponent>,
+        public dialogRef: MatDialogRef<GameSetupDialogComponent>,
         public communicationService: CommunicationService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
+
+    getDialog() {
+        return this.dialogRef;
+    }
 
     closeDialog(): void {
         this.dialogRef.close();
@@ -30,7 +34,7 @@ export class GameSetupDialogComponent implements OnInit {
             playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
             minutes: new FormControl(1, [Validators.required]),
             seconds: new FormControl(0, [Validators.required]),
-            dictionary: new FormControl('', [Validators.required]),
+            dictionary: [''],
         });
     }
 
@@ -52,10 +56,5 @@ export class GameSetupDialogComponent implements OnInit {
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters);
         this.dialogRef.close();
         this.router.navigate(['/waiting-room']);
-    }
-
-    createGame() {
-        const uuid = 1;
-        this.router.navigate(['/game', uuid]);
     }
 }

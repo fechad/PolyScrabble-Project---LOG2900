@@ -38,12 +38,10 @@
                     <div class="col-md-10">
                         <label>Choix du dictionnaire: </label>
                         <select id="dictionaries" name="dictionary" formControlName="dictionary" class="form-control">
-                            <option selected disabled value="">Choisissez</option>
                             <option [ngValue]="dictionnary.id" *ngFor="let dictionnary of communicationService.dictionnaries | async">{{ dictionnary.name }}</option>
                         </select>
                     </div>
 
-                    <div class="requirement" *ngIf="gameParametersForm.controls['dictionary'].errors">Choisissez un dictionnaire.</div>
                 </div>
             </div>
             <div class="row">

@@ -23,7 +23,7 @@ describe('ModesPageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [ModesPageComponent],
             providers: [
-                { provide: MatDialog, useValue: MatDialogMock },
+                { provide: MatDialog, useClass: MatDialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
             ],
         }).compileComponents();

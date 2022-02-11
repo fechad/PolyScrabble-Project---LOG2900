@@ -94,6 +94,8 @@ export class SocketManager {
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
             }
+            socket.on('confirmForfeit', () => room.forfeit());
+
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
