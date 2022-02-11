@@ -9,7 +9,7 @@
                 <p class="message">{{ message.text }}</p>
             </div>
             <div *ngIf="message.emitter === 'local'" class="chat-log-error">
-                <p class="message">{{ message.text }}</p>
+                <p class="message" [innerText]="message.text"></p>
             </div>
         </div>
     </div>
@@ -19,7 +19,6 @@
         rows="10"
         type="text"
         placeholder="Entrez une commande ou un message ici !"
-        minlength="1"
         maxlength="512"
         (keydown.enter)="validateSyntax()"
         [(ngModel)]="textValue"

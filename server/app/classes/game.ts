@@ -57,7 +57,7 @@ export class Game {
     private checkTurn(playerId: PlayerId, timerRequest: boolean) {
         const validTurn = playerId === (this.isPlayer0Turn ? this.players[0].id : this.players[1].id);
         if (!validTurn && timerRequest === false) {
-            this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
+            this.eventEmitter.emit('turn-error', "Ce n'est pas votre tour");
         } else if (!validTurn && timerRequest === true) {
             return false;
         }

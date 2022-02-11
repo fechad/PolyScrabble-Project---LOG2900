@@ -43,25 +43,10 @@ describe('GamePageComponent', () => {
 
     it('should call quitGame() when quit-game button clicked ', async () => {
         const quitGameSpy = spyOn(component, 'quitGame').and.callThrough();
-        let button = fixture.debugElement.nativeElement.querySelector('#quit-game');
+        const button = fixture.debugElement.nativeElement.querySelector('#quit-game');
         button.click();
         fixture.whenStable().then(() => {
             expect(quitGameSpy).toHaveBeenCalled();
         });
     });
 });
-/*
-    it('skipMyTurn should call skipTurn', () => {
-        const skipTurnSpy = spyOn(skipTurnService, 'skipTurn').and.callThrough();
-        component.skipMyTurn();
-        expect(skipTurnSpy).toHaveBeenCalled();
-    });
-   
-    it('should call skipTurn() when skip-turn button clicked ', fakeAsync(() => {
-        const skipTurnSpy = spyOn(skipTurnService, 'skipTurn').and.callThrough();
-        const button = fixture.debugElement.query(By.css('#skip-turn'));
-        button.nativeElement.click();
-        tick();
-        expect(skipTurnSpy).toHaveBeenCalled();
-    }));
-*/

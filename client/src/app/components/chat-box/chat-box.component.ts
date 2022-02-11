@@ -2,7 +2,6 @@ import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/cor
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { SkipTurnService } from '@app/services/skip-turn.service';
-
 @Component({
     selector: 'app-chat-box',
     templateUrl: './chat-box.component.html',
@@ -20,16 +19,23 @@ export class ChatBoxComponent implements OnInit {
     yourMessage: boolean = true;
     syntaxIsValid: boolean = true;
     commandStructure: string[] = [];
+    help: string[] = [
+        'Voici ce que vous pouvez faire:',
+        '!placer <ligne><colonne>[(h|v)] <lettres>',
+        'ex: !placer g10v abc placera verticalement les lettres abc verticalement',
+        'à partir de la position g10',
+    ];
     myId: string | undefined;
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
         this.myId = this.communicationService.getId();
     }
 
-    ngOnInit(): void {}
+    ngOnInit() {}
 
     clearText() {
-        this.textValue = '';
+        this.textValue = ' ';
+        this.textValue = undefined!;
     }
     isMyMessage() {
         this.yourMessage = false;
@@ -39,7 +45,7 @@ export class ChatBoxComponent implements OnInit {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
     validateSyntax() {
-        if (!this.textValue.trim().match(/[A-zÀ-ú0-9*!?]/g)) {
+        if (!this.textValue.trim().match(/[A-zÀ-ú0-9*!?]/g) && this.textValue.trim() !== '') {
             this.communicationService.sendLocalMessage('Message ne peut contenir du caractère non textuelle autre que !, ? et *');
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
@@ -60,8 +66,14 @@ export class ChatBoxComponent implements OnInit {
         if (this.commandStructure[0] === '!placer' && this.commandStructure.length === 3) return this.placer();
         if (this.commandStructure[0] === '!échanger' && this.commandStructure.length === 2) return this.echanger();
         if (this.commandStructure[0] === '!passer' && this.commandStructure.length === 1) return this.passer();
-
+        if (this.commandStructure[0] === '!aide' && this.commandStructure.length === 1) return this.sendHelp();
         return new Error(`La commande ${this.commandStructure[0]} n'existe pas`);
+    }
+    sendHelp() {
+        for (const message of this.help) {
+            this.communicationService.sendLocalMessage(message);
+        }
+        return undefined;
     }
     placer(): Error | undefined {
         let error: Error | undefined;
