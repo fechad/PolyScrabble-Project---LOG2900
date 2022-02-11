@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleRight, faFont, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
@@ -24,6 +25,7 @@ export class GamePageComponent {
         public gridService: GridService,
         public communicationService: CommunicationService,
         public dialog: MatDialog,
+        public gameContextService: GameContextService,
     ) {}
 
     helpInfo() {

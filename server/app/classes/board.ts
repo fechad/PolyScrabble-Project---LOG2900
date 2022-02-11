@@ -14,7 +14,7 @@ export class Board {
     board: GameTile[][];
     private syntaxValidator: SyntaxValidator;
 
-    constructor( private dictionnary: DictionnaryService) {
+    constructor(private dictionnary: DictionnaryService) {
         this.syntaxValidator = new SyntaxValidator();
         this.board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
@@ -48,8 +48,8 @@ export class Board {
         if (!this.dictionnary.validateWords(words)) {
             return new Error('Un des mots crees ne fait pas partie du dictionnaire');
         }
-        let score = this.placeWithScore(words);
-        return word.length === WORD_LENGTH_BONUS ? (score + BONUS_POINTS) : score;
+        const score = this.placeWithScore(words);
+        return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
     private placeWithScore(words: string[]): number {
@@ -127,7 +127,15 @@ export class Board {
         return (word += letters);
     }
 
-    private getLetters(row:number, refRow:number, col: number, refCol:number, testedWord: string, horizontal: boolean, letterPlace?: number): string {
+    private getLetters(
+        row: number,
+        refRow: number,
+        col: number,
+        refCol: number,
+        testedWord: string,
+        horizontal: boolean,
+        letterPlace?: number,
+    ): string {
         let letterCount = 0;
         let letters = '';
         while (col < BOARD_LENGTH && row < BOARD_LENGTH) {

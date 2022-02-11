@@ -1,25 +1,43 @@
 <div class="infos">
-    <div class="opponent" [ngClass]="{ player: true, tour: (gameContextService.isMainPlayerTurn | async) }">
-      <p class="winner-left" *ngIf="(this.communicationService.getId() !== this.communicationService.getLoserId()) && this.communicationService.getLoserId() !== undefined">👑</p>
-      <p class="winner-left" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
-        <div class="p-infos"> 
-            <p>{{ this.getMainPlayer() }} : score joueur 1</p>
+    <div class="opponent" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) === false }">
+        <p
+            class="winner-left"
+            *ngIf="
+                this.communicationService.getId() !== this.communicationService.getLoserId() && this.communicationService.getLoserId() !== undefined
+            "
+        >
+            👑
+        </p>
+        <p class="winner-left" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
+        <div class="p-infos">
+            <p>{{ this.gameContextService.opponentName }} : score joueur 1</p>
             <p>lettres restantes joueur1</p>
         </div>
     </div>
     <div class="game-infos">
         <p>mode de jeu</p>
         <div class="backChrono">
-            <countdown #countdown [config]="{ format: 'mm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }" (event)="handleEvent($event)"></countdown>
+            <countdown
+                #countdown
+                [config]="{ format: 'mm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
+                (event)="handleEvent($event)"
+            ></countdown>
         </div>
         <p>lettres restantes en reserve</p>
     </div>
-    <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMainPlayerTurn | async) === false }">
+    <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) }">
         <div class="p-infos">
-            <p>{{this.getOtherPlayer()}} : score joueur 2</p>
+            <p>{{ this.gameContextService.myName }} : score joueur 2</p>
             <p>lettres restantes joueur2</p>
         </div>
-        <p class="winner-right" *ngIf="(this.communicationService.getId() !== this.communicationService.getLoserId()) && this.communicationService.getLoserId() !== undefined">👑</p>
+        <p
+            class="winner-right"
+            *ngIf="
+                this.communicationService.getId() !== this.communicationService.getLoserId() && this.communicationService.getLoserId() !== undefined
+            "
+        >
+            👑
+        </p>
         <p class="winner-right" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
     </div>
 </div>
