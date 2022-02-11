@@ -28,7 +28,7 @@ export class Game {
         this.gameId = id;
         this.parameters = parameters;
         this.players = players;
-        this.isPlayer0Turn = Math.random() > PLAYER_0_TURN_PROBABILITY;
+        this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
     }
 
     gameInit() {
