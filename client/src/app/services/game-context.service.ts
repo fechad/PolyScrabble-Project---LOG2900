@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Letter } from './Alphabet';
 
 type Tile = Letter | undefined;
@@ -10,8 +10,7 @@ type Board = Tile[][];
     providedIn: 'root',
 })
 export class GameContextService {
-    // BehaviorSubject<> = new BehaviorSubject();
-    readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
+    letterRack: Subject<Letter[]> = new Subject();
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
@@ -41,6 +40,11 @@ export class GameContextService {
     setPlayerTurn(isMainPlayerTurn: boolean) {
         this.isMainPlayerTurn.next(isMainPlayerTurn);
     }
+    updateRack(newRack: Letter[]) {
+        this.letterRack.next(newRack);
+    }
 
-    constructor() {}
+    getRackObs() {
+        return this.letterRack.asObservable();
+    }
 }

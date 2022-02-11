@@ -1,13 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { letters } from '@app/services/Alphabet';
+import { Component, OnChanges, OnInit } from '@angular/core';
+import { Letter } from '@app/services/Alphabet';
+import { GameContextService } from '@app/services/game-context.service';
+
+const DELAY = 10;
 @Component({
     selector: 'app-letter-rack',
     templateUrl: './letter-rack.component.html',
     styleUrls: ['./letter-rack.component.scss'],
 })
-export class LetterRackComponent implements OnInit {
-    letters = letters;
-    constructor() {}
+export class LetterRackComponent implements OnInit, OnChanges {
+    letters: Letter[];
+    timeOut: number;
+    constructor(public gameContextService: GameContextService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.gameContextService.getRackObs().subscribe((newRack) => {
+            this.letters = newRack;
+            this.timeOut = window.setTimeout(() => {}, DELAY);
+        });
+    }
+
+    ngOnChanges(): void {
+        window.clearTimeout(this.timeOut);
+    }
 }
