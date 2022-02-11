@@ -1,5 +1,5 @@
 import { assert } from 'console';
-import { GameTile } from './gameTile';
+import { GameTile } from './game-tile';
 
 describe('Game Tile', () => {
     let gameTile: GameTile;

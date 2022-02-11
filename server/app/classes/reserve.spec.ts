@@ -9,8 +9,8 @@ describe('Reserve', () => {
         reserve = new Reserve();
     });
     it('should have 7 elements in each rack', () => {
-        assert(reserve.rack1.length === racksLength);
-        assert(reserve.rack2.length === racksLength);
+        assert(reserve.letterRacks[0].length === racksLength);
+        assert(reserve.letterRacks[1].length === racksLength);
     });
     it('should return the right number of letters', () => {
         const numberOfLetters = 4;

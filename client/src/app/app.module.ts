@@ -18,7 +18,6 @@ import { GameSetupDialogComponent } from './components/game-setup-dialog/game-se
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
 import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
 import { LetterRackComponent } from './components/letter-rack/letter-rack.component';
-import { SingleLetterComponent } from './components/single-letter/single-letter.component';
 import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
@@ -45,7 +44,6 @@ import { HelpInfoComponent } from './components/help-info/help-info.component';
         LetterRackComponent,
         ChatBoxComponent,
         InfosBoxComponent,
-        SingleLetterComponent,
         ModesPageComponent,
         HelpInfoComponent,
     ],
