@@ -151,7 +151,6 @@ export class SocketManager {
             socket.on('parameters', () => game.getParameters());
             socket.on('confirm-forfeit', (idLoser) => {
                 game.forfeit(idLoser);
-                console.log('sock');
             });
 
             socket.on('disconnect', () => {
