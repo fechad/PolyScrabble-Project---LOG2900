@@ -45,7 +45,7 @@ export class ChatBoxComponent implements OnInit {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
     validateSyntax() {
-        if (!this.textValue.trim().match(/[A-zÀ-ú0-9*!?]/g) && this.textValue.trim() !== '') {
+        if (!this.textValue.trim().match(/[A-Za-zÀ-ú0-9*!?]/g) && this.textValue.trim() !== '') {
             this.communicationService.sendLocalMessage('Message ne peut contenir du caractère non textuelle autre que !, ? et *');
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
@@ -66,18 +66,20 @@ export class ChatBoxComponent implements OnInit {
         if (this.commandStructure[0] === '!placer' && this.commandStructure.length === 3) return this.placer();
         if (this.commandStructure[0] === '!échanger' && this.commandStructure.length === 2) return this.echanger();
         if (this.commandStructure[0] === '!passer' && this.commandStructure.length === 1) return this.passer();
-        if (this.commandStructure[0] === '!aide' && this.commandStructure.length === 1) return this.sendHelp();
+        if (this.commandStructure[0] === '!aide' && this.commandStructure.length === 1) {
+            this.sendHelp();
+            return undefined;
+        }
         return new Error(`La commande ${this.commandStructure[0]} n'existe pas`);
     }
     sendHelp() {
         for (const message of this.help) {
             this.communicationService.sendLocalMessage(message);
         }
-        return undefined;
     }
     placer(): Error | undefined {
         let error: Error | undefined;
-        if (this.commandStructure[2].match(/[^A-zÀ-ú]/g)) {
+        if (this.commandStructure[2].match(/[^A-Za-zÀ-ú]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         } else {
             /* TODO:checker si c dans le chevalet */
