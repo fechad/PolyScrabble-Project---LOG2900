@@ -5,7 +5,7 @@ div {
 }
 
 #wholeBox {
-    background-color: #ddbcf5;
+    background-color: #E1AC01;
     margin-left: 5vw;
     margin-top: 10px;
     margin-bottom: 20px;
@@ -32,7 +32,7 @@ div {
     padding: 10px;
     margin: 5% 5% 5% 25%;
     border-radius: 15px;
-    background-color: #b7ffe5;
+    background-color: #838383;
 }
 .chat-log-opponent {
     display: flex;
@@ -43,7 +43,19 @@ div {
     padding: 10px;
     margin: 5% 25% 5% 5%;
     border-radius: 15px;
-    background-color: #ffefed;
+    background-color: #ffffff;
+}
+.chat-log-error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: hidden;
+    width: 80%;
+    padding: 10px;
+    margin: 5% 5% 5% 5%;
+    border-radius: 15px;
+    background-color: #f8f847;
+    color: #ee1919;
 }
 #writingBox {
     height: 20%;

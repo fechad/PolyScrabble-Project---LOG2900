@@ -106,12 +106,12 @@ describe('Game', () => {
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         // eslint-disable-next-line dot-notation
-        game['checkTurn']('0');
+        game['checkTurn']('0', false);
         assert(stubError.notCalled);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         // eslint-disable-next-line dot-notation
-        game['checkTurn']('1');
+        game['checkTurn']('1', false);
         assert(stubError.called);
         done();
     });
@@ -119,10 +119,10 @@ describe('Game', () => {
     it('should skip turn', (done) => {
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
-        game.skipTurn(game.players[0].id);
+        game.skipTurn(game.players[0].id, false);
         // eslint-disable-next-line dot-notation
         assert(!game['isPlayer0Turn']);
-        game.skipTurn(game.players[1].id);
+        game.skipTurn(game.players[1].id, false);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
@@ -132,7 +132,7 @@ describe('Game', () => {
     it('should not skip turn if it is not your turn', (done) => {
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
-        game.skipTurn(game.players[1].id);
+        game.skipTurn(game.players[1].id, false);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.called);

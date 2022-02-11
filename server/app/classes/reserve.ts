@@ -2,8 +2,7 @@ import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
 
 export class Reserve {
-    rack1: Letter[] = [];
-    rack2: Letter[] = [];
+    letterRacks: Letter[][] = [];
     private reserve: Letter[] = [];
 
     constructor() {
@@ -13,14 +12,6 @@ export class Reserve {
             }
         }
         this.setRacks();
-    }
-
-    setRacks() {
-        const rackLength = 7;
-        for (let i = 0; i < rackLength; i++) {
-            this.rack1 = this.rack1.concat(this.drawLetters(1));
-            this.rack2 = this.rack2.concat(this.drawLetters(1));
-        }
     }
 
     drawLetters(quantity: number): Letter[] {
@@ -34,5 +25,17 @@ export class Reserve {
             this.reserve.pop();
         }
         return lettersToSend;
+    }
+
+    private setRacks() {
+        const rackLength = 7;
+        let rack1: Letter[] = [];
+        let rack2: Letter[] = [];
+        for (let i = 0; i < rackLength; i++) {
+            rack1 = rack1.concat(this.drawLetters(1));
+            rack2 = rack2.concat(this.drawLetters(1));
+        }
+        this.letterRacks.push(rack1);
+        this.letterRacks.push(rack2);
     }
 }

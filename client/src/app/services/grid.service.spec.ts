@@ -9,7 +9,7 @@ export class CanvasTestHelper {
         return canvas;
     }
 }
-
+const CALLNUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
     let ctxStub: CanvasRenderingContext2D;
@@ -43,7 +43,7 @@ describe('GridService', () => {
 
     it(' drawMessage should call fillText on the canvas', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-        service.drawMessage('test', 0, 0);
+        service.drawMessage('test', 0, 0, '9');
         expect(fillTextSpy).toHaveBeenCalled();
     });
 
@@ -63,7 +63,7 @@ describe('GridService', () => {
     it(' drawMessage should call fillText as many times as words in a message', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
         const message = 'test';
-        service.drawMessage(message, 0, 0);
+        service.drawMessage(message, 0, 0, '9');
         expect(fillTextSpy).toHaveBeenCalledTimes(message.split(' ').length);
     });
 
@@ -101,30 +101,9 @@ describe('GridService', () => {
         expect(afterSize).toBeGreaterThan(beforeSize);
     });
 
-    it('bonusConditions should call drawTripleWord 8 times', () => {
-        const drawTripleWordSpy = spyOn(service, 'drawTripleWord').and.callThrough();
+    it('bonusConditions should call drawBonus 61 times', () => {
+        const drawTripleWordSpy = spyOn(service, 'drawBonus').and.callThrough();
         service.drawGrid();
-        expect(drawTripleWordSpy).toHaveBeenCalledTimes(8);
-    });
-    it('bonusConditions should call drawTripleLetter 12 times', () => {
-        const drawTripleLetterSpy = spyOn(service, 'drawTripleLetter').and.callThrough();
-        service.drawGrid();
-        expect(drawTripleLetterSpy).toHaveBeenCalledTimes(12);
-    });
-    it('bonusConditions should call drawDoubleWord 17 times', () => {
-        const drawDoubleWordSpy = spyOn(service, 'drawDoubleWord').and.callThrough();
-        service.drawGrid();
-        expect(drawDoubleWordSpy).toHaveBeenCalledTimes(16);
-    });
-    it('bonusConditions should call drawDoubleLetter 24 times', () => {
-        const drawDoubleLetterSpy = spyOn(service, 'drawDoubleLetter').and.callThrough();
-        service.drawGrid();
-        expect(drawDoubleLetterSpy).toHaveBeenCalledTimes(24);
-    });
-
-    it('bonusConditions should call drawStar 1 time', () => {
-        const drawStarSpy = spyOn(service, 'drawStar').and.callThrough();
-        service.drawGrid();
-        expect(drawStarSpy).toHaveBeenCalledTimes(1);
+        expect(drawTripleWordSpy).toHaveBeenCalledTimes(CALLNUMBER);
     });
 });

@@ -1,18 +1,40 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-
+import { Letter } from '@app/services/Alphabet';
+import { GameContextService } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
-
+const CENTERTILE = 7;
+const AJUSTY = 16;
+const AJUSTTILEY = 10;
+const AJUSTTILEX = 5;
+const AJUSTSTARX = 4;
+const AJUSTSTARY = 10;
+const AJUSTBONUS = 10;
+const AJUSTBONUSWORD = 2;
+const AJUSTLETTER = 4;
+const TWOCHARNUMBER = 10;
+const AJUSTSTEP = 0.5;
+const EXCEPTIONX = 11;
+const EXCEPTIONY = 0;
+const AMOUNTOFNUMBER = 15;
+enum Colors {
+    Mustard = '#E1AC01',
+    Yellow = '#FFE454',
+    Green = '#54bd9d',
+    Blue = '#65CCD2',
+    Grey = '#838383',
+}
 @Injectable({
     providedIn: 'root',
 })
 export class GridService {
     gridContext: CanvasRenderingContext2D;
     fontSize = '9px system-ui';
-
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+
+    constructor(private gameContext: GameContextService) {}
 
     drawGrid() {
         const dimension = 15;
@@ -26,15 +48,24 @@ export class GridService {
         this.gridContext.fillStyle = '#c4c4c4';
         this.gridContext.strokeStyle = '#B1ACAC';
         const gridOrigin = 20;
-
         for (let i = 0; i < dimension; i++) {
             for (let j = 0; j < dimension; j++) {
                 this.gridContext.beginPath();
                 this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
                 this.gridContext.fill();
-                this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + 16);
-                this.gridContext.fillStyle = '#838383';
+                this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUSTY);
+                this.drawTiles(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUSTY);
+                this.gridContext.fillStyle = '#353535';
             }
+        }
+    }
+
+    drawTiles(posX: number, posY: number, canvasX: number, canvasY: number) {
+        if (this.gameContext.board.value[posX][posY] !== undefined) {
+            const tile = this.gameContext.board.value[posX][posY] as Letter;
+            this.gridContext.fillStyle = 'burlywood';
+            this.gridContext.fill();
+            this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, '30');
         }
     }
 
@@ -69,56 +100,36 @@ export class GridService {
             '1411',
         ];
         if (tripleWord.includes(coord)) {
-            this.drawTripleWord(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Mustard, 'WORD x3');
         } else if (tripleLetter.includes(coord)) {
-            this.drawTripleLetter(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Green, 'LETTER x3');
         } else if (doubleWord.includes(coord)) {
-            this.drawDoubleWord(canvasX, canvasY);
-        } else if (doubleLetter.includes(coord) || (posX === 11 && posY === 0)) {
-            this.drawDoubleLetter(canvasX, canvasY);
-        } else if (posX === 7 && posY === 7) {
-            this.drawStar(canvasX, canvasY);
+            this.drawBonus(canvasX, canvasY, Colors.Yellow, 'WORD x2');
+        } else if (doubleLetter.includes(coord) || (posX === EXCEPTIONX && posY === EXCEPTIONY)) {
+            this.drawBonus(canvasX, canvasY, Colors.Blue, 'LETTER x2');
+        } else if (posX === CENTERTILE && posY === CENTERTILE) {
+            this.drawBonus(canvasX - AJUSTSTARX, canvasY + AJUSTSTARY, Colors.Grey, '⭐');
         }
     }
 
-    drawTripleWord(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#c93de0';
+    drawBonus(canvasX: number, canvasY: number, color: string, word: string) {
+        this.gridContext.fillStyle = color;
         this.gridContext.fill();
-        this.drawMessage('WORD x3', canvasX, canvasY);
+        this.drawMessage(word, canvasX, canvasY, '9');
     }
 
-    drawTripleLetter(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#54bd9d';
-        this.gridContext.fill();
-        this.drawMessage('LETTER x3', canvasX, canvasY);
-    }
-
-    drawDoubleWord(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#e1adf3';
-        this.gridContext.fill();
-        this.drawMessage('WORD x2', canvasX, canvasY);
-    }
-
-    drawDoubleLetter(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#b7ffe5';
-        this.gridContext.fill();
-
-        this.drawMessage('LETTER x2', canvasX, canvasY);
-    }
-
-    drawStar(canvasX: number, canvasY: number) {
-        this.gridContext.fillStyle = '#e1adf3';
-        this.gridContext.fill();
-        this.drawMessage('STAR', canvasX, canvasY);
-    }
-
-    drawMessage(word: string, posX: number, posY: number) {
+    drawMessage(word: string, posX: number, posY: number, size: string) {
         this.gridContext.fillStyle = '#000000';
-        this.gridContext.font = this.fontSize;
+        this.gridContext.font = word === '⭐' ? '30px system-ui' : size + 'px system-ui';
         const sentence = word.split(' ');
         const step = 10;
-        for (let i = 0; i < sentence.length; i++) {
-            this.gridContext.fillText(sentence[i], posX, posY + step * i);
+        if (sentence.length === 2) {
+            this.gridContext.fillText(sentence[0], posX + AJUSTBONUSWORD, posY);
+            this.gridContext.fillText(sentence[1], posX + AJUSTBONUS, posY + step);
+        } else {
+            for (let i = 0; i < sentence.length; i++) {
+                this.gridContext.fillText(sentence[i], posX, posY + step * i);
+            }
         }
     }
 
@@ -127,24 +138,24 @@ export class GridService {
         const step = 33.5;
         this.gridContext.font = '20px system-ui';
         for (let i = 0; i < word.length; i++) {
-            this.gridContext.fillStyle = '#000000';
-            this.gridContext.fillText(word[i], startPosition.x + 4, startPosition.y + step * i);
+            this.gridContext.fillStyle = '#E1AC01';
+            this.gridContext.fillText(word[i], startPosition.x + AJUSTLETTER, startPosition.y + step * i);
         }
     }
 
     drawNumbers(numbers: string) {
         const startPosition: Vec2 = { x: 28, y: 10 };
         const step = 33.5;
-        this.gridContext.fillStyle = '#000000';
+        this.gridContext.fillStyle = '#E1AC01';
         this.gridContext.font = '20px system-ui';
-        const numberList = numbers.split(' ', 15);
+        const numberList = numbers.split(' ', AMOUNTOFNUMBER);
 
         for (let i = 0; i < numberList.length; i++) {
             const number: number = +numberList[i];
-            if (number < 10) {
-                this.gridContext.fillText(number.toString(), startPosition.x + step * i, startPosition.y + 4);
+            if (number < TWOCHARNUMBER) {
+                this.gridContext.fillText(number.toString(), startPosition.x + step * i, startPosition.y + AJUSTLETTER);
             } else {
-                this.gridContext.fillText(number.toString(), startPosition.x + (step - 0.5) * i, startPosition.y + 4);
+                this.gridContext.fillText(number.toString(), startPosition.x + (step - AJUSTSTEP) * i, startPosition.y + AJUSTLETTER);
             }
         }
     }
