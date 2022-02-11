@@ -3,13 +3,18 @@ import { Message } from '@app/classes/message';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Letter } from './Alphabet';
 
-type Tile = Letter | undefined;
+const BOARD_LENGTH = 15;
+
+export type Tile = Letter | undefined;
 type Board = Tile[][];
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameContextService {
+    letter: Tile;
+    // BehaviorSubject<> = new BehaviorSubject();
+    readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     letterRack: Subject<Letter[]> = new Subject();
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
@@ -17,6 +22,15 @@ export class GameContextService {
     readonly isMainPlayerTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private msgCount: number = 0;
 
+    constructor() {
+        for (let i = 0; i < BOARD_LENGTH; i++) {
+            const row = [];
+            for (let j = 0; j < BOARD_LENGTH; j++) {
+                row.push(undefined);
+            }
+            this.board.next([...this.board.value, row]);
+        }
+    }
     iStart() {
         this.isMainPlayerTurn.next(true);
     }
