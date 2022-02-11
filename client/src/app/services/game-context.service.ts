@@ -14,12 +14,10 @@ export class GameContextService {
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
-    readonly isMainPlayerTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+    readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+    readonly myName: string;
+    readonly opponentName: string;
     private msgCount: number = 0;
-
-    iStart() {
-        this.isMainPlayerTurn.next(true);
-    }
 
     receiveMessages(message: Message, msgCount: number, myself: boolean) {
         this.messages.next([...this.messages.value, message]);
@@ -37,9 +35,10 @@ export class GameContextService {
         }
     }
 
-    setPlayerTurn(isMainPlayerTurn: boolean) {
-        this.isMainPlayerTurn.next(isMainPlayerTurn);
+    setMyTurn(isYourTurn: boolean) {
+        this.isMyTurn.next(isYourTurn);
     }
+
     updateRack(newRack: Letter[]) {
         this.letterRack.next(newRack);
     }

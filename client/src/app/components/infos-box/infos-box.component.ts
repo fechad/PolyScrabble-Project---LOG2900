@@ -15,10 +15,9 @@ export class InfosBoxComponent implements AfterViewInit {
     private subscription: Subscription;
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
-        this.subscription = gameContextService.isMainPlayerTurn.subscribe((value) => {
+        this.subscription = gameContextService.isMyTurn.subscribe(() => {
             this.reset();
         });
-        
     }
 
     ngAfterViewInit(): void {

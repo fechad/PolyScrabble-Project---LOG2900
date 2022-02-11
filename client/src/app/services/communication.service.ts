@@ -180,11 +180,7 @@ export class CommunicationService {
         this.roomSocket.on('id', (id: PlayerId) => {
             this.myId = id;
         });
-        this.roomSocket.on('you-start', (number) => {
-            if (number === token) {
-                this.gameContextService.iStart();
-            }
-        });
+
         this.roomSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId, token);
         });
@@ -193,8 +189,8 @@ export class CommunicationService {
     private joinGameHandler(gameId: string, token: number) {
         this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token } });
 
-        this.gameSocket.on('turn', (isMainPlayerTurn: boolean) => {
-            this.gameContextService.setPlayerTurn(isMainPlayerTurn);
+        this.gameSocket.on('turn', (id: PlayerId) => {
+            this.gameContextService.setMyTurn(id === this.myId);
         });
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);

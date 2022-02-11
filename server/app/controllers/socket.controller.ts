@@ -1,6 +1,7 @@
 import { Game } from '@app/classes/game';
 import { Player, PlayerId } from '@app/classes/room';
 import { Message } from '@app/message';
+import { DictionnaryService } from '@app/services/dictionnary.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
 import { RoomsService } from '@app/services/rooms.service';
 import { WaitingRoomService } from '@app/services/waiting-room.service';
@@ -15,7 +16,7 @@ export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
 
-    constructor(server: http.Server, public roomsService: RoomsService) {
+    constructor(server: http.Server, public roomsService: RoomsService, private dictionnaryService: DictionnaryService) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
@@ -89,13 +90,12 @@ export class SocketManager {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => {
                     room.start();
-                    const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters);
+                    const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters, this.dictionnaryService);
                     this.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
             }
             socket.on('confirmForfeit', () => room.forfeit());
-
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
@@ -155,7 +155,7 @@ export class SocketManager {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
             });
 
-            game.playerReady();
+            game.gameInit();
         });
     }
 }

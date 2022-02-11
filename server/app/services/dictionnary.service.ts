@@ -27,7 +27,7 @@ export class DictionnaryService {
     }
 
     validateWords(wordList: string[]): boolean {
-        return wordList.map(word => word.split(';')).every(words => this.isValidWord(words[words.length - 1]));
+        return wordList.map((word) => word.split(';')).every((words) => this.isValidWord(words[words.length - 1]));
     }
 
     private isWord(expression: string): boolean {
