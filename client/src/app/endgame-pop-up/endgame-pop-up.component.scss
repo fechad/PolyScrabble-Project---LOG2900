@@ -1,6 +1,14 @@
-#summary {
-    z-index: 99999;
+mat-card {
+    text-align: left;
     width: 50vh;
-    height: 50vw;
-    background-color: white;
+    height: 40vw;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.icone-cancel:hover {
+    cursor: pointer;
 }

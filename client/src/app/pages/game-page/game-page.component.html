@@ -1,12 +1,11 @@
 <div class="container">
     <!--<app-sidebar></app-sidebar> -->
     <div class="infosArea">
-        <app-infos-box #infoBox></app-infos-box>
+        <app-infos-box id="infoBox"></app-infos-box>
     </div>
 
     <div class="game-container">
         <div id="left-container">
-            <app-endgame-pop-up *ngIf="true"></app-endgame-pop-up>
             <button class="icon" (click)="helpInfo()"><fa-icon [icon]="faQuestionCircle" size="2x"></fa-icon></button>
             <div class="size-container">
                 <button class="sizing"><fa-icon id="reduce" [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon></button>
