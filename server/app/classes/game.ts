@@ -58,26 +58,22 @@ export class Game {
             const response = await this.board.placeWord(letters, position);
             if (!(response instanceof Error)) {
                 console.log(response);
-
+                this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 const board = this.formatSendableBoard();
                 this.eventEmitter.emit('board', board);
                 this.eventEmitter.emit('score', response, playerId);
-                // this.skipTurn(playerId, false);
             } else {
                 const error = response as Error;
                 this.eventEmitter.emit('game-error', error.message, playerId);
             }
+            this.sendRack();
         }
     }
 
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId, false)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
-            if (this.isPlayer0Turn) {
-                this.eventEmitter.emit('rack', this.reserve.letterRacks[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
-            } else {
-                this.eventEmitter.emit('rack', this.reserve.letterRacks[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
-            }
+            this.sendRack();
         }
     }
 
@@ -123,5 +119,13 @@ export class Game {
             board.push(row);
         }
         return board;
+    }
+
+    private sendRack() {
+        if (this.isPlayer0Turn) {
+            this.eventEmitter.emit('rack', this.reserve.letterRacks[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
+        } else {
+            this.eventEmitter.emit('rack', this.reserve.letterRacks[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
+        }
     }
 }
