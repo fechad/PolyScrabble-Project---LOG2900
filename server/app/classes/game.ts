@@ -64,7 +64,6 @@ export class Game {
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
-            console.log('here' + playerId);
             this.sendRack();
         }
     }

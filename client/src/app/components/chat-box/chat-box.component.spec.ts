@@ -53,7 +53,7 @@ describe('ChatBoxComponent', () => {
     });
 
     it('placer should call communicationService.placer() for a list of valid !placer commands', () => {
-        const comPlacer = spyOn(component.communicationService, 'placer').and.callThrough();
+        const comPlacer = spyOn(component.communicationService, 'place').and.callThrough();
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {
@@ -86,7 +86,7 @@ describe('ChatBoxComponent', () => {
     });
 
     it('placer should call communicationService.echanger() for a list of valid !echanger commands', () => {
-        const comEchanger = spyOn(component.communicationService, 'echanger').and.callThrough();
+        const comEchanger = spyOn(component.communicationService, 'exchange').and.callThrough();
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {

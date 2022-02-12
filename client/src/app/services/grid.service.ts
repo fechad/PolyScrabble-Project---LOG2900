@@ -43,7 +43,6 @@ export class GridService {
     constructor(private gameContext: GameContextService) {}
 
     drawGrid() {
-        console.log(this.gameContext.board.value);
         const offset = BOARD_LENGTH / BOARD_LENGTH;
         const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
         this.gridContext.lineWidth = offset;

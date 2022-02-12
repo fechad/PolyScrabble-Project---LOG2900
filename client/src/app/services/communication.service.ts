@@ -221,8 +221,8 @@ export class CommunicationService {
         this.gameSocket.on('game-error', (error: string) => {
             this.sendLocalMessage(error);
         });
-        this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
-            if (id === this.myId) this.gameContextService.updateRack(rack);
+        this.gameSocket.on('rack', (rack: Letter[]) => {
+            this.gameContextService.updateRack(rack);
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
