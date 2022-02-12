@@ -136,12 +136,12 @@ export class ChatBoxComponent {
         this.communicationService.switchTurn();
         return;
     }
-    isInRack(mot: string) {
+    isInRack(word: string) {
         let lettersInRack = '';
         for (const letter of this.gameContextService.rack.value) {
-            lettersInRack += letter.name;
+            lettersInRack = lettersInRack.concat(letter.name);
         }
-        for (const letter of mot) {
+        for (const letter of word) {
             if (!lettersInRack.toLowerCase().includes(letter)) return false;
         }
         return true;

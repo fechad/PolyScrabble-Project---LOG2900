@@ -10,9 +10,9 @@ import { Player, PlayerId } from './room';
 export type GameId = number;
 type Tile = Letter | undefined;
 type SendableBoard = Tile[][];
+export const MAIN_PLAYER = 0;
+export const OTHER_PLAYER = 1;
 const STANDARD_GAME_PLAYER_NUMBER = 2;
-const MAIN_PLAYER = 0;
-const OTHER_PLAYER = 1;
 const PLAYER_0_TURN_PROBABILITY = 0.5;
 const BOARD_LENGTH = 15;
 
@@ -70,9 +70,12 @@ export class Game {
 
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId, false)) {
-            // TODO: change the letters in the service
-            // TODO: emit the new rack
-            this.eventEmitter.emit('rack', letters, playerId);
+            this.reserve.updateReserve(letters, this.isPlayer0Turn);
+            if (this.isPlayer0Turn) {
+                this.eventEmitter.emit('rack', this.reserve.letterRacks[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
+            } else {
+                this.eventEmitter.emit('rack', this.reserve.letterRacks[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
+            }
         }
     }
 

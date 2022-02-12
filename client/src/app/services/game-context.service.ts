@@ -80,6 +80,7 @@ export class GameContextService {
 
     updateRack(newRack: Letter[]) {
         this.letterRack.next(newRack);
+        this.rack.next(newRack);
     }
 
     getRackObs() {

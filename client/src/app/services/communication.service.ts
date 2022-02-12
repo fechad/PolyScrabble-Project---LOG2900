@@ -203,6 +203,7 @@ export class CommunicationService {
             this.sendLocalMessage(error);
         });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
+            console.log(rack);
             if (id === this.myId) this.gameContextService.updateRack(rack);
         });
         this.gameSocket.on('players', (players: Player[]) => {
