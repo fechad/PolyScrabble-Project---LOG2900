@@ -1,46 +1,65 @@
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { of } from 'rxjs';
 import { JoinSetupDialogComponent } from './join-setup-dialog.component';
 
-export class MatDialogRefMock {
-    close() {
-        return { afterClosed: () => of({}) };
-    }
-}
+import SpyObj = jasmine.SpyObj;
+
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
+
 describe('JoinSetupDialogComponent', () => {
-    // let component: JoinSetupDialogComponent;
+    let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;
-    let formBuilder: FormBuilder;
-    let dialogRef: MatDialogRef<JoinSetupDialogComponent>;
-    let matDialogData: typeof MAT_DIALOG_DATA;
+    // let dialogRef: MatDialogRef<JoinSetupDialogComponent>;
+    let communicationServiceSpy: SpyObj<CommunicationService>;
+    let router: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
+        router = jasmine.createSpyObj('Router', ['navigate']);
         await TestBed.configureTestingModule({
             declarations: [JoinSetupDialogComponent],
+            imports: [HttpClientTestingModule, MatCardModule, RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             providers: [
-                { provide: CommunicationService, useClass: CommunicationService },
-                { provide: MatDialogRef, useClass: MatDialogRefMock },
-                { provide: FormBuilder, useValue: formBuilder },
-                { provide: Router, useValue: {} },
-                { provide: MatDialogRef, useValue: dialogRef },
-                { provide: MAT_DIALOG_DATA, useValue: matDialogData },
+                { provide: CommunicationService, useValue: communicationServiceSpy },
+                { provide: MatDialogRef, useValue: dialogMock },
+                FormBuilder,
+                { provide: Router, useValue: router },
+                { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
         }).compileComponents();
+
+        router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinSetupDialogComponent);
-        // component = fixture.componentInstance;
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['rooms'], ['joinRoom']);
+        component = fixture.componentInstance;
+        component.joiningRoomForm = new FormGroup({
+            secondPlayerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+        });
+
+        component.ngOnInit();
         fixture.detectChanges();
     });
 
-    // TO-DO : should create fails
     // it('should create', () => {
     //     expect(component).toBeTruthy();
+    // });
+
+    // it('form invalid if no name entered', () => {
+    //     expect(component.joiningRoomForm.valid).toBeFalsy();
     // });
 
     // it('click on cancel button should call closeDialog() function', fakeAsync(() => {
