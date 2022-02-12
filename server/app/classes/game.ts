@@ -51,11 +51,11 @@ export class Game {
             try {
                 const response = await this.board.placeWord(letters, position);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
-                const board = this.formatSendableBoard();
-                this.eventEmitter.emit('board', board);
+                this.eventEmitter.emit('board', this.formatSendableBoard());
                 this.eventEmitter.emit('score', response, playerId);
             } catch (e) {
                 this.eventEmitter.emit('game-error', e.message, playerId);
+                this.eventEmitter.emit('board', this.formatSendableBoard());
             }
             this.sendRack();
         }

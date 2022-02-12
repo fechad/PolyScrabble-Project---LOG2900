@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { Letter } from '@app/services/Alphabet';
-import { GameContextService } from './game-context.service';
+import { GameContextService, Tile } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
@@ -22,6 +22,9 @@ const AMOUNTOFNUMBER = 15;
 const DEFAULT_SIZE = 9;
 const TILE_SIZE = 30;
 const BOARD_LENGTH = 15;
+const COMMAND_X_INDEX = 1;
+const COMMAND_Y_INDEX = 0;
+const LOWERCASE_A_ASCII = 97;
 
 enum Colors {
     Mustard = '#E1AC01',
@@ -72,6 +75,35 @@ export class GridService {
             this.gridContext.fill();
             this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, TILE_SIZE);
         }
+    }
+
+    tempUpdateBoard(lettersToAdd: string, position: string) {
+        const COMMAND_ORIENTATION_INDEX = position.length - 1;
+        const verticalPosition = position[COMMAND_Y_INDEX].charCodeAt(0) - LOWERCASE_A_ASCII;
+        const horizontalPositionString =
+            COMMAND_ORIENTATION_INDEX === 2 ? position[COMMAND_X_INDEX] : position[COMMAND_X_INDEX] + position[COMMAND_X_INDEX + 1];
+        const horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
+
+        const isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
+        const iterationPosition = isVerticalPlacement ? verticalPosition : horizontalPosition;
+
+        const temporaryBoard = this.gameContext.board.value;
+        let letterPosition = 0;
+        for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
+            if (letterPosition > lettersToAdd.length - 1) break;
+            const tile = isVerticalPlacement ? temporaryBoard[i][iterationPosition] : temporaryBoard[iterationPosition][i];
+            if (tile !== null) continue;
+            const letter: Tile = {
+                id: 0,
+                name: lettersToAdd[letterPosition].toUpperCase(),
+                score: 0,
+                quantity: 0,
+            } as Letter;
+            if (isVerticalPlacement) temporaryBoard[i][iterationPosition] = letter;
+            else temporaryBoard[iterationPosition][i] = letter;
+            letterPosition++;
+        }
+        this.gameContext.board.next(temporaryBoard);
     }
 
     bonusConditions(posX: number, posY: number, canvasX: number, canvasY: number) {

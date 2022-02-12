@@ -11,6 +11,7 @@ import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { Letter } from './Alphabet';
 import { Board, GameContextService } from './game-context.service';
+import { GridService } from './grid.service';
 
 type Token = number;
 
@@ -34,7 +35,7 @@ export class CommunicationService {
 
     private loserId: string | undefined = undefined;
 
-    constructor(public gameContextService: GameContextService, httpClient: HttpClient, private router: Router) {
+    constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         this.listenRooms();
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('error', (e) => this.handleError(e));
@@ -112,6 +113,7 @@ export class CommunicationService {
 
     place(letters: string, position: string) {
         this.gameContextService.tempUpdateRack(letters);
+        this.gridService.tempUpdateBoard(letters, position);
         this.gameSocket?.emit('place-letters', letters, position);
     }
 
