@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ModeServiceService } from '@app/services/mode-service.service';
 
 @Component({
     selector: 'app-main-page',
@@ -10,7 +11,7 @@ export class MainPageComponent {
         {
             route: '/classique',
             toolTip: 'Une partie de Scrabble avec les règles standards.',
-            texte: 'Mode classique',
+            texte: 'Mode Classique',
         },
         {
             route: '/2990',
@@ -19,4 +20,5 @@ export class MainPageComponent {
         },
         { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores' },
     ];
+    constructor(public mode: ModeServiceService) {}
 }
