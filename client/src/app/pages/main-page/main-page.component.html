@@ -15,7 +15,7 @@
     </div>
 
     <div class="vertical">
-        <img class="logo" src="assets/logo.svg" alt="Scrabble">
+        <img class="logo" src="assets/logo.svg" alt="Scrabble" />
         <button
             mat-raised-button
             *ngFor="let champ of boutonMainPage"
@@ -23,6 +23,7 @@
             matTooltip="{{ champ.toolTip }}"
             matTooltipPosition="right"
             routerLink="{{ champ.route }}"
+            (click)="mode.appendMode(champ.texte)"
         >
             {{ champ.texte }}
         </button>

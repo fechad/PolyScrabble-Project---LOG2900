@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
+import { ModeServiceService } from '@app/services/mode-service.service';
 import { CountdownComponent } from 'ngx-countdown';
 
 @Component({
@@ -10,9 +11,7 @@ import { CountdownComponent } from 'ngx-countdown';
 })
 export class InfosBoxComponent implements AfterViewInit {
     @ViewChild('countdown') cd: CountdownComponent;
-
-    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {}
-
+    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService, public mode: ModeServiceService) {}
     ngAfterViewInit(): void {
         this.reset();
         this.gameContextService.isMyTurn.asObservable().subscribe(() => {
