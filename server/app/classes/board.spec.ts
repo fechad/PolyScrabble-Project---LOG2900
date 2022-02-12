@@ -24,7 +24,7 @@ describe('Board', () => {
         word = 'test';
     });
 
-    it('should create 165 tiles', (done) => {
+    it('should create 225 tiles', (done) => {
         const expectedCount = BOARD_LENGTH * BOARD_LENGTH;
         assert(board.board !== undefined);
         let count = 0;
@@ -191,75 +191,6 @@ describe('Board', () => {
         assert(contacts[1][2] === INVALID);
         done();
     });
-
-    it('should get the attempted word', (done) => {
-        let expectedWord = 'h;4;5;test';
-        let positionArray = ['e', '6', 'h'];
-        let contacts = [[INVALID]];
-        let words = board['getWords'](word, positionArray, contacts);
-        assert(words.length === 1);
-        assert(words[0] === expectedWord);
-
-        positionArray = ['e', '8', 'v'];
-        expectedWord = 'v;4;7;test';
-        contacts = [[INVALID]];
-        words = board['getWords'](word, positionArray, contacts);
-        assert(words.length === 1);
-        assert(words[0] === expectedWord);
-
-        board.board[7][7].setLetter('a');
-        expectedWord = 'h;7;5;teast';
-        positionArray = ['h', '6', 'h'];
-        contacts = [[INVALID]];
-        words = board['getWords'](word, positionArray, contacts);
-        assert(words.length === 1);
-        assert(words[0] === expectedWord);
-
-        expectedWord = 'v;4;7;tesat';
-        positionArray = ['e', '8', 'v'];
-        contacts = [[INVALID]];
-        words = board['getWords'](word, positionArray, contacts);
-        assert(words.length === 1);
-        assert(words[0] === expectedWord);
-        done();
-    });
-
-    it('should get the words by contact', (done) => {
-        board.board[7][6].setLetter('i');
-        board.board[7][7].setLetter('a');
-        board.board[9][6].setLetter('s');
-        board.board[9][7].setLetter('t');
-
-        let expectedWord = 'h;8;5;test';
-        let expectedWord1 = 'v;7;6;ies';
-        let expectedWord2 = 'v;7;7;ast';
-        let positionArray = ['i', '6', 'h'];
-        let contacts = [
-            [8, 6, 1],
-            [8, 7, 2],
-        ];
-        let words = board['getWords'](word, positionArray, contacts);
-        assert(words.length === 3);
-        assert(words[0] === expectedWord);
-        assert(words[1] === expectedWord1);
-        assert(words[2] === expectedWord2);
-
-        expectedWord = 'v;6;5;test';
-        expectedWord1 = 'h;7;5;eia';
-        expectedWord2 = 'h;9;5;tst';
-        positionArray = ['g', '6', 'v'];
-        contacts = [
-            [7, 5, 1],
-            [9, 5, 3],
-        ];
-        words = board['getWords'](word, positionArray, contacts);
-        assert(words.length === 3);
-        assert(words[0] === expectedWord);
-        assert(words[1] === expectedWord1);
-        assert(words[2] === expectedWord2);
-        done();
-    });
-
     it('should change newly placed word', (done) => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');

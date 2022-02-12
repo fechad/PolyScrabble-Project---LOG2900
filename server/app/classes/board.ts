@@ -1,5 +1,6 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { SyntaxValidator } from '@app/services/syntax-validator';
+import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
@@ -14,6 +15,7 @@ const BOARD_PLACEMENT_DELAY = 3000; // ms
 export class Board {
     board: GameTile[][];
     private syntaxValidator: SyntaxValidator;
+    private wordGetter: WordGetter;
 
     constructor(private dictionnary: DictionnaryService) {
         this.syntaxValidator = new SyntaxValidator();
@@ -28,6 +30,7 @@ export class Board {
         this.initList(Multipliers.MULT_WORDS_2, 1, 2);
         this.initList(Multipliers.MULT_LETTERS_3, 3);
         this.initList(Multipliers.MULT_LETTERS_2, 2);
+        this.wordGetter = new WordGetter(this.board);
     }
 
     async placeWord(word: string, position: string): Promise<number> {
@@ -42,9 +45,10 @@ export class Board {
         if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
         const contacts = this.getContacts(word.length, positionArray);
         if (contacts.length === 0) throw new Error('Placement invalide vous devez toucher un autre mot');
-        const words = this.getWords(word, positionArray, contacts);
+        const words = this.wordGetter.getWords(word, positionArray, contacts);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
+        this.printBoard();
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
@@ -89,77 +93,6 @@ export class Board {
                 this.board[currentRow + i][currentCol].newlyPlaced = false;
             }
         }
-    }
-
-    private getWords(word: string, position: string[], contacts: number[][]): string[] {
-        const words: string[] = [];
-        const currentRow = position[0].charCodeAt(0) - A_ASCII;
-        const currentCol = parseInt(position[1], 10) - 1;
-
-        // get attempted word
-        words.push(this.getWord(currentRow, currentCol, word, position[2] === 'h', position[2]));
-
-        // get words by contact
-        if (contacts[0][0] !== INVALID) {
-            for (const contact of contacts) {
-                const wordStart = position[2] === 'h' ? 'v' : 'h';
-                words.push(this.getWord(contact[0], contact[1], word, position[2] === 'v', wordStart, contact[2]));
-            }
-        }
-        return words;
-    }
-
-    private getWord(row: number, col: number, attemptedWord: string, horizontal: boolean, word: string, letterPlace?: number): string {
-        const referenceRow = row;
-        const referenceCol = col;
-
-        if (horizontal) {
-            while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
-        } else {
-            while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
-        }
-        word += ';' + row.toString() + ';' + col.toString() + ';';
-        const letters = this.getLetters(row, referenceRow, col, referenceCol, attemptedWord, horizontal, letterPlace);
-        return (word += letters);
-    }
-
-    private getLetters(
-        row: number,
-        refRow: number,
-        col: number,
-        refCol: number,
-        testedWord: string,
-        horizontal: boolean,
-        letterPlace?: number,
-    ): string {
-        let letterCount = 0;
-        let letters = '';
-        while (col < BOARD_LENGTH && row < BOARD_LENGTH) {
-            if (
-                letterPlace === undefined &&
-                (letterCount < testedWord.length || (horizontal ? !this.board[row][col + 1].empty : !this.board[row + 1][col].empty))
-            ) {
-                if (this.board[row][col].empty) {
-                    letters += testedWord.charAt(letterCount);
-                    letterCount++;
-                } else {
-                    letters += this.board[row][col].getChar();
-                }
-            } else if (!this.board[row][col].empty || (col <= refCol && row <= refRow)) {
-                if (!this.board[row][col].empty) {
-                    letters += this.board[row][col].getChar();
-                } else if (row === refRow && col === refCol) {
-                    if (letterPlace !== undefined && letterPlace !== INVALID) {
-                        letters += testedWord.charAt(letterPlace);
-                    }
-                }
-            } else {
-                break;
-            }
-            if (horizontal) col++;
-            else row++;
-        }
-        return letters;
     }
 
     private getContacts(wordLength: number, position: string[]): number[][] {
@@ -247,6 +180,22 @@ export class Board {
     private initList(array: number[][], multLetter: number, multWord?: number) {
         for (const position of array) {
             this.board[position[0]][position[1]] = new GameTile(multLetter, multWord);
+        }
+    }
+
+    // only for debug purpose
+    private printBoard() {
+        for (const row of this.board) {
+            for (const tile of row) {
+                if (!tile.empty) {
+                    process.stdout.write(`${tile.getChar().toUpperCase()} `);
+                } else {
+                    process.stdout.write(
+                        tile.wordMultiplier !== 1 ? `x${tile.wordMultiplier}` : tile.multiplier !== 1 ? `${tile.multiplier} ` : '  ',
+                    );
+                }
+            }
+            console.log();
         }
     }
 }
