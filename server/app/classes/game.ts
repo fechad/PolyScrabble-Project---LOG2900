@@ -52,9 +52,6 @@ export class Game {
 
     async placeLetters(letters: string, position: string, playerId: PlayerId) {
         if (this.checkTurn(playerId, false)) {
-            // TODO: make verifications (probably return game-error)
-            // TODO: calculate points
-            // TODO: emit the result
             const response = await this.board.placeWord(letters, position);
             if (!(response instanceof Error)) {
                 console.log(response);
