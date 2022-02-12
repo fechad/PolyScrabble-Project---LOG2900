@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Parameters } from './parameters';
 
-export type Player = { name: string; id: PlayerId };
+export type Player = { name: string; id: PlayerId; connected: boolean };
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -22,6 +22,7 @@ export class Room extends EventEmitter {
         this.mainPlayer = {
             id: playerId,
             name: playerName,
+            connected: true,
         };
         this.name = `Partie de ${playerName}`;
     }
@@ -36,18 +37,22 @@ export class Room extends EventEmitter {
         if (this.otherPlayer !== undefined) {
             return Error('already 2 players in the game');
         }
-        this.otherPlayer = { id: playerId, name: playerName };
+        this.otherPlayer = { id: playerId, name: playerName, connected: true };
         this.emit('update-room');
         return undefined;
     }
 
     quit(mainPlayer: boolean) {
-        if (mainPlayer) {
+        if (mainPlayer && !this.started) {
             this.emit('kick');
-        } else {
+        } else if (!this.started) {
             this.otherPlayer = undefined;
-            this.emit('update-room');
+        } else if (mainPlayer) {
+            this.mainPlayer.connected = false;
+        } else if (this.otherPlayer) {
+            this.otherPlayer.connected = false;
         }
+        this.emit('update-room');
     }
 
     start() {

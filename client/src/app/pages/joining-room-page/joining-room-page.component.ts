@@ -26,6 +26,8 @@ export class JoiningRoomPageComponent {
         this.dialog.open(JoinSetupDialogComponent, {
             data: {
                 room: room.id,
+                name: room.mainPlayer.name,
+                dictionnary: this.dictionnaries ? this.dictionnaries[room.parameters?.dictionnary || 0]?.name : '…',
             },
         });
     }

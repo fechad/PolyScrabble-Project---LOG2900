@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
+import { Player } from '@app/classes/room';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Letter } from './Alphabet';
-import { Player } from './communication.service';
 
 const BOARD_LENGTH = 15;
 export type Tile = Letter | null;

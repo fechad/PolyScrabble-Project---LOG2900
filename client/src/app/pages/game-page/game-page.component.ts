@@ -27,7 +27,11 @@ export class GamePageComponent {
         public communicationService: CommunicationService,
         public dialog: MatDialog,
         public gameContextService: GameContextService,
-    ) {}
+    ) {
+        this.communicationService.selectedRoom.subscribe(async (room) => {
+            if (room === undefined) await this.router.navigate(['/home']);
+        });
+    }
 
     helpInfo() {
         this.dialog.open(HelpInfoComponent);

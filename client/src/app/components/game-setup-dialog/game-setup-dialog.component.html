@@ -37,7 +37,7 @@
                     </div>
                     <div class="col-md-10">
                         <label>Choix du dictionnaire: </label>
-                        <select id="dictionaries" name="dictionary" formControlName="dictionary" class="form-control">
+                        <select id="dictionaries" name="dictionnary" formControlName="dictionnary" class="form-control">
                             <option [ngValue]="dictionnary.id" *ngFor="let dictionnary of communicationService.dictionnaries | async">
                                 {{ dictionnary.name }}
                             </option>
