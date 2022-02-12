@@ -29,24 +29,18 @@ export class Reserve {
     }
 
     updateReserve(unwantedLetters: string, isMainPlayer: boolean) {
-        let index;
-        if (isMainPlayer) {
-            index = MAIN_PLAYER;
-        } else {
-            index = OTHER_PLAYER;
-        }
-        const temporaryRack: Letter[] = [];
-        for (const unwantedLetter of unwantedLetters.split('')) {
-            let removedElement = false;
-            for (const letter of this.letterRacks[index]) {
-                if (unwantedLetter === letter.name.toLowerCase() && !removedElement) {
-                    this.reserve.push(letter);
-                    removedElement = true;
-                } else {
-                    temporaryRack.push(letter);
+        const index = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
+
+        for (const unwantedLetter of unwantedLetters) {
+            const listLength = this.letterRacks[index].length - 1;
+            for (let i = 0; i <= listLength; i++) {
+                if (unwantedLetter === this.letterRacks[index][i].name.toLowerCase()) {
+                    this.reserve.push(this.letterRacks[index][i]);
+                    this.letterRacks[index][i] = this.letterRacks[index][listLength];
+                    this.letterRacks[index].pop();
+                    break;
                 }
             }
-            this.letterRacks[index] = temporaryRack;
         }
         this.letterRacks[index] = this.letterRacks[index].concat(this.drawLetters(unwantedLetters.length));
     }
