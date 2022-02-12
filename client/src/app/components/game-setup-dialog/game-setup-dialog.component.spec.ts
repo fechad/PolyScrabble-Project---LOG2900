@@ -9,22 +9,28 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication.service';
 import { GameSetupDialogComponent } from './game-setup-dialog.component';
 
 const dialogMock = {
-    close: () => {},
+    close: () => {
+        return;
+    },
 };
 
 describe('GameSetupDialogComponent', () => {
     let component: GameSetupDialogComponent;
     let fixture: ComponentFixture<GameSetupDialogComponent>;
     let router: jasmine.SpyObj<Router>;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['createRoom']);
         await TestBed.configureTestingModule({
             declarations: [GameSetupDialogComponent],
             providers: [
+                { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: Router, useValue: router },
                 { provide: FormBuilder, useClass: FormBuilder },
                 { provide: MatDialogRef, useValue: dialogMock },
@@ -82,20 +88,15 @@ describe('GameSetupDialogComponent', () => {
     it('when form is valid dialog should close', async () => {
         const playerName = component.gameParametersForm.controls.playerName;
         playerName.setValue('Test');
-        const spyOnCreateRoom = spyOn(component.communicationService, 'createRoom');
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
         await component.onSubmit();
-        expect(spyOnCreateRoom).toHaveBeenCalled();
         expect(closeDialogSpy).toHaveBeenCalled();
     });
 
     it('when form is valid player should be redirected to waiting-room', async () => {
         const playerName = component.gameParametersForm.controls.playerName;
         playerName.setValue('Test');
-        const spyOnCreateRoom = spyOn(component.communicationService, 'createRoom');
-        expect(component.gameParametersForm.valid).toBeTruthy();
         await component.onSubmit();
-        expect(spyOnCreateRoom).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalled();
     });
 

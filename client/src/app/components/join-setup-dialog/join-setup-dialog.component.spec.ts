@@ -22,7 +22,6 @@ describe('JoinSetupDialogComponent', () => {
     let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;
     // let dialogRef: MatDialogRef<JoinSetupDialogComponent>;
-    let matDialogData: typeof MAT_DIALOG_DATA;
     let communicationServiceSpy: SpyObj<CommunicationService>;
     let router: jasmine.SpyObj<Router>;
 
@@ -36,7 +35,7 @@ describe('JoinSetupDialogComponent', () => {
                 { provide: MatDialogRef, useValue: dialogMock },
                 FormBuilder,
                 { provide: Router, useValue: router },
-                { provide: MAT_DIALOG_DATA, useValue: matDialogData },
+                { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
         }).compileComponents();
 
@@ -45,7 +44,7 @@ describe('JoinSetupDialogComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinSetupDialogComponent);
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['joinRoom']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['rooms'], ['joinRoom']);
         component = fixture.componentInstance;
         component.joiningRoomForm = new FormGroup({
             secondPlayerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
