@@ -8,6 +8,8 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { GridService } from '@app/services/grid.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { of } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
@@ -25,8 +27,8 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent],
-            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule],
-            providers: [{ provide: CommunicationService }, { provide: MatDialog, useClass: MatDialogMock }],
+            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule, FontAwesomeModule],
+            providers: [{ provide: CommunicationService }, { provide: MatDialog, useClass: MatDialogMock }, { provide: GridService, usevalue: {} }],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
         const router = TestBed.inject(Router);
@@ -37,15 +39,6 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should call quitGame() when quit-game button clicked ', async () => {
-        const quitGameSpy = spyOn(component, 'quitGame').and.callThrough();
-        const button = fixture.debugElement.nativeElement.querySelector('#quit-game');
-        button.click();
-        fixture.whenStable().then(() => {
-            expect(quitGameSpy).toHaveBeenCalled();
-        });
     });
 
     it('should call openConfirmation() when quit-game button clicked ', fakeAsync(() => {

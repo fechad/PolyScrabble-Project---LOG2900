@@ -30,10 +30,13 @@ export class ChatBoxComponent {
     syntaxIsValid: boolean = true;
     commandStructure: string[] = [];
     help: string[] = [
-        'Voici ce que vous pouvez faire:',
-        '!placer <ligne><colonne>[(h|v)] <lettres>',
-        'ex: !placer g10v abc placera verticalement les lettres abc verticalement',
-        'à partir de la position g10',
+        'Voici ce que vous pouvez faire: \n' +
+            '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
+            'ex: !placer g10v abc placera les lettres\n' +
+            'abc verticalement à partir de la position g10\n' +
+            '\n!passer permet de passer votre tour\n' +
+            '\n!échanger permet changer vos lettres\n' +
+            'ex: !échanger abc',
     ];
     myId: string | undefined;
 
@@ -99,14 +102,14 @@ export class ChatBoxComponent {
             ) {
                 if (this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MIN_LENGTH) {
                     if (this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1-9]/g)) {
-                        this.communicationService.placer(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
+                        this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
                     }
                 } else if (
                     this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MAX_LENGTH &&
                     this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1]/g) &&
                     this.commandStructure[POSITION_BLOCK_INDEX][2].match(/[0-5]/g)
                 ) {
-                    this.communicationService.placer(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
+                    this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
                 }
             } else {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
@@ -125,7 +128,7 @@ export class ChatBoxComponent {
         if (this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].match(/[^a-z*]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
-            this.communicationService.echanger(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
+            this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         } else {
             error = new Error('Ces lettres ne sont pas dans le chevalet');
         }

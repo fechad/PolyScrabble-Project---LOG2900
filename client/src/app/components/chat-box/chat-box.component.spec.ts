@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { alphabet, Letter } from '@app/services/Alphabet';
 import { ChatBoxComponent } from './chat-box.component';
 
@@ -22,7 +23,10 @@ describe('ChatBoxComponent', () => {
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [ChatBoxComponent],
-            providers: [{ provide: ElementRef, useValue: elemRef }],
+            providers: [
+                { provide: ElementRef, useValue: elemRef },
+                { provide: Router, useValue: {} },
+            ],
         }).compileComponents();
     });
 

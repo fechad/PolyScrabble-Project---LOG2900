@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCard } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { CommunicationService } from '@app/services/communication.service';
 import { of } from 'rxjs';
@@ -21,6 +22,7 @@ describe('JoiningRoomPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [JoiningRoomPageComponent],
+            imports: [MatCard],
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialog, useValue: MatDialogMock },
@@ -40,7 +42,7 @@ describe('JoiningRoomPageComponent', () => {
     // });
 
     // TO-DO: mock class Room
-    // fit('openDialog should open dialog from component', () => {
+    // it('openDialog should open dialog from component', () => {
     //     const testRoom = new Room();
     //     const openDialogSpy = spyOn(component.dialog, 'open');
     //     component.openDialog(testRoom);

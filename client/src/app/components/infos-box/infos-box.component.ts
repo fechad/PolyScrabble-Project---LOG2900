@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
-import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
+import { CountdownComponent } from 'ngx-countdown';
 
 @Component({
     selector: 'app-infos-box',
@@ -20,13 +20,6 @@ export class InfosBoxComponent implements AfterViewInit {
         });
     }
 
-    handleEvent(e: CountdownEvent) {
-        if (this.gameContextService.isMyTurn.value) {
-            if (e.action === 'done') {
-                this.communicationService.resetTimer();
-            }
-        }
-    }
     reset() {
         this.cd.restart();
         this.cd.begin();

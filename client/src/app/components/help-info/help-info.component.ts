@@ -7,7 +7,7 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./help-info.component.scss'],
 })
 export class HelpInfoComponent implements OnInit {
-    constructor(private dialogRef: MatDialogRef<HelpInfoComponent>) {}
+    constructor(public dialogRef: MatDialogRef<HelpInfoComponent>) {}
 
     ngOnInit(): void {}
 

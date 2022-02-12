@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
@@ -11,7 +12,9 @@ import { environment } from 'src/environments/environment';
 import { Letter } from './Alphabet';
 import { Board, GameContextService } from './game-context.service';
 
-export type Player = { name: string; id: PlayerId; score: number };
+type Token = number;
+
+const IDS_KEY = 'ids';
 
 @Injectable({
     providedIn: 'root',
@@ -22,6 +25,8 @@ export class CommunicationService {
     readonly dictionnaries: Promise<Dictionnary[]>;
 
     private myId: PlayerId | undefined;
+    private token: Token;
+
     private readonly waitingRoomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
     private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
     private roomSocket: Socket | undefined = undefined;
@@ -29,15 +34,26 @@ export class CommunicationService {
 
     private loserId: string | undefined = undefined;
 
-    constructor(public gameContextService: GameContextService, httpClient: HttpClient) {
+    constructor(public gameContextService: GameContextService, httpClient: HttpClient, private router: Router) {
         this.listenRooms();
-        this.mainSocket.on('join', (room, token) => this.joinRoomHandler(room, token));
+        this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
-        this.mainSocket.on('id', (id: string) => {
-            this.myId = id;
-        });
         this.dictionnaries = httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
+        const idsString = sessionStorage.getItem(IDS_KEY) || '';
+        const ids = idsString.split(';').filter((s) => s.length > 0);
+        if (ids.length > 0) {
+            this.myId = ids.pop();
+            sessionStorage.setItem(IDS_KEY, ids.join(';'));
+        }
+        this.mainSocket.on('id', (id: PlayerId, token: Token) => {
+            // TODO: add token with id to prevent faking identity
+            this.myId = id;
+            this.token = token;
+            const filteredIds = ids.filter((ident) => ident !== id);
+            filteredIds.push(id);
+            sessionStorage.setItem(IDS_KEY, filteredIds.join(';'));
+        });
     }
 
     isMainPlayer() {
@@ -82,8 +98,7 @@ export class CommunicationService {
     }
 
     sendMessage(message: string) {
-        this.gameSocket?.emit('message', { emitter: this.getId(), text: message });
-        // this.msgCount++;
+        this.gameSocket?.emit('message', message);
         this.gameContextService.addMessage(message, false);
     }
 
@@ -92,29 +107,25 @@ export class CommunicationService {
     }
 
     switchTurn() {
-        this.gameSocket?.emit('switch-turn', this.myId);
+        this.gameSocket?.emit('switch-turn');
     }
 
-    resetTimer() {
-        this.gameSocket?.emit('reset-timer', this.myId);
-    }
-
-    placer(letters: string, position: string) {
+    place(letters: string, position: string) {
         this.gameContextService.tempUpdateRack(letters);
-        this.gameSocket?.emit('place-letters', letters, position, this.myId);
+        this.gameSocket?.emit('place-letters', letters, position);
     }
 
-    echanger(letters: string) {
-        this.gameSocket?.emit('change-letters', letters, this.myId);
+    exchange(letters: string) {
+        this.gameSocket?.emit('change-letters', letters);
     }
+
     getLoserId(): string | undefined {
         return this.loserId;
     }
 
     confirmForfeit() {
-        if (this.selectedRoom.value !== undefined) {
-            this.gameSocket?.emit('confirmForfeit', this.getId());
-        }
+        this.loserId = this.myId;
+        this.gameSocket?.emit('confirm-forfeit', this.loserId);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -174,8 +185,8 @@ export class CommunicationService {
         this.selectedRoom.next(undefined);
     }
 
-    private joinRoomHandler(room: string, token: number) {
-        this.roomSocket = io(`${environment.socketUrl}/rooms/${room}`, { auth: { token } });
+    private joinRoomHandler(roomId: RoomId) {
+        this.roomSocket = io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
             setTimeout("alert('Vous avez été rejeté.');", 1);
@@ -187,12 +198,19 @@ export class CommunicationService {
         });
 
         this.roomSocket.on('join-game', (gameId) => {
-            this.joinGameHandler(gameId, token);
+            this.joinGameHandler(gameId);
         });
     }
 
-    private joinGameHandler(gameId: string, token: number) {
-        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { token } });
+    private joinGameHandler(gameId: string) {
+        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { id: this.myId, token: this.token } });
+
+        this.gameSocket.on('forfeit', (idLoser) => {
+            if (idLoser !== this.myId) {
+                this.router.navigate(['/home']);
+                setTimeout("alert('Votre adversaire a abandonné, vous avez gagné! 👑👑👑');", 1);
+            }
+        });
 
         this.gameSocket.on('turn', (id: PlayerId) => {
             this.gameContextService.setMyTurn(id === this.myId);
@@ -204,7 +222,6 @@ export class CommunicationService {
             this.sendLocalMessage(error);
         });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
-            console.log(rack);
             if (id === this.myId) this.gameContextService.updateRack(rack);
         });
         this.gameSocket.on('players', (players: Player[]) => {
@@ -213,7 +230,6 @@ export class CommunicationService {
             }
         });
         this.gameSocket.on('board', (board: Board) => {
-            console.log(board);
             this.gameContextService.setBoard(board);
         });
         this.gameSocket.on('score', (score: number, player: PlayerId) => {

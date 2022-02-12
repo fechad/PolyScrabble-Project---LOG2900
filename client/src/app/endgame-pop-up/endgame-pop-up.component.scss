@@ -1,0 +1,14 @@
+mat-card {
+    text-align: left;
+    width: 50vh;
+    height: 40vw;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.icone-cancel:hover {
+    cursor: pointer;
+}

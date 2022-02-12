@@ -2,6 +2,7 @@ import { Component, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
+import { EndgamePopUpComponent } from '@app/endgame-pop-up/endgame-pop-up.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
@@ -26,10 +27,18 @@ export class GamePageComponent {
         public communicationService: CommunicationService,
         public dialog: MatDialog,
         public gameContextService: GameContextService,
-    ) {}
+    ) {
+        this.communicationService.selectedRoom.subscribe(async (room) => {
+            if (room === undefined) await this.router.navigate(['/home']);
+        });
+    }
 
     helpInfo() {
         this.dialog.open(HelpInfoComponent);
+    }
+
+    endgamePopUp() {
+        this.dialog.open(EndgamePopUpComponent);
     }
 
     openConfirmation() {
@@ -40,7 +49,7 @@ export class GamePageComponent {
     }
 
     quitGame() {
-        this.router.navigateByUrl('http://localhost:4200/#/home');
+        this.router.navigateByUrl('http://localhost:4200/home');
     }
     skipMyTurn() {
         this.communicationService.switchTurn();

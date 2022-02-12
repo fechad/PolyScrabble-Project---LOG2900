@@ -30,11 +30,10 @@ export class GameSetupDialogComponent implements OnInit {
 
     ngOnInit(): void {
         this.gameParametersForm = this.formBuilder.group({
-            id: [''],
             playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
             minutes: new FormControl(1, [Validators.required]),
             seconds: new FormControl(0, [Validators.required]),
-            dictionary: [''],
+            dictionnary: new FormControl(0, [Validators.required]),
         });
     }
 
@@ -47,7 +46,7 @@ export class GameSetupDialogComponent implements OnInit {
 
         const parameters = new Parameters();
         parameters.timer = this.gameParametersForm.value.minutes * 60 + this.gameParametersForm.value.seconds;
-        parameters.dictionnary = this.gameParametersForm.value.dictionary;
+        parameters.dictionnary = this.gameParametersForm.value.dictionnary;
         const error = parameters.validateParameters();
         if (error !== undefined) {
             console.error(error, parameters, this.gameParametersForm.value);

@@ -22,8 +22,8 @@ describe('Game', () => {
 
     beforeEach(() => {
         players = [
-            { name: 'Bob', id: '0' },
-            { name: 'notBob', id: '1' },
+            { name: 'Bob', id: '0', connected: true },
+            { name: 'notBob', id: '1', connected: true },
         ];
         parameters = new Parameters();
         game = new Game(0, players, parameters, dictionnary);
@@ -48,24 +48,14 @@ describe('Game', () => {
         }, RESPONSE_DELAY);
     });
 
-    it('should get parameters', (done) => {
-        const stub = sinon.stub();
-        game.eventEmitter.on('parameters', stub);
-        game.getParameters();
-        setTimeout(() => {
-            assert(stub.calledWith(parameters));
-            done();
-        }, RESPONSE_DELAY);
-    });
-
     it('should change letters', (done) => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
-        const letters = 'abcd';
+        const letters = game.reserve.letterRacks[0][0].name.toLowerCase() + game.reserve.letterRacks[0][3].name.toLowerCase();
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.changeLetters(letters, '0');
-        assert(stub.calledWith(letters, '0'));
+        game.changeLetters(letters, game.players[0].id);
+        assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
         assert(stubError.notCalled);
         done();
     });
@@ -82,23 +72,34 @@ describe('Game', () => {
         done();
     });
 
-    it('should place letters', (done) => {
+    it('should place letters', async () => {
         const stub = sinon.stub();
-        const position = 'c8h';
-        const letters = 'abcd';
+        const position = 'h7h';
+        const letters = 'test';
         game.eventEmitter.on('score', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(letters, position, '0');
+        await game.placeLetters(letters, position, '0');
         assert(stub.called);
         assert(stubError.notCalled);
-        done();
+    });
+
+    it('should output an error when not placing letters', async () => {
+        const stub = sinon.stub();
+        const position = 'h7h';
+        const letters = 'testaaaaaaaaaaa';
+        game.eventEmitter.on('score', stub);
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        await game.placeLetters(letters, position, '0');
+        assert(stub.notCalled);
+        assert(stubError.called);
     });
 
     it('should not place letters if it is not your turn', (done) => {
         const stub = sinon.stub();
-        const position = 'c8h';
-        const letters = 'abcd';
+        const position = 'h7h';
+        const letters = 'test';
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
@@ -112,12 +113,12 @@ describe('Game', () => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         // eslint-disable-next-line dot-notation
-        game['checkTurn']('0', false);
+        game['checkTurn']('0');
         assert(stubError.notCalled);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         // eslint-disable-next-line dot-notation
-        game['checkTurn']('1', false);
+        game['checkTurn']('1');
         assert(stubError.called);
         done();
     });
@@ -125,10 +126,10 @@ describe('Game', () => {
     it('should skip turn', (done) => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[0].id, false);
+        game.skipTurn(game.players[0].id);
         // eslint-disable-next-line dot-notation
         assert(!game['isPlayer0Turn']);
-        game.skipTurn(game.players[1].id, false);
+        game.skipTurn(game.players[1].id);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
@@ -138,7 +139,7 @@ describe('Game', () => {
     it('should not skip turn if it is not your turn', (done) => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[1].id, false);
+        game.skipTurn(game.players[1].id);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.called);

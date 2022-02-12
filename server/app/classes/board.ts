@@ -30,33 +30,20 @@ export class Board {
         this.initList(Multipliers.MULT_LETTERS_2, 2);
     }
 
-    async placeWord(word: string, position: string): Promise<number | Error> {
+    async placeWord(word: string, position: string): Promise<number> {
         const positionArray = this.syntaxValidator.separatePosition(position);
-        if (!this.isWordInBound(word.length, positionArray)) {
-            return new Error('Placement invalide le mot ne rentre pas dans la grille');
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        if (!this.syntaxValidator.validatePositionSyntax(positionArray)) throw new Error("Erreur de syntaxe dans le placement d'un mot");
+        if (!this.isWordInBound(word.length, positionArray)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
         await new Promise((resolve) => {
             setTimeout(() => {
                 resolve(null);
             }, BOARD_PLACEMENT_DELAY);
         });
-
-        if (!this.syntaxValidator.validatePositionSyntax(positionArray)) {
-            return new Error("Erreur de syntaxe dans le placement d'un mot");
-        }
-        if (!this.firstWordValidation(word.length, positionArray)) {
-            return new Error('Placement invalide pour le premier mot');
-        }
+        if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
         const contacts = this.getContacts(word.length, positionArray);
-        if (contacts.length === 0) {
-            return new Error('Placement invalide vous devez toucher un autre mot');
-        }
+        if (contacts.length === 0) throw new Error('Placement invalide vous devez toucher un autre mot');
         const words = this.getWords(word, positionArray, contacts);
-        if (!this.dictionnary.validateWords(words)) {
-            return new Error('Un des mots crees ne fait pas partie du dictionnaire');
-        }
+        if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
