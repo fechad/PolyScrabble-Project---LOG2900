@@ -86,4 +86,19 @@ export class GameContextService {
     getRackObs() {
         return this.letterRack.asObservable();
     }
+
+    tempUpdateRack(lettersToChange: string) {
+        const temporaryRack = this.rack.value;
+        for (const unwantedLetter of lettersToChange) {
+            const listLength = temporaryRack.length - 1;
+            for (let i = 0; i <= listLength; i++) {
+                if (unwantedLetter === temporaryRack[i].name.toLowerCase()) {
+                    temporaryRack[i] = temporaryRack[listLength];
+                    temporaryRack.pop();
+                    break;
+                }
+            }
+        }
+        this.rack.next(temporaryRack);
+    }
 }

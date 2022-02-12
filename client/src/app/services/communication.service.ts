@@ -100,6 +100,7 @@ export class CommunicationService {
     }
 
     placer(letters: string, position: string) {
+        this.gameContextService.tempUpdateRack(letters);
         this.gameSocket?.emit('place-letters', letters, position, this.myId);
     }
 
