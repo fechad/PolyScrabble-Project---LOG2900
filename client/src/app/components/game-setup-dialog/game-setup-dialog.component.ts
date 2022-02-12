@@ -20,10 +20,6 @@ export class GameSetupDialogComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 
-    getDialog() {
-        return this.dialogRef;
-    }
-
     closeDialog(): void {
         this.dialogRef.close();
     }

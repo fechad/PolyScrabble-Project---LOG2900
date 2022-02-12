@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +12,23 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSetupDialogComponent } from './game-setup-dialog.component';
+
+export class ParametersMock {
+    timer: number = 0;
+    dictionnary: number = 0;
+    gameType: 'solo';
+    difficulty?: undefined;
+
+    validateParameters() {
+        if (this.timer <= 0 || this.timer % 30 !== 0 || this.timer > 600) {
+            return Error('Timer should be divisible by 30 and be between 0 and 600');
+        }
+        if (this.gameType === 'solo' && this.difficulty === undefined) {
+            return Error('Difficulty is needed for Solo mode');
+        }
+        return;
+    }
+}
 
 const dialogMock = {
     close: () => {
@@ -36,7 +54,15 @@ describe('GameSetupDialogComponent', () => {
                 { provide: MatDialogRef, useValue: dialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
-            imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule, MatCardModule, MatToolbarModule, MatIconModule],
+            imports: [
+                RouterTestingModule.withRoutes(routes),
+                HttpClientModule,
+                HttpClientTestingModule,
+                AppRoutingModule,
+                MatCardModule,
+                MatToolbarModule,
+                MatIconModule,
+            ],
         }).compileComponents();
 
         router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
@@ -100,12 +126,11 @@ describe('GameSetupDialogComponent', () => {
         expect(router.navigate).toHaveBeenCalled();
     });
 
-    // TO-DO: test console.error line
-    // it('should console error when error found', async () => {
-    //     const spyOnCreateRoom = spyOn(component.communicationService, 'createRoom');
-    //     expect(spyOnCreateRoom).toHaveBeenCalled();
-    //     const err = new Error();
-    //     await component.onSubmit();
-    //     expect(console.error).toHaveBeenCalledWith('Some error');
-    // });
+    it('should not close dialog when error found', async () => {
+        const parameters = new ParametersMock();
+        const closeDialogSpy = spyOn(component.dialogRef, 'close');
+        parameters.validateParameters();
+        await component.onSubmit();
+        expect(closeDialogSpy).not.toHaveBeenCalled();
+    });
 });
