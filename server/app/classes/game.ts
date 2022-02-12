@@ -50,13 +50,15 @@ export class Game {
         this.eventEmitter.emit('message', message);
     }
 
-    placeLetters(letters: string, position: string, playerId: PlayerId) {
+    async placeLetters(letters: string, position: string, playerId: PlayerId) {
         if (this.checkTurn(playerId, false)) {
             // TODO: make verifications (probably return game-error)
             // TODO: calculate points
             // TODO: emit the result
-            const response = this.board.placeWord(letters, position);
-            if (typeof response !== typeof Error) {
+            const response = await this.board.placeWord(letters, position);
+            if (!(response instanceof Error)) {
+                console.log(response);
+
                 const board = this.formatSendableBoard();
                 this.eventEmitter.emit('board', board);
                 this.eventEmitter.emit('score', response, playerId);
@@ -70,7 +72,7 @@ export class Game {
 
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId, false)) {
-            this.reserve.updateReserve(letters, this.isPlayer0Turn);
+            this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             if (this.isPlayer0Turn) {
                 this.eventEmitter.emit('rack', this.reserve.letterRacks[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
             } else {

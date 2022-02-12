@@ -142,7 +142,9 @@ export class SocketManager {
 
             socket.on('message', (message: Message) => game.message(message));
             socket.on('change-letters', (letters: string, playerId: PlayerId) => game.changeLetters(letters, playerId));
-            socket.on('place-letters', (letters: string, position: string, playerId: PlayerId) => game.placeLetters(letters, position, playerId));
+            socket.on('place-letters', async (letters: string, position: string, playerId: PlayerId) =>
+                game.placeLetters(letters, position, playerId),
+            );
             socket.on('switch-turn', (playerId: PlayerId) => {
                 game.skipTurn(playerId, false);
             });

@@ -9,6 +9,7 @@ const HALF_LENGTH = 7;
 const WORD_LENGTH_BONUS = 7;
 const BONUS_POINTS = 50;
 const A_ASCII = 'a'.charCodeAt(0);
+const BOARD_PLACEMENT_DELAY = 3000; // ms
 
 export class Board {
     board: GameTile[][];
@@ -29,13 +30,21 @@ export class Board {
         this.initList(Multipliers.MULT_LETTERS_2, 2);
     }
 
-    placeWord(word: string, position: string): number | Error {
+    async placeWord(word: string, position: string): Promise<number | Error> {
         const positionArray = this.syntaxValidator.separatePosition(position);
-        if (!this.syntaxValidator.validatePositionSyntax(positionArray)) {
-            return new Error("Erreur de syntaxe dans le placement d'un mot");
-        }
         if (!this.isWordInBound(word.length, positionArray)) {
             return new Error('Placement invalide le mot ne rentre pas dans la grille');
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(null);
+            }, BOARD_PLACEMENT_DELAY);
+        });
+
+        if (!this.syntaxValidator.validatePositionSyntax(positionArray)) {
+            return new Error("Erreur de syntaxe dans le placement d'un mot");
         }
         if (!this.firstWordValidation(word.length, positionArray)) {
             return new Error('Placement invalide pour le premier mot');

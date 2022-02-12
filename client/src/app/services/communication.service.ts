@@ -199,7 +199,7 @@ export class CommunicationService {
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
         });
-        this.gameSocket.on('turn-error', (error: string) => {
+        this.gameSocket.on('game-error', (error: string) => {
             this.sendLocalMessage(error);
         });
         this.gameSocket.on('rack', (rack: Letter[], id: PlayerId) => {
@@ -212,6 +212,7 @@ export class CommunicationService {
             }
         });
         this.gameSocket.on('board', (board: Board) => {
+            console.log(board);
             this.gameContextService.setBoard(board);
         });
         this.gameSocket.on('score', (score: number, player: PlayerId) => {

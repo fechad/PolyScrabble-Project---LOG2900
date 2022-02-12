@@ -28,21 +28,23 @@ export class Reserve {
         return lettersToSend;
     }
 
-    updateReserve(unwantedLetters: string, isMainPlayer: boolean) {
-        const index = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
+    updateReserve(lettersToChange: string, isMainPlayer: boolean, putBack: boolean) {
+        const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
 
-        for (const unwantedLetter of unwantedLetters) {
-            const listLength = this.letterRacks[index].length - 1;
+        for (const unwantedLetter of lettersToChange) {
+            const listLength = this.letterRacks[playerIndex].length - 1;
             for (let i = 0; i <= listLength; i++) {
-                if (unwantedLetter === this.letterRacks[index][i].name.toLowerCase()) {
-                    this.reserve.push(this.letterRacks[index][i]);
-                    this.letterRacks[index][i] = this.letterRacks[index][listLength];
-                    this.letterRacks[index].pop();
+                if (unwantedLetter === this.letterRacks[playerIndex][i].name.toLowerCase()) {
+                    if (putBack) {
+                        this.reserve.push(this.letterRacks[playerIndex][i]);
+                    }
+                    this.letterRacks[playerIndex][i] = this.letterRacks[playerIndex][listLength];
+                    this.letterRacks[playerIndex].pop();
                     break;
                 }
             }
         }
-        this.letterRacks[index] = this.letterRacks[index].concat(this.drawLetters(unwantedLetters.length));
+        this.letterRacks[playerIndex] = this.letterRacks[playerIndex].concat(this.drawLetters(lettersToChange.length));
     }
 
     private setRacks() {
