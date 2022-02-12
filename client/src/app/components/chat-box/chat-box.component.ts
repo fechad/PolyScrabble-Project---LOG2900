@@ -57,6 +57,7 @@ export class ChatBoxComponent {
             this.communicationService.sendLocalMessage('Message ne peut contenir du caractère non textuelle autre que !, ? et *');
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
+
             if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
                 const error = this.validateCommand();
                 if (error !== undefined) {
@@ -65,12 +66,14 @@ export class ChatBoxComponent {
             } else {
                 this.communicationService.sendMessage(this.textValue);
             }
+
             this.scrollToBottom();
         }
         this.clearText();
     }
 
     validateCommand(): Error | undefined {
+        if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
         if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.placer();
         if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.echanger();
         if (this.commandStructure[COMMAND_INDEX] === '!passer' && this.commandStructure.length === 1) return this.passer();
@@ -120,11 +123,11 @@ export class ChatBoxComponent {
             this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
 
         if (this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].match(/[^a-z*]/g)) {
-            error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
+            error = new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.echanger(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         } else {
-            error = new Error('Ces lettres ne sont pas dans le rack');
+            error = new Error('Ces lettres ne sont pas dans le chevalet');
         }
         return error;
     }

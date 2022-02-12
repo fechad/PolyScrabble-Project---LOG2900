@@ -30,6 +30,7 @@ describe('ChatBoxComponent', () => {
         fixture = TestBed.createComponent(ChatBoxComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        component.gameContextService.isMyTurn.next(true);
     });
 
     it('should create', () => {
