@@ -22,12 +22,12 @@ export class Game {
     readonly reserve = new Reserve();
     readonly messages: Message[] = [];
     readonly board: Board;
-    private isPlayer0Turn: Boolean;
+    private isPlayer0Turn: boolean;
     private nbOfPlayersReady = 0;
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
-        setTimeout(() => {}, this.parameters.timer);
+        setTimeout(function () {}, this.parameters.timer);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
     }
 

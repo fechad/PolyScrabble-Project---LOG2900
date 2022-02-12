@@ -12,11 +12,11 @@ import { SocketManager } from './socket.controller';
 
 const RESPONSE_DELAY = 100;
 
-async function waitForCommunication(time: number): Promise<void> {
+const waitForCommunication = async (time: number): Promise<void> => {
     return new Promise((resolve) => {
         setTimeout(() => resolve(), time);
     });
-}
+};
 
 describe('SocketManager service tests', () => {
     let service: SocketManager;
@@ -33,6 +33,7 @@ describe('SocketManager service tests', () => {
         // eslint-disable-next-line dot-notation
         service = server['socketManager'];
         service.games.splice(0);
+        // eslint-disable-next-line dot-notation
         service['logins']['users'] = {};
         playersSocket = [ioClient(`${urlString}/`, { forceNew: true }), ioClient(`${urlString}/`, { forceNew: true })];
         broadcastSocket = ioClient(`${urlString}/waitingRoom`, { forceNew: true });
@@ -108,7 +109,9 @@ describe('SocketManager service tests', () => {
         });
         await waitForCommunication(ROOMS_LIST_UPDATE_TIMEOUT + RESPONSE_DELAY);
         connected = true;
-        playersSocket[1].on('join', () => { full = true; });
+        playersSocket[1].on('join', () => {
+            full = true;
+        });
         playersSocket[1].emit('join-room', 0);
         await waitForCommunication(ROOMS_LIST_UPDATE_TIMEOUT + RESPONSE_DELAY);
         await waitForCommunication(ROOMS_LIST_UPDATE_TIMEOUT + RESPONSE_DELAY);
@@ -142,7 +145,7 @@ describe('SocketManager service tests', () => {
         assert(stub2.calledWith('already 2 players in the game'));
     });
 
-    async function createRoom(): Promise<[Socket, Socket]> {
+    const createRoom = async (): Promise<[Socket, Socket]> => {
         const stub = sinon.stub();
         playersSocket[0].on('join', stub);
         const parameters = new Parameters();
@@ -163,10 +166,10 @@ describe('SocketManager service tests', () => {
         roomSocket2.on('join-game', stub);
 
         return [roomSocket, roomSocket2];
-    }
+    };
 
     it('should create a game', async () => {
-        const [roomSocket, _roomSocket2] = await createRoom();
+        const [roomSocket] = await createRoom();
         expect(service.roomsService.rooms.length).to.equal(1);
         roomSocket.emit('start');
         await waitForCommunication(RESPONSE_DELAY);
@@ -174,9 +177,9 @@ describe('SocketManager service tests', () => {
         expect(service.games.length).to.equal(1);
     });
 
-    async function joinGame(): Promise<[Socket, Socket, Socket, Socket]> {
+    const joinGame = async (): Promise<[[Socket, Socket], [Socket, Socket]]> => {
         const [roomSocket, roomSocket2] = await createRoom();
-        
+
         roomSocket.emit('start');
         await waitForCommunication(RESPONSE_DELAY);
         expect(service.games.length).to.equal(1);
@@ -184,15 +187,19 @@ describe('SocketManager service tests', () => {
         const gameSocket = ioClient(`${urlString}/games/0`, { auth: identifiers[0], forceNew: true });
         const gameSocket2 = ioClient(`${urlString}/games/0`, { auth: identifiers[1], forceNew: true });
         await waitForCommunication(RESPONSE_DELAY);
+        // eslint-disable-next-line dot-notation
         service.games[0]['isPlayer0Turn'] = true;
-        
-        return [roomSocket, roomSocket2, gameSocket, gameSocket2];
-    }
+
+        return [
+            [roomSocket, roomSocket2],
+            [gameSocket, gameSocket2],
+        ];
+    };
 
     it('should send and receive a message in game', async () => {
         const message: Message = { text: 'this is a test message', emitter: identifiers[0].id };
 
-        const [_roomSocket, _roomSocket2, gameSocket, gameSocket2] = await joinGame();
+        const [gameSocket, gameSocket2] = (await joinGame())[1];
         const stub = sinon.stub();
         const stub2 = sinon.stub();
         gameSocket.on('message', stub);
@@ -206,8 +213,8 @@ describe('SocketManager service tests', () => {
     });
 
     it('should skip turn', async () => {
-        const [_roomSocket, _roomSocket2, gameSocket, gameSocket2] = await joinGame();
-        
+        const [gameSocket, gameSocket2] = (await joinGame())[1];
+
         const stub = sinon.stub();
         const stub2 = sinon.stub();
         gameSocket.on('turn', stub);
@@ -221,7 +228,7 @@ describe('SocketManager service tests', () => {
     });
 
     it('should send an error on wrong player skipping turn', async () => {
-        const [_roomSocket, _roomSocket2, gameSocket, gameSocket2] = await joinGame();
+        const [gameSocket, gameSocket2] = (await joinGame())[1];
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
@@ -232,6 +239,7 @@ describe('SocketManager service tests', () => {
         gameSocket2.emit('switch-turn');
         await waitForCommunication(RESPONSE_DELAY);
         assert(stub.called, 'not called error');
+        // eslint-disable-next-line dot-notation
         assert(service.games[0]['isPlayer0Turn'], 'wrong turn');
         assert(stub2.notCalled, 'did not call turn');
         assert(stub3.notCalled, 'did not call turn for other player');
@@ -239,8 +247,8 @@ describe('SocketManager service tests', () => {
 
     it('should change letters', async () => {
         const letters = 'abcd';
-        
-        const [_roomSocket, _roomSocket2, gameSocket, gameSocket2] = await joinGame();
+
+        const [gameSocket, gameSocket2] = (await joinGame())[1];
         const stub = sinon.stub();
         const stub2 = sinon.stub();
         gameSocket.on('rack', stub);
@@ -257,7 +265,7 @@ describe('SocketManager service tests', () => {
         const position = 'h7h';
         const expectedPoints = 6;
 
-        const [_roomSocket, _roomSocket2, gameSocket, gameSocket2] = await joinGame();
+        const [gameSocket, gameSocket2] = (await joinGame())[1];
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();

@@ -69,7 +69,7 @@ export class SocketManager {
                 next(Error('Invalid room number'));
                 return;
             }
-            socket.data.roomIdx = idx;
+            socket.data.room = this.roomsService.rooms[idx];
 
             const { id, token } = socket.handshake.auth;
             if (this.logins.verify(id, token)) {
@@ -79,9 +79,12 @@ export class SocketManager {
             }
         });
         rooms.on('connect', (socket) => {
-            const room = this.roomsService.rooms[socket.data.roomIdx];
+            const room = socket.data.room;
             const isMainPlayer = room.mainPlayer.id === socket.handshake.auth.id;
             socket.join(`room-${room.id}`);
+
+            if (isMainPlayer) room.mainPlayer.connected = true;
+            else room.getOtherPlayer().connected = true;
 
             const events: [string, () => void][] = [['update-room', () => socket.emit('update-room', room)]];
             if (!isMainPlayer) events.push(['kick', () => socket.emit('kick')]);
@@ -99,10 +102,22 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                if (isMainPlayer) {
-                    this.roomsService.rooms.splice(socket.data.roomIdx, 1);
+                if (room.isStarted()) {
+                    this.roomsService.pendDeletion(room.id, () => {
+                        const NOT_FOUND = -1;
+
+                        const idx = this.games.findIndex((game) => game.gameId === room.id);
+                        if (idx !== NOT_FOUND) {
+                            this.games.splice(idx, 1);
+                        }
+                        events.forEach(([name, handler]) => room.off(name, handler));
+                    });
+                } else {
+                    if (isMainPlayer) {
+                        this.roomsService.remove(room.id);
+                    }
+                    events.forEach(([name, handler]) => room.off(name, handler));
                 }
-                events.forEach(([name, handler]) => room.off(name, handler));
             });
 
             socket.emit('update-room', room);
@@ -135,6 +150,10 @@ export class SocketManager {
             socket.join(`game-${game.gameId}`);
 
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
+
+            for (const message of game.messages) {
+                socket.emit('message', message);
+            }
 
             const events: string[] = ['message', 'score', 'turn', 'parameters', 'game-error', 'players', 'forfeit', 'board'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);

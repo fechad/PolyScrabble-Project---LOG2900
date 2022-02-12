@@ -20,7 +20,6 @@
             <countdown
                 #countdown
                 [config]="{ format: 'mm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
-                (event)="handleEvent($event)"
             ></countdown>
         </div>
         <p>lettres restantes en reserve</p>

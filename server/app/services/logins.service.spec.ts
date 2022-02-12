@@ -40,21 +40,24 @@ describe('Logins service', () => {
         assert(loginsService.verify(id, token));
         loginsService.logout(id);
         assert(!loginsService.verify(id, token));
-        const [newId, newToken] = loginsService.login(id, `${SOCKET_ID}-bis`);
+        const [newId, newToken] = loginsService.login(id, `${SOCKET_ID}-bis2`);
         expect(newId).to.equal(id);
         assert(loginsService.verify(id, newToken));
         assert(!loginsService.verify(id, token));
     });
-    it('should not allow reconnections after 5s', () => {
+    it('should not allow reconnections after 5s', (done) => {
         const [id, token] = loginsService.login(undefined, SOCKET_ID);
         assert(loginsService.verify(id, token));
         loginsService.logout(id);
         assert(!loginsService.verify(id, token));
         setTimeout(() => {
-            const [newId, newToken] = loginsService.login(id, `${SOCKET_ID}-bis`);
+            const [newId, newToken] = loginsService.login(id, `${SOCKET_ID}-bis3`);
             expect(newId).to.not.equal(id);
-            assert(loginsService.verify(id, newToken));
+            assert(loginsService.verify(newId, newToken));
             assert(!loginsService.verify(id, token));
+            assert(!loginsService.verify(id, newToken));
+            assert(!loginsService.verify(newId, token));
+            done();
         }, 5100);
     });
 });

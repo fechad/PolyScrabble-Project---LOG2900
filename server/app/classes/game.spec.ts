@@ -22,8 +22,8 @@ describe('Game', () => {
 
     beforeEach(() => {
         players = [
-            { name: 'Bob', id: '0' },
-            { name: 'notBob', id: '1' },
+            { name: 'Bob', id: '0', connected: true },
+            { name: 'notBob', id: '1', connected: true },
         ];
         parameters = new Parameters();
         game = new Game(0, players, parameters, dictionnary);
@@ -82,6 +82,19 @@ describe('Game', () => {
         game.placeLetters(letters, position, '0');
         assert(stub.called);
         assert(stubError.notCalled);
+        done();
+    });
+
+    it('should output an error when not placing letters', (done) => {
+        const stub = sinon.stub();
+        const position = 'h7h';
+        const letters = 'testaaaaaaaaaaa';
+        game.eventEmitter.on('score', stub);
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        game.placeLetters(letters, position, '0');
+        assert(stub.notCalled);
+        assert(stubError.called);
         done();
     });
 
