@@ -107,15 +107,18 @@ export class CommunicationService {
     }
 
     switchTurn() {
-        this.gameSocket?.emit('switch-turn', this.myId);
+        this.gameSocket?.emit('switch-turn');
     }
 
-    placer(letters: string, position: string) {
-        this.gameSocket?.emit('place-letters', letters, position, this.myId);
+    place(letters: string, position: string) {
+        this.gameContextService.tempUpdateRack(letters);
+        this.gameSocket?.emit('place-letters', letters, position);
     }
-    echanger(letters: string) {
-        this.gameSocket?.emit('change-letters', letters, this.myId);
+
+    exchange(letters: string) {
+        this.gameSocket?.emit('change-letters', letters);
     }
+
     getLoserId(): string | undefined {
         return this.loserId;
     }
@@ -205,28 +208,34 @@ export class CommunicationService {
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId) {
                 this.router.navigate(['/home']);
-                setTimeout("alert('Votre adversaire à abandonner, vous avez gagné! 👑👑👑');", 1);
+                setTimeout("alert('Votre adversaire a abandonné, vous avez gagné! 👑👑👑');", 1);
             }
         });
 
         this.gameSocket.on('turn', (id: PlayerId) => {
             this.gameContextService.setMyTurn(id === this.myId);
         });
-        this.gameSocket.on('turn-error', (error: string) => {
+        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
+            this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
+        });
+        this.gameSocket.on('game-error', (error: string) => {
             this.sendLocalMessage(error);
+        });
+        this.gameSocket.on('rack', (rack: Letter[]) => {
+            this.gameContextService.updateRack(rack);
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setInfos(player, player.id === this.myId);
+                this.gameContextService.setName(player, player.id === this.myId);
             }
         });
         this.gameSocket.on('board', (board: Board) => {
             this.gameContextService.setBoard(board);
         });
-        this.gameSocket.on('score', (score: number, player: PlayerId) => {});
-        this.gameSocket.on('message', (message: Message, msgCount: number) => {
-            this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId);
+        this.gameSocket.on('score', (score: number, player: PlayerId) => {
+            this.gameContextService.setScore(score, this.myId === player);
         });
-        this.gameSocket.on('rack', (rack: Letter[]) => this.gameContextService.updateRack(rack));
+        // TO-DO: does not receive forfeit event from server
+        this.gameSocket.on('forfeit', () => {});
     }
 }

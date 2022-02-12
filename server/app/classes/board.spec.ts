@@ -330,12 +330,12 @@ describe('Board', () => {
         done();
     });
 
-    it('should place a word on the board', (done) => {
+    it('should place a word on the board', async () => {
         let position = 'f8v';
         let attemptedWord = 'testeur';
         let expectedScore = 58;
 
-        let result = board.placeWord(attemptedWord, position);
+        let result = await board.placeWord(attemptedWord, position);
         expect(result).to.equals(expectedScore);
 
         position = 'f6h';
@@ -343,8 +343,7 @@ describe('Board', () => {
         attemptedWord = 'ars';
         expectedScore = 13;
 
-        result = board.placeWord(attemptedWord, position);
+        result = await board.placeWord(attemptedWord, position);
         expect(result).to.equals(expectedScore);
-        done();
     });
 });

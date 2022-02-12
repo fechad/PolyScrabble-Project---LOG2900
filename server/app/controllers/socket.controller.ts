@@ -172,7 +172,7 @@ export class SocketManager {
                 game.forfeit(idLoser);
             });
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
-            socket.on('place-letters', (letters: string, position: string) => game.placeLetters(letters, position, id));
+            socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
             socket.on('switch-turn', () => game.skipTurn(id));
 
             socket.on('disconnect', () => {

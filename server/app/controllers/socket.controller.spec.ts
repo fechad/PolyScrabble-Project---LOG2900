@@ -11,6 +11,7 @@ import { Container } from 'typedi';
 import { SocketManager } from './socket.controller';
 
 const RESPONSE_DELAY = 100;
+const WORD_PLACEMENT_DELAY = 3000;
 
 const waitForCommunication = async (time: number): Promise<void> => {
     return new Promise((resolve) => {
@@ -246,33 +247,38 @@ describe('SocketManager service tests', () => {
     });
 
     it('should change letters', async () => {
-        const letters = 'abcd';
-
         const [gameSocket, gameSocket2] = (await joinGame())[1];
+        // eslint-disable-next-line dot-notation
+        service.games[0]['isPlayer0Turn'] = true;
+        const letters = service.games[0].reserve.letterRacks[0][0].name.toLowerCase();
+
         const stub = sinon.stub();
         const stub2 = sinon.stub();
         gameSocket.on('rack', stub);
         gameSocket2.on('rack', stub2);
         gameSocket.emit('change-letters', letters);
-        await waitForCommunication(RESPONSE_DELAY);
+        await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
         // TODO: adapter avec integration service
-        expect(stub.args).to.deep.equal([[letters]]);
+        expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0]]]);
         assert(stub2.notCalled);
     });
 
     it('should place letters', async () => {
-        const letters = 'test';
+        const letters = 'as';
         const position = 'h7h';
-        const expectedPoints = 6;
-
+        const expectedPoints = 1;
         const [gameSocket, gameSocket2] = (await joinGame())[1];
+        // eslint-disable-next-line dot-notation
+        service.games[0]['isPlayer0Turn'] = true;
+        service.games[0].reserve.letterRacks[0].push({ id: 0, name: 'A', score: 1, quantity: 0 });
+        service.games[0].reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 });
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
         gameSocket.on('score', stub);
         gameSocket2.on('score', stub2);
         gameSocket.emit('place-letters', letters, position);
-        await waitForCommunication(RESPONSE_DELAY);
+        await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
         // TODO: adapter avec integration validation mots et calcul de points
         expect(stub.args).to.deep.equal([[expectedPoints, identifiers[0].id]]);
         expect(stub2.args).to.deep.equal([[expectedPoints, identifiers[0].id]]);

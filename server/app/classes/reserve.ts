@@ -1,5 +1,6 @@
 import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
+import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 
 export class Reserve {
     letterRacks: Letter[][] = [];
@@ -25,6 +26,25 @@ export class Reserve {
             this.reserve.pop();
         }
         return lettersToSend;
+    }
+
+    updateReserve(lettersToChange: string, isMainPlayer: boolean, putBack: boolean) {
+        const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
+
+        for (const unwantedLetter of lettersToChange) {
+            const listLength = this.letterRacks[playerIndex].length - 1;
+            for (let i = 0; i <= listLength; i++) {
+                if (unwantedLetter === this.letterRacks[playerIndex][i].name.toLowerCase()) {
+                    if (putBack) {
+                        this.reserve.push(this.letterRacks[playerIndex][i]);
+                    }
+                    this.letterRacks[playerIndex][i] = this.letterRacks[playerIndex][listLength];
+                    this.letterRacks[playerIndex].pop();
+                    break;
+                }
+            }
+        }
+        this.letterRacks[playerIndex] = this.letterRacks[playerIndex].concat(this.drawLetters(lettersToChange.length));
     }
 
     private setRacks() {

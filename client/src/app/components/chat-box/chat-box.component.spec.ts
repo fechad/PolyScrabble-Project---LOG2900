@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { alphabet, Letter } from '@app/services/Alphabet';
 import { ChatBoxComponent } from './chat-box.component';
 
 import SpyObj = jasmine.SpyObj;
@@ -10,10 +11,10 @@ describe('ChatBoxComponent', () => {
     let component: ChatBoxComponent;
     let fixture: ComponentFixture<ChatBoxComponent>;
     let elemRef: SpyObj<ElementRef>;
-    const placerCommands = ['!placer g9h adant', '!placer g9h adanT', '!placer g13h s', '!placer g13v s', '!placer g13 s'];
+    const placerCommands = ['!placer g9h baf', '!placer g9h abc', '!placer g13h def', '!placer g13v a', '!placer g13 g'];
     const invalidPlacerCommands = ['!placer gz adant', '!placer g9h adan*', '!placer g16h s', '!placer g13v ', '!placer g13 5'];
-    const echangerCommands = ['!échanger mwb', '!échanger e*', ' !échanger eew'];
-    const invalidEchangerCommands = ['!échanger', '!échanger eT', ' !échanger e23'];
+    const echangerCommands = ['!échanger ab', '!échanger e', ' !échanger cdg'];
+    const invalidEchangerCommands = ['!échanger', '!échanger eT', ' !échanger e23', '!échanger e*'];
     beforeEach(() => {
         elemRef = jasmine.createSpyObj('ElementRef', ['nativeElement', 'nativeElement.focus']);
     });
@@ -33,6 +34,7 @@ describe('ChatBoxComponent', () => {
         fixture = TestBed.createComponent(ChatBoxComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        component.gameContextService.isMyTurn.next(true);
     });
 
     it('should create', () => {
@@ -51,7 +53,13 @@ describe('ChatBoxComponent', () => {
     });
 
     it('placer should call communicationService.placer() for a list of valid !placer commands', () => {
-        const comPlacer = spyOn(component.communicationService, 'placer').and.callThrough();
+        const comPlacer = spyOn(component.communicationService, 'place').and.callThrough();
+        const rackStub: Letter[] = [];
+        const RACKS_LENGTH = 7;
+        for (let i = 0; i < RACKS_LENGTH; i++) {
+            rackStub.push(alphabet[i]); // adds 'abcdefg'
+        }
+        component.gameContextService.rack.next(rackStub);
         for (const i of placerCommands) {
             component.textValue = i;
             component.validateSyntax();
@@ -78,7 +86,13 @@ describe('ChatBoxComponent', () => {
     });
 
     it('placer should call communicationService.echanger() for a list of valid !echanger commands', () => {
-        const comEchanger = spyOn(component.communicationService, 'echanger').and.callThrough();
+        const comEchanger = spyOn(component.communicationService, 'exchange').and.callThrough();
+        const rackStub: Letter[] = [];
+        const RACKS_LENGTH = 7;
+        for (let i = 0; i < RACKS_LENGTH; i++) {
+            rackStub.push(alphabet[i]); // adds 'abcdefg'
+        }
+        component.gameContextService.rack.next(rackStub);
         for (const i of echangerCommands) {
             component.textValue = i;
             component.validateSyntax();

@@ -10,7 +10,7 @@
         </p>
         <p class="winner-left" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
         <div class="p-infos">
-            <p>{{ this.gameContextService.opponentName }} : score joueur 1</p>
+            <p>{{ this.gameContextService.opponentName }} : {{ this.gameContextService.opponentScore | async }} points</p>
             <p>lettres restantes joueur1</p>
         </div>
     </div>
@@ -26,7 +26,7 @@
     </div>
     <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) }">
         <div class="p-infos">
-            <p>{{ this.gameContextService.myName }} : score joueur 2</p>
+            <p>{{ this.gameContextService.myName }} : {{ this.gameContextService.myScore | async }} points</p>
             <p>lettres restantes joueur2</p>
         </div>
         <p

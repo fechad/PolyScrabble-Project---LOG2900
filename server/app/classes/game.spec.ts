@@ -51,11 +51,11 @@ describe('Game', () => {
     it('should change letters', (done) => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
-        const letters = 'abcd';
+        const letters = game.reserve.letterRacks[0][0].name.toLowerCase() + game.reserve.letterRacks[0][3].name.toLowerCase();
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.changeLetters(letters, '0');
-        assert(stub.calledWith('0', letters));
+        game.changeLetters(letters, game.players[0].id);
+        assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
         assert(stubError.notCalled);
         done();
     });
@@ -72,30 +72,28 @@ describe('Game', () => {
         done();
     });
 
-    it('should place letters', (done) => {
+    it('should place letters', async () => {
         const stub = sinon.stub();
         const position = 'h7h';
         const letters = 'test';
         game.eventEmitter.on('score', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(letters, position, '0');
+        await game.placeLetters(letters, position, '0');
         assert(stub.called);
         assert(stubError.notCalled);
-        done();
     });
 
-    it('should output an error when not placing letters', (done) => {
+    it('should output an error when not placing letters', async () => {
         const stub = sinon.stub();
         const position = 'h7h';
         const letters = 'testaaaaaaaaaaa';
         game.eventEmitter.on('score', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(letters, position, '0');
+        await game.placeLetters(letters, position, '0');
         assert(stub.notCalled);
         assert(stubError.called);
-        done();
     });
 
     it('should not place letters if it is not your turn', (done) => {

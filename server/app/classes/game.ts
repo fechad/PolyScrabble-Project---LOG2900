@@ -8,14 +8,14 @@ import { Reserve } from './reserve';
 import { Player, PlayerId } from './room';
 
 export type GameId = number;
-const STANDARD_GAME_PLAYER_NUMBER = 2;
-const MAIN_PLAYER = 0;
-const OTHER_PLAYER = 1;
-const PLAYER_0_TURN_PROBABILITY = 0.5;
-const BOARD_LENGTH = 15;
-
 type Tile = Letter | undefined;
 type SendableBoard = Tile[][];
+
+export const MAIN_PLAYER = 0;
+export const OTHER_PLAYER = 1;
+const STANDARD_GAME_PLAYER_NUMBER = 2;
+const PLAYER_0_TURN_PROBABILITY = 0.5;
+const BOARD_LENGTH = 15;
 
 export class Game {
     readonly eventEmitter = new EventEmitter();
@@ -46,27 +46,25 @@ export class Game {
         this.eventEmitter.emit('message', message);
     }
 
-    placeLetters(letters: string, position: string, playerId: PlayerId) {
+    async placeLetters(letters: string, position: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            // TODO: make verifications (probably return game-error)
-            // TODO: calculate points
-            // TODO: emit the result
             try {
-                const response = this.board.placeWord(letters, position);
+                const response = await this.board.placeWord(letters, position);
+                this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 const board = this.formatSendableBoard();
                 this.eventEmitter.emit('board', board);
                 this.eventEmitter.emit('score', response, playerId);
             } catch (e) {
                 this.eventEmitter.emit('game-error', e.message, playerId);
             }
+            this.sendRack();
         }
     }
 
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            // TODO: change the letters in the service
-            // TODO: emit the new rack
-            this.eventEmitter.emit('rack', playerId, letters);
+            this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
+            this.sendRack();
         }
     }
 
@@ -92,7 +90,7 @@ export class Game {
         }
         return validTurn;
     }
-    
+
     private formatSendableBoard(): SendableBoard {
         const board: SendableBoard = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
@@ -110,5 +108,13 @@ export class Game {
             board.push(row);
         }
         return board;
+    }
+
+    private sendRack() {
+        if (this.isPlayer0Turn) {
+            this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
+        } else {
+            this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
+        }
     }
 }
