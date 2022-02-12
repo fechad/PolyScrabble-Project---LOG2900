@@ -48,7 +48,6 @@ export class Board {
         const words = this.wordGetter.getWords(word, positionArray, contacts);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
-        this.printBoard();
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
@@ -78,7 +77,6 @@ export class Board {
             }
             score += wordScore * wordMultiplier;
         });
-
         this.changeNewlyPlaced(words[0].split(';'));
         return score;
     }
@@ -184,6 +182,7 @@ export class Board {
     }
 
     // only for debug purpose
+    /*
     private printBoard() {
         for (const row of this.board) {
             for (const tile of row) {
@@ -197,5 +196,5 @@ export class Board {
             }
             console.log();
         }
-    }
+    }*/
 }
