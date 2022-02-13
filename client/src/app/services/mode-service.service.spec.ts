@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { GameContextService } from './game-context.service';
+import { ModeServiceService } from './mode-service.service';
 
-describe('GameContextService', () => {
-    let service: GameContextService;
+describe('ModeServiceService', () => {
+    let service: ModeServiceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
-        service = TestBed.inject(GameContextService);
+        service = TestBed.inject(ModeServiceService);
     });
 
     it('should be created', () => {

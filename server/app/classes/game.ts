@@ -27,7 +27,7 @@ export class Game {
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
-        setTimeout(function () {}, this.parameters.timer);
+        setTimeout(() => {}, this.parameters.timer);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
     }
 

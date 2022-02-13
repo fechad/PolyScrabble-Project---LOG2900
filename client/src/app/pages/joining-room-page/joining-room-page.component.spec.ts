@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCard } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { CommunicationService } from '@app/services/communication.service';
 import { of } from 'rxjs';
@@ -22,7 +22,7 @@ describe('JoiningRoomPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [JoiningRoomPageComponent],
-            imports: [MatCard],
+            imports: [MatCardModule],
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialog, useValue: MatDialogMock },
