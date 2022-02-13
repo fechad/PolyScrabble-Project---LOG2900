@@ -94,12 +94,12 @@ export class CommunicationService {
     }
 
     sendLocalMessage(message: string) {
-        this.gameContextService.addMessage(message, true, false);
+        this.gameContextService.addMessage(message, true);
     }
 
     sendMessage(message: string) {
         this.gameSocket?.emit('message', message);
-        this.gameContextService.addMessage(message, false, false);
+        this.gameContextService.addMessage(message, false);
     }
 
     getId(): PlayerId | undefined {
