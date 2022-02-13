@@ -11,7 +11,7 @@
         <p class="winner-left" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
         <div class="p-infos">
             <p>{{ this.gameContextService.opponentName }} : {{ this.gameContextService.opponentScore | async }} points</p>
-            <p>lettres restantes joueur1</p>
+            <p *ngIf="myRackIsVisible">{{ this.gameContextService.myRackCount | async }} lettres restantes dans le chevalet</p>
         </div>
     </div>
     <div class="game-infos">
@@ -23,12 +23,12 @@
                 (event)="onTimerFinished($event)"
             ></countdown>
         </div>
-        <p>lettres restantes en reserve</p>
+        <p>{{ this.gameContextService.reserveCount | async }} lettres disponibles dans la réserve</p>
     </div>
     <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) }">
         <div class="p-infos">
             <p>{{ this.gameContextService.myName }} : {{ this.gameContextService.myScore | async }} points</p>
-            <p>lettres restantes joueur2</p>
+            <p *ngIf="opponentRackIsVisible">{{ this.gameContextService.opponentRackCount | async }} restantes dans le chevalet</p>
         </div>
         <p
             class="winner-right"

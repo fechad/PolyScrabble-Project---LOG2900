@@ -1,17 +1,18 @@
 .rack-container {
     background-color: #353535;
+    padding: 5px;
     height: 8vh;
-    width: 30vw;
+    width: 27vw;
     border-radius: 15px;
     border-width: thin;
     border-style: solid;
     text-align: center;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .letter-container {
+    margin: 0px 5px 0px 5px;
     display: flex;
     flex-direction: row;
     width: 3vw;

@@ -11,15 +11,6 @@
             <div *ngIf="message.emitter === 'local'" class="chat-log-error">
                 <p class="message" [innerText]="message.text"></p>
             </div>
-            <div *ngIf="message.text.split(' ')[0] === '!placer'" class="chat-log-feedback">
-                <p class="message" [innerText]="message.text"></p>
-            </div>
-            <div *ngIf="message.text.split(' ')[0] === '!échanger' && message.emitter === myId" class="chat-log-feedback">
-                <p class="message" [innerText]="message.text"></p>
-            </div>
-            <div *ngIf="message.text.split(' ')[0] === '!échanger' && message.emitter !== myId" class="chat-log-feedback">
-                <p class="message">{{ this.gameContextService.opponentName }} a échangé {{ message.text.split(' ')[1].length }} lettre(s)</p>
-            </div>
         </div>
     </div>
     <textarea

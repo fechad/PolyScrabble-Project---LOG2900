@@ -38,6 +38,7 @@ export class Game {
             this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
             this.eventEmitter.emit('turn', this.getPlayerTurnId());
             this.eventEmitter.emit('players', this.players);
+            this.getReserveCount();
         }
     }
 
@@ -51,11 +52,14 @@ export class Game {
             try {
                 const response = await this.board.placeWord(letters, position);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
-                const board = this.formatSendableBoard();
-                this.eventEmitter.emit('board', board);
+                this.eventEmitter.emit('board', this.formatSendableBoard());
                 this.eventEmitter.emit('score', response, playerId);
+                const validMessage = '!placer ' + position + ' ' + letters;
+                this.eventEmitter.emit('valid-command', validMessage);
+                this.getReserveCount();
             } catch (e) {
                 this.eventEmitter.emit('game-error', e.message, playerId);
+                this.eventEmitter.emit('board', this.formatSendableBoard());
             }
             this.sendRack();
         }
@@ -65,6 +69,8 @@ export class Game {
         if (this.checkTurn(playerId)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             this.sendRack();
+            const validMessage = '!échanger ' + letters;
+            this.eventEmitter.emit('valid-command', validMessage);
         }
     }
 
@@ -77,6 +83,10 @@ export class Game {
 
     forfeit(idLoser: string | undefined) {
         this.eventEmitter.emit('forfeit', idLoser);
+    }
+
+    getReserveCount() {
+        this.eventEmitter.emit('reserve', this.reserve.getCount());
     }
 
     private getPlayerTurnId() {
@@ -112,9 +122,19 @@ export class Game {
 
     private sendRack() {
         if (this.isPlayer0Turn) {
-            this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
+            this.eventEmitter.emit(
+                'rack',
+                this.players[MAIN_PLAYER].id,
+                this.reserve.letterRacks[MAIN_PLAYER],
+                this.reserve.letterRacks[OTHER_PLAYER].length,
+            );
         } else {
-            this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
+            this.eventEmitter.emit(
+                'rack',
+                this.players[OTHER_PLAYER].id,
+                this.reserve.letterRacks[OTHER_PLAYER],
+                this.reserve.letterRacks[MAIN_PLAYER].length,
+            );
         }
     }
 }
