@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { ModeServiceService } from '@app/services/mode-service.service';
-import { CountdownComponent } from 'ngx-countdown';
+import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
 
 @Component({
     selector: 'app-infos-box',
@@ -22,5 +22,11 @@ export class InfosBoxComponent implements AfterViewInit {
     reset() {
         this.cd.restart();
         this.cd.begin();
+    }
+
+    onTimerFinished(e: CountdownEvent) {
+        if (e.action === 'done') {
+            this.communicationService.switchTurn();
+        }
     }
 }

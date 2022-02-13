@@ -19,7 +19,8 @@
         <div class="backChrono">
             <countdown
                 #countdown
-                [config]="{ format: 'mm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
+                [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
+                (event)="onTimerFinished($event)"
             ></countdown>
         </div>
         <p>lettres restantes en reserve</p>

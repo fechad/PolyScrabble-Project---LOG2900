@@ -207,7 +207,7 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId) {
-                setTimeout("alert('Votre adversaire à abandonner, vous avez gagné! 👑👑👑');", 2);
+                setTimeout("alert('Votre adversaire à abandonné, vous avez gagné! 👑👑👑');", 2);
             }
             this.leaveGame();
             this.router.navigate(['/']);
