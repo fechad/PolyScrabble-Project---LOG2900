@@ -91,7 +91,7 @@ export class GridService {
         let letterPosition = 0;
         for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
             if (letterPosition > lettersToAdd.length - 1) break;
-            const tile = isVerticalPlacement ? temporaryBoard[i][iterationPosition] : temporaryBoard[iterationPosition][i];
+            const tile = isVerticalPlacement ? temporaryBoard[i][horizontalPosition] : temporaryBoard[verticalPosition][i];
             if (tile !== null) continue;
             const letter: Tile = {
                 id: 0,
@@ -99,8 +99,8 @@ export class GridService {
                 score: 0,
                 quantity: 0,
             } as Letter;
-            if (isVerticalPlacement) temporaryBoard[i][iterationPosition] = letter;
-            else temporaryBoard[iterationPosition][i] = letter;
+            if (isVerticalPlacement) temporaryBoard[i][horizontalPosition] = letter;
+            else temporaryBoard[verticalPosition][i] = letter;
             letterPosition++;
         }
         this.gameContext.board.next(temporaryBoard);
