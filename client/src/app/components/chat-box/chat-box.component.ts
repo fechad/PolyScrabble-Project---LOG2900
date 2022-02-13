@@ -48,10 +48,6 @@ export class ChatBoxComponent {
         this.textValue = '';
     }
 
-    isMyMessage() {
-        this.yourMessage = false;
-    }
-
     scrollToBottom() {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }

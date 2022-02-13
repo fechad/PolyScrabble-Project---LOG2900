@@ -94,12 +94,12 @@ export class CommunicationService {
     }
 
     sendLocalMessage(message: string) {
-        this.gameContextService.addMessage(message, true);
+        this.gameContextService.addMessage(message, true, false);
     }
 
     sendMessage(message: string) {
         this.gameSocket?.emit('message', message);
-        this.gameContextService.addMessage(message, false);
+        this.gameContextService.addMessage(message, false, false);
     }
 
     getId(): PlayerId | undefined {
@@ -207,8 +207,9 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId) {
-                setTimeout("alert('Votre adversaire à abandonné, vous avez gagné! 👑👑👑');", 2);
+                setTimeout("alert('Votre adversaire a abandonné, vous avez gagné! 👑👑👑');", 2);
             }
+            this.gameContextService.clearMessages();
             this.leaveGame();
             this.router.navigate(['/']);
         });
