@@ -1,3 +1,4 @@
+import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert } from 'chai';
@@ -75,11 +76,15 @@ describe('Game', () => {
     it('should place letters', async () => {
         const stub = sinon.stub();
         const position = 'h7h';
+        game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
+        game.reserve.letterRacks[0].push({ id: 0, name: 'E', score: 1, quantity: 0 } as Letter);
+        game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
+        game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
         game.eventEmitter.on('score', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(letters, position, '0');
+        await game.placeLetters(letters, position, game.players[0].id);
         assert(stub.called);
         assert(stubError.notCalled);
     });
