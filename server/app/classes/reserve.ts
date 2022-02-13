@@ -47,6 +47,10 @@ export class Reserve {
         this.letterRacks[playerIndex] = this.letterRacks[playerIndex].concat(this.drawLetters(lettersToChange.length));
     }
 
+    getCount() {
+        return this.reserve.length;
+    }
+
     private setRacks() {
         const rackLength = 7;
         let rack1: Letter[] = [];

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { Player } from '@app/classes/room';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Letter } from './Alphabet';
 
 const BOARD_LENGTH = 15;
+const NORMAL_RACK_LENGTH = 7;
 export type Tile = Letter | null;
 export type Board = Tile[][];
 
@@ -13,7 +14,6 @@ export type Board = Tile[][];
 })
 export class GameContextService {
     letter: Tile;
-    // BehaviorSubject<> = new BehaviorSubject();
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
@@ -21,7 +21,9 @@ export class GameContextService {
     readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     readonly myScore: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     readonly opponentScore: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    letterRack: Subject<Letter[]> = new Subject();
+    readonly reserveCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    readonly myRackCount: BehaviorSubject<number> = new BehaviorSubject<number>(NORMAL_RACK_LENGTH);
+    readonly opponentRackCount: BehaviorSubject<number> = new BehaviorSubject<number>(NORMAL_RACK_LENGTH);
     myName: string;
     opponentName: string;
     private msgCount: number = 0;
@@ -82,13 +84,14 @@ export class GameContextService {
         }
     }
 
-    updateRack(newRack: Letter[]) {
-        this.letterRack.next(newRack);
+    updateRack(newRack: Letter[], opponentCount: number) {
+        this.myRackCount.next(newRack.length);
+        this.opponentRackCount.next(opponentCount);
         this.rack.next(newRack);
     }
 
-    getRackObs() {
-        return this.letterRack.asObservable();
+    updateReserveCount(count: number) {
+        this.reserveCount.next(count);
     }
 
     tempUpdateRack(lettersToChange: string) {

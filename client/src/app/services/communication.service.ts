@@ -228,8 +228,11 @@ export class CommunicationService {
         this.gameSocket.on('valid-command', (response: string) => {
             this.sendLocalMessage(response);
         });
-        this.gameSocket.on('rack', (rack: Letter[]) => {
-            this.gameContextService.updateRack(rack);
+        this.gameSocket.on('reserve', (count: number) => {
+            this.gameContextService.updateReserveCount(count);
+        });
+        this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
+            this.gameContextService.updateRack(rack, opponentRackCount);
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
