@@ -50,6 +50,10 @@ export class GameContextService {
         }
     }
 
+    clearMessages() {
+        this.messages.next([]);
+    }
+
     addMessage(message: string, local: boolean) {
         if (local) {
             this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);

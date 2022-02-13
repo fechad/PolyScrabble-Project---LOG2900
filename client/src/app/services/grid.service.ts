@@ -12,7 +12,8 @@ const AJUSTTILEX = 5;
 const AJUSTSTARX = 4;
 const AJUSTSTARY = 10;
 const AJUSTBONUS = 10;
-const AJUSTBONUSWORD = 2;
+const AJUSTBONUSWORD = 5;
+const AJUSTBONUSLETTER = 1;
 const AJUSTLETTER = 4;
 const TWOCHARNUMBER = 10;
 const AJUSTSTEP = 0.5;
@@ -137,13 +138,13 @@ export class GridService {
             '1411',
         ];
         if (tripleWord.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, Colors.Mustard, 'WORD x3');
+            this.drawBonus(canvasX, canvasY, Colors.Mustard, 'MOT x3');
         } else if (tripleLetter.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, Colors.Green, 'LETTER x3');
+            this.drawBonus(canvasX, canvasY, Colors.Green, 'LETTRE x3');
         } else if (doubleWord.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, Colors.Yellow, 'WORD x2');
+            this.drawBonus(canvasX, canvasY, Colors.Yellow, 'MOT x2');
         } else if (doubleLetter.includes(coord) || (posX === EXCEPTIONX && posY === EXCEPTIONY)) {
-            this.drawBonus(canvasX, canvasY, Colors.Blue, 'LETTER x2');
+            this.drawBonus(canvasX, canvasY, Colors.Blue, 'LETTRE x2');
         } else if (posX === CENTERTILE && posY === CENTERTILE) {
             this.drawBonus(canvasX - AJUSTSTARX, canvasY + AJUSTSTARY, Colors.Grey, '⭐');
         }
@@ -160,8 +161,11 @@ export class GridService {
         this.gridContext.font = word === '⭐' ? '30px system-ui' : this.multiplier * size + 'px system-ui';
         const sentence = word.split(' ');
         const step = 10;
-        if (sentence.length === 2) {
+        if (sentence.length === 2 && sentence[0] === 'MOT') {
             this.gridContext.fillText(sentence[0], posX + AJUSTBONUSWORD, posY);
+            this.gridContext.fillText(sentence[1], posX + AJUSTBONUS, posY + step);
+        } else if (sentence.length === 2 && sentence[0] === 'LETTRE') {
+            this.gridContext.fillText(sentence[0], posX + AJUSTBONUSLETTER, posY);
             this.gridContext.fillText(sentence[1], posX + AJUSTBONUS, posY + step);
         } else {
             for (let i = 0; i < sentence.length; i++) {
