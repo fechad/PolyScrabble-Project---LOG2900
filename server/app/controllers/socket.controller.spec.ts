@@ -259,7 +259,7 @@ describe('SocketManager service tests', () => {
         gameSocket.emit('change-letters', letters);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
         // TODO: adapter avec integration service
-        expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0]]]);
+        expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0], service.games[0].reserve.letterRacks[1].length]]);
         assert(stub2.notCalled);
     });
 
