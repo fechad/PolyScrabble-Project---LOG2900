@@ -53,6 +53,8 @@ export class Game {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.eventEmitter.emit('board', this.formatSendableBoard());
                 this.eventEmitter.emit('score', response, playerId);
+                const validMessage = '!placer ' + position + ' ' + letters;
+                this.eventEmitter.emit('valid-command', validMessage);
             } catch (e) {
                 this.eventEmitter.emit('game-error', e.message, playerId);
                 this.eventEmitter.emit('board', this.formatSendableBoard());
@@ -65,6 +67,8 @@ export class Game {
         if (this.checkTurn(playerId)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             this.sendRack();
+            const validMessage = '!échanger ' + letters;
+            this.eventEmitter.emit('valid-command', validMessage);
         }
     }
 

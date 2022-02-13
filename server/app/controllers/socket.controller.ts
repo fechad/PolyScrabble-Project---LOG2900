@@ -155,7 +155,7 @@ export class SocketManager {
                 socket.emit('message', message);
             }
 
-            const events: string[] = ['message', 'score', 'turn', 'parameters', 'game-error', 'players', 'forfeit', 'board'];
+            const events: string[] = ['message', 'score', 'turn', 'parameters', 'game-error', 'players', 'forfeit', 'board', 'valid-command'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             handlers.push([
                 'rack',

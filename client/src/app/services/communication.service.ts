@@ -225,6 +225,9 @@ export class CommunicationService {
         this.gameSocket.on('game-error', (error: string) => {
             this.sendLocalMessage(error);
         });
+        this.gameSocket.on('valid-command', (response: string) => {
+            this.sendLocalMessage(response);
+        });
         this.gameSocket.on('rack', (rack: Letter[]) => {
             this.gameContextService.updateRack(rack);
         });
