@@ -2,14 +2,23 @@
     <div id="nonWritingBox" #scroll [scrollTop]="scroll.scrollHeight">
         <!--<div class="chat-log-opponent"></div>-->
         <div *ngFor="let message of gameContextService.messages | async">
-            <div *ngIf="message.emitter === myId" class="chat-log">
+            <div *ngIf="message.emitter === myId && message.text[0] !== '!'" class="chat-log">
                 <p class="message">{{ message.text }}</p>
             </div>
-            <div *ngIf="message.emitter !== myId && message.emitter !== 'local'" class="chat-log-opponent">
+            <div *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.text[0] !== '!'" class="chat-log-opponent">
                 <p class="message">{{ message.text }}</p>
             </div>
             <div *ngIf="message.emitter === 'local'" class="chat-log-error">
                 <p class="message" [innerText]="message.text"></p>
+            </div>
+            <div *ngIf="message.text.split(' ')[0] === '!placer'" class="chat-log-feedback">
+                <p class="message" [innerText]="message.text"></p>
+            </div>
+            <div *ngIf="message.text.split(' ')[0] === '!échanger' && message.emitter === myId" class="chat-log-feedback">
+                <p class="message" [innerText]="message.text"></p>
+            </div>
+            <div *ngIf="message.text.split(' ')[0] === '!échanger' && message.emitter !== myId" class="chat-log-feedback">
+                <p class="message">{{ this.gameContextService.opponentName }} a échangé {{ message.text.split(' ')[1].length }} lettre(s)</p>
             </div>
         </div>
     </div>

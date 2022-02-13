@@ -12,4 +12,10 @@ describe('ModeServiceService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    it('mode should be input string of appendMode', () => {
+        service.mode = 'start';
+        service.appendMode('classique');
+        expect(service.mode).toBe('classique');
+    });
 });

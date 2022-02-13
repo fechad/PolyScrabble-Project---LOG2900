@@ -57,6 +57,17 @@ div {
     background-color: #f8f847;
     color: #ee1919;
 }
+.chat-log-feedback {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: hidden;
+    width: 80%;
+    padding: 10px;
+    margin: 4%;
+    border-radius: 15px;
+    background-color: #ffffb3;
+}
 #writingBox {
     height: 20%;
     border-radius: 15px;
