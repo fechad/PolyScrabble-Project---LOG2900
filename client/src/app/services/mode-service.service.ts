@@ -8,6 +8,6 @@ export class ModeServiceService {
     constructor() {}
 
     appendMode(partMode: string) {
-        this.mode = this.mode + partMode;
+        this.mode = partMode;
     }
 }
