@@ -44,7 +44,7 @@ export class GamePageComponent {
     }
 
     quitGame() {
-        this.router.navigateByUrl('http://localhost:4200/home');
+        this.router.navigateByUrl('http://localhost:4200/');
     }
     skipMyTurn() {
         this.communicationService.switchTurn();
