@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { alphabet, Letter } from '@app/services/Alphabet';
 import { ChatBoxComponent } from './chat-box.component';
@@ -21,7 +22,7 @@ describe('ChatBoxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, FormsModule],
             declarations: [ChatBoxComponent],
             providers: [
                 { provide: ElementRef, useValue: elemRef },
@@ -168,5 +169,11 @@ describe('ChatBoxComponent', () => {
         component.textValue = '!aide v';
         component.validateSyntax();
         expect(help).not.toHaveBeenCalled();
+    });
+
+    it('should return number of letters in command exchange', () => {
+        const msg = '!échanger abc';
+        const result = component.getLetterExchanged(msg);
+        expect(result).toEqual(3);
     });
 });

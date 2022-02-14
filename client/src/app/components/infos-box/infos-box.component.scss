@@ -16,21 +16,23 @@
 .game-infos,
 .opponent,
 .player {
-    background-color: #E1AC01;
+    background-color: #e1ac01;
     width: 33.33vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    font-size: 20px;
 }
 
-.opponent, .player{
+.opponent,
+.player {
     flex-direction: row;
     justify-content: space-around;
 }
 
 .tour {
-    background-color: #FFE454;
+    background-color: #ffe454;
 }
 
 p {
@@ -42,7 +44,6 @@ p {
     align-items: center;
     flex-direction: column;
     width: 95%;
-
 }
 .p-infos p {
     margin-left: 1vh;
@@ -56,13 +57,13 @@ p {
     align-items: center;
 }
 
-.winner-left, .winner-right{
+.winner-left,
+.winner-right {
     display: flex;
     width: 5%;
     justify-content: flex-start;
     align-items: center;
-    font-size: 80px;
-
+    font-size: 30px;
 }
 
 .winner-right {

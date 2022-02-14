@@ -11,6 +11,12 @@
             <div *ngIf="message.emitter === 'local'" class="chat-log-error">
                 <p class="message" [innerText]="message.text"></p>
             </div>
+            <div *ngIf="message.text[0] === '!' && message.text[2] === 'c' && message.emitter === myId" class="chat-log-error">
+                <p class="message" [innerText]="message.text"></p>
+            </div>
+            <div *ngIf="message.text[0] === '!' && message.text[2] === 'c' && message.emitter !== myId" class="chat-log-error">
+                <p class="message">{{ this.gameContextService.opponentName }} a échangé {{ this.getLetterExchanged(message.text) }} lettre(s)</p>
+            </div>
         </div>
     </div>
     <textarea
