@@ -13,6 +13,11 @@ export class MainLobbyService {
     constructor(private roomsService: RoomsService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
+        const alreadyJoinedRoom = this.roomsService.rooms.find((r) => r.mainPlayer.id === id || r.getOtherPlayer()?.id === id);
+        if (alreadyJoinedRoom) {
+            socket.emit('join', alreadyJoinedRoom.id);
+        }
+
         // message initial
         socket.on('join-room', (roomId: RoomId, playerName: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);

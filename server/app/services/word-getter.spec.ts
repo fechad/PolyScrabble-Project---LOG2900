@@ -2,6 +2,8 @@ import { GameTile } from '@app/classes/game-tile';
 import { assert } from 'chai';
 import { WordGetter } from './word-getter';
 
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+
 const BOARD_LENGTH = 15;
 const INVALID = -1;
 

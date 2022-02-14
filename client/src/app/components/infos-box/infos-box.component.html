@@ -3,12 +3,12 @@
         <p
             class="winner-left"
             *ngIf="
-                this.communicationService.getId() !== this.communicationService.getLoserId() && this.communicationService.getLoserId() !== undefined
+                this.communicationService.getId().value !== this.communicationService.getLoserId() && this.communicationService.getLoserId() !== undefined
             "
         >
             👑
         </p>
-        <p class="winner-left" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
+        <p class="winner-left" *ngIf="this.communicationService.getId().value === this.communicationService.getLoserId()"></p>
         <div class="p-infos">
             <p>{{ this.gameContextService.opponentName }} : {{ this.gameContextService.opponentScore | async }} points</p>
             <p *ngIf="myRackIsVisible">{{ this.gameContextService.myRackCount | async }} lettres restantes dans le chevalet</p>
@@ -33,11 +33,11 @@
         <p
             class="winner-right"
             *ngIf="
-                this.communicationService.getId() !== this.communicationService.getLoserId() && this.communicationService.getLoserId() !== undefined
+                this.communicationService.getId().value !== this.communicationService.getLoserId() && this.communicationService.getLoserId() !== undefined
             "
         >
             👑
         </p>
-        <p class="winner-right" *ngIf="this.communicationService.getId() === this.communicationService.getLoserId()"></p>
+        <p class="winner-right" *ngIf="this.communicationService.getId().value === this.communicationService.getLoserId()"></p>
     </div>
 </div>

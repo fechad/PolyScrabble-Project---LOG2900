@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication.service';
@@ -13,12 +12,9 @@ export class WaitingRoomPageComponent {
     isMainPlayer: boolean;
     otherPlayerName: string | undefined;
 
-    constructor(public communicationService: CommunicationService, private router: Router, private location: Location) {
+    constructor(public communicationService: CommunicationService, private router: Router) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
-            if (room === undefined) await this.location.back();
-            else if (room.started) this.router.navigate(['/game']);
-
-            this.isMainPlayer = this.communicationService.getId() === room?.mainPlayer.id;
+            this.isMainPlayer = this.communicationService.getId().value === room?.mainPlayer.id;
             this.otherPlayerName = room?.otherPlayer?.name;
 
             const hasOtherPlayer = room?.otherPlayer !== undefined;

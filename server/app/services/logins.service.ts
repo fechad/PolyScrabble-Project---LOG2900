@@ -27,7 +27,7 @@ export class LoginsService {
     }
 
     verify(id: PlayerId, token: Token): boolean {
-        return this.users[id]?.token === token && this.users[id].loggedIn;
+        return this.users[id]?.token === token && this.users[id]?.loggedIn;
     }
 
     logout(id: PlayerId) {

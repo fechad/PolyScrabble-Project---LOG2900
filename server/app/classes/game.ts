@@ -13,7 +13,6 @@ type SendableBoard = Tile[][];
 
 export const MAIN_PLAYER = 0;
 export const OTHER_PLAYER = 1;
-const STANDARD_GAME_PLAYER_NUMBER = 2;
 const PLAYER_0_TURN_PROBABILITY = 0.5;
 const BOARD_LENGTH = 15;
 
@@ -23,23 +22,19 @@ export class Game {
     readonly messages: Message[] = [];
     readonly board: Board;
     private isPlayer0Turn: boolean;
-    private nbOfPlayersReady = 0;
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
-        setTimeout(() => {}, this.parameters.timer);
+        setTimeout(() => this.eventEmitter.emit('dummy'), this.parameters.timer);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
     }
 
     gameInit() {
-        this.nbOfPlayersReady++;
-        if (this.nbOfPlayersReady === STANDARD_GAME_PLAYER_NUMBER) {
-            this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
-            this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
-            this.eventEmitter.emit('turn', this.getPlayerTurnId());
-            this.eventEmitter.emit('players', this.players);
-            this.getReserveCount();
-        }
+        this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
+        this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
+        this.eventEmitter.emit('turn', this.getPlayerTurnId());
+        this.eventEmitter.emit('players', this.players);
+        this.getReserveCount();
     }
 
     message(message: Message) {
@@ -52,15 +47,14 @@ export class Game {
             try {
                 const response = await this.board.placeWord(letters, position);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
-                this.eventEmitter.emit('board', this.formatSendableBoard());
                 this.eventEmitter.emit('score', response, playerId);
                 const validMessage = '!placer ' + position + ' ' + letters;
                 this.eventEmitter.emit('valid-command', validMessage);
                 this.getReserveCount();
             } catch (e) {
                 this.eventEmitter.emit('game-error', e.message, playerId);
-                this.eventEmitter.emit('board', this.formatSendableBoard());
             }
+            this.eventEmitter.emit('board', this.formatSendableBoard());
             this.sendRack();
         }
     }

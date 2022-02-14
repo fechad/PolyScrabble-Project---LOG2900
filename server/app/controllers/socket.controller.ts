@@ -1,5 +1,5 @@
 import { Game } from '@app/classes/game';
-import { Player, PlayerId } from '@app/classes/room';
+import { Player, PlayerId, Room } from '@app/classes/room';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { LoginsService } from '@app/services/logins.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
@@ -79,12 +79,21 @@ export class SocketManager {
             }
         });
         rooms.on('connect', (socket) => {
-            const room = socket.data.room;
+            const room: Room = socket.data.room;
             const isMainPlayer = room.mainPlayer.id === socket.handshake.auth.id;
             socket.join(`room-${room.id}`);
 
-            if (isMainPlayer) room.mainPlayer.connected = true;
-            else room.getOtherPlayer().connected = true;
+            if (isMainPlayer) {
+                room.mainPlayer.connected = true;
+            } else {
+                const otherPlayer = room.getOtherPlayer();
+                if (otherPlayer) otherPlayer.connected = true;
+            }
+            this.roomsService.unpendDeletion(room.id);
+
+            if (room.isStarted()) {
+                socket.emit('join-game', room.id);
+            }
 
             const events: [string, () => void][] = [['update-room', () => socket.emit('update-room', room)]];
             if (!isMainPlayer) events.push(['kick', () => socket.emit('kick')]);
@@ -180,9 +189,7 @@ export class SocketManager {
             socket.on('message', (message: string) => {
                 game.message({ text: message, emitter: id });
             });
-            socket.on('confirm-forfeit', (idLoser) => {
-                game.forfeit(idLoser);
-            });
+            socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
             socket.on('switch-turn', () => game.skipTurn(id));

@@ -10,20 +10,20 @@ const NORMAL_RACK_LENGTH = 7;
     styleUrls: ['./infos-box.component.scss'],
 })
 export class InfosBoxComponent implements AfterViewInit {
-    @ViewChild('countdown') cd: CountdownComponent;
+    @ViewChild('countdown', { static: false }) cd: CountdownComponent;
     myRackIsVisible = false;
     opponentRackIsVisible = false;
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService, public mode: ModeServiceService) {}
 
     ngAfterViewInit(): void {
         this.reset();
-        this.gameContextService.isMyTurn.asObservable().subscribe(() => {
+        this.gameContextService.isMyTurn.subscribe(() => {
             this.reset();
         });
-        this.gameContextService.myRackCount.asObservable().subscribe((newCount) => {
+        this.gameContextService.myRackCount.subscribe((newCount) => {
             if (newCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
         });
-        this.gameContextService.myRackCount.asObservable().subscribe((newCount) => {
+        this.gameContextService.myRackCount.subscribe((newCount) => {
             if (newCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
         });
     }

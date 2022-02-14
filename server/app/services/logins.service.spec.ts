@@ -46,6 +46,8 @@ describe('Logins service', () => {
         assert(!loginsService.verify(id, token));
     });
     it('should not allow reconnections after 5s', (done) => {
+        const RECONNECTION_DELAY = 5100;
+
         const [id, token] = loginsService.login(undefined, SOCKET_ID);
         assert(loginsService.verify(id, token));
         loginsService.logout(id);
@@ -58,6 +60,6 @@ describe('Logins service', () => {
             assert(!loginsService.verify(id, newToken));
             assert(!loginsService.verify(newId, token));
             done();
-        }, 5100);
+        }, RECONNECTION_DELAY);
     });
 });

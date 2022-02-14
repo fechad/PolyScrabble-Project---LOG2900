@@ -21,7 +21,7 @@ export class JoinSetupDialogComponent implements OnInit {
         private formBuilder: FormBuilder,
         private router: Router,
         public communicationService: CommunicationService,
-        @Inject(MAT_DIALOG_DATA) public data: any,
+        @Inject(MAT_DIALOG_DATA) public data: { room: number, name: string, dictionnary: string },
     ) {
         this.selectedRoom = this.communicationService.rooms.pipe(map((rooms) => rooms[this.data.room]));
     }
