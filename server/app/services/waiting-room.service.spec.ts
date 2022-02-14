@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 import { RoomsService } from './rooms.service';
 import { ROOMS_LIST_UPDATE_TIMEOUT, WaitingRoomService } from './waiting-room.service';
 
-const RESPONSE_DELAY = ROOMS_LIST_UPDATE_TIMEOUT + 100; // ms
+const RESPONSE_DELAY = 100; // ms
 
 describe('WaitingRoom service tests', () => {
     let service: WaitingRoomService;
@@ -93,7 +93,7 @@ describe('WaitingRoom service tests', () => {
             expect(eventStub2.callCount).to.equal(1);
             assert(eventStub2.alwaysCalledWith('broadcast-rooms', []));
             done();
-        }, RESPONSE_DELAY * 3);
+        }, RESPONSE_DELAY + ROOMS_LIST_UPDATE_TIMEOUT * 3);
     });
 
     it('should not display full rooms', (done) => {
@@ -108,7 +108,7 @@ describe('WaitingRoom service tests', () => {
 
         const parameters = new Parameters();
         const room = new Room(1, 'DummyId', 'Dummy', parameters);
-        expect(room.addPlayer('NotDummyId', 'NotDummy')).to.be.undefined;
+        expect(room.addPlayer('NotDummyId', 'NotDummy')).to.equal(undefined);
         expect(room.hasOtherPlayer()).to.equal(true);
         rooms.rooms.push(room);
         expect(rooms.rooms.length).to.equal(1);
@@ -120,6 +120,6 @@ describe('WaitingRoom service tests', () => {
             expect(eventStub2.callCount).to.equal(1);
             assert(eventStub2.alwaysCalledWith('broadcast-rooms', []));
             done();
-        }, RESPONSE_DELAY);
+        }, ROOMS_LIST_UPDATE_TIMEOUT + RESPONSE_DELAY);
     });
 });

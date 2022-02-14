@@ -1,7 +1,6 @@
-import { Component, ElementRef, Injector, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
-import { SkipTurnService } from '@app/services/skip-turn.service';
 
 const COMMAND_INDEX = 0;
 const LETTERS_TO_EXCHANGE_INDEX = 1;
@@ -41,7 +40,7 @@ export class ChatBoxComponent {
     myId: string | undefined;
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
-        this.myId = this.communicationService.getId();
+        this.myId = this.communicationService.getId().value;
     }
 
     clearText() {
@@ -149,6 +148,3 @@ export class ChatBoxComponent {
         return true;
     }
 }
-Injector.create({
-    providers: [{ provide: ChatBoxComponent, deps: [SkipTurnService] }],
-});

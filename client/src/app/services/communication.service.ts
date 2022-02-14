@@ -25,40 +25,36 @@ export class CommunicationService {
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
 
-    private myId: PlayerId | undefined;
+    private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
     private readonly waitingRoomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
-    private readonly mainSocket: Socket = io(`${environment.socketUrl}/`);
+    private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
 
     private loserId: string | undefined = undefined;
 
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
+        const auth = this.getAuth();
+        this.mainSocket = io(`${environment.socketUrl}/`, { auth });
+
         this.listenRooms();
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
         this.dictionnaries = httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
-        const idsString = sessionStorage.getItem(IDS_KEY) || '';
-        const ids = idsString.split(';').filter((s) => s.length > 0);
-        if (ids.length > 0) {
-            this.myId = ids.pop();
-            sessionStorage.setItem(IDS_KEY, ids.join(';'));
-        }
+
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
-            // TODO: add token with id to prevent faking identity
-            this.myId = id;
+            this.myId.next(id);
             this.token = token;
-            const filteredIds = ids.filter((ident) => ident !== id);
-            filteredIds.push(id);
-            sessionStorage.setItem(IDS_KEY, filteredIds.join(';'));
+
+            addEventListener('beforeunload', () => this.saveAuth(id), { capture: true });
         });
     }
 
-    isMainPlayer() {
-        return this.selectedRoom.value?.mainPlayer.id === this.myId;
+    isMainPlayer(): boolean {
+        return this.selectedRoom.value?.mainPlayer.id === this.myId.value;
     }
 
     kick() {
@@ -103,7 +99,7 @@ export class CommunicationService {
         this.gameContextService.addMessage(message, false);
     }
 
-    getId(): PlayerId | undefined {
+    getId(): BehaviorSubject<PlayerId | undefined> {
         return this.myId;
     }
 
@@ -126,8 +122,8 @@ export class CommunicationService {
     }
 
     confirmForfeit() {
-        this.loserId = this.myId;
-        this.gameSocket?.emit('confirm-forfeit', this.loserId);
+        this.loserId = this.myId.value;
+        this.gameSocket?.emit('confirm-forfeit');
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -188,16 +184,13 @@ export class CommunicationService {
     }
 
     private joinRoomHandler(roomId: RoomId) {
-        this.roomSocket = io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId, token: this.token } });
+        this.roomSocket = io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
             setTimeout("alert('Vous avez été rejeté.');", 1);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (e) => this.handleError(e));
-        this.roomSocket.on('id', (id: PlayerId) => {
-            this.myId = id;
-        });
 
         this.roomSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId);
@@ -205,10 +198,10 @@ export class CommunicationService {
     }
 
     private joinGameHandler(gameId: string) {
-        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { id: this.myId, token: this.token } });
+        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { id: this.myId.value, token: this.token } });
 
         this.gameSocket.on('forfeit', (idLoser) => {
-            if (idLoser !== this.myId) {
+            if (idLoser !== this.myId.value) {
                 setTimeout("alert('Votre adversaire a abandonné, vous avez gagné! 👑👑👑');", 2);
             }
             this.gameContextService.clearMessages();
@@ -217,10 +210,10 @@ export class CommunicationService {
         });
 
         this.gameSocket.on('turn', (id: PlayerId) => {
-            this.gameContextService.setMyTurn(id === this.myId);
+            this.gameContextService.setMyTurn(id === this.myId.value);
         });
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
-            this.gameContextService.receiveMessages(message, msgCount, id === this.myId);
+            this.gameContextService.receiveMessages(message, msgCount, id === this.myId.value);
         });
         this.gameSocket.on('game-error', (error: string) => {
             this.sendLocalMessage(error);
@@ -236,16 +229,35 @@ export class CommunicationService {
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setName(player, player.id === this.myId);
+                this.gameContextService.setName(player, player.id === this.myId.value);
             }
         });
         this.gameSocket.on('board', (board: Board) => {
             this.gameContextService.setBoard(board);
         });
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
-            this.gameContextService.setScore(score, this.myId === player);
+            this.gameContextService.setScore(score, this.myId.value === player);
         });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});
+    }
+
+    private getAuth(): { id?: PlayerId } {
+        const idsString = sessionStorage.getItem(IDS_KEY) || '';
+        const ids = idsString.split(';').filter((s) => s.length > 0);
+        const auth: { id?: PlayerId } = {};
+        if (ids.length > 0) {
+            auth.id = ids.pop();
+            sessionStorage.setItem(IDS_KEY, ids.join(';'));
+        }
+        return auth;
+    }
+
+    private saveAuth(id: PlayerId) {
+        const idsString = sessionStorage.getItem(IDS_KEY) || '';
+        const ids = idsString.split(';').filter((s) => s.length > 0);
+        const filteredIds = ids.filter((ident) => ident !== id);
+        filteredIds.push(id);
+        sessionStorage.setItem(IDS_KEY, filteredIds.join(';'));
     }
 }

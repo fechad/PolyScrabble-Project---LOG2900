@@ -43,11 +43,6 @@ export class GameSetupDialogComponent implements OnInit {
         const parameters = new Parameters();
         parameters.timer = this.gameParametersForm.value.minutes * 60 + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
-        const error = parameters.validateParameters();
-        if (error !== undefined) {
-            console.error(error, parameters, this.gameParametersForm.value);
-            return;
-        }
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters);
         this.dialogRef.close();
         this.router.navigate(['/waiting-room']);
