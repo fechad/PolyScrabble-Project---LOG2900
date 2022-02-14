@@ -1,6 +1,7 @@
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { EndGameService } from '@app/services/end-game.service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
 import { Parameters } from './parameters';
@@ -19,9 +20,16 @@ const BOARD_LENGTH = 15;
 export class Game {
     readonly eventEmitter = new EventEmitter();
     readonly reserve = new Reserve();
+    readonly endGameService = new EndGameService();
     readonly messages: Message[] = [];
     readonly board: Board;
+    readonly scores: number[] = [0, 0];
     private isPlayer0Turn: boolean;
+<<<<<<< HEAD
+=======
+    private nbOfPlayersReady = 0;
+    private skipCounter = 0;
+>>>>>>> 53f2f49 (logique de fin de système commencé: service créé, implémentation des deux cas de fin de partie, reste a tester et finir les voix de communication pour une fin de partie)
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
@@ -45,18 +53,30 @@ export class Game {
 
     async placeLetters(letters: string, position: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
+            const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             try {
                 const response = await this.board.placeWord(letters, position);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
+<<<<<<< HEAD
                 this.eventEmitter.emit('score', response, playerId);
                 const validMessage = this.getPlayerName() + ' : !placer ' + position + ' ' + letters;
+=======
+                this.eventEmitter.emit('board', this.formatSendableBoard());
+                this.scores[playerIndex] += response;
+                this.eventEmitter.emit('score', this.scores[playerIndex], playerId);
+                const validMessage = '!placer ' + position + ' ' + letters;
+>>>>>>> 53f2f49 (logique de fin de système commencé: service créé, implémentation des deux cas de fin de partie, reste a tester et finir les voix de communication pour une fin de partie)
                 this.eventEmitter.emit('valid-command', validMessage);
                 this.getReserveCount();
+                this.updateSkipCounter(false);
             } catch (e) {
                 this.eventEmitter.emit('game-error', e.message, playerId);
             }
             this.eventEmitter.emit('board', this.formatSendableBoard());
             this.sendRack();
+            if (this.reserve.getCount() === 0 && this.reserve.letterRacks[0 || 1].length === 0) {
+                this.endGame();
+            }
         }
     }
 
@@ -69,6 +89,7 @@ export class Game {
         if (this.checkTurn(playerId)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             this.sendRack();
+<<<<<<< HEAD
 
             let validMessage = 'Vous avez échangé les lettres:  ' + letters;
             this.eventEmitter.emit('valid-exchange', playerId, validMessage);
@@ -76,18 +97,48 @@ export class Game {
             validMessage = this.getPlayerName() + ' a échangé ' + letters.length + ' lettres';
             const opponentId = this.getPlayerId(false);
             this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
+=======
+            const validMessage = '!échanger ' + letters;
+            this.eventEmitter.emit('valid-command', validMessage);
+            this.updateSkipCounter(false);
+>>>>>>> 53f2f49 (logique de fin de système commencé: service créé, implémentation des deux cas de fin de partie, reste a tester et finir les voix de communication pour une fin de partie)
         }
     }
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
+<<<<<<< HEAD
             this.eventEmitter.emit('turn', this.getPlayerId(true));
+=======
+            this.eventEmitter.emit('turn', this.getPlayerTurnId());
+            this.updateSkipCounter(true);
+>>>>>>> 53f2f49 (logique de fin de système commencé: service créé, implémentation des deux cas de fin de partie, reste a tester et finir les voix de communication pour une fin de partie)
         }
+    }
+
+    updateSkipCounter(playerSkip: boolean) {
+        if (playerSkip) {
+            this.skipCounter += 1;
+            if (this.skipCounter === 6) this.endGame();
+        } else this.skipCounter = 0;
     }
 
     forfeit(idLoser: string | undefined) {
         this.eventEmitter.emit('forfeit', idLoser);
+    }
+
+    endGame() {
+        const finalScores = this.endGameService.calculateFinalScores(this.scores, this.reserve);
+        this.eventEmitter.emit('final-scores', finalScores);
+        this.eventEmitter.emit('message', this.endGameService.createGameSummaryMessage());
+        this.eventEmitter.emit('congratulations', this.getWinnerID(finalScores));
+    }
+
+    getWinnerID(finalScores: number[]): PlayerId {
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
+        return 'equalScore';
     }
 
     getReserveCount() {
