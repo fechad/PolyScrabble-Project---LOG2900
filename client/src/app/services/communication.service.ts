@@ -186,6 +186,7 @@ export class CommunicationService {
         this.roomSocket.on('kick', () => {
             this.leaveGame();
             setTimeout("alert('Vous avez été rejeté.');", 1);
+            this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (e) => this.handleError(e));

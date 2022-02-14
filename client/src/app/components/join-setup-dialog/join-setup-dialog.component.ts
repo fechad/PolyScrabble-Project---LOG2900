@@ -21,7 +21,7 @@ export class JoinSetupDialogComponent implements OnInit {
         private formBuilder: FormBuilder,
         private router: Router,
         public communicationService: CommunicationService,
-        @Inject(MAT_DIALOG_DATA) public data: { room: number, name: string, dictionnary: string },
+        @Inject(MAT_DIALOG_DATA) public data: { room: number; name: string; dictionnary: string },
     ) {
         this.selectedRoom = this.communicationService.rooms.pipe(map((rooms) => rooms[this.data.room]));
     }
@@ -37,6 +37,11 @@ export class JoinSetupDialogComponent implements OnInit {
     }
 
     async submit() {
+        for (const key of Object.keys(this.joiningRoomForm.controls)) {
+            if (!this.joiningRoomForm.controls[key].valid) {
+                return;
+            }
+        }
         await this.communicationService.joinRoom(this.joiningRoomForm.value.secondPlayerName, this.data.room);
         this.dialogRef.close();
         this.router.navigate(['/waiting-room']);
