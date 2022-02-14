@@ -29,4 +29,8 @@ describe('CommunicationService', () => {
         const dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionnaries');
         dictionnaries.flush([]);
     });
+
+    it('should detect main player', () => {
+        service.isMainPlayer();
+    });
 });
