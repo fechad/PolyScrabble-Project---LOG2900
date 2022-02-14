@@ -13,6 +13,7 @@ const dialogMock = {
     },
 };
 
+<<<<<<< HEAD
 const data = {
     room: 1,
     name: 'test',
@@ -30,7 +31,16 @@ export class CommunicationServiceMock {
     } as Room);
     dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
 }
+=======
+// Mock implements the behavior of open() method
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
+>>>>>>> 0a3dbe6... clean up html unknown
 
+export class CommunicationServiceMock {}
 describe('JoiningRoomPageComponent', () => {
     let component: JoiningRoomPageComponent;
     let fixture: ComponentFixture<JoiningRoomPageComponent>;
@@ -42,17 +52,24 @@ describe('JoiningRoomPageComponent', () => {
             declarations: [JoiningRoomPageComponent],
             imports: [MatCardModule],
             providers: [
+<<<<<<< HEAD
                 { provide: CommunicationService, useValue: service },
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: data },
+=======
+                { provide: CommunicationService, useValue: communicationServiceSpy },
+                { provide: MatDialog, useValue: dialogMock },
+>>>>>>> 0a3dbe6... clean up html unknown
             ],
         }).compileComponents();
     });
 
     beforeEach(() => {
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['dictionnaries']);
         fixture = TestBed.createComponent(JoiningRoomPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        // component.communicationService = Object.assign(new Promise<Dictionnary>(resolve => resolve(dictionnaries));
     });
 
     it('should create', () => {
