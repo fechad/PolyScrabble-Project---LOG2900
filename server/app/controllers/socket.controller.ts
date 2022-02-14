@@ -177,6 +177,7 @@ export class SocketManager {
                 'reserve',
                 'rackCount',
                 'congratulations',
+                'game-summary',
                 'its-a-tie',
             ];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);

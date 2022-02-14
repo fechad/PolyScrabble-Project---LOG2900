@@ -248,6 +248,10 @@ export class CommunicationService {
                 this.congratulations === `Félicitations ${winner.name}, vous avez gagné la partie !!`;
             } else this.loserId = this.myId;
         });
+        this.gameSocket.on('game-summary', (summary: string) => {
+            this.sendLocalMessage(summary);
+            //this.gameContextService.setMyTurn(false);
+        });
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
             this.congratulations === `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });

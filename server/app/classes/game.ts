@@ -132,7 +132,7 @@ export class Game {
         const finalScores = this.endGameService.calculateFinalScores(this.scores, this.reserve);
         this.eventEmitter.emit('score', finalScores[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
         this.eventEmitter.emit('score', finalScores[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
-        this.eventEmitter.emit('message', this.endGameService.createGameSummaryMessage(this.players));
+        this.eventEmitter.emit('game-summary', this.endGameService.createGameSummaryMessage(this.players));
         this.eventEmitter.emit('congratulations', this.getWinner(finalScores));
     }
 

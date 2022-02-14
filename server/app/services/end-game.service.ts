@@ -35,11 +35,11 @@ export class EndGameService {
     updateLetterLists(player: number, rack: Letter[]) {
         if (player === MAIN_PLAYER) {
             for (const letter of rack) {
-                this.mainLetterList += letter;
+                this.mainLetterList += letter.name;
             }
         } else {
             for (const letter of rack) {
-                this.otherLetterList += letter;
+                this.otherLetterList += letter.name;
             }
         }
     }
