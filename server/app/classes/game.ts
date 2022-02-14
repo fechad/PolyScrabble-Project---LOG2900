@@ -130,15 +130,19 @@ export class Game {
 
     endGame() {
         const finalScores = this.endGameService.calculateFinalScores(this.scores, this.reserve);
-        this.eventEmitter.emit('final-scores', finalScores);
-        this.eventEmitter.emit('message', this.endGameService.createGameSummaryMessage());
-        this.eventEmitter.emit('congratulations', this.getWinnerID(finalScores));
+        this.eventEmitter.emit('score', finalScores[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
+        this.eventEmitter.emit('score', finalScores[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
+        this.eventEmitter.emit('message', this.endGameService.createGameSummaryMessage(this.players));
+        this.eventEmitter.emit('congratulations', this.getWinner(finalScores));
     }
 
-    getWinnerID(finalScores: number[]): PlayerId {
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
-        return 'equalScore';
+    getWinner(finalScores: number[]): Player {
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER];
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER];
+        else {
+            this.eventEmitter.emit('its-a-tie', this.players[MAIN_PLAYER], this.players[OTHER_PLAYER]);
+        }
+        return { id: 'equalScore', name: '', connected: true };
     }
 
     getReserveCount() {

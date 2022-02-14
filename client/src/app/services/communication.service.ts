@@ -33,7 +33,7 @@ export class CommunicationService {
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
     private loserId: string | undefined = undefined;
-    private congratulations: string | undefined = undefined;
+    public congratulations: string | undefined = undefined;
 
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
@@ -243,14 +243,13 @@ export class CommunicationService {
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
             this.gameContextService.setScore(score, this.myId.value === player);
         });
-        this.gameSocket.on('final-scores', (player: PlayerId) => {
-            if (player != this.myId) this.loserId = this.myId;
+        this.gameSocket.on('congratulations', (winner: Player) => {
+            if (winner.id === this.myId) {
+                this.congratulations === `Félicitations ${winner.name}, vous avez gagné la partie !!`;
+            } else this.loserId = this.myId;
         });
-        this.gameSocket.on('congratulations', (winner: PlayerId) => {
-            if (winner === 'equalScore') {
-                this.loserId === 'noLoser';
-                this.congratulations === 'Félicitations vous avez gagné la partie !!';
-            } else if (winner != this.myId) this.loserId = this.myId;
+        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
+            this.congratulations === `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});
