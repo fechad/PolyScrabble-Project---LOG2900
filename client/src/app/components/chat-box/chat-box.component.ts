@@ -23,7 +23,6 @@ export class ChatBoxComponent {
             textarea.nativeElement.focus();
         }
     }
-
     textValue: string = '';
     yourMessage: boolean = true;
     syntaxIsValid: boolean = true;
@@ -143,8 +142,14 @@ export class ChatBoxComponent {
             lettersInRack = lettersInRack.concat(letter.name);
         }
         for (const letter of word) {
-            if (!lettersInRack.toLowerCase().includes(letter)) return false;
+            if (!lettersInRack.toLowerCase().includes(letter) && !lettersInRack.includes('*')) return false;
         }
         return true;
+    }
+
+    getLetterExchanged(message: string): number {
+        let feedback: string[] = [];
+        feedback = message.split(' ');
+        return feedback[1].length;
     }
 }

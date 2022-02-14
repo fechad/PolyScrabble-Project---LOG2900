@@ -3,6 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication.service';
 
+// export class CommunicationServiceMock {
+//     readonly selectedRoom: BehaviorSubject<Room | undefined> = new Room()
+// }
+
 describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
     let service: CommunicationService;
@@ -24,5 +28,9 @@ describe('CommunicationService', () => {
         expect(service).toBeTruthy();
         const dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionnaries');
         dictionnaries.flush([]);
+    });
+
+    it('should detect main player', () => {
+        service.isMainPlayer();
     });
 });

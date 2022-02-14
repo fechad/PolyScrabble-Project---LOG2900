@@ -34,7 +34,7 @@ export class CommunicationService {
     private gameSocket: Socket | undefined = undefined;
 
     private loserId: string | undefined = undefined;
-
+    congratulations: string | undefined = undefined;
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
         this.mainSocket = io(`${environment.socketUrl}/`, { auth });
@@ -215,17 +215,21 @@ export class CommunicationService {
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId.value);
         });
-        this.gameSocket.on('game-error', (error: string) => {
-            this.sendLocalMessage(error);
+        this.gameSocket.on('game-error', (error: string, idPlayer: PlayerId) => {
+            if (idPlayer === this.myId.value) this.sendLocalMessage(error);
         });
         this.gameSocket.on('valid-command', (response: string) => {
             this.sendLocalMessage(response);
+        });
+        this.gameSocket.on('valid-exchange', (response: string) => {
+            this.sendMessage(response);
         });
         this.gameSocket.on('reserve', (count: number) => {
             this.gameContextService.updateReserveCount(count);
         });
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
+            this.gameSocket?.emit('switch-turn');
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {

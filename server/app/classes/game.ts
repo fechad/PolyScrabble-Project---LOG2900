@@ -63,8 +63,7 @@ export class Game {
         if (this.checkTurn(playerId)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             this.sendRack();
-            const validMessage = '!échanger ' + letters;
-            this.eventEmitter.emit('valid-command', validMessage);
+            this.eventEmitter.emit('valid-exchange');
         }
     }
 
