@@ -41,6 +41,7 @@ describe('GamePageComponent', () => {
                 FormsModule,
             ],
             providers: [
+                // { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
             ],
