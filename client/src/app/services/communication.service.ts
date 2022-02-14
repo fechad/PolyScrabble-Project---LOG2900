@@ -24,7 +24,7 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
-
+    congratulations: string | undefined = undefined;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -32,9 +32,7 @@ export class CommunicationService {
     private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
-
     private loserId: string | undefined = undefined;
-    congratulations: string | undefined = undefined;
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
         this.mainSocket = io(`${environment.socketUrl}/`, { auth });
