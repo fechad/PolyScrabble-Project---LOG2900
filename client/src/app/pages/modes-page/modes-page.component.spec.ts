@@ -2,19 +2,17 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatDialog } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { ModesPageComponent } from './modes-page.component';
 
-// Mock implements the behavior of open() method
-export class MatDialogMock {
-    open() {
-        return { afterClosed: () => of({}) };
-    }
+export class ActivatedRouteMock {
+    snapshot = { url: ['classic'] };
 }
 
-export class ActivatedRouteMock {
-    snapshot = { url: ['classique'] };
-}
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
 
 describe('ModesPageComponent', () => {
     let component: ModesPageComponent;
@@ -24,7 +22,7 @@ describe('ModesPageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [ModesPageComponent],
             providers: [
-                { provide: MatDialog, useClass: MatDialogMock },
+                { provide: MatDialog, useValue: dialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
             ],
         }).compileComponents();

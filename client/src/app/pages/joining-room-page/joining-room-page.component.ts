@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Room } from '@app/classes/room';
@@ -11,7 +11,7 @@ import { CommunicationService } from '@app/services/communication.service';
     templateUrl: './joining-room-page.component.html',
     styleUrls: ['./joining-room-page.component.scss'],
 })
-export class JoiningRoomPageComponent {
+export class JoiningRoomPageComponent implements OnInit {
     dictionnaries: Dictionnary[] | undefined = undefined;
 
     constructor(public dialog: MatDialog, public communicationService: CommunicationService, public location: Location) {}

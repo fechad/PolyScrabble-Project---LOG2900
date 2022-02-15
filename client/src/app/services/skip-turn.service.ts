@@ -7,7 +7,6 @@ import { Subject } from 'rxjs';
 export class SkipTurnService {
     isYourTurn = true;
     turnChange: Subject<boolean> = new Subject<boolean>();
-    constructor() {}
     skipTurn() {
         this.isYourTurn = !this.isYourTurn;
         this.turnChange.next(this.isYourTurn);
