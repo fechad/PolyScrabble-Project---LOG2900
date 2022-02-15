@@ -5,9 +5,10 @@ import { Dictionnary } from '@app/classes/dictionnary';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
+import { IoWrapper } from '@app/classes/socket-wrapper';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { Letter } from './alphabet';
 import { Board, GameContextService } from './game-context.service';
@@ -28,15 +29,22 @@ export class CommunicationService {
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
-    private readonly waitingRoomsSocket: Socket = io(`${environment.socketUrl}/waitingRoom`);
+    private readonly waitingRoomsSocket: Socket;
     private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
     private loserId: string | undefined = undefined;
 
-    constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
+    constructor(
+        public gameContextService: GameContextService,
+        public gridService: GridService,
+        httpClient: HttpClient,
+        private router: Router,
+        private io: IoWrapper,
+    ) {
+        this.waitingRoomsSocket = this.io.io(`${environment.socketUrl}/waitingRoom`);
         const auth = this.getAuth();
-        this.mainSocket = io(`${environment.socketUrl}/`, { auth });
+        this.mainSocket = this.io.io(`${environment.socketUrl}/`, { auth });
 
         this.listenRooms();
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
@@ -53,7 +61,7 @@ export class CommunicationService {
     }
 
     isMainPlayer(): boolean {
-        return this.selectedRoom.value?.mainPlayer.id === this.myId.value;
+        return this.selectedRoom.value !== undefined && this.selectedRoom.value.mainPlayer.id === this.myId.value;
     }
 
     kick() {
@@ -134,19 +142,8 @@ export class CommunicationService {
 
     async waitForRoom() {
         await new Promise((resolve, reject) => {
-            let ended = false;
-            this.mainSocket.once('join', () => {
-                if (!ended) {
-                    ended = true;
-                    resolve(null);
-                }
-            });
-            this.mainSocket.once('error', (e) => {
-                if (!ended) {
-                    ended = true;
-                    reject(e);
-                }
-            });
+            this.mainSocket.once('join', () => resolve(null));
+            this.mainSocket.once('error', (e) => reject(e));
         });
         await this.selectedRoom.pipe(take(2)).toPromise();
     }
@@ -184,7 +181,7 @@ export class CommunicationService {
     }
 
     private joinRoomHandler(roomId: RoomId) {
-        this.roomSocket = io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
+        this.roomSocket = this.io.io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
             setTimeout("alert('Vous avez été éjecté de la salle d'attente');", 1);
@@ -199,7 +196,7 @@ export class CommunicationService {
     }
 
     private joinGameHandler(gameId: string) {
-        this.gameSocket = io(`${environment.socketUrl}/games/${gameId}`, { auth: { id: this.myId.value, token: this.token } });
+        this.gameSocket = this.io.io(`${environment.socketUrl}/games/${gameId}`, { auth: { id: this.myId.value, token: this.token } });
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
@@ -210,24 +207,14 @@ export class CommunicationService {
             this.router.navigate(['/']);
         });
 
-        this.gameSocket.on('turn', (id: PlayerId) => {
-            this.gameContextService.setMyTurn(id === this.myId.value);
+        this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.setMyTurn(id === this.myId.value));
+        this.gameSocket.on('message', (message: Message, msgCount: number) => {
+            this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
         });
-        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
-            this.gameContextService.receiveMessages(message, msgCount, id === this.myId.value);
-        });
-        this.gameSocket.on('game-error', (error: string, idPlayer: PlayerId) => {
-            if (idPlayer === this.myId.value) this.sendLocalMessage(error);
-        });
-        this.gameSocket.on('valid-command', (response: string) => {
-            this.sendLocalMessage(response);
-        });
-        this.gameSocket.on('valid-exchange', (response: string) => {
-            this.sendLocalMessage(response);
-        });
-        this.gameSocket.on('reserve', (count: number) => {
-            this.gameContextService.updateReserveCount(count);
-        });
+        this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
+        this.gameSocket.on('valid-command', (response: string) => this.sendLocalMessage(response));
+        this.gameSocket.on('valid-exchange', (response: string) => this.sendLocalMessage(response));
+        this.gameSocket.on('reserve', (count: number) => this.gameContextService.updateReserveCount(count));
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
             this.gameSocket?.emit('switch-turn');
@@ -237,9 +224,7 @@ export class CommunicationService {
                 this.gameContextService.setName(player, player.id === this.myId.value);
             }
         });
-        this.gameSocket.on('board', (board: Board) => {
-            this.gameContextService.setBoard(board);
-        });
+        this.gameSocket.on('board', (board: Board) => this.gameContextService.setBoard(board));
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
             this.gameContextService.setScore(score, this.myId.value === player);
         });
@@ -250,7 +235,6 @@ export class CommunicationService {
         });
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
-            // this.gameContextService.setMyTurn(false);
         });
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
             this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
