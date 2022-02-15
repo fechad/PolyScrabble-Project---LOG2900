@@ -121,7 +121,7 @@ export class Game {
         if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER];
         else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER];
         else {
-            this.eventEmitter.emit('its-a-tie', this.players[MAIN_PLAYER], this.players[OTHER_PLAYER]);
+            this.eventEmitter.emit('its-a-tie', this.players[MAIN_PLAYER], this.players[OTHER_PLAYER].name);
         }
         return { id: 'equalScore', name: '', connected: true };
     }

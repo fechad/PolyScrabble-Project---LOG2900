@@ -241,8 +241,8 @@ export class CommunicationService {
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
         });
-        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
-            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo.name}, vous avez gagné la partie !!`;
+        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo: string) => {
+            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
     }
 
