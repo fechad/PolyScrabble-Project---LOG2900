@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-import { Letter } from './Alphabet';
+import { Letter } from './alphabet';
 import { Board, GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 
@@ -173,7 +173,8 @@ export class CommunicationService {
     }
 
     private handleError(e: string | Error) {
-        console.error(e);
+        // eslint-disable-next-line no-console
+        if (!environment.production) console.error(e);
     }
 
     private leaveGame() {
@@ -254,8 +255,6 @@ export class CommunicationService {
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
             this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
-        // TO-DO: does not receive forfeit event from server
-        this.gameSocket.on('forfeit', () => {});
     }
 
     private getAuth(): { id?: PlayerId } {

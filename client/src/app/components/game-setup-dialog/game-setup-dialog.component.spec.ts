@@ -13,6 +13,8 @@ import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameSetupDialogComponent } from './game-setup-dialog.component';
 
+const HALFMINUTE = 30;
+const TENMINUTES = 600;
 export class ParametersMock {
     timer: number = 0;
     dictionnary: number = 0;
@@ -20,7 +22,7 @@ export class ParametersMock {
     difficulty?: undefined;
 
     validateParameters() {
-        if (this.timer <= 0 || this.timer % 30 !== 0 || this.timer > 600) {
+        if (this.timer <= 0 || this.timer % HALFMINUTE !== 0 || this.timer > TENMINUTES) {
             return Error('Timer should be divisible by 30 and be between 0 and 600');
         }
         if (this.gameType === 'solo' && this.difficulty === undefined) {
