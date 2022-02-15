@@ -144,6 +144,9 @@ describe('Board', () => {
 
         positionArray = ['b', '6', 'v'];
         assert(!board['isTouchingOtherWord'](word.length, positionArray));
+
+        positionArray = ['f', '3', 'h'];
+        assert(!board['isTouchingOtherWord'](word.length, positionArray));
         done();
     });
 
@@ -161,7 +164,6 @@ describe('Board', () => {
         assert(board['isTouchingOtherWord'](word.length, positionArray));
         positionArray = ['h', '6', 'h'];
         assert(board['isTouchingOtherWord'](word.length, positionArray));
-        // TODO: check if going through a word
 
         positionArray = ['f', '9', 'v'];
         assert(board['isTouchingOtherWord'](word.length, positionArray));
@@ -223,6 +225,7 @@ describe('Board', () => {
         assert(contacts[0][2] === 3);
         done();
     });
+
     it('should change newly placed word', (done) => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
@@ -251,44 +254,21 @@ describe('Board', () => {
         let wordAndPos = ['h;7;6;as', 'v;9;6;vu'];
         let expectedScore = 7;
         let score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[7][6].newlyPlaced);
-        assert(!board.board[7][7].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
         wordAndPos = ['v;4;5;test', 'h;7;5;tas'];
         expectedScore = 9;
         score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[4][5].newlyPlaced);
-        assert(!board.board[5][5].newlyPlaced);
-        assert(!board.board[6][5].newlyPlaced);
-        assert(!board.board[7][5].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
         wordAndPos = ['h;5;4;metro', 'v;4;5;test'];
         expectedScore = 10;
         score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[5][4].newlyPlaced);
-        assert(!board.board[5][5].newlyPlaced);
-        assert(!board.board[5][6].newlyPlaced);
-        assert(!board.board[5][7].newlyPlaced);
-        assert(!board.board[5][8].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
         wordAndPos = ['v;7;7;speciale', 'h;7;5;tas'];
         expectedScore = 42;
         score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[7][7].newlyPlaced);
-        assert(!board.board[7][8].newlyPlaced);
-        assert(!board.board[7][9].newlyPlaced);
-        assert(!board.board[7][10].newlyPlaced);
-        assert(!board.board[7][11].newlyPlaced);
-        assert(!board.board[7][12].newlyPlaced);
-        assert(!board.board[7][13].newlyPlaced);
-        assert(!board.board[7][14].newlyPlaced);
         expect(score).to.equal(expectedScore);
         done();
     });
@@ -308,5 +288,45 @@ describe('Board', () => {
 
         result = await board.placeWord(attemptedWord, position);
         expect(result).to.equals(expectedScore);
+    });
+
+    it('should not place a word  if there is something invalid', async () => {
+        let position = 'f16v';
+        let attemptedWord = 'testeur';
+        let errorMessage = "Erreur de syntaxe dans le placement d'un mot";
+        try{
+           await board.placeWord(attemptedWord, position); 
+        }catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        position = 'f14h';
+        errorMessage = 'Placement invalide le mot ne rentre pas dans la grille';
+        try{
+            await board.placeWord(attemptedWord, position); 
+        }catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        position = 'c2h';
+        errorMessage = 'Placement invalide pour le premier mot';
+        try{
+            await board.placeWord(attemptedWord, position); 
+        }catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+
+        position = 'c2h';
+        errorMessage = 'Placement invalide vous devez toucher un autre mot';
+        try{
+            await board.placeWord(attemptedWord, position); 
+        }catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        // TODO: tester mot non dans le dictionnaire
     });
 });

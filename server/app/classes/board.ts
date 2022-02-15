@@ -142,7 +142,9 @@ export class Board {
             return true;
         }
         for (let i = col; i < col + wordLength; i++) {
-            if ((row - 1 >= 0 && !this.board[row - 1][i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][i].empty)) {
+            if (!this.board[row][i].empty) {
+                return true;
+            } else if ((row - 1 >= 0 && !this.board[row - 1][i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][i].empty)) {
                 return true;
             }
         }
@@ -157,7 +159,9 @@ export class Board {
             return true;
         }
         for (let i = row; i < row + wordLength; i++) {
-            if (col - 1 >= 0 && !this.board[i][col - 1].empty) {
+            if (!this.board[i][col].empty) {
+                return true;
+            } else if (col - 1 >= 0 && !this.board[i][col - 1].empty) {
                 return true;
             }
             if (col + 1 < BOARD_LENGTH && !this.board[i][col + 1].empty) {
