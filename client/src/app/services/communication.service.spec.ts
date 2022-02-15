@@ -4,48 +4,24 @@ import { Router } from '@angular/router';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { Player, Room } from '@app/classes/room';
-import { CommunicationService, IoWrapper } from '@app/services/communication.service';
-import EventEmitter from 'events';
+import { IoWrapper } from '@app/classes/socket-wrapper';
+import { SocketMock } from '@app/classes/socket-wrapper.spec';
+import { CommunicationService } from '@app/services/communication.service';
 import { Letter } from './alphabet';
 import { Board } from './game-context.service';
 
-class SocketMock {
-    readonly events: EventEmitter = new EventEmitter();
-    readonly emitSpy: jasmine.Spy<any>;
-    connected: boolean = true;
-
-    emit(event: string, ...params: any[]) {}
-    on(event: string, listener: (...params: any[]) => void) {
-        this.events.on(event, listener);
-    }
-    once(event: string, listener: (...params: any[]) => void) {
-        this.events.once(event, listener);
-    }
-    connect() {
-        this.connected = true;
-    }
-    disconnect() {
-        this.connected = false;
-    }
-    close() {}
-
-    constructor() {
-        this.emitSpy = spyOn<SocketMock, any>(this, 'emit');
-    }
-}
+/* eslint-disable dot-notation, max-lines */
 
 class IoWrapperMock {
-    io(path: string, params?: { auth: any }): SocketMock {
+    io(): SocketMock {
         return new SocketMock();
     }
 }
 
-// export class CommunicationServiceMock {
-//     readonly selectedRoom: BehaviorSubject<Room | undefined> = new Room()
-// }
-
 describe('CommunicationService', () => {
-    const ID: string = 'BOB';
+    const ID = 'BOB';
+    const TOKEN = 34;
+    const GAME_NO = 9;
 
     let httpMock: HttpTestingController;
     let service: CommunicationService;
@@ -53,7 +29,17 @@ describe('CommunicationService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [{ provide: Router, useValue: { navigate(){} } }, { provide: IoWrapper, useClass: IoWrapperMock }],
+            providers: [
+                {
+                    provide: Router,
+                    useValue: {
+                        navigate: () => {
+                            /* ignore */
+                        },
+                    },
+                },
+                { provide: IoWrapper, useClass: IoWrapperMock },
+            ],
         });
         service = TestBed.inject(CommunicationService);
         httpMock = TestBed.inject(HttpTestingController);
@@ -71,36 +57,45 @@ describe('CommunicationService', () => {
     });
 
     it('should handle id message', () => {
-        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, 23);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
         expect(service.getId().value).toBe(ID);
-        expect(service['token']).toBe(23);
+        expect(service['token']).toBe(TOKEN);
     });
 
     it('should handle broadcasting messages', () => {
         expect(service.rooms.value).toEqual([]);
-        const rooms: Room[] = [{ id: 0, name: 'Game', parameters: new Parameters(), mainPlayer: { name: 'BOB', id: ID, connected: true }, otherPlayer: undefined, started: false }];
+        const rooms: Room[] = [
+            {
+                id: 0,
+                name: 'Game',
+                parameters: new Parameters(),
+                mainPlayer: { name: 'BOB', id: ID, connected: true },
+                otherPlayer: undefined,
+                started: false,
+            },
+        ];
         (service['waitingRoomsSocket'] as unknown as SocketMock).events.emit('broadcast-rooms', rooms);
         expect(service.rooms.value).toEqual(rooms);
     });
 
     const createRoom = () => {
-        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, 23);
-        (service['mainSocket'] as unknown as SocketMock).events.emit('join', 5);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('join', GAME_NO);
         (service['roomSocket'] as unknown as SocketMock).events.emit('update-room', {
-            id: 0,
+            id: GAME_NO,
             name: 'Room name',
             parameters: new Parameters(),
             mainPlayer: { name: 'Player 1', id: ID, connected: true },
             otherPlayer: undefined,
             started: false,
         });
-    }
+    };
 
     const otherPlayer = () => {
         const newRoom = service.selectedRoom.value;
         if (newRoom) newRoom.mainPlayer.id = 'albatros';
         service.selectedRoom.next(newRoom);
-    }
+    };
 
     it('should allow to know if ID is mainPlayer', () => {
         expect(service.isMainPlayer()).toBe(false);
@@ -135,7 +130,7 @@ describe('CommunicationService', () => {
 
     it('should kick & leave when main player', () => {
         createRoom();
-        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', 5);
+        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', GAME_NO);
         const spy = (service['gameSocket'] as unknown as SocketMock).emitSpy;
         service.kickLeave();
         expect(spy).toHaveBeenCalledWith('kick');
@@ -157,7 +152,7 @@ describe('CommunicationService', () => {
     });
 
     it('should not leave when not in room', () => {
-        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, 23);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
         expect(() => service.leave()).toThrow();
     });
 
@@ -171,23 +166,23 @@ describe('CommunicationService', () => {
 
     it('should forfeit', () => {
         createRoom();
-        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', 9);
+        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', GAME_NO);
         service.confirmForfeit();
         expect((service['gameSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('confirm-forfeit');
         expect(service.getLoserId()).toBe(ID);
     });
 
     it('should join room', async () => {
-        const promise = service.joinRoom('aldabob', 0);
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', 0, 'aldabob');
+        const promise = service.joinRoom('aldabob', GAME_NO);
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', GAME_NO, 'aldabob');
         createRoom();
         setTimeout(() => otherPlayer(), 0);
         await promise;
     });
 
     it('should not join room 2 times', async () => {
-        const promise = service.joinRoom('aldabob', 0);
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', 0, 'aldabob');
+        const promise = service.joinRoom('aldabob', GAME_NO);
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', GAME_NO, 'aldabob');
         createRoom();
         setTimeout(() => otherPlayer(), 0);
         await promise;
@@ -195,8 +190,8 @@ describe('CommunicationService', () => {
     });
 
     it('should not join room when there is an error', async () => {
-        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, 23);
-        const promise = service.joinRoom('aldabob', 0);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
+        const promise = service.joinRoom('aldabob', GAME_NO);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', new Error('big bad error'));
         await expectAsync(promise).toBeRejected();
     });
@@ -226,7 +221,7 @@ describe('CommunicationService', () => {
     });
 
     it('should start/stop listening to broadcasts', async () => {
-        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, 23);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
         const spy = spyOn(service['waitingRoomsSocket'], 'disconnect').and.callThrough();
         expect(service['waitingRoomsSocket'].connected).toBe(true);
         service.unlistenRooms();
@@ -243,26 +238,26 @@ describe('CommunicationService', () => {
     });
 
     it('should handle errors on main socket', async () => {
-        const spy = spyOn<any>(service, 'handleError');
+        const spy = spyOn(service, 'handleError' as never);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', 'BIG BAD ERROR');
         expect(spy).toHaveBeenCalled();
     });
 
     const joinGame = () => {
         createRoom();
-        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', 9);
+        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', GAME_NO);
     };
 
     it('should handle errors on room socket', async () => {
         joinGame();
-        const spy = spyOn<any>(service, 'handleError').and.callThrough();
+        const spy = spyOn(service, 'handleError' as never).and.callThrough();
         (service['roomSocket'] as unknown as SocketMock).events.emit('error', 'BIG BAD ERROR');
         expect(spy).toHaveBeenCalled();
     });
 
     it('should forfeit', async () => {
         const spy = spyOn(service['gameContextService'], 'clearMessages');
-        const spy2 = spyOn<any>(service, 'leaveGame');
+        const spy2 = spyOn(service, 'leaveGame' as never);
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('forfeit', ID);
         expect(spy).toHaveBeenCalled();
@@ -271,7 +266,7 @@ describe('CommunicationService', () => {
 
     it('should allow other player to forfeit', async () => {
         const spy = spyOn(service['gameContextService'], 'clearMessages');
-        const spy2 = spyOn<any>(service, 'leaveGame');
+        const spy2 = spyOn(service, 'leaveGame' as never);
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('forfeit', 'Dummy');
         expect(spy).toHaveBeenCalled();
@@ -312,19 +307,53 @@ describe('CommunicationService', () => {
         expect(spy).toHaveBeenCalledWith('BOBO', true);
     });
 
+    it('should receive valid exchanges', async () => {
+        const spy = spyOn(service['gameContextService'], 'addMessage');
+        joinGame();
+        (service['gameSocket'] as unknown as SocketMock).events.emit('valid-exchange', 'BOBO');
+        expect(spy).toHaveBeenCalledWith('BOBO', true);
+    });
+
+    it('should accept wins', async () => {
+        joinGame();
+        (service['gameSocket'] as unknown as SocketMock).events.emit('congratulations', { name: 'BOB', id: ID, connected: true });
+        expect(service.congratulations).toBe('Félicitations BOB, vous avez gagné la partie !!');
+    });
+
+    it('should accept losts', async () => {
+        joinGame();
+        (service['gameSocket'] as unknown as SocketMock).events.emit('congratulations', { name: 'BOB', id: 'Dummy', connected: true });
+        expect(service.getLoserId()).toBe(ID);
+    });
+
+    it('should receive game summary', async () => {
+        const spy = spyOn(service['gameContextService'], 'addMessage');
+        joinGame();
+        (service['gameSocket'] as unknown as SocketMock).events.emit('game-summary', 'BOBO');
+        expect(spy).toHaveBeenCalledWith('BOBO', true);
+    });
+
+    it('should accept ties', async () => {
+        joinGame();
+        (service['gameSocket'] as unknown as SocketMock).events.emit('its-a-tie', { name: 'BOB', id: ID, connected: true }, 'BOBBY');
+        expect(service.congratulations).toBe('Félicitations, BOB et BOBBY, vous avez gagné la partie !!');
+    });
+
     it('should update reserve', async () => {
+        const NUM_LETTERS = 1000;
         const spy = spyOn(service['gameContextService'], 'updateReserveCount');
         joinGame();
-        (service['gameSocket'] as unknown as SocketMock).events.emit('reserve', 9);
-        expect(spy).toHaveBeenCalledWith(9);
+        (service['gameSocket'] as unknown as SocketMock).events.emit('reserve', NUM_LETTERS);
+        expect(spy).toHaveBeenCalledWith(NUM_LETTERS);
     });
 
     it('should update racks', async () => {
+        const NUM_LETTERS = 9;
         const spy = spyOn(service['gameContextService'], 'updateRack');
         joinGame();
         const letters: Letter[] = [{ id: 0, name: 'A', score: 1, quantity: 30 }];
-        (service['gameSocket'] as unknown as SocketMock).events.emit('rack', letters, 9);
-        expect(spy).toHaveBeenCalledWith(letters, 9);
+        (service['gameSocket'] as unknown as SocketMock).events.emit('rack', letters, NUM_LETTERS);
+        expect(spy).toHaveBeenCalledWith(letters, NUM_LETTERS);
     });
 
     it('should set players', async () => {
@@ -346,20 +375,23 @@ describe('CommunicationService', () => {
     });
 
     it('should set score', async () => {
+        const SCORE = 9;
         const spy = spyOn(service['gameContextService'], 'setScore');
         joinGame();
-        (service['gameSocket'] as unknown as SocketMock).events.emit('score', 9, ID);
-        expect(spy).toHaveBeenCalledWith(9, true);
-        (service['gameSocket'] as unknown as SocketMock).events.emit('score', 9, 'Dummy');
-        expect(spy).toHaveBeenCalledWith(9, false);
+        (service['gameSocket'] as unknown as SocketMock).events.emit('score', SCORE, ID);
+        expect(spy).toHaveBeenCalledWith(SCORE, true);
+        (service['gameSocket'] as unknown as SocketMock).events.emit('score', SCORE, 'Dummy');
+        expect(spy).toHaveBeenCalledWith(SCORE, false);
     });
 
     it('should save id when unloading', () => {
-        let closeHandler: EventListenerOrEventListenerObject = () => {};
+        let closeHandler: EventListenerOrEventListenerObject = () => {
+            expect(true).toBe(false); // should not be called
+        };
         const spy = spyOn(window, 'addEventListener').and.callFake((event: string, handler: EventListenerOrEventListenerObject) => {
             closeHandler = handler;
         });
-        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, 23);
+        (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
         expect(spy).toHaveBeenCalled();
         expect(closeHandler).not.toBe(undefined);
         closeHandler(new Event('beforeunload'));

@@ -5,9 +5,10 @@ import { Dictionnary } from '@app/classes/dictionnary';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
+import { IoWrapper } from '@app/classes/socket-wrapper';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { io as ioSocket, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { Letter } from './alphabet';
 import { Board, GameContextService } from './game-context.service';
@@ -16,15 +17,6 @@ import { GridService } from './grid.service';
 type Token = number;
 
 const IDS_KEY = 'ids';
-
-@Injectable({
-    providedIn: 'root',
-})
-export class IoWrapper {
-    io(path: string, params?: { auth: any }): Socket {
-        return ioSocket(path, params)
-    }
-}
 
 @Injectable({
     providedIn: 'root',
@@ -43,7 +35,13 @@ export class CommunicationService {
     private gameSocket: Socket | undefined = undefined;
     private loserId: string | undefined = undefined;
 
-    constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router, private io: IoWrapper) {
+    constructor(
+        public gameContextService: GameContextService,
+        public gridService: GridService,
+        httpClient: HttpClient,
+        private router: Router,
+        private io: IoWrapper,
+    ) {
         this.waitingRoomsSocket = this.io.io(`${environment.socketUrl}/waitingRoom`);
         const auth = this.getAuth();
         this.mainSocket = this.io.io(`${environment.socketUrl}/`, { auth });
@@ -237,7 +235,6 @@ export class CommunicationService {
         });
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
-            // this.gameContextService.setMyTurn(false);
         });
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
             this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
