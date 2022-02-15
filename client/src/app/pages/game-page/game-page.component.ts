@@ -43,7 +43,7 @@ export class GamePageComponent {
         this.router.navigateByUrl('http://localhost:4200/');
     }
     skipMyTurn() {
-        this.communicationService.switchTurn();
+        this.communicationService.switchTurn(false);
     }
     resetFont() {
         this.gridService.multiplier = 1;

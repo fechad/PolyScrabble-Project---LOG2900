@@ -132,10 +132,10 @@ describe('Game', () => {
     it('should skip turn', (done) => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[0].id);
+        game.skipTurn(game.players[0].id, true);
         // eslint-disable-next-line dot-notation
         assert(!game['isPlayer0Turn']);
-        game.skipTurn(game.players[1].id);
+        game.skipTurn(game.players[1].id, true);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
@@ -145,7 +145,7 @@ describe('Game', () => {
     it('should not skip turn if it is not your turn', (done) => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[1].id);
+        game.skipTurn(game.players[1].id, true);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.called);

@@ -35,7 +35,7 @@ export class InfosBoxComponent implements AfterViewInit {
 
     onTimerFinished(e: CountdownEvent) {
         if (e.action === 'done') {
-            this.communicationService.switchTurn();
+            this.communicationService.switchTurn(true);
         }
     }
 }

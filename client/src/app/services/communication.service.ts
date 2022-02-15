@@ -26,6 +26,7 @@ export class CommunicationService {
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
     congratulations: string | undefined = undefined;
+    endGame: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -110,8 +111,8 @@ export class CommunicationService {
         return this.myId;
     }
 
-    switchTurn() {
-        this.gameSocket?.emit('switch-turn');
+    switchTurn(timerRequest: boolean) {
+        this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, position: string) {
@@ -231,13 +232,17 @@ export class CommunicationService {
         this.gameSocket.on('congratulations', (winner: Player) => {
             if (winner.id === this.myId.value) {
                 this.congratulations = `Félicitations ${winner.name}, vous avez gagné la partie !!`;
-            } else this.loserId = this.myId.value;
+            } else {
+                this.loserId = this.myId.value;
+                this.congratulations = ' Votre adversaire à gagné la partie !';
+            }
+            this.endGame = true;
         });
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
         });
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
-            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
+            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo.name}, vous avez gagné la partie !!`;
         });
     }
 
