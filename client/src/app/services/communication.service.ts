@@ -228,7 +228,6 @@ export class CommunicationService {
         });
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
-            this.gameSocket?.emit('switch-turn');
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
@@ -241,8 +240,6 @@ export class CommunicationService {
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
             this.gameContextService.setScore(score, this.myId.value === player);
         });
-        // TO-DO: does not receive forfeit event from server
-        this.gameSocket.on('forfeit', () => {});
     }
 
     private getAuth(): { id?: PlayerId } {

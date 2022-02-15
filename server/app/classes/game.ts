@@ -57,6 +57,7 @@ export class Game {
             }
             this.eventEmitter.emit('board', this.formatSendableBoard());
             this.sendRack();
+            this.skipTurn(playerId);
         }
     }
 
@@ -76,6 +77,7 @@ export class Game {
             validMessage = this.getPlayerName() + ' a échangé ' + letters.length + ' lettres';
             const opponentId = this.getPlayerId(false);
             this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
+            this.skipTurn(playerId);
         }
     }
 
