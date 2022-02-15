@@ -197,4 +197,22 @@ describe('Game', () => {
         await game.placeLetters('allo', 'h7h', game.players[MAIN_PLAYER].id);
         assert(endGame.called);
     });
+    it('should calulate the final scores when the mainPlayer rack is empty', () => {
+        const scoreMainPlayer = 10;
+        const scoreOtherPlayer = 20;
+        const scores = [scoreMainPlayer, scoreOtherPlayer];
+        game.reserve.emptyReserve();
+        game.reserve.letterRacks[MAIN_PLAYER].length = 0;
+        const result = game.endGameService.calculateFinalScores(scores, game.reserve);
+        assert(result);
+    });
+    it('should calulate the final scores when the otherPlayer rack is empty', () => {
+        const scoreMainPlayer = 10;
+        const scoreOtherPlayer = 20;
+        const scores = [scoreMainPlayer, scoreOtherPlayer];
+        game.reserve.emptyReserve();
+        game.reserve.letterRacks[OTHER_PLAYER].length = 0;
+        const result = game.endGameService.calculateFinalScores(scores, game.reserve);
+        assert(result);
+    });
 });
