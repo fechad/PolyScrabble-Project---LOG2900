@@ -30,6 +30,7 @@ export class Game {
     }
 
     gameInit() {
+        this.eventEmitter.emit('board', this.formatSendableBoard());
         this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
         this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
         this.eventEmitter.emit('turn', this.getPlayerTurnId());
