@@ -110,14 +110,14 @@ describe('ChatBoxComponent', () => {
         }
     });
 
-    it('validateCommand should call placer when !passer command is sent ', () => {
+    it('validateCommand should call passer when !passer command is sent ', () => {
         const pass = spyOn(component, 'pass').and.callThrough();
         component.textValue = '!passer';
         component.validateSyntax();
         expect(pass).toHaveBeenCalled();
     });
 
-    it('placer should call communicationService.switchTurn() for a valid !passer command', () => {
+    it('passer should call communicationService.switchTurn() for a valid !passer command', () => {
         const switchTurn = spyOn(component.communicationService, 'switchTurn').and.callThrough();
         component.textValue = '!passer';
         component.validateSyntax();
