@@ -19,7 +19,7 @@ class CommunicationServiceMock {
     setRoom(): void {
         this.selectedRoom.next({
             id: 0,
-            name: 'Room name',
+            name: 'Room',
             parameters: new Parameters(),
             mainPlayer: { name: 'Player 1', id: '0', connected: true },
             otherPlayer: undefined,
