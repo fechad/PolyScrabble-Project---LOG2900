@@ -36,6 +36,6 @@ export class WaitingRoomPageComponent {
 
     kickLeave() {
         this.communicationService.kickLeave();
-        this.router.navigate(['/classique']);
+        this.router.navigate(['/classic']);
     }
 }

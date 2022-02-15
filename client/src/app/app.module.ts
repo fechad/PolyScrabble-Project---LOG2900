@@ -23,7 +23,6 @@ import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { CommunicationService } from './services/communication.service';
-import { EndgamePopUpComponent } from './endgame-pop-up/endgame-pop-up.component';
 
 /**
  * Main module that is used in main.ts.
@@ -47,7 +46,6 @@ import { EndgamePopUpComponent } from './endgame-pop-up/endgame-pop-up.component
         InfosBoxComponent,
         ModesPageComponent,
         HelpInfoComponent,
-        EndgamePopUpComponent,
     ],
     imports: [
         AppMaterialModule,

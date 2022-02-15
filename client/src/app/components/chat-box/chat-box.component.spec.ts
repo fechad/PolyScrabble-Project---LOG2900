@@ -3,7 +3,7 @@ import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { alphabet, Letter } from '@app/services/Alphabet';
+import { alphabet, Letter } from '@app/services/alphabet';
 import { ChatBoxComponent } from './chat-box.component';
 
 import SpyObj = jasmine.SpyObj;

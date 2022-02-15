@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-import { Letter } from '@app/services/Alphabet';
+import { Letter } from '@app/services/alphabet';
 import { GameContextService, Tile } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;

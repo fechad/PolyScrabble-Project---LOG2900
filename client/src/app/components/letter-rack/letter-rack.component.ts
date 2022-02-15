@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Letter } from '@app/services/Alphabet';
+import { Letter } from '@app/services/alphabet';
 import { GameContextService } from '@app/services/game-context.service';
 
 // const DELAY = 10;
