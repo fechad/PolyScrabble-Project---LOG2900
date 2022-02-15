@@ -201,7 +201,7 @@ export class SocketManager {
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
-            socket.on('switch-turn', (timerRequest: boolean) => game.skipTurn(id, timerRequest));
+            socket.on('switch-turn', () => game.skipTurn(id));
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));

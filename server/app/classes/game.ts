@@ -26,13 +26,12 @@ export class Game {
     readonly board: Board;
     readonly scores: number[] = [0, 0];
     private isPlayer0Turn: boolean;
-    private skipCounter;
+    private skipCounter = 0;
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
         setTimeout(() => this.eventEmitter.emit('dummy'), this.parameters.timer);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
-        this.skipCounter = 0;
     }
 
     gameInit() {
@@ -90,11 +89,11 @@ export class Game {
         }
     }
 
-    skipTurn(playerId: PlayerId, timerRequest: boolean) {
+    skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
             this.eventEmitter.emit('turn', this.getPlayerId(true));
-            if (!timerRequest && timerRequest !== undefined) this.updateSkipCounter(true);
+            this.updateSkipCounter(true);
         }
     }
 

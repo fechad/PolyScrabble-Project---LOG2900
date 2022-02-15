@@ -19,7 +19,6 @@ export class MainPageComponent {
             toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
             texte: 'Mode LOG2990',
             disabled: true,
-            style: 'background-color: #cccccc',
         },
         { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: true },
     ];
