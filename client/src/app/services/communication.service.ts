@@ -63,7 +63,7 @@ export class CommunicationService {
     }
 
     isMainPlayer(): boolean {
-        return this.selectedRoom.value?.mainPlayer.id === this.myId.value;
+        return this.selectedRoom.value !== undefined && this.selectedRoom.value.mainPlayer.id === this.myId.value;
     }
 
     kick() {
@@ -144,20 +144,8 @@ export class CommunicationService {
 
     async waitForRoom() {
         await new Promise((resolve, reject) => {
-            let ended = false;
-            this.mainSocket.once('join', () => {
-                if (!ended) {
-                    ended = true;
-                    resolve(null);
-                }
-            });
-            this.mainSocket.once('error', (e) => {
-                if (!ended) {
-                    ended = true;
-                    console.log('archi');
-                    reject(e);
-                }
-            });
+            this.mainSocket.once('join', () => resolve(null));
+            this.mainSocket.once('error', (e) => reject(e));
         });
         await this.selectedRoom.pipe(take(2)).toPromise();
     }
@@ -222,8 +210,8 @@ export class CommunicationService {
         });
 
         this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.setMyTurn(id === this.myId.value));
-        this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
-            this.gameContextService.receiveMessages(message, msgCount, id === this.myId.value);
+        this.gameSocket.on('message', (message: Message, msgCount: number) => {
+            this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
         });
         this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
         this.gameSocket.on('valid-command', (response: string) => this.sendLocalMessage(response));
