@@ -108,6 +108,7 @@ export class CommunicationService {
     place(letters: string, position: string) {
         this.gameContextService.tempUpdateRack(letters);
         this.gridService.tempUpdateBoard(letters, position);
+        this.gameContextService.allowSwitch(false);
         this.gameSocket?.emit('place-letters', letters, position);
     }
 
@@ -228,6 +229,7 @@ export class CommunicationService {
         });
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
+            this.gameContextService.allowSwitch(true);
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {

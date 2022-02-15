@@ -33,7 +33,7 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     onTimerFinished(e: CountdownEvent) {
-        if (e.action === 'done') {
+        if (e.action === 'done' && this.gameContextService.skipTurnEnabled && this.gameContextService.isMyTurn.value) {
             this.communicationService.switchTurn();
         }
     }

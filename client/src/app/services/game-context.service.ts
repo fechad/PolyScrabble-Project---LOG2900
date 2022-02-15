@@ -26,6 +26,7 @@ export class GameContextService {
     readonly opponentRackCount: BehaviorSubject<number> = new BehaviorSubject<number>(NORMAL_RACK_LENGTH);
     myName: string;
     opponentName: string;
+    skipTurnEnabled: boolean = true;
     private msgCount: number = 0;
 
     constructor() {
@@ -42,6 +43,10 @@ export class GameContextService {
 
     setBoard(board: Board) {
         this.board.next(board);
+    }
+
+    allowSwitch(isAllowed: boolean) {
+        this.skipTurnEnabled = isAllowed;
     }
 
     receiveMessages(message: Message, msgCount: number, myself: boolean) {
