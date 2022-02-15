@@ -9,16 +9,18 @@ import { ModeServiceService } from '@app/services/mode-service.service';
 export class MainPageComponent {
     boutonMainPage = [
         {
-            route: '/classique',
+            route: '/classic',
             toolTip: 'Une partie de Scrabble avec les règles standards.',
             texte: 'Mode Classique',
+            disabled: false,
         },
         {
             route: '/2990',
             toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
-            texte: 'Mode 2990',
+            texte: 'Mode LOG2990',
+            disabled: true,
         },
-        { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores' },
+        { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: true },
     ];
     constructor(public mode: ModeServiceService) {}
 }
