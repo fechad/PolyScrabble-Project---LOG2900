@@ -43,7 +43,7 @@ describe('ChatBoxComponent', () => {
     });
 
     it('validateCommand should call placer for a list of valid !placer commands ', () => {
-        const placer = spyOn(component, 'placer').and.callThrough();
+        const placer = spyOn(component, 'place').and.callThrough();
         for (const i of placerCommands) {
             component.textValue = i;
             component.validateSyntax();
@@ -78,7 +78,7 @@ describe('ChatBoxComponent', () => {
     });
 
     it('validateCommand should call echanger for a list of valid !echanger commands ', () => {
-        const echanger = spyOn(component, 'echanger').and.callThrough();
+        const echanger = spyOn(component, 'exchange').and.callThrough();
         for (const i of echangerCommands) {
             component.textValue = i;
             component.validateSyntax();
@@ -111,7 +111,7 @@ describe('ChatBoxComponent', () => {
     });
 
     it('validateCommand should call placer when !passer command is sent ', () => {
-        const passer = spyOn(component, 'passer').and.callThrough();
+        const passer = spyOn(component, 'pass').and.callThrough();
         component.textValue = '!passer';
         component.validateSyntax();
         expect(passer).toHaveBeenCalled();
