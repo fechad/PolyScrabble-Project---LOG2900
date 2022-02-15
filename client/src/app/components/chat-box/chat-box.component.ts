@@ -70,6 +70,7 @@ export class ChatBoxComponent {
     }
 
     validateCommand(): Error | undefined {
+        if (this.communicationService.congratulations !== undefined) return new Error(' La partie est terminée !');
         if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
         if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.place();
         if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.exchange();

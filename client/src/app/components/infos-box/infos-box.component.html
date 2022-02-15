@@ -1,5 +1,8 @@
 <div class="infos">
-    <div class="opponent" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) === false }">
+    <div
+        class="opponent"
+        [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) === false && this.communicationService.endGame === false }"
+    >
         <div class="p-infos">
             <p>{{ this.gameContextService.opponentName }} : {{ this.gameContextService.opponentScore | async }} points</p>
             <p *ngIf="myRackIsVisible">{{ this.gameContextService.myRackCount | async }} lettres restantes dans le chevalet</p>
@@ -7,7 +10,7 @@
     </div>
     <div class="game-infos" *ngIf="this.communicationService.congratulations === undefined">
         <p>{{ this.mode.mode }}</p>
-        <div class="backChrono">
+        <div class="backChrono" *ngIf="this.communicationService.endGame === false">
             <countdown
                 #countdown
                 [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
@@ -20,7 +23,7 @@
     <div class="game-infos" *ngIf="this.communicationService.congratulations !== undefined">
         <p>👑 {{ this.communicationService.congratulations }} 👑</p>
     </div>
-    <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) }">
+    <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) && this.communicationService.endGame === false }">
         <div class="p-infos">
             <p>{{ this.gameContextService.myName }} : {{ this.gameContextService.myScore | async }} points</p>
             <p *ngIf="opponentRackIsVisible">{{ this.gameContextService.opponentRackCount | async }} restantes dans le chevalet</p>
