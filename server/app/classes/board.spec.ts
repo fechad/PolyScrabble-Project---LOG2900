@@ -80,6 +80,10 @@ describe('Board', () => {
         result = board['isWordInBound'](word.length, positionArray);
         assert(!result);
 
+        positionArray = ['d', '-4', 'h'];
+        result = board['isWordInBound'](word.length, positionArray);
+        assert(!result);
+
         positionArray = ['d', '12', 'h'];
         result = board['isWordInBound'](word.length, positionArray);
         assert(result);
@@ -261,8 +265,8 @@ describe('Board', () => {
         score = board['placeWithScore'](wordAndPos);
         expect(score).to.equal(expectedScore);
 
-        wordAndPos = ['h;5;4;metro', 'v;4;5;test'];
-        expectedScore = 10;
+        wordAndPos = ['h;4;3;metro', 'v;4;5;test'];
+        expectedScore = 16;
         score = board['placeWithScore'](wordAndPos);
         expect(score).to.equal(expectedScore);
 
@@ -282,7 +286,6 @@ describe('Board', () => {
         expect(result).to.equals(expectedScore);
 
         position = 'f6h';
-        // arts avec la collision avec le premier t de testeur
         attemptedWord = 'ars';
         expectedScore = 13;
 
@@ -292,27 +295,29 @@ describe('Board', () => {
 
     it('should not place a word  if there is something invalid', async () => {
         let position = 'f16v';
-        let attemptedWord = 'testeur';
         let errorMessage = "Erreur de syntaxe dans le placement d'un mot";
-        try{
-           await board.placeWord(attemptedWord, position); 
-        }catch (error) {
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
             expect(error.message).to.equal(errorMessage);
         }
 
         position = 'f14h';
         errorMessage = 'Placement invalide le mot ne rentre pas dans la grille';
-        try{
-            await board.placeWord(attemptedWord, position); 
-        }catch (error) {
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
             expect(error.message).to.equal(errorMessage);
         }
 
         position = 'c2h';
         errorMessage = 'Placement invalide pour le premier mot';
-        try{
-            await board.placeWord(attemptedWord, position); 
-        }catch (error) {
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
             expect(error.message).to.equal(errorMessage);
         }
 
@@ -321,12 +326,20 @@ describe('Board', () => {
 
         position = 'c2h';
         errorMessage = 'Placement invalide vous devez toucher un autre mot';
-        try{
-            await board.placeWord(attemptedWord, position); 
-        }catch (error) {
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
             expect(error.message).to.equal(errorMessage);
         }
 
-        // TODO: tester mot non dans le dictionnaire
+        position = 'e8v';
+        errorMessage = 'Un des mots crees ne fait pas partie du dictionnaire';
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
     });
 });

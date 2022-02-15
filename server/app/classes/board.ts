@@ -73,7 +73,7 @@ export class Board {
                 }
                 if (wordAndPos[0] === 'h') {
                     currentCol++;
-                } else if (wordAndPos[0] === 'v') {
+                } else {
                     currentRow++;
                 }
             }
@@ -89,7 +89,7 @@ export class Board {
         for (let i = 0; i < wordAndPos[3].length; i++) {
             if (wordAndPos[0] === 'h') {
                 this.board[currentRow][currentCol + i].newlyPlaced = false;
-            } else if (wordAndPos[0] === 'v') {
+            } else {
                 this.board[currentRow + i][currentCol].newlyPlaced = false;
             }
         }
@@ -111,7 +111,7 @@ export class Board {
                     contacts.push([row, col + i, i - collisions]);
                 }
             }
-        } else if (position[2] === 'v') {
+        } else {
             for (let i = 0; i < wordLength + collisions; i++) {
                 if (!this.board[row + i][col].empty) {
                     collisions++;
@@ -202,7 +202,7 @@ export class Board {
                     collisionsCol++;
                 }
             }
-        } else if (position[2] === 'v') {
+        } else {
             for (let i = 0; i < wordLength + collisionsRow; i++) {
                 if (row + i >= BOARD_LENGTH) {
                     return false;

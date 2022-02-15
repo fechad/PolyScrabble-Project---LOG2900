@@ -75,18 +75,18 @@ describe('Game', () => {
     });
 
     it('should place letters', async () => {
-        const stub = sinon.stub();
+        const stubScore = sinon.stub();
         const position = 'h7h';
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'E', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
-        game.eventEmitter.on('score', stub);
+        game.eventEmitter.on('score', stubScore);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         await game.placeLetters(letters, position, game.players[0].id);
-        assert(stub.called);
+        assert(stubScore.called);
         assert(stubError.notCalled);
     });
 
@@ -151,6 +151,7 @@ describe('Game', () => {
         assert(stubError.called);
         done();
     });
+
     it('Skipping 6 turns in a row should call endGame', () => {
         // eslint-disable-next-line dot-notation
         game['skipCounter'] = 5;
@@ -158,11 +159,13 @@ describe('Game', () => {
         game.updateSkipCounter(true);
         assert(endGame.called);
     });
+
     it('updating the skipCouter after a valid command should reset the counter', () => {
         game.updateSkipCounter(false);
         // eslint-disable-next-line dot-notation
         assert(game['skipCounter'] === 0);
     });
+
     it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
         const calculateFinalScores = sinon.spy(game.endGameService, 'calculateFinalScores');
         const createGameSummaryMessage = sinon.spy(game.endGameService, 'createGameSummaryMessage');
@@ -172,6 +175,7 @@ describe('Game', () => {
         assert(createGameSummaryMessage.called);
         assert(getWinner.called);
     });
+
     it('getWinner should return the winners id', () => {
         const mainPlayer = game.players[MAIN_PLAYER];
         const otherPlayer = game.players[OTHER_PLAYER];
@@ -183,11 +187,13 @@ describe('Game', () => {
         const result2 = game.getWinner([otherPlayerScore, mainPlayerScore]);
         assert(result2 === otherPlayer);
     });
+
     it('getWinner should return a player with an id called equalScore if its a tie', () => {
         const score = 20;
         const result1 = game.getWinner([score, score]);
         assert(result1.id === 'equalScore');
     });
+
     it('empty reserve and empty rack should trigger endGame', async () => {
         const endGame = sinon.stub(game, 'endGame');
         game.reserve.emptyReserve();
@@ -197,6 +203,7 @@ describe('Game', () => {
         await game.placeLetters('allo', 'h7h', game.players[MAIN_PLAYER].id);
         assert(endGame.called);
     });
+
     it('should calulate the final scores when the mainPlayer rack is empty', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
@@ -206,6 +213,7 @@ describe('Game', () => {
         const result = game.endGameService.calculateFinalScores(scores, game.reserve);
         assert(result);
     });
+
     it('should calulate the final scores when the otherPlayer rack is empty', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
@@ -214,5 +222,38 @@ describe('Game', () => {
         game.reserve.letterRacks[OTHER_PLAYER].length = 0;
         const result = game.endGameService.calculateFinalScores(scores, game.reserve);
         assert(result);
+    });
+
+    it('should forfeit the game', (done) => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('forfeit', stub);
+
+        game.forfeit(game.players[0].id);
+        assert(stub.calledWith(game.players[0].id));
+        done();
+    });
+
+    it('should initialise a game', (done) => {
+        const stubBoard = sinon.stub();
+        game.eventEmitter.on('board', stubBoard);
+        const stubRack = sinon.stub();
+        game.eventEmitter.on('rack', stubRack);
+        const stubTurn = sinon.stub();
+        game.eventEmitter.on('turn', stubTurn);
+        const stubPlayers = sinon.stub();
+        game.eventEmitter.on('players', stubPlayers);
+        const stubReserve = sinon.stub();
+        game.eventEmitter.on('reserve', stubReserve);
+
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        game.gameInit();
+
+        assert(stubBoard.called);
+        assert(stubRack.calledTwice);
+        assert(stubTurn.calledWith(game.players[0].id));
+        assert(stubReserve.calledWith(game.reserve.getCount()));
+
+        done();
     });
 });

@@ -147,13 +147,7 @@ export class Game {
             const row = [];
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 const gameTile = this.board.board[i][j];
-                let tile: Tile;
-                if (!gameTile.empty) {
-                    tile = gameTile.letter;
-                } else {
-                    tile = undefined;
-                }
-                row.push(tile);
+                row.push(gameTile.empty ? undefined : gameTile.letter);
             }
             board.push(row);
         }
@@ -161,20 +155,13 @@ export class Game {
     }
 
     private sendRack() {
-        if (this.isPlayer0Turn) {
-            this.eventEmitter.emit(
-                'rack',
-                this.players[MAIN_PLAYER].id,
-                this.reserve.letterRacks[MAIN_PLAYER],
-                this.reserve.letterRacks[OTHER_PLAYER].length,
-            );
-        } else {
-            this.eventEmitter.emit(
-                'rack',
-                this.players[OTHER_PLAYER].id,
-                this.reserve.letterRacks[OTHER_PLAYER],
-                this.reserve.letterRacks[MAIN_PLAYER].length,
-            );
-        }
+        let player = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
+        let opponnent = this.isPlayer0Turn ? OTHER_PLAYER : MAIN_PLAYER;
+        this.eventEmitter.emit(
+            'rack',
+            this.players[player].id,
+            this.reserve.letterRacks[player],
+            this.reserve.letterRacks[opponnent].length,
+        );
     }
 }
