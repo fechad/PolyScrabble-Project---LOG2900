@@ -7,6 +7,11 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
+<<<<<<< HEAD
+=======
+import SpyObj = jasmine.SpyObj;
+
+>>>>>>> 593b6be... mock for communication service
 const dialogMock = {
     open: () => {
         return;
@@ -55,10 +60,15 @@ describe('JoiningRoomPageComponent', () => {
         fixture.detectChanges();
     });
 
+<<<<<<< HEAD
+=======
+    // TO-DO: should create fails
+>>>>>>> 593b6be... mock for communication service
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
+<<<<<<< HEAD
     it('openDialog should open dialog from component', () => {
         const testRoom: Room = {
             id: 0,
@@ -72,4 +82,12 @@ describe('JoiningRoomPageComponent', () => {
         component.openDialog(testRoom);
         expect(openDialogSpy).toHaveBeenCalled();
     });
+=======
+    // it('openDialog should open dialog from component', () => {
+    //     const testRoom = new Room();
+    //     const openDialogSpy = spyOn(component.dialog, 'open');
+    //     component.openDialog(testRoom);
+    //     expect(openDialogSpy).toHaveBeenCalled();
+    // });
+>>>>>>> 593b6be... mock for communication service
 });
