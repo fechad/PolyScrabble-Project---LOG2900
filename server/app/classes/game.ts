@@ -16,6 +16,7 @@ export const MAIN_PLAYER = 0;
 export const OTHER_PLAYER = 1;
 const PLAYER_0_TURN_PROBABILITY = 0.5;
 const BOARD_LENGTH = 15;
+const MAX_SKIP_IN_A_ROW = 6;
 
 export class Game {
     readonly eventEmitter = new EventEmitter();
@@ -99,7 +100,7 @@ export class Game {
     updateSkipCounter(playerSkip: boolean) {
         if (playerSkip) {
             this.skipCounter += 1;
-            if (this.skipCounter === 6) this.endGame();
+            if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
         } else this.skipCounter = 0;
     }
 
