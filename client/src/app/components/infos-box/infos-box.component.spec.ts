@@ -14,15 +14,19 @@ class GameContextServiceMock {
 }
 
 describe('InfosBoxComponent', () => {
-    let component: InfosBoxComponent;
+    // let component: InfosBoxComponent;
     let fixture: ComponentFixture<InfosBoxComponent>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
     // let gameContextServiceSpy: jasmine.SpyObj<GameContextService>;
+<<<<<<< HEAD
 <<<<<<< HEAD
     // const gameService = new GameContextServiceMock();
 =======
     const gameService = new GameContextServiceMock();
 >>>>>>> 593b6be... mock for communication service
+=======
+    // const gameService = new GameContextServiceMock();
+>>>>>>> 3f28bbd... join setup dialog tests
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [InfosBoxComponent],
@@ -36,22 +40,28 @@ describe('InfosBoxComponent', () => {
     beforeEach(() => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['getId']);
         fixture = TestBed.createComponent(InfosBoxComponent);
-        component = fixture.componentInstance;
+        // component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
     // TO-DO
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3f28bbd... join setup dialog tests
     // it('should create', () => {
     //     expect(component).toBeTruthy();
     //     gameService.getId();
     // });
+<<<<<<< HEAD
 =======
     fit('should create', () => {
         expect(component).toBeTruthy();
         gameService.getId();
     });
 >>>>>>> 593b6be... mock for communication service
+=======
+>>>>>>> 3f28bbd... join setup dialog tests
 
     // it('should call reset', () => {
     //     const resetSpy = spyOn(component, 'reset');
