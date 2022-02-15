@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { Player } from '@app/classes/room';
 import { BehaviorSubject } from 'rxjs';
-import { Letter } from './Alphabet';
-
+import { Letter } from './alphabet';
 const BOARD_LENGTH = 15;
 const NORMAL_RACK_LENGTH = 7;
 export type Tile = Letter | null;

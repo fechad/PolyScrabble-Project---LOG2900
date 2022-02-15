@@ -51,7 +51,7 @@ export class ChatBoxComponent {
     }
     validateSyntax() {
         if (!this.textValue.trim().match(/[A-Za-zÀ-ú0-9*!?]/g) && this.textValue.trim() !== '') {
-            this.communicationService.sendLocalMessage('Message ne peut contenir du caractère non textuelle autre que !, ? et *');
+            this.communicationService.sendLocalMessage('Le message ne peut contenir du caractère non textuelle autre que !, ? et *');
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
 
@@ -71,9 +71,9 @@ export class ChatBoxComponent {
 
     validateCommand(): Error | undefined {
         if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
-        if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.placer();
-        if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.echanger();
-        if (this.commandStructure[COMMAND_INDEX] === '!passer' && this.commandStructure.length === 1) return this.passer();
+        if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.place();
+        if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.exchange();
+        if (this.commandStructure[COMMAND_INDEX] === '!passer' && this.commandStructure.length === 1) return this.pass();
         if (this.commandStructure[COMMAND_INDEX] === '!aide' && this.commandStructure.length === 1) {
             this.sendHelp();
             return undefined;
@@ -85,7 +85,7 @@ export class ChatBoxComponent {
             this.communicationService.sendLocalMessage(message);
         }
     }
-    placer(): Error | undefined {
+    place(): Error | undefined {
         let error: Error | undefined;
         if (this.commandStructure[WORD_TO_PLACE_INDEX].match(/[^A-Za-zÀ-ú]/g)) {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
@@ -111,11 +111,11 @@ export class ChatBoxComponent {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
             }
         } else {
-            error = new Error('Ces lettres ne sont pas dans le rack');
+            error = new Error('Ces lettres ne sont pas dans le chevalet');
         }
         return error;
     }
-    echanger(): Error | undefined {
+    exchange(): Error | undefined {
         let error: Error | undefined;
         const isInBound =
             this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
@@ -132,7 +132,7 @@ export class ChatBoxComponent {
         return error;
     }
 
-    passer(): Error | undefined {
+    pass(): Error | undefined {
         this.communicationService.switchTurn();
         return;
     }

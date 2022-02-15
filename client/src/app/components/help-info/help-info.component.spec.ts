@@ -7,7 +7,9 @@ import { By } from '@angular/platform-browser';
 import { HelpInfoComponent } from './help-info.component';
 
 const dialogMock = {
-    close: () => {},
+    close: () => {
+        return;
+    },
 };
 
 describe('HelpInfoComponent', () => {

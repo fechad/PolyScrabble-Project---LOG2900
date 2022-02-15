@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-import { Letter } from './Alphabet';
+import { Letter } from './alphabet';
 import { Board, GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 
@@ -33,6 +33,7 @@ export class CommunicationService {
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
     private loserId: string | undefined = undefined;
+
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
         this.mainSocket = io(`${environment.socketUrl}/`, { auth });
@@ -173,7 +174,8 @@ export class CommunicationService {
     }
 
     private handleError(e: string | Error) {
-        console.error(e);
+        // eslint-disable-next-line no-console
+        if (!environment.production) console.error(e);
     }
 
     private leaveGame() {
@@ -186,7 +188,7 @@ export class CommunicationService {
         this.roomSocket = io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
-            setTimeout("alert('Vous avez été rejeté.');", 1);
+            setTimeout("alert('Vous avez été éjecté de la salle d'attente');", 1);
             this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
@@ -202,7 +204,7 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
-                setTimeout("alert('Votre adversaire a abandonné, vous avez gagné! 👑👑👑');", 2);
+                setTimeout("alert('👑 Votre adversaire a abandonné, vous avez gagné! 👑');", 2);
             }
             this.gameContextService.clearMessages();
             this.leaveGame();
@@ -241,6 +243,18 @@ export class CommunicationService {
         });
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
             this.gameContextService.setScore(score, this.myId.value === player);
+        });
+        this.gameSocket.on('congratulations', (winner: Player) => {
+            if (winner.id === this.myId.value) {
+                this.congratulations = `Félicitations ${winner.name}, vous avez gagné la partie !!`;
+            } else this.loserId = this.myId.value;
+        });
+        this.gameSocket.on('game-summary', (summary: string) => {
+            this.sendLocalMessage(summary);
+            // this.gameContextService.setMyTurn(false);
+        });
+        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
+            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
     }
 

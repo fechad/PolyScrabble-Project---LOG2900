@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { Parameters } from '@app/classes/parameters';
 import { CommunicationService } from '@app/services/communication.service';
 
+const SEC_CONVERT = 60;
+
 @Component({
     selector: 'app-game-setup-dialog',
     templateUrl: './game-setup-dialog.component.html',
@@ -41,7 +43,7 @@ export class GameSetupDialogComponent implements OnInit {
         }
 
         const parameters = new Parameters();
-        parameters.timer = this.gameParametersForm.value.minutes * 60 + this.gameParametersForm.value.seconds;
+        parameters.timer = this.gameParametersForm.value.minutes * SEC_CONVERT + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters);
         this.dialogRef.close();
