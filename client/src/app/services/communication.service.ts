@@ -243,16 +243,16 @@ export class CommunicationService {
             this.gameContextService.setScore(score, this.myId.value === player);
         });
         this.gameSocket.on('congratulations', (winner: Player) => {
-            if (winner.id === this.myId) {
-                this.congratulations === `Félicitations ${winner.name}, vous avez gagné la partie !!`;
-            } else this.loserId = this.myId;
+            if (winner.id === this.myId.value) {
+                this.congratulations = `Félicitations ${winner.name}, vous avez gagné la partie !!`;
+            } else this.loserId = this.myId.value;
         });
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
             // this.gameContextService.setMyTurn(false);
         });
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
-            this.congratulations === `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
+            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
         // TO-DO: does not receive forfeit event from server
         this.gameSocket.on('forfeit', () => {});

@@ -25,7 +25,6 @@ export class Game {
     readonly board: Board;
     readonly scores: number[] = [0, 0];
     private isPlayer0Turn: boolean;
-    private nbOfPlayersReady = 0;
     private skipCounter = 0;
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
