@@ -185,7 +185,7 @@ export class CommunicationService {
         this.roomSocket = io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
-            setTimeout("alert('Vous avez été rejeté.');", 1);
+            setTimeout("alert('Vous avez été éjecté de la salle d'attente');", 1);
             this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
@@ -201,7 +201,7 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
-                setTimeout("alert('Votre adversaire a abandonné, vous avez gagné! 👑👑👑');", 2);
+                setTimeout("alert('👑 Votre adversaire a abandonné, vous avez gagné! 👑');", 2);
             }
             this.gameContextService.clearMessages();
             this.leaveGame();

@@ -15,6 +15,7 @@
             <div class="container">
                 <span>
                     <p id="firstPlayer">Nom du joueur: {{ game.name }}</p>
+                    <p id="timer">Temps limite par tour: {{ game.parameters.timer }} secondes</p>
                     <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[game.parameters.dictionnary].name : '…' }}</p>
                 </span>
             </div>

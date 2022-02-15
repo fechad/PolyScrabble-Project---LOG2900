@@ -9,7 +9,7 @@ import { WaitingRoomPageComponent } from '@app/pages/waiting-room-page/waiting-r
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
-    { path: 'classique', component: ModesPageComponent },
+    { path: 'classic', component: ModesPageComponent },
     { path: '2990', component: ModesPageComponent },
     { path: 'game', component: GamePageComponent },
     { path: 'waiting-room', component: WaitingRoomPageComponent },
