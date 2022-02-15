@@ -110,8 +110,8 @@ export class CommunicationService {
         return this.myId;
     }
 
-    switchTurn() {
-        this.gameSocket?.emit('switch-turn');
+    switchTurn(timerRequest: boolean) {
+        this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, position: string) {
