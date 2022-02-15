@@ -33,7 +33,7 @@ export class CommunicationService {
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
     private loserId: string | undefined = undefined;
-    public congratulations: string | undefined = undefined;
+    congratulations: string | undefined = undefined;
 
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
@@ -250,7 +250,7 @@ export class CommunicationService {
         });
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
-            //this.gameContextService.setMyTurn(false);
+            // this.gameContextService.setMyTurn(false);
         });
         this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
             this.congratulations === `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;

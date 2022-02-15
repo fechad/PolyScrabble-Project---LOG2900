@@ -74,7 +74,7 @@ export class Game {
             }
             this.eventEmitter.emit('board', this.formatSendableBoard());
             this.sendRack();
-            if (this.reserve.getCount() === 0 && this.reserve.letterRacks[0 || 1].length === 0) {
+            if (this.reserve.getCount() === 0 && (this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER))) {
                 this.endGame();
             }
         }

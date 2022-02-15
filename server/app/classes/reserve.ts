@@ -54,6 +54,17 @@ export class Reserve {
         return this.reserve.length;
     }
 
+    emptyReserve() {
+        this.drawLetters(this.reserve.length);
+    }
+
+    isPlayerRackEmpty(player: number): boolean {
+        for (const letter of this.letterRacks[player]) {
+            if (letter !== undefined) return false;
+        }
+        return true;
+    }
+
     private setRacks() {
         const rackLength = 7;
         let rack1: Letter[] = [];

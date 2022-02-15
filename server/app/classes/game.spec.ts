@@ -1,3 +1,4 @@
+import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
@@ -186,5 +187,14 @@ describe('Game', () => {
         const score = 20;
         const result1 = game.getWinner([score, score]);
         assert(result1.id === 'equalScore');
+    });
+    it('empty reserve and empty rack should trigger endGame', async () => {
+        const endGame = sinon.stub(game, 'endGame');
+        game.reserve.emptyReserve();
+        game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        await game.placeLetters('allo', 'h7h', game.players[MAIN_PLAYER].id);
+        assert(endGame.called);
     });
 });

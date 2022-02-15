@@ -1,4 +1,6 @@
+import { alphabetTemplate } from '@app/alphabet-template';
 import { assert } from 'chai';
+import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Reserve } from './reserve';
 
 describe('Reserve', () => {
@@ -41,5 +43,18 @@ describe('Reserve', () => {
         for (let i = 0; i < beforeReserve.length; i++) {
             assert(beforeReserve[i].name === afterReserve[i].name);
         }
+    });
+    it('empyReserve should empty the reserve', () => {
+        reserve.emptyReserve();
+        assert(reserve.getCount() === 0);
+    });
+    it('isPlayerRackEmpty should accurately tell if a rack is empty', () => {
+        reserve.letterRacks[MAIN_PLAYER].length = 0;
+        const firstResult = reserve.isPlayerRackEmpty(MAIN_PLAYER);
+        assert(firstResult === true);
+
+        reserve.letterRacks[OTHER_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
+        const secondResult = reserve.isPlayerRackEmpty(OTHER_PLAYER);
+        assert(secondResult === false);
     });
 });
