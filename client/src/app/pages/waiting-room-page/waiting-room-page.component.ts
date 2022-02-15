@@ -24,6 +24,7 @@ export class WaitingRoomPageComponent {
 
     leave() {
         this.communicationService.leave();
+        this.router.navigate(['/joining-room']);
     }
 
     start() {
@@ -36,6 +37,6 @@ export class WaitingRoomPageComponent {
 
     kickLeave() {
         this.communicationService.kickLeave();
-        this.router.navigate(['/classique']);
+        this.router.navigate(['/classic']);
     }
 }

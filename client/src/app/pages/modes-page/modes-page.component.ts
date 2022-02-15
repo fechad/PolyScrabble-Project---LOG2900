@@ -10,8 +10,8 @@ import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game
 })
 export class ModesPageComponent {
     boutons = [
-        { promptsDialog: true, route: '', toolTip: '', texte: 'Solo' },
-        { promptsDialog: true, route: '', toolTip: '', texte: 'Multijoueur' },
+        { promptsDialog: true, route: '', toolTip: '', texte: 'Solo', disabled: true },
+        { promptsDialog: true, route: '', toolTip: '', texte: 'Multijoueur', disabled: false },
         { promptsDialog: false, route: '/joining-room', toolTip: '', texte: 'Rejoindre une partie' },
         { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', texte: 'Retour' },
     ];

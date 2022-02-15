@@ -37,13 +37,6 @@ describe('ModesPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('click on solo mode should open dialog', fakeAsync(() => {
-        const openDialogSpy = spyOn(component, 'openDialog').and.callThrough();
-        fixture.debugElement.query(By.css('.Solo')).nativeElement.click();
-        tick();
-        expect(openDialogSpy).toHaveBeenCalled();
-    }));
-
     it('click on multiplayer mode should open dialog', fakeAsync(() => {
         const openDialogSpy = spyOn(component, 'openDialog').and.callThrough();
         fixture.debugElement.query(By.css('.Multijoueur')).nativeElement.click();
