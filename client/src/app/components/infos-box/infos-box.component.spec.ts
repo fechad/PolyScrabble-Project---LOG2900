@@ -14,11 +14,11 @@ class GameContextServiceMock {
 }
 
 describe('InfosBoxComponent', () => {
-    let component: InfosBoxComponent;
+    // let component: InfosBoxComponent;
     let fixture: ComponentFixture<InfosBoxComponent>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
     // let gameContextServiceSpy: jasmine.SpyObj<GameContextService>;
-    const gameService = new GameContextServiceMock();
+    // const gameService = new GameContextServiceMock();
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [InfosBoxComponent],
@@ -32,7 +32,7 @@ describe('InfosBoxComponent', () => {
     beforeEach(() => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['getId']);
         fixture = TestBed.createComponent(InfosBoxComponent);
-        component = fixture.componentInstance;
+        // component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
