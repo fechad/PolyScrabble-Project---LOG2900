@@ -214,8 +214,8 @@ export class CommunicationService {
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId.value);
         });
-        this.gameSocket.on('game-error', (error: string, idPlayer: PlayerId) => {
-            if (idPlayer === this.myId.value) this.sendLocalMessage(error);
+        this.gameSocket.on('game-error', (error: string) => {
+            this.sendLocalMessage(error);
         });
         this.gameSocket.on('valid-command', (response: string) => {
             this.sendLocalMessage(response);

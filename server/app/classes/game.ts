@@ -53,7 +53,7 @@ export class Game {
                 this.eventEmitter.emit('valid-command', validMessage);
                 this.getReserveCount();
             } catch (e) {
-                this.eventEmitter.emit('game-error', e.message, playerId);
+                this.eventEmitter.emit('game-error', playerId, e.message);
             }
             this.eventEmitter.emit('board', this.formatSendableBoard());
             this.sendRack();
@@ -101,7 +101,7 @@ export class Game {
     private checkTurn(playerId: PlayerId) {
         const validTurn = playerId === this.getPlayerId(true);
         if (!validTurn) {
-            this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
+            this.eventEmitter.emit('game-error', playerId, new Error("Ce n'est pas votre tour").message);
         }
         return validTurn;
     }

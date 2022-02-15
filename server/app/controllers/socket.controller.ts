@@ -169,7 +169,6 @@ export class SocketManager {
                 'score',
                 'turn',
                 'parameters',
-                'game-error',
                 'players',
                 'forfeit',
                 'board',
@@ -178,18 +177,15 @@ export class SocketManager {
                 'rackCount',
             ];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
-            handlers.push([
-                'rack',
-                (targetId: PlayerId, ...params: unknown[]) => {
-                    if (targetId === id) socket.emit('rack', ...params);
-                },
-            ]);
-            handlers.push([
-                'valid-exchange',
-                (targetId: PlayerId, ...params: unknown[]) => {
-                    if (targetId === id) socket.emit('valid-exchange', ...params);
-                },
-            ]);
+            const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange'];
+            for (const event of specificPlayerEvents) {
+                handlers.push([
+                    event,
+                    (targetId: PlayerId, ...params: unknown[]) => {
+                        if (targetId === id) socket.emit(event, ...params);
+                    },
+                ]);
+            }
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
             socket.on('message', (message: string) => {
