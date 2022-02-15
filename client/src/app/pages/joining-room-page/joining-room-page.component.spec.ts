@@ -6,7 +6,6 @@ import { JoiningRoomPageComponent } from './joining-room-page.component';
 
 import SpyObj = jasmine.SpyObj;
 
-// Mock implements the behavior of open() method
 const dialogMock = {
     close: () => {
         return;
@@ -15,7 +14,7 @@ const dialogMock = {
 
 export class CommunicationServiceMock {}
 describe('JoiningRoomPageComponent', () => {
-    // let component: JoiningRoomPageComponent;
+    let component: JoiningRoomPageComponent;
     let fixture: ComponentFixture<JoiningRoomPageComponent>;
     let communicationServiceSpy: SpyObj<CommunicationService>;
 
@@ -33,17 +32,16 @@ describe('JoiningRoomPageComponent', () => {
     beforeEach(() => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['dictionnaries']);
         fixture = TestBed.createComponent(JoiningRoomPageComponent);
-        // component = fixture.componentInstance;
+        component = fixture.componentInstance;
         fixture.detectChanges();
         // component.communicationService = Object.assign(new Promise<Dictionnary>(resolve => resolve(dictionnaries));
     });
 
     // TO-DO: should create fails
-    // it('should create', () => {
-    //     expect(component).toBeTruthy();
-    // });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    // TO-DO: mock class Room
     // it('openDialog should open dialog from component', () => {
     //     const testRoom = new Room();
     //     const openDialogSpy = spyOn(component.dialog, 'open');
