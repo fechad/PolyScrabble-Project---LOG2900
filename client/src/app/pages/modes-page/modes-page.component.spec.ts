@@ -4,15 +4,15 @@ import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { ModesPageComponent } from './modes-page.component';
 
+export class ActivatedRouteMock {
+    snapshot = { url: ['classic'] };
+}
+
 const dialogMock = {
     close: () => {
         return;
     },
 };
-
-export class ActivatedRouteMock {
-    snapshot = { url: ['classic'] };
-}
 
 describe('ModesPageComponent', () => {
     let component: ModesPageComponent;
@@ -22,7 +22,7 @@ describe('ModesPageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [ModesPageComponent],
             providers: [
-                { provide: MatDialog, useClass: dialogMock },
+                { provide: MatDialog, useValue: dialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
             ],
         }).compileComponents();
