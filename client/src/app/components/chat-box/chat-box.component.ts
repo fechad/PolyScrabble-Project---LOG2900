@@ -125,15 +125,14 @@ export class ChatBoxComponent {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
-            // this.communicationService.sendMessage(this.textValue);
         } else {
             error = new Error('Ces lettres ne sont pas dans le chevalet');
         }
         return error;
     }
 
-    pass(): Error | undefined {
-        this.communicationService.switchTurn();
+    passer(): Error | undefined {
+        this.communicationService.switchTurn(false);
         return;
     }
     isInRack(word: string) {
