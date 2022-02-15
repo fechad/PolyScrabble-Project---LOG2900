@@ -20,6 +20,7 @@ const data = {
     dictionary: 'francais',
 };
 
+<<<<<<< HEAD
 export class CommunicationServiceMock {
     selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
         id: 0,
@@ -33,6 +34,8 @@ export class CommunicationServiceMock {
 }
 =======
 // Mock implements the behavior of open() method
+=======
+>>>>>>> 593b6be... mock for communication service
 const dialogMock = {
     close: () => {
         return;
@@ -72,10 +75,15 @@ describe('JoiningRoomPageComponent', () => {
         // component.communicationService = Object.assign(new Promise<Dictionnary>(resolve => resolve(dictionnaries));
     });
 
+<<<<<<< HEAD
+=======
+    // TO-DO: should create fails
+>>>>>>> 593b6be... mock for communication service
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
+<<<<<<< HEAD
     it('openDialog should open dialog from component', () => {
         const testRoom: Room = {
             id: 0,
@@ -89,4 +97,12 @@ describe('JoiningRoomPageComponent', () => {
         component.openDialog(testRoom);
         expect(openDialogSpy).toHaveBeenCalled();
     });
+=======
+    // it('openDialog should open dialog from component', () => {
+    //     const testRoom = new Room();
+    //     const openDialogSpy = spyOn(component.dialog, 'open');
+    //     component.openDialog(testRoom);
+    //     expect(openDialogSpy).toHaveBeenCalled();
+    // });
+>>>>>>> 593b6be... mock for communication service
 });
