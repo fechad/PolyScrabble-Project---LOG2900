@@ -184,6 +184,12 @@ export class SocketManager {
                     if (targetId === id) socket.emit('rack', ...params);
                 },
             ]);
+            handlers.push([
+                'valid-exchange',
+                (targetId: PlayerId, ...params: unknown[]) => {
+                    if (targetId === id) socket.emit('valid-exchange', ...params);
+                },
+            ]);
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
             socket.on('message', (message: string) => {

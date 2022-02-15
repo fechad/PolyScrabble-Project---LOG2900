@@ -218,10 +218,10 @@ export class CommunicationService {
             if (idPlayer === this.myId.value) this.sendLocalMessage(error);
         });
         this.gameSocket.on('valid-command', (response: string) => {
-            this.sendLocalMessage(response);
+            this.sendMessage(response);
         });
         this.gameSocket.on('valid-exchange', (response: string) => {
-            this.sendMessage(response);
+            this.sendLocalMessage(response);
         });
         this.gameSocket.on('reserve', (count: number) => {
             this.gameContextService.updateReserveCount(count);
