@@ -33,7 +33,6 @@ export class CommunicationService {
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
     private loserId: string | undefined = undefined;
-    congratulations: string | undefined = undefined;
 
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
