@@ -142,7 +142,36 @@ describe('Board', () => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
 
-        positionArray = ['i', '6', 'v'];
+        positionArray = ['b', '6', 'v'];
+        assert(!board['isTouchingOtherWord'](word.length, positionArray));
+        done();
+    });
+
+    it('should validate if word has contact point', (done) => {
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+
+        let positionArray = ['h', '9', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['h', '3', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['i', '7', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['g', '6', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['h', '6', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        // TODO: check if going through a word
+
+        positionArray = ['f', '9', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['g', '6', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['d', '7', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['i', '8', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['f', '8', 'v'];
         assert(board['isTouchingOtherWord'](word.length, positionArray));
         done();
     });
@@ -185,6 +214,13 @@ describe('Board', () => {
         assert(contacts[1][0] === 8);
         assert(contacts[1][1] === 6);
         assert(contacts[1][2] === INVALID);
+
+        positionArray = ['e', '6', 'v'];
+        contacts = board['getContacts'](word.length, positionArray);
+        assert(contacts.length === 1);
+        assert(contacts[0][0] === 7);
+        assert(contacts[0][1] === 5);
+        assert(contacts[0][2] === 3);
         done();
     });
     it('should change newly placed word', (done) => {

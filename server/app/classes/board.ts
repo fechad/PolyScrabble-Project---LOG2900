@@ -35,7 +35,8 @@ export class Board {
 
     async placeWord(word: string, position: string): Promise<number> {
         const positionArray = this.syntaxValidator.separatePosition(position);
-        if (!this.syntaxValidator.validatePositionSyntax(positionArray)) throw new Error("Erreur de syntaxe dans le placement d'un mot");
+        if (!this.syntaxValidator.validatePositionSyntax(positionArray, word.length === 1))
+            throw new Error("Erreur de syntaxe dans le placement d'un mot");
         if (!this.isWordInBound(word.length, positionArray)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
         await new Promise((resolve) => {
             setTimeout(() => {
@@ -45,7 +46,8 @@ export class Board {
         if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
         if (!this.isTouchingOtherWord(word.length, positionArray)) throw new Error('Placement invalide vous devez toucher un autre mot');
         const contacts = this.getContacts(word.length, positionArray);
-        const words = this.wordGetter.getWords(word, positionArray, contacts);
+        const wordWithoutAccents = this.syntaxValidator.removeAccents(word);
+        const words = this.wordGetter.getWords(wordWithoutAccents, positionArray, contacts);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
@@ -122,8 +124,8 @@ export class Board {
         return contacts;
     }
 
-    private isTouchingOtherWord(wordLength: number, position: string[]): boolean{
-        if (!this.board[HALF_LENGTH][HALF_LENGTH].empty) {
+    private isTouchingOtherWord(wordLength: number, position: string[]): boolean {
+        if (this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             return true;
         }
         const row = position[0].charCodeAt(0) - A_ASCII;
@@ -131,15 +133,15 @@ export class Board {
 
         if (position[2] === 'h') {
             return this.isWordTouchingHorizontal(wordLength, row, col);
-        } 
+        }
         return this.isWordTouchingVertical(wordLength, row, col);
     }
 
-    private isWordTouchingHorizontal(wordLength: number, row: number, col: number): boolean{
+    private isWordTouchingHorizontal(wordLength: number, row: number, col: number): boolean {
         if ((col - 1 > 0 && !this.board[row][col - 1].empty) || (col + wordLength < BOARD_LENGTH && !this.board[row][col + wordLength].empty)) {
             return true;
         }
-        for(let i = col; i < col + wordLength; i++){
+        for (let i = col; i < col + wordLength; i++) {
             if ((row - 1 >= 0 && !this.board[row - 1][i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][i].empty)) {
                 return true;
             }
@@ -147,7 +149,7 @@ export class Board {
         return false;
     }
 
-    private isWordTouchingVertical (wordLength: number, row: number, col: number): boolean{
+    private isWordTouchingVertical(wordLength: number, row: number, col: number): boolean {
         if (row - 1 > 0 && !this.board[row - 1][col].empty) {
             return true;
         }
@@ -173,8 +175,7 @@ export class Board {
             const col = parseInt(position[1], 10) - 1;
             if (position[2] === 'h' && row === HALF_LENGTH && col <= HALF_LENGTH && col + wordLength - 1 >= HALF_LENGTH) {
                 return true;
-            }
-            else if (col === HALF_LENGTH && row <= HALF_LENGTH && row + wordLength - 1 >= HALF_LENGTH) {
+            } else if (col === HALF_LENGTH && row <= HALF_LENGTH && row + wordLength - 1 >= HALF_LENGTH) {
                 return true;
             }
         }
