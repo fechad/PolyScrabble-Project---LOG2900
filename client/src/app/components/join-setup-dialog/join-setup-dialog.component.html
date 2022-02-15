@@ -16,10 +16,15 @@
                         <input type="text" formControlName="secondPlayerName" class="form-control" />
                     </div>
 
-                    <div *ngIf="this.joiningRoomForm.value.secondPlayerName === data.name">
+                    <div class="requirement" *ngIf="this.joiningRoomForm.value.secondPlayerName === data.name">
                         Votre nom ne doit pas être identique à votre adversaire
                     </div>
-
+                    <div
+                        class="requirement"
+                        *ngIf="joiningRoomForm.controls['secondPlayerName'].errors && joiningRoomForm.controls['secondPlayerName'].touched"
+                    >
+                        Rentrez un nom contenant seulement des lettres.
+                    </div>
                     <div class="col-md-10">
                         <label>Nom de l'adversaire: {{ data.name }}</label>
                     </div>

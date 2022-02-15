@@ -23,7 +23,6 @@ export class ChatBoxComponent {
             textarea.nativeElement.focus();
         }
     }
-
     textValue: string = '';
     yourMessage: boolean = true;
     syntaxIsValid: boolean = true;
@@ -126,7 +125,7 @@ export class ChatBoxComponent {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
-            this.communicationService.sendMessage(this.textValue);
+            // this.communicationService.sendMessage(this.textValue);
         } else {
             error = new Error('Ces lettres ne sont pas dans le chevalet');
         }
@@ -143,8 +142,14 @@ export class ChatBoxComponent {
             lettersInRack = lettersInRack.concat(letter.name);
         }
         for (const letter of word) {
-            if (!lettersInRack.toLowerCase().includes(letter)) return false;
+            if (!lettersInRack.toLowerCase().includes(letter) && !lettersInRack.includes('*')) return false;
         }
         return true;
+    }
+
+    getLetterExchanged(message: string): number {
+        let feedback: string[] = [];
+        feedback = message.split(' ');
+        return feedback[1].length;
     }
 }

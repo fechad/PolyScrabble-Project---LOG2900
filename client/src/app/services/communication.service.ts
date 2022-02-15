@@ -24,7 +24,7 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
-
+    congratulations: string | undefined = undefined;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -32,9 +32,7 @@ export class CommunicationService {
     private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
-
     private loserId: string | undefined = undefined;
-
     constructor(public gameContextService: GameContextService, public gridService: GridService, httpClient: HttpClient, private router: Router) {
         const auth = this.getAuth();
         this.mainSocket = io(`${environment.socketUrl}/`, { auth });
@@ -188,6 +186,7 @@ export class CommunicationService {
         this.roomSocket.on('kick', () => {
             this.leaveGame();
             setTimeout("alert('Vous avez été rejeté.');", 1);
+            this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (e) => this.handleError(e));
@@ -215,10 +214,13 @@ export class CommunicationService {
         this.gameSocket.on('message', (message: Message, msgCount: number, id: PlayerId) => {
             this.gameContextService.receiveMessages(message, msgCount, id === this.myId.value);
         });
-        this.gameSocket.on('game-error', (error: string) => {
-            this.sendLocalMessage(error);
+        this.gameSocket.on('game-error', (error: string, idPlayer: PlayerId) => {
+            if (idPlayer === this.myId.value) this.sendLocalMessage(error);
         });
         this.gameSocket.on('valid-command', (response: string) => {
+            this.sendLocalMessage(response);
+        });
+        this.gameSocket.on('valid-exchange', (response: string) => {
             this.sendLocalMessage(response);
         });
         this.gameSocket.on('reserve', (count: number) => {
@@ -226,6 +228,7 @@ export class CommunicationService {
         });
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
+            this.gameSocket?.emit('switch-turn');
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {

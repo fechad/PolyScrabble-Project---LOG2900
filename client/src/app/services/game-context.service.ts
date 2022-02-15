@@ -99,7 +99,7 @@ export class GameContextService {
         for (const unwantedLetter of lettersToChange) {
             const listLength = temporaryRack.length - 1;
             for (let i = 0; i <= listLength; i++) {
-                if (unwantedLetter === temporaryRack[i].name.toLowerCase()) {
+                if (unwantedLetter === temporaryRack[i].name.toLowerCase() || (unwantedLetter.match(/[A-Z]/g) && temporaryRack[i].name === '*')) {
                     temporaryRack[i] = temporaryRack[listLength];
                     temporaryRack.pop();
                     break;

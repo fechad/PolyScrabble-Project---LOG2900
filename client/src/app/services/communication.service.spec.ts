@@ -3,6 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication.service';
 
+// export class CommunicationServiceMock {
+//     readonly selectedRoom: BehaviorSubject<Room | undefined> = new Room()
+// }
+
 describe('CommunicationService', () => {
     let httpMock: HttpTestingController;
     let service: CommunicationService;

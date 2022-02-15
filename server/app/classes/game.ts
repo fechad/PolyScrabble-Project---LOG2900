@@ -33,7 +33,7 @@ export class Game {
         this.eventEmitter.emit('board', this.formatSendableBoard());
         this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
         this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
-        this.eventEmitter.emit('turn', this.getPlayerTurnId());
+        this.eventEmitter.emit('turn', this.getPlayerId(true));
         this.eventEmitter.emit('players', this.players);
         this.getReserveCount();
     }
@@ -49,7 +49,7 @@ export class Game {
                 const response = await this.board.placeWord(letters, position);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.eventEmitter.emit('score', response, playerId);
-                const validMessage = '!placer ' + position + ' ' + letters;
+                const validMessage = this.getPlayerName() + ' : !placer ' + position + ' ' + letters;
                 this.eventEmitter.emit('valid-command', validMessage);
                 this.getReserveCount();
             } catch (e) {
@@ -60,19 +60,29 @@ export class Game {
         }
     }
 
+    getPlayerName() {
+        const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
+        return this.players[playerIndex].name;
+    }
+
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             this.sendRack();
-            const validMessage = '!échanger ' + letters;
-            this.eventEmitter.emit('valid-command', validMessage);
+
+            let validMessage = 'Vous avez échangé les lettres:  ' + letters;
+            this.eventEmitter.emit('valid-exchange', playerId, validMessage);
+
+            validMessage = this.getPlayerName() + ' a échangé ' + letters.length + ' lettres';
+            const opponentId = this.getPlayerId(false);
+            this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
         }
     }
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
-            this.eventEmitter.emit('turn', this.getPlayerTurnId());
+            this.eventEmitter.emit('turn', this.getPlayerId(true));
         }
     }
 
@@ -84,12 +94,12 @@ export class Game {
         this.eventEmitter.emit('reserve', this.reserve.getCount());
     }
 
-    private getPlayerTurnId() {
-        return this.isPlayer0Turn ? this.players[MAIN_PLAYER].id : this.players[OTHER_PLAYER].id;
+    private getPlayerId(isActivePlayer: boolean) {
+        return isActivePlayer === this.isPlayer0Turn ? this.players[MAIN_PLAYER].id : this.players[OTHER_PLAYER].id;
     }
 
     private checkTurn(playerId: PlayerId) {
-        const validTurn = playerId === this.getPlayerTurnId();
+        const validTurn = playerId === this.getPlayerId(true);
         if (!validTurn) {
             this.eventEmitter.emit('game-error', new Error("Ce n'est pas votre tour"));
         }
