@@ -32,7 +32,7 @@ export class ChatBoxComponent {
             '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
             'ex: !placer g10v abc placera les lettres\n' +
             'abc verticalement à partir de la position g10\n' +
-            '\n!passer permet de pass votre tour\n' +
+            '\n!passer permet de passer votre tour\n' +
             '\n!échanger permet changer vos lettres\n' +
             'ex: !échanger abc',
     ];
@@ -70,7 +70,6 @@ export class ChatBoxComponent {
     }
 
     validateCommand(): Error | undefined {
-        if (this.communicationService.congratulations !== undefined) return new Error(' La partie est terminée !');
         if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
         if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.place();
         if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.exchange();
@@ -126,6 +125,7 @@ export class ChatBoxComponent {
             error = new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
+            // this.communicationService.sendMessage(this.textValue);
         } else {
             error = new Error('Ces lettres ne sont pas dans le chevalet');
         }
@@ -133,7 +133,7 @@ export class ChatBoxComponent {
     }
 
     pass(): Error | undefined {
-        this.communicationService.switchTurn(false);
+        this.communicationService.switchTurn();
         return;
     }
     isInRack(word: string) {
