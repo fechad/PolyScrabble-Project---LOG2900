@@ -43,8 +43,8 @@ export class Board {
             }, BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
+        if (!this.isTouchingOtherWord(word.length, positionArray)) throw new Error('Placement invalide vous devez toucher un autre mot');
         const contacts = this.getContacts(word.length, positionArray);
-        if (contacts.length === 0) throw new Error('Placement invalide vous devez toucher un autre mot');
         const words = this.wordGetter.getWords(word, positionArray, contacts);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
@@ -122,25 +122,60 @@ export class Board {
         return contacts;
     }
 
+    private isTouchingOtherWord(wordLength: number, position: string[]): boolean{
+        if (!this.board[HALF_LENGTH][HALF_LENGTH].empty) {
+            return true;
+        }
+        const row = position[0].charCodeAt(0) - A_ASCII;
+        const col = parseInt(position[1], 10) - 1;
+
+        if (position[2] === 'h') {
+            return this.isWordTouchingHorizontal(wordLength, row, col);
+        } 
+        return this.isWordTouchingVertical(wordLength, row, col);
+    }
+
+    private isWordTouchingHorizontal(wordLength: number, row: number, col: number): boolean{
+        if ((col - 1 > 0 && !this.board[row][col - 1].empty) || (col + wordLength < BOARD_LENGTH && !this.board[row][col + wordLength].empty)) {
+            return true;
+        }
+        for(let i = col; i < col + wordLength; i++){
+            if ((row - 1 >= 0 && !this.board[row - 1][i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][i].empty)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private isWordTouchingVertical (wordLength: number, row: number, col: number): boolean{
+        if (row - 1 > 0 && !this.board[row - 1][col].empty) {
+            return true;
+        }
+        if (row + wordLength < BOARD_LENGTH && !this.board[row + wordLength][col].empty) {
+            return true;
+        }
+        for (let i = row; i < row + wordLength; i++) {
+            if (col - 1 >= 0 && !this.board[i][col - 1].empty) {
+                return true;
+            }
+            if (col + 1 < BOARD_LENGTH && !this.board[i][col + 1].empty) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private firstWordValidation(wordLength: number, position: string[]): boolean {
         if (!this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             return true;
         } else {
             const row = position[0].charCodeAt(0) - A_ASCII;
             const col = parseInt(position[1], 10) - 1;
-            switch (position[2]) {
-                case 'h': {
-                    if (row === HALF_LENGTH && col <= HALF_LENGTH && col + wordLength - 1 >= HALF_LENGTH) {
-                        return true;
-                    }
-                    break;
-                }
-                case 'v': {
-                    if (col === HALF_LENGTH && row <= HALF_LENGTH && row + wordLength - 1 >= HALF_LENGTH) {
-                        return true;
-                    }
-                    break;
-                }
+            if (position[2] === 'h' && row === HALF_LENGTH && col <= HALF_LENGTH && col + wordLength - 1 >= HALF_LENGTH) {
+                return true;
+            }
+            else if (col === HALF_LENGTH && row <= HALF_LENGTH && row + wordLength - 1 >= HALF_LENGTH) {
+                return true;
             }
         }
         return false;

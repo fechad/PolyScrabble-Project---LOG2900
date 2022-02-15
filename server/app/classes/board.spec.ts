@@ -135,19 +135,15 @@ describe('Board', () => {
         done();
     });
 
-    it('should get an empty array for no contact except first word', (done) => {
+    it('should not let no contact except for first word', (done) => {
         let positionArray = ['f', '11', 'v'];
-        let contacts = board['getContacts'](word.length, positionArray);
-
-        assert(contacts.length === 1);
-        assert(contacts[0][0] === INVALID);
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
 
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
 
         positionArray = ['i', '6', 'v'];
-        contacts = board['getContacts'](word.length, positionArray);
-        assert(contacts.length === 0);
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
         done();
     });
 
