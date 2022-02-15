@@ -3,7 +3,7 @@ import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
-import { Game } from './game';
+import { Game, MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Parameters } from './parameters';
 import { Player } from './room';
 
@@ -149,5 +149,42 @@ describe('Game', () => {
         assert(game['isPlayer0Turn']);
         assert(stubError.called);
         done();
+    });
+    it('Skipping 6 turns in a row should call endGame', () => {
+        // eslint-disable-next-line dot-notation
+        game['skipCounter'] = 5;
+        const endGame = sinon.spy(game, 'endGame');
+        game.updateSkipCounter(true);
+        assert(endGame.called);
+    });
+    it('updating the skipCouter after a valid command should reset the counter', () => {
+        game.updateSkipCounter(false);
+        // eslint-disable-next-line dot-notation
+        assert(game['skipCounter'] === 0);
+    });
+    it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
+        const calculateFinalScores = sinon.spy(game.endGameService, 'calculateFinalScores');
+        const createGameSummaryMessage = sinon.spy(game.endGameService, 'createGameSummaryMessage');
+        const getWinner = sinon.spy(game, 'getWinner');
+        game.endGame();
+        assert(calculateFinalScores.called);
+        assert(createGameSummaryMessage.called);
+        assert(getWinner.called);
+    });
+    it('getWinner should return the winners id', () => {
+        const mainPlayer = game.players[MAIN_PLAYER];
+        const otherPlayer = game.players[OTHER_PLAYER];
+        const mainPlayerScore = 20;
+        const otherPlayerScore = 10;
+        const result1 = game.getWinner([mainPlayerScore, otherPlayerScore]);
+        assert(result1 === mainPlayer);
+
+        const result2 = game.getWinner([otherPlayerScore, mainPlayerScore]);
+        assert(result2 === otherPlayer);
+    });
+    it('getWinner should return a player with an id called equalScore if its a tie', () => {
+        const score = 20;
+        const result1 = game.getWinner([score, score]);
+        assert(result1.id === 'equalScore');
     });
 });

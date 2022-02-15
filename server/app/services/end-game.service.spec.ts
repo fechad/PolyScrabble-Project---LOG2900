@@ -6,7 +6,6 @@ import { EndGameService } from './end-game.service';
 
 describe('EndGameService', () => {
     let endGameService: EndGameService;
-    // let game: Game;
     let reserve: Reserve;
 
     beforeEach(() => {
