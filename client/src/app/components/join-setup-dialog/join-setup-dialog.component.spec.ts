@@ -13,6 +13,11 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { JoinSetupDialogComponent } from './join-setup-dialog.component';
 
+<<<<<<< HEAD
+=======
+// import SpyObj = jasmine.SpyObj;
+
+>>>>>>> 3f28bbd... join setup dialog tests
 const dialogMock = {
     close: () => {
         return;
@@ -30,6 +35,11 @@ class CommunicationServiceMock {
 describe('JoinSetupDialogComponent', () => {
     let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;
+<<<<<<< HEAD
+=======
+    // let dialogRef: MatDialogRef<JoinSetupDialogComponent>;
+    // let communicationServiceSpy: SpyObj<CommunicationService>;
+>>>>>>> 3f28bbd... join setup dialog tests
     let router: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
@@ -58,6 +68,10 @@ describe('JoinSetupDialogComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinSetupDialogComponent);
+<<<<<<< HEAD
+=======
+        // communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['joinRoom']);
+>>>>>>> 3f28bbd... join setup dialog tests
         component = fixture.componentInstance;
         component.joiningRoomForm = new FormGroup({
             secondPlayerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
@@ -70,11 +84,19 @@ describe('JoinSetupDialogComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+<<<<<<< HEAD
 
     it('form invalid if no name entered', () => {
         expect(component.joiningRoomForm.valid).toBeFalsy();
     });
 
+=======
+
+    it('form invalid if no name entered', () => {
+        expect(component.joiningRoomForm.valid).toBeFalsy();
+    });
+
+>>>>>>> 3f28bbd... join setup dialog tests
     it('click on cancel button should call closeDialog() function', fakeAsync(() => {
         spyOn(component, 'closeDialog');
         fixture.debugElement.query(By.css('.icone-cancel')).nativeElement.click();
@@ -91,6 +113,10 @@ describe('JoinSetupDialogComponent', () => {
     it('on submit dialog should close', async () => {
         const playerName = component.joiningRoomForm.controls.secondPlayerName;
         playerName.setValue('Test');
+<<<<<<< HEAD
+=======
+        spyOn(component.communicationService, 'joinRoom');
+>>>>>>> 3f28bbd... join setup dialog tests
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
         await component.submit();
         expect(closeDialogSpy).toHaveBeenCalled();
