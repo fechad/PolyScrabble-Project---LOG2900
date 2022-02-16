@@ -96,7 +96,6 @@ describe('JoinSetupDialogComponent', () => {
     it('on submit dialog should close', async () => {
         const playerName = component.joiningRoomForm.controls.secondPlayerName;
         playerName.setValue('Test');
-        spyOn(component.communicationService, 'joinRoom');
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
         await component.submit();
         expect(closeDialogSpy).toHaveBeenCalled();

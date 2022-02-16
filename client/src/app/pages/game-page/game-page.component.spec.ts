@@ -18,7 +18,6 @@ import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { GamePageComponent } from './game-page.component';
 
-// import SpyObj = jasmine.SpyObj;
 const dialogMock = {
     close: () => {
         return;
@@ -28,7 +27,6 @@ const dialogMock = {
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    // let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -43,12 +41,10 @@ describe('GamePageComponent', () => {
                 FormsModule,
             ],
             providers: [
-                // { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
             ],
         }).compileComponents();
-        // communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['switchTurn']);
         fixture = TestBed.createComponent(GamePageComponent);
         const router = TestBed.inject(Router);
         router.initialNavigation();
@@ -99,10 +95,4 @@ describe('GamePageComponent', () => {
         tick();
         expect(helpSpy).toHaveBeenCalled();
     }));
-
-    // TO-DO
-    // it('skipMyTurn should call switch turn from communication service', () => {
-    //     component.skipMyTurn();
-    //     expect(communicationServiceSpy.switchTurn).toHaveBeenCalled();
-    // });
 });
