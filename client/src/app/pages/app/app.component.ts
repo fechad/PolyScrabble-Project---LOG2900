@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication.service';
+import { skip } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -9,8 +10,8 @@ import { CommunicationService } from '@app/services/communication.service';
 })
 export class AppComponent {
     constructor(communicationService: CommunicationService, router: Router) {
-        const prevRoom = { exists: true, started: true };
-        communicationService.selectedRoom.subscribe((room) => {
+        const prevRoom = { exists: false, started: false };
+        communicationService.selectedRoom.pipe(skip(1)).subscribe((room) => {
             if (room === undefined && prevRoom.exists) router.navigate(['/']);
             else if (!room?.started && prevRoom.started) router.navigate(['/waiting-room']);
             else if (room?.started && !prevRoom.started) router.navigate(['/game']);
