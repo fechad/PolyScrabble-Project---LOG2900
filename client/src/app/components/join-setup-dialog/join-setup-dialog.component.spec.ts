@@ -62,7 +62,6 @@ describe('JoinSetupDialogComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinSetupDialogComponent);
-        // communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['joinRoom']);
         component = fixture.componentInstance;
         component.joiningRoomForm = new FormGroup({
             secondPlayerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
