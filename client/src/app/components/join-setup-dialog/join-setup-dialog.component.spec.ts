@@ -81,7 +81,7 @@ describe('JoinSetupDialogComponent', () => {
 
     it('click on cancel button should call closeDialog() function', fakeAsync(() => {
         spyOn(component, 'closeDialog');
-        fixture.debugElement.query(By.css('.icone-cancel')).nativeElement.click();
+        fixture.debugElement.query(By.css('.icon-cancel')).nativeElement.click();
         tick();
         expect(component.closeDialog).toHaveBeenCalled();
     }));
