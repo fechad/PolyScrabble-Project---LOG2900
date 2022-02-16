@@ -8,7 +8,7 @@ import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
 import { Letter } from './alphabet';
-import { Board } from './game-context.service';
+import { Board, GameContextService } from './game-context.service';
 
 /* eslint-disable dot-notation, max-lines */
 
@@ -25,6 +25,7 @@ describe('CommunicationService', () => {
 
     let httpMock: HttpTestingController;
     let service: CommunicationService;
+    let gameContext: GameContextService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -43,6 +44,7 @@ describe('CommunicationService', () => {
         });
         service = TestBed.inject(CommunicationService);
         httpMock = TestBed.inject(HttpTestingController);
+        gameContext = TestBed.inject(GameContextService);
         const dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionnaries');
         dictionnaries.flush([]);
         sessionStorage.clear();
@@ -256,7 +258,7 @@ describe('CommunicationService', () => {
     });
 
     it('should forfeit', async () => {
-        const spy = spyOn(service['gameContextService'], 'clearMessages');
+        const spy = spyOn(gameContext, 'clearMessages');
         const spy2 = spyOn(service, 'leaveGame' as never);
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('forfeit', ID);
@@ -265,7 +267,7 @@ describe('CommunicationService', () => {
     });
 
     it('should allow other player to forfeit', async () => {
-        const spy = spyOn(service['gameContextService'], 'clearMessages');
+        const spy = spyOn(gameContext, 'clearMessages');
         const spy2 = spyOn(service, 'leaveGame' as never);
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('forfeit', 'Dummy');
@@ -274,16 +276,15 @@ describe('CommunicationService', () => {
     });
 
     it('should set turn', async () => {
-        const spy = spyOn(service['gameContextService'], 'setMyTurn');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('turn', ID);
-        expect(spy).toHaveBeenCalledWith(true);
+        expect(gameContext.isMyTurn.value).toBe(true);
         (service['gameSocket'] as unknown as SocketMock).events.emit('turn', 'Dummy');
-        expect(spy).toHaveBeenCalledWith(false);
+        expect(gameContext.isMyTurn.value).toBe(false);
     });
 
     it('should receive message', async () => {
-        const spy = spyOn(service['gameContextService'], 'receiveMessages');
+        const spy = spyOn(gameContext, 'receiveMessages');
         joinGame();
         const message: Message = { emitter: ID, text: 'Random text' };
         (service['gameSocket'] as unknown as SocketMock).events.emit('message', message, 2);
@@ -294,21 +295,21 @@ describe('CommunicationService', () => {
     });
 
     it('should receive game errors', async () => {
-        const spy = spyOn(service['gameContextService'], 'addMessage');
+        const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('game-error', 'BOBO');
         expect(spy).toHaveBeenCalledWith('BOBO', true);
     });
 
     it('should receive valid commands', async () => {
-        const spy = spyOn(service['gameContextService'], 'addMessage');
+        const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('valid-command', 'BOBO');
         expect(spy).toHaveBeenCalledWith('BOBO', true);
     });
 
     it('should receive valid exchanges', async () => {
-        const spy = spyOn(service['gameContextService'], 'addMessage');
+        const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('valid-exchange', 'BOBO');
         expect(spy).toHaveBeenCalledWith('BOBO', true);
@@ -327,7 +328,7 @@ describe('CommunicationService', () => {
     });
 
     it('should receive game summary', async () => {
-        const spy = spyOn(service['gameContextService'], 'addMessage');
+        const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('game-summary', 'BOBO');
         expect(spy).toHaveBeenCalledWith('BOBO', true);
@@ -341,15 +342,14 @@ describe('CommunicationService', () => {
 
     it('should update reserve', async () => {
         const NUM_LETTERS = 1000;
-        const spy = spyOn(service['gameContextService'], 'updateReserveCount');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('reserve', NUM_LETTERS);
-        expect(spy).toHaveBeenCalledWith(NUM_LETTERS);
+        expect(gameContext.reserveCount.value).toBe(NUM_LETTERS);
     });
 
     it('should update racks', async () => {
         const NUM_LETTERS = 9;
-        const spy = spyOn(service['gameContextService'], 'updateRack');
+        const spy = spyOn(gameContext, 'updateRack');
         joinGame();
         const letters: Letter[] = [{ id: 0, name: 'A', score: 1, quantity: 30 }];
         (service['gameSocket'] as unknown as SocketMock).events.emit('rack', letters, NUM_LETTERS);
@@ -357,26 +357,25 @@ describe('CommunicationService', () => {
     });
 
     it('should set players', async () => {
-        const spy = spyOn(service['gameContextService'], 'setName');
+        const spy = spyOn(gameContext, 'setName');
         joinGame();
         const player1: Player = { name: 'BOB', id: ID, connected: true };
         const player2: Player = { name: 'Not BOB', id: 'Dummy', connected: true };
         (service['gameSocket'] as unknown as SocketMock).events.emit('players', [player1, player2]);
-        expect(spy).toHaveBeenCalledWith(player1, true);
-        expect(spy).toHaveBeenCalledWith(player2, false);
+        expect(spy).toHaveBeenCalledWith(player1.name, true);
+        expect(spy).toHaveBeenCalledWith(player2.name, false);
     });
 
     it('should set board', async () => {
-        const spy = spyOn(service['gameContextService'], 'setBoard');
         joinGame();
         const board: Board = [[{ id: 0, name: 'A', score: 1, quantity: 3000 }]];
         (service['gameSocket'] as unknown as SocketMock).events.emit('board', board);
-        expect(spy).toHaveBeenCalledWith(board);
+        expect(gameContext.board.value).toBe(board);
     });
 
     it('should set score', async () => {
         const SCORE = 9;
-        const spy = spyOn(service['gameContextService'], 'setScore');
+        const spy = spyOn(gameContext, 'setScore');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('score', SCORE, ID);
         expect(spy).toHaveBeenCalledWith(SCORE, true);
