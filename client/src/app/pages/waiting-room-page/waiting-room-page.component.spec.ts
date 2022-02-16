@@ -10,7 +10,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
 
-
 export class CommunicationServiceMock {
     selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
         id: 0,
@@ -40,37 +39,6 @@ export class CommunicationServiceMock {
 
     getId() {
         return;
-
-class CommunicationServiceMock {
-    selectedRoom: BehaviorSubject<Room>;
-    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
-        id: 0,
-        name: 'Room',
-        parameters: new Parameters(),
-        mainPlayer: { name: 'Player 1', id: '0', connected: true },
-        otherPlayer: undefined,
-        started: false,
-    } as Room);
-    dictionnaries: Promise<Dictionnary[]> = Promise.resolve([{ id: 0, name: 'français' }]);
-    start() {
-        return;
-    }
-
-    leave() {
-        return;
-    }
-
-    kick() {
-        return;
-    }
-
-    kickLeave() {
-        return;
-    }
-
-    getId() {
-        return;
->>>>>>> 6066f5a... tests for waiting-room page
     }
 }
 
@@ -78,64 +46,26 @@ describe('WaitingRoomPageComponent', () => {
     let component: WaitingRoomPageComponent;
     let fixture: ComponentFixture<WaitingRoomPageComponent>;
     let router: Router;
-<<<<<<< HEAD
-<<<<<<< HEAD
     let service: CommunicationServiceMock;
-=======
-    // let communicationServiceSpy: SpyObj<CommunicationService>;
-    const service = new CommunicationServiceMock();
->>>>>>> 593b6be... mock for communication service
-=======
-    let service: CommunicationServiceMock;
->>>>>>> 6066f5a... tests for waiting-room page
 
     beforeEach(async () => {
         service = new CommunicationServiceMock();
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             declarations: [WaitingRoomPageComponent],
-<<<<<<< HEAD
-<<<<<<< HEAD
             providers: [{ provide: CommunicationService, useValue: service }],
-=======
-            providers: [
-                { provide: CommunicationService, useClass: CommunicationServiceMock },
-                { provide: Router, useValue: router },
-            ],
->>>>>>> 593b6be... mock for communication service
-=======
-            providers: [{ provide: CommunicationService, useValue: service }],
->>>>>>> 6066f5a... tests for waiting-room page
         }).compileComponents();
     });
 
     beforeEach(() => {
-<<<<<<< HEAD
-<<<<<<< HEAD
         fixture = TestBed.createComponent(WaitingRoomPageComponent);
         router = TestBed.inject(Router);
         router.initialNavigation();
         service.selectedRoom.subscribe(async (room) => {
-=======
-        // communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['start'], ['leave']);
-        fixture = TestBed.createComponent(WaitingRoomPageComponent);
-        router = TestBed.inject(Router);
-        router.initialNavigation();
-        component = fixture.componentInstance;
-        component.communicationService.selectedRoom.subscribe(async (room) => {
->>>>>>> 593b6be... mock for communication service
-=======
-        fixture = TestBed.createComponent(WaitingRoomPageComponent);
-        router = TestBed.inject(Router);
-        router.initialNavigation();
-        service.selectedRoom.subscribe(async (room) => {
->>>>>>> 6066f5a... tests for waiting-room page
             if (room === undefined) router.navigate(['/']);
             else if (room.started) router.navigate(['/game']);
             fixture.detectChanges();
         });
-<<<<<<< HEAD
-<<<<<<< HEAD
         component = fixture.componentInstance;
     });
 
@@ -165,45 +95,5 @@ describe('WaitingRoomPageComponent', () => {
         const kickLeaveSpy = spyOn(service, 'kickLeave');
         component.kickLeave();
         expect(kickLeaveSpy).toHaveBeenCalled();
-=======
-=======
-        component = fixture.componentInstance;
-    });
->>>>>>> 6066f5a... tests for waiting-room page
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('leave should call leave from CommunicationService', () => {
-        const leaveSpy = spyOn(service, 'leave');
-        component.leave();
-        expect(leaveSpy).toHaveBeenCalled();
-    });
-
-    it('start should call start from CommunicationService', () => {
-        const startSpy = spyOn(service, 'start');
-        component.start();
-        expect(startSpy).toHaveBeenCalled();
-    });
-
-    it('kick should call kick from CommunicationService', () => {
-        const kickSpy = spyOn(service, 'kick');
-        component.kick();
-        expect(kickSpy).toHaveBeenCalled();
-    });
-
-<<<<<<< HEAD
-        // it('kick should call kick from CommunicationService', () => {
-        //     component.kick();
-        //     expect(communicationServiceSpy.kick).toHaveBeenCalled();
-        // });
->>>>>>> 593b6be... mock for communication service
-=======
-    it('kickLeave should call kickLeave from CommunicationService', () => {
-        const kickLeaveSpy = spyOn(service, 'kickLeave');
-        component.kickLeave();
-        expect(kickLeaveSpy).toHaveBeenCalled();
->>>>>>> 6066f5a... tests for waiting-room page
     });
 });

@@ -7,11 +7,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
-<<<<<<< HEAD
-=======
-import SpyObj = jasmine.SpyObj;
-
->>>>>>> 593b6be... mock for communication service
 const dialogMock = {
     open: () => {
         return;
@@ -37,7 +32,7 @@ export class CommunicationServiceMock {
 }
 
 describe('JoiningRoomPageComponent', () => {
-    // let component: JoiningRoomPageComponent;
+    let component: JoiningRoomPageComponent;
     let fixture: ComponentFixture<JoiningRoomPageComponent>;
     let service: CommunicationServiceMock;
 
@@ -56,25 +51,14 @@ describe('JoiningRoomPageComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(JoiningRoomPageComponent);
-        // component = fixture.componentInstance;
+        component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-<<<<<<< HEAD
-=======
-    // TO-DO: should create fails
-<<<<<<< HEAD
->>>>>>> 593b6be... mock for communication service
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-=======
-    // it('should create', () => {
-    //     expect(component).toBeTruthy();
-    // });
->>>>>>> 3f28bbd... join setup dialog tests
 
-<<<<<<< HEAD
     it('openDialog should open dialog from component', () => {
         const testRoom: Room = {
             id: 0,
@@ -88,12 +72,4 @@ describe('JoiningRoomPageComponent', () => {
         component.openDialog(testRoom);
         expect(openDialogSpy).toHaveBeenCalled();
     });
-=======
-    // it('openDialog should open dialog from component', () => {
-    //     const testRoom = new Room();
-    //     const openDialogSpy = spyOn(component.dialog, 'open');
-    //     component.openDialog(testRoom);
-    //     expect(openDialogSpy).toHaveBeenCalled();
-    // });
->>>>>>> 593b6be... mock for communication service
 });
