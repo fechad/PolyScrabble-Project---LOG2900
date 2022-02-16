@@ -2,13 +2,15 @@ import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { Game, MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Parameters } from './parameters';
 import { Player } from './room';
 
 const RESPONSE_DELAY = 400;
+const HALF_LENGTH = 7;
+const BOARD_LENGTH = 15;
 
 describe('Game', () => {
     let players: Player[];
@@ -76,18 +78,42 @@ describe('Game', () => {
 
     it('should place letters', async () => {
         const stubScore = sinon.stub();
+        const stubValidCommand = sinon.stub();
+        const stubReserve = sinon.stub();
+        const stubBoard = sinon.stub();
+
+        game.eventEmitter.on('score', stubScore);
+        game.eventEmitter.on('valid-command', stubValidCommand);
+        game.eventEmitter.on('reserve', stubReserve);
+        game.eventEmitter.on('board', stubBoard);
         const position = 'h7h';
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'E', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
-        game.eventEmitter.on('score', stubScore);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         await game.placeLetters(letters, position, game.players[0].id);
         assert(stubScore.called);
+        assert(stubValidCommand.called);
+        assert(stubReserve.called);
+        assert(stubBoard.called);
         assert(stubError.notCalled);
+    });
+
+    it('should not place letters when it is not your turn', async () => {
+        const letters = 'test';
+        const position = 'h7h';
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = false;
+        const stubValidCommand = sinon.stub();
+        game.eventEmitter.on('valid-command', stubValidCommand);
+
+        await game.placeLetters(letters, position, game.players[0].id);
+
+        assert(stubValidCommand.notCalled);
+        assert(stubError.called);
     });
 
     it('should output an error when not placing letters', async () => {
@@ -224,6 +250,16 @@ describe('Game', () => {
         assert(result);
     });
 
+    it('should send the players rack', (done) => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('rack', stub);
+
+        // eslint-disable-next-line dot-notation
+        game['sendRack']();
+        assert(stub.called);
+        done();
+    });
+
     it('should forfeit the game', (done) => {
         const stub = sinon.stub();
         game.eventEmitter.on('forfeit', stub);
@@ -254,6 +290,56 @@ describe('Game', () => {
         assert(stubTurn.calledWith(game.players[0].id));
         assert(stubReserve.calledWith(game.reserve.getCount()));
 
+        done();
+    });
+
+    it('should get the name of the player', (done) => {
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        expect(game.getPlayerName()).to.equal(game.players[0].name);
+
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = false;
+        expect(game.getPlayerName()).to.equal(game.players[1].name);
+        done();
+    });
+
+    it('should get the id of the player', (done) => {
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        // eslint-disable-next-line dot-notation
+        expect(game['getPlayerId'](true)).to.equal(game.players[0].id);
+
+        // eslint-disable-next-line dot-notation
+        expect(game['getPlayerId'](false)).to.equal(game.players[1].id);
+        done();
+    });
+
+
+    it('should get reserve called', (done) => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('reserve', stub);
+
+        const count = game.reserve.getCount();
+        game.getReserveCount();
+        assert(stub.calledWith(count));
+        done();
+    });
+
+    it('should get formatted board', (done) => {
+        game.board.board[HALF_LENGTH][HALF_LENGTH].setLetter('a');
+        const expectedLetter = {id: 1, name: 'A', score: 1, quantity: 9};
+        // eslint-disable-next-line dot-notation
+        const formattedBoard = game['formatSendableBoard']();
+        for (let i = 0; i < BOARD_LENGTH; i++) {
+            for (let j = 0; j < BOARD_LENGTH; j++) {
+                if (i === HALF_LENGTH && j === HALF_LENGTH) {
+                    expect(formattedBoard[i][j] === expectedLetter);
+                } else {
+                    assert(formattedBoard[i][j] === undefined);
+                }
+            }
+        }
         done();
     });
 });

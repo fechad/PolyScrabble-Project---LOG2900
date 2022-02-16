@@ -155,13 +155,8 @@ export class Game {
     }
 
     private sendRack() {
-        let player = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
-        let opponnent = this.isPlayer0Turn ? OTHER_PLAYER : MAIN_PLAYER;
-        this.eventEmitter.emit(
-            'rack',
-            this.players[player].id,
-            this.reserve.letterRacks[player],
-            this.reserve.letterRacks[opponnent].length,
-        );
+        const player = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
+        const opponnent = this.isPlayer0Turn ? OTHER_PLAYER : MAIN_PLAYER;
+        this.eventEmitter.emit('rack', this.players[player].id, this.reserve.letterRacks[player], this.reserve.letterRacks[opponnent].length);
     }
 }
