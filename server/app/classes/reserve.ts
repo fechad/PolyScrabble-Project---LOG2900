@@ -4,7 +4,7 @@ import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 
 export class Reserve {
     letterRacks: Letter[][] = [];
-    reserve: Letter[] = [];
+    private reserve: Letter[] = [];
 
     constructor() {
         for (const letter of alphabetTemplate) {
