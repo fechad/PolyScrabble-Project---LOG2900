@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
+import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
@@ -10,7 +11,6 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-import { Letter } from './alphabet';
 import { Board, GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 

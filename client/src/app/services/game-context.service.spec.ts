@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Letter } from './alphabet';
+import { Letter } from '@app/classes/letter';
 import { GameContextService } from './game-context.service';
 
 describe('GameContextService', () => {
@@ -14,23 +14,27 @@ describe('GameContextService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should throw when removing weird characters', () => {
-        expect(() => service.tempUpdateRack('*')).toThrow();
-        expect(() => service.tempUpdateRack('ù')).toThrow();
-        expect(() => service.tempUpdateRack('b*»)/')).toThrow();
+    it('should not update when removing weird characters', () => {
+        const beforeRack = service.rack.value;
+        service.tempUpdateRack('*');
+        expect(beforeRack).toEqual(service.rack.value);
+        // expect(() => service.tempUpdateRack('ù')).toThrow();
+        // expect(() => service.tempUpdateRack('b*»)/')).toThrow();
     });
 
-    it('should throw when removing characters not in board', () => {
-        service.rack.next([{ id: 0, name: 'a', score: 1, quantity: 2 }]);
-        expect(() => service.tempUpdateRack('ab')).toThrow();
-        expect(() => service.tempUpdateRack('def')).toThrow();
+    it('should not update when characters not in board', () => {
+        service.rack.next([{ name: 'a', score: 1 }]);
+        const beforeRack = service.rack.value;
+        service.tempUpdateRack('ab');
+        expect(beforeRack).toEqual(service.rack.value);
+        // expect(() => service.tempUpdateRack('def')).toThrow();
     });
 
     it('should update the rack', () => {
         const RACK: Letter[] = [
-            { id: 0, name: 'a', score: 1, quantity: 30 },
-            { id: 0, name: 'a', score: 1, quantity: 30 },
-            { id: 1, name: 'b', score: 3, quantity: 5 },
+            { name: 'a', score: 1 },
+            { name: 'a', score: 1 },
+            { name: 'b', score: 3 },
         ];
         const OTHER_RACK_LENGTH = 4;
 

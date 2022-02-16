@@ -137,12 +137,18 @@ export class ChatBoxComponent {
         return;
     }
     isInRack(word: string) {
-        let lettersInRack = '';
+        const NOT_FOUND = -1;
+        let lettersInRack: string[] = [];
         for (const letter of this.gameContextService.rack.value) {
             lettersInRack = lettersInRack.concat(letter.name);
         }
         for (const letter of word) {
-            if (!lettersInRack.toLowerCase().includes(letter) && !lettersInRack.includes('*')) return false;
+            const index = lettersInRack.findIndex((foundLetter) => {
+                return letter === foundLetter.toLowerCase() || foundLetter === '*';
+            });
+            if (index === NOT_FOUND) return false;
+            lettersInRack[index] = lettersInRack[lettersInRack.length - 1];
+            lettersInRack.pop();
         }
         return true;
     }
