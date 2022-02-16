@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { GridService } from '@app/services/grid.service';
 import { GameContextService } from './game-context.service';
 
+// import SpyObj = jasmine.SpyObj;
 export class CanvasTestHelper {
     static createCanvas(width: number, height: number): HTMLCanvasElement {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -10,6 +11,7 @@ export class CanvasTestHelper {
         return canvas;
     }
 }
+
 const CALLNUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
@@ -17,8 +19,12 @@ describe('GridService', () => {
     let ctxStub: CanvasRenderingContext2D;
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
+<<<<<<< HEAD
     const ORIGIN = 0;
     const POLICE_SIZE = 9;
+=======
+    // let gameContextServiceSpy: SpyObj<GameContextService>;
+>>>>>>> 6066f5a... tests for waiting-room page
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
