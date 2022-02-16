@@ -10,7 +10,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
 
-class CommunicationServiceMock {
+export class CommunicationServiceMock {
     selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
         id: 0,
         name: 'Room',
@@ -20,29 +20,6 @@ class CommunicationServiceMock {
         started: false,
     } as Room);
     dictionnaries: Promise<Dictionnary[]> = Promise.resolve([{ id: 0, name: 'français' }]);
-    // constructor() {
-    //     this.selectedRoom.next({
-    //         id: 0,
-    //         name: 'Room',
-    //         parameters: new Parameters(),
-    //         mainPlayer: { name: 'Player 1', id: '0', connected: true },
-    //         otherPlayer: undefined,
-    //         started: false,
-    //     });
-    // }
-
-    // setRoom(): void {
-    //     this.selectedRoom.next({
-    //         id: 0,
-    //         name: 'Room',
-    //         parameters: new Parameters(),
-    //         mainPlayer: { name: 'Player 1', id: '0', connected: true },
-    //         otherPlayer: undefined,
-    //         started: false,
-    //     });
-
-    // this.selectedRoom.subscribe(async () => {
-    //  this.router.navigate(['/']);
 
     start() {
         return;
