@@ -67,7 +67,7 @@ export class Game {
             }
             this.eventEmitter.emit('board', this.formatSendableBoard());
             this.sendRack();
-            this.skipTurn(playerId);
+            this.skipTurn(playerId, false);
             if (this.reserve.getCount() === 0 && (this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER))) {
                 this.endGame();
             }
@@ -89,7 +89,7 @@ export class Game {
                 validMessage = this.getPlayerName() + ' a échangé ' + letters.length + ' lettres';
                 const opponentId = this.getPlayerId(false);
                 this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
-                this.skipTurn(playerId);
+                this.skipTurn(playerId, false);
                 this.updateSkipCounter(false);
             } else {
                 this.eventEmitter.emit('game-error', playerId, new Error('La réserve est trop petite pour y échanger des lettres').message);
