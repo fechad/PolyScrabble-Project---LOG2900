@@ -2,18 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { CommunicationService } from '@app/services/communication.service';
-import { of } from 'rxjs';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
 import SpyObj = jasmine.SpyObj;
 
 // Mock implements the behavior of open() method
-export class MatDialogMock {
-    open() {
-        return { afterClosed: () => of({}) };
-    }
-}
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
 
+export class CommunicationServiceMock {}
 describe('JoiningRoomPageComponent', () => {
     // let component: JoiningRoomPageComponent;
     let fixture: ComponentFixture<JoiningRoomPageComponent>;
@@ -25,15 +25,17 @@ describe('JoiningRoomPageComponent', () => {
             imports: [MatCardModule],
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
-                { provide: MatDialog, useValue: MatDialogMock },
+                { provide: MatDialog, useValue: dialogMock },
             ],
         }).compileComponents();
     });
 
     beforeEach(() => {
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['dictionnaries']);
         fixture = TestBed.createComponent(JoiningRoomPageComponent);
         // component = fixture.componentInstance;
         fixture.detectChanges();
+        // component.communicationService = Object.assign(new Promise<Dictionnary>(resolve => resolve(dictionnaries));
     });
 
     // TO-DO: should create fails

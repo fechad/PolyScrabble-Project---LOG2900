@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -29,7 +29,14 @@ describe('JoinSetupDialogComponent', () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
         await TestBed.configureTestingModule({
             declarations: [JoinSetupDialogComponent],
-            imports: [HttpClientTestingModule, MatCardModule, RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
+            imports: [
+                HttpClientTestingModule,
+                MatCardModule,
+                RouterTestingModule.withRoutes(routes),
+                HttpClientModule,
+                AppRoutingModule,
+                ReactiveFormsModule,
+            ],
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialogRef, useValue: dialogMock },
