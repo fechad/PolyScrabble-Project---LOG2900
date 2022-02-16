@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
-import { Letter } from '@app/services/alphabet';
 import { GameContextService, Tile } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
@@ -94,10 +94,8 @@ export class GridService {
             const tile = isVerticalPlacement ? temporaryBoard[i][horizontalPosition] : temporaryBoard[verticalPosition][i];
             if (tile !== null) continue;
             const letter: Tile = {
-                id: 0,
                 name: lettersToAdd[letterPosition].toUpperCase(),
                 score: 0,
-                quantity: 0,
             } as Letter;
             if (isVerticalPlacement) temporaryBoard[i][horizontalPosition] = letter;
             else temporaryBoard[verticalPosition][i] = letter;
