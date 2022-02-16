@@ -75,12 +75,15 @@ describe('Reserve', () => {
     });
 
     it('should update the reserve', (done) => {
-        const lengthBefore = reserve.reserve.length;
+        // eslint-disable-next-line dot-notation
+        const lengthBefore = reserve['reserve'].length;
         reserve.updateReserve(reserve.letterRacks[0][0].name.toLowerCase(), true, true);
-        expect(lengthBefore).to.equal(reserve.reserve.length);
+        // eslint-disable-next-line dot-notation
+        expect(lengthBefore).to.equal(reserve['reserve'].length);
 
         reserve.updateReserve(reserve.letterRacks[0][0].name.toLowerCase(), false, false);
-        expect(lengthBefore - 1).to.equal(reserve.reserve.length);
+        // eslint-disable-next-line dot-notation
+        expect(lengthBefore - 1).to.equal(reserve['reserve'].length);
         done();
     });
 

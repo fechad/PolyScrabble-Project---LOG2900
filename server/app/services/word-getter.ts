@@ -15,7 +15,7 @@ export class WordGetter {
         words.push(this.getWord(currentRow, currentCol, word, position[2] === 'h', position[2]));
 
         // get words by contact
-        if (contacts[0][0] !== INVALID) {
+        if (contacts.length > 0 && contacts[0][0] !== INVALID) {
             for (const contact of contacts) {
                 const wordStart = position[2] === 'h' ? 'v' : 'h';
                 words.push(this.getWord(contact[0], contact[1], word, position[2] === 'v', wordStart, contact[2]));

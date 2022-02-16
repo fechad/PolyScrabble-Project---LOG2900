@@ -54,11 +54,40 @@ describe('MainLobby service tests', () => {
         done();
     });
 
+    it('should emit join if already joined room', (done) => {
+        const parameters = new Parameters();
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
+        
+        const stub = sinon.stub();
+        playersSocket[0].on('join', stub);
+
+        service.connect(playersSocket[0], 'DummyId');
+
+        assert(stub.called);
+        done();
+    });
+
     it('should return an error if room does not exist', (done) => {
         const stub = sinon.stub();
         playersSocket[0].on('error', stub);
         playersSocket[0].emit('join-room', 0, 'NotDummy');
         assert(stub.calledWith('Room is no longer available'));
+        done();
+    });
+
+    it('should return an error if player cannot join', (done) => {
+        const stub = sinon.stub();
+        const player3 = new EventEmitter();
+        service.connect(player3, 'ReallyNotDummyId');
+        player3.on('error', stub);
+
+        const parameters = new Parameters();
+        playersSocket[0].emit('create-room', 'Dummy', parameters);
+
+        playersSocket[1].emit('join-room', 0, 'NotDummy');
+
+        player3.emit('join-room', 0, 'ReallyNotDummy');
+        assert(stub.called);
         done();
     });
 });
