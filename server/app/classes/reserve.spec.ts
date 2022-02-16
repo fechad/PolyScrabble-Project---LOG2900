@@ -1,5 +1,5 @@
 import { alphabetTemplate } from '@app/alphabet-template';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Reserve } from './reserve';
 
@@ -10,17 +10,21 @@ describe('Reserve', () => {
     beforeEach(() => {
         reserve = new Reserve();
     });
-    it('should have 7 elements in each rack', () => {
+
+    it('should have 7 elements in each rack', (done) => {
         assert(reserve.letterRacks[0].length === racksLength);
         assert(reserve.letterRacks[1].length === racksLength);
+        done();
     });
-    it('should return the right number of letters', () => {
+
+    it('should return the right number of letters', (done) => {
         const numberOfLetters = 4;
         assert(reserve.drawLetters(numberOfLetters).length === numberOfLetters);
         assert(reserve.drawLetters(racksLength).length === racksLength);
+        done();
     });
 
-    it('should take the right amount of letters from the reserve', () => {
+    it('should take the right amount of letters from the reserve', (done) => {
         const numberOfDrawnLetters = 22;
         // eslint-disable-next-line dot-notation
         const beforeReserveLength = reserve['reserve'].length;
@@ -28,9 +32,10 @@ describe('Reserve', () => {
         // eslint-disable-next-line dot-notation
         const afterReserveLength = reserve['reserve'].length;
         assert(beforeReserveLength === afterReserveLength + numberOfDrawnLetters);
+        done();
     });
 
-    it('should take the correct letters from the reserve', () => {
+    it('should take the correct letters from the reserve', (done) => {
         const numberOfDrawnLetters = 5;
         // eslint-disable-next-line dot-notation
         const beforeReserve = reserve['reserve'];
@@ -43,22 +48,50 @@ describe('Reserve', () => {
         for (let i = 0; i < beforeReserve.length; i++) {
             assert(beforeReserve[i].name === afterReserve[i].name);
         }
+        done();
     });
-    it('isPlayerRackEmpty should accurately tell if a rack is empty', () => {
+
+    it('should tell if a rack is empty', (done) => {
         reserve.letterRacks[MAIN_PLAYER].length = 0;
-        const firstResult = reserve.isPlayerRackEmpty(MAIN_PLAYER);
-        assert(firstResult === true);
+        let result = reserve.isPlayerRackEmpty(MAIN_PLAYER);
+        assert(result);
+
+        reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
+        result = reserve.isPlayerRackEmpty(MAIN_PLAYER);
+        assert(!result);
 
         reserve.letterRacks[OTHER_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
-        const secondResult = reserve.isPlayerRackEmpty(OTHER_PLAYER);
-        assert(secondResult === false);
+        result = reserve.isPlayerRackEmpty(OTHER_PLAYER);
+        assert(!result);
+        done();
     });
 
-    it('it should deal with draw bigger than number in reserve', () => {
+    it('should deal with draw bigger than number in reserve', () => {
         const remainingLetters = 4;
         // eslint-disable-next-line dot-notation
         reserve.drawLetters(reserve['reserve'].length - remainingLetters);
         const letters = reserve.drawLetters(remainingLetters + 1);
         assert(letters.length === remainingLetters);
+    });
+
+    it('should update the reserve', (done) => {
+        // eslint-disable-next-line dot-notation
+        const lengthBefore = reserve['reserve'].length;
+        reserve.updateReserve(reserve.letterRacks[0][0].name.toLowerCase(), true, true);
+        // eslint-disable-next-line dot-notation
+        expect(lengthBefore).to.equal(reserve['reserve'].length);
+
+        reserve.updateReserve(reserve.letterRacks[0][0].name.toLowerCase(), false, false);
+        // eslint-disable-next-line dot-notation
+        expect(lengthBefore - 1).to.equal(reserve['reserve'].length);
+        done();
+    });
+
+    it('should set the racks', (done) => {
+        // eslint-disable-next-line dot-notation
+        reserve['setRacks']();
+        assert(reserve.letterRacks[0].length === racksLength);
+        assert(reserve.letterRacks[1].length === racksLength);
+        done();
     });
 });
