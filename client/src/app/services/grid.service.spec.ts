@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { GridService } from '@app/services/grid.service';
+import { GameContextService } from './game-context.service';
 
 export class CanvasTestHelper {
     static createCanvas(width: number, height: number): HTMLCanvasElement {
@@ -12,6 +13,7 @@ export class CanvasTestHelper {
 const CALLNUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
+    let gameContext: GameContextService;
     let ctxStub: CanvasRenderingContext2D;
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
@@ -21,8 +23,10 @@ describe('GridService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(GridService);
+        gameContext = TestBed.inject(GameContextService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         service.gridContext = ctxStub;
+        service.tempUpdateBoard('A', 'h7h');
     });
 
     it('should be created', () => {
@@ -107,5 +111,11 @@ describe('GridService', () => {
         const drawTripleWordSpy = spyOn(service, 'drawBonus').and.callThrough();
         service.drawGrid();
         expect(drawTripleWordSpy).toHaveBeenCalledTimes(CALLNUMBER);
+    });
+
+    it('should not place two times the same letter', () => {
+        service.tempUpdateBoard('V', 'h7v');
+        service.tempUpdateBoard('Q', 'h7h');
+        expect(gameContext.board.value[7][6]?.name).toBe('A');
     });
 });
