@@ -28,6 +28,7 @@ export class JoiningRoomPageComponent implements OnInit {
                 room: room.id,
                 name: room.mainPlayer.name,
                 dictionnary: this.dictionnaries ? this.dictionnaries[room.parameters?.dictionnary || 0]?.name : '…',
+                timer: room.parameters.timer,
             },
         });
     }
