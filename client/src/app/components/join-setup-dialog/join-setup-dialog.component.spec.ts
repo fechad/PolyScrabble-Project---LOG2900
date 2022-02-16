@@ -114,9 +114,12 @@ describe('JoinSetupDialogComponent', () => {
         const playerName = component.joiningRoomForm.controls.secondPlayerName;
         playerName.setValue('Test');
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         spyOn(component.communicationService, 'joinRoom');
 >>>>>>> 3f28bbd... join setup dialog tests
+=======
+>>>>>>> 6066f5a... tests for waiting-room page
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
         await component.submit();
         expect(closeDialogSpy).toHaveBeenCalled();
