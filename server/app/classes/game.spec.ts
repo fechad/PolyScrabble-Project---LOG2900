@@ -200,8 +200,6 @@ describe('Game', () => {
     });
 
     it('Reserve of less than 7 shouldnt allow letter exchanges', async () => {
-        const endGame = sinon.stub(game, 'endGame');
-
         const remainingLettersInReserve = 4;
         // eslint-disable-next-line dot-notation
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
@@ -209,7 +207,7 @@ describe('Game', () => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.changeLetters('allo', game.players[MAIN_PLAYER].id);
-        assert(endGame.called);
+        assert(stubError.called);
     });
 
     it('should calulate the final scores when the mainPlayer rack is empty', () => {
