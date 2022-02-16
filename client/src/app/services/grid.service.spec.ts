@@ -19,12 +19,8 @@ describe('GridService', () => {
     let ctxStub: CanvasRenderingContext2D;
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
-<<<<<<< HEAD
     const ORIGIN = 0;
     const POLICE_SIZE = 9;
-=======
-    // let gameContextServiceSpy: SpyObj<GameContextService>;
->>>>>>> 6066f5a... tests for waiting-room page
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
