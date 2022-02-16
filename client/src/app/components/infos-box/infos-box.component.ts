@@ -16,7 +16,6 @@ export class InfosBoxComponent implements AfterViewInit {
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService, public mode: ModeServiceService) {}
 
     ngAfterViewInit(): void {
-        this.reset();
         this.gameContextService.isMyTurn.subscribe(() => {
             this.reset();
         });
@@ -34,7 +33,7 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     onTimerFinished(e: CountdownEvent) {
-        if (e.action === 'done') {
+        if (e.action === 'done' && this.gameContextService.skipTurnEnabled && this.gameContextService.isMyTurn.value) {
             this.communicationService.switchTurn(true);
         }
     }
