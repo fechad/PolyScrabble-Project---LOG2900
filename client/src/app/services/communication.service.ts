@@ -208,24 +208,24 @@ export class CommunicationService {
             this.router.navigate(['/']);
         });
 
-        this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.setMyTurn(id === this.myId.value));
+        this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.isMyTurn.next(id === this.myId.value));
         this.gameSocket.on('message', (message: Message, msgCount: number) => {
             this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
         });
         this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
         this.gameSocket.on('valid-command', (response: string) => this.sendLocalMessage(response));
         this.gameSocket.on('valid-exchange', (response: string) => this.sendLocalMessage(response));
-        this.gameSocket.on('reserve', (count: number) => this.gameContextService.updateReserveCount(count));
+        this.gameSocket.on('reserve', (count: number) => this.gameContextService.reserveCount.next(count));
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
             this.gameSocket?.emit('switch-turn');
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setName(player, player.id === this.myId.value);
+                this.gameContextService.setName(player.name, player.id === this.myId.value);
             }
         });
-        this.gameSocket.on('board', (board: Board) => this.gameContextService.setBoard(board));
+        this.gameSocket.on('board', (board: Board) => this.gameContextService.board.next(board));
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
             this.gameContextService.setScore(score, this.myId.value === player);
         });
