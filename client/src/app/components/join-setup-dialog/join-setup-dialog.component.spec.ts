@@ -13,11 +13,8 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { JoinSetupDialogComponent } from './join-setup-dialog.component';
 
-<<<<<<< HEAD
-=======
 // import SpyObj = jasmine.SpyObj;
 
->>>>>>> 3f28bbd... join setup dialog tests
 const dialogMock = {
     close: () => {
         return;
@@ -35,11 +32,8 @@ class CommunicationServiceMock {
 describe('JoinSetupDialogComponent', () => {
     let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;
-<<<<<<< HEAD
-=======
     // let dialogRef: MatDialogRef<JoinSetupDialogComponent>;
     // let communicationServiceSpy: SpyObj<CommunicationService>;
->>>>>>> 3f28bbd... join setup dialog tests
     let router: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
@@ -68,10 +62,6 @@ describe('JoinSetupDialogComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinSetupDialogComponent);
-<<<<<<< HEAD
-=======
-        // communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['joinRoom']);
->>>>>>> 3f28bbd... join setup dialog tests
         component = fixture.componentInstance;
         component.joiningRoomForm = new FormGroup({
             secondPlayerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
