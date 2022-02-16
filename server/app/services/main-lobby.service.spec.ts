@@ -57,7 +57,7 @@ describe('MainLobby service tests', () => {
     it('should emit join if already joined room', (done) => {
         const parameters = new Parameters();
         playersSocket[0].emit('create-room', 'Dummy', parameters);
-        
+
         const stub = sinon.stub();
         playersSocket[0].on('join', stub);
 
