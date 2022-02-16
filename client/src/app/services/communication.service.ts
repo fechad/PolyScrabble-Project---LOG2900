@@ -26,6 +26,7 @@ export class CommunicationService {
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
     congratulations: string | undefined = undefined;
+    endGame: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -110,13 +111,14 @@ export class CommunicationService {
         return this.myId;
     }
 
-    switchTurn() {
-        this.gameSocket?.emit('switch-turn');
+    switchTurn(timerRequest: boolean) {
+        this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, position: string) {
         this.gameContextService.tempUpdateRack(letters);
         this.gridService.tempUpdateBoard(letters, position);
+        this.gameContextService.allowSwitch(false);
         this.gameSocket?.emit('place-letters', letters, position);
     }
 
@@ -207,36 +209,40 @@ export class CommunicationService {
             this.router.navigate(['/']);
         });
 
-        this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.setMyTurn(id === this.myId.value));
+        this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.isMyTurn.next(id === this.myId.value));
         this.gameSocket.on('message', (message: Message, msgCount: number) => {
             this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
         });
         this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
         this.gameSocket.on('valid-command', (response: string) => this.sendLocalMessage(response));
         this.gameSocket.on('valid-exchange', (response: string) => this.sendLocalMessage(response));
-        this.gameSocket.on('reserve', (count: number) => this.gameContextService.updateReserveCount(count));
+        this.gameSocket.on('reserve', (count: number) => this.gameContextService.reserveCount.next(count));
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);
-            this.gameSocket?.emit('switch-turn');
+            this.gameContextService.allowSwitch(true);
         });
         this.gameSocket.on('players', (players: Player[]) => {
             for (const player of players) {
-                this.gameContextService.setName(player, player.id === this.myId.value);
+                this.gameContextService.setName(player.name, player.id === this.myId.value);
             }
         });
-        this.gameSocket.on('board', (board: Board) => this.gameContextService.setBoard(board));
+        this.gameSocket.on('board', (board: Board) => this.gameContextService.board.next(board));
         this.gameSocket.on('score', (score: number, player: PlayerId) => {
             this.gameContextService.setScore(score, this.myId.value === player);
         });
         this.gameSocket.on('congratulations', (winner: Player) => {
             if (winner.id === this.myId.value) {
                 this.congratulations = `Félicitations ${winner.name}, vous avez gagné la partie !!`;
-            } else this.loserId = this.myId.value;
+            } else {
+                this.loserId = this.myId.value;
+                this.congratulations = ' Votre adversaire à gagné la partie !';
+            }
+            this.endGame = true;
         });
         this.gameSocket.on('game-summary', (summary: string) => {
             this.sendLocalMessage(summary);
         });
-        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo) => {
+        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo: string) => {
             this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
     }

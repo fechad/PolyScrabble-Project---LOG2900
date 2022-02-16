@@ -169,7 +169,6 @@ export class SocketManager {
                 'score',
                 'turn',
                 'parameters',
-                'game-error',
                 'players',
                 'forfeit',
                 'board',
@@ -181,18 +180,15 @@ export class SocketManager {
                 'its-a-tie',
             ];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
-            handlers.push([
-                'rack',
-                (targetId: PlayerId, ...params: unknown[]) => {
-                    if (targetId === id) socket.emit('rack', ...params);
-                },
-            ]);
-            handlers.push([
-                'valid-exchange',
-                (targetId: PlayerId, ...params: unknown[]) => {
-                    if (targetId === id) socket.emit('valid-exchange', ...params);
-                },
-            ]);
+            const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange'];
+            for (const event of specificPlayerEvents) {
+                handlers.push([
+                    event,
+                    (targetId: PlayerId, ...params: unknown[]) => {
+                        if (targetId === id) socket.emit(event, ...params);
+                    },
+                ]);
+            }
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
             socket.on('message', (message: string) => {
@@ -201,7 +197,7 @@ export class SocketManager {
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
-            socket.on('switch-turn', () => game.skipTurn(id));
+            socket.on('switch-turn', (timerRequest: boolean) => game.skipTurn(id, timerRequest));
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));

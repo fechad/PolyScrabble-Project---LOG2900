@@ -81,8 +81,7 @@ export class GridService {
     tempUpdateBoard(lettersToAdd: string, position: string) {
         const COMMAND_ORIENTATION_INDEX = position.length - 1;
         const verticalPosition = position.charCodeAt(COMMAND_Y_INDEX) - LOWERCASE_A_ASCII;
-        const horizontalPositionString =
-            COMMAND_ORIENTATION_INDEX === 2 ? position[COMMAND_X_INDEX] : position[COMMAND_X_INDEX] + position[COMMAND_X_INDEX + 1];
+        const horizontalPositionString = position.substring(COMMAND_X_INDEX, COMMAND_ORIENTATION_INDEX);
         const horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
 
         const isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';

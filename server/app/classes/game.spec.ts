@@ -158,10 +158,10 @@ describe('Game', () => {
     it('should skip turn', (done) => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[0].id);
+        game.skipTurn(game.players[0].id, true);
         // eslint-disable-next-line dot-notation
         assert(!game['isPlayer0Turn']);
-        game.skipTurn(game.players[1].id);
+        game.skipTurn(game.players[1].id, true);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
@@ -171,7 +171,7 @@ describe('Game', () => {
     it('should not skip turn if it is not your turn', (done) => {
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[1].id);
+        game.skipTurn(game.players[1].id, true);
         // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.called);
@@ -222,7 +222,8 @@ describe('Game', () => {
 
     it('empty reserve and empty rack should trigger endGame', async () => {
         const endGame = sinon.stub(game, 'endGame');
-        game.reserve.emptyReserve();
+        // eslint-disable-next-line dot-notation
+        game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
@@ -230,11 +231,23 @@ describe('Game', () => {
         assert(endGame.called);
     });
 
+    it('Reserve of less than 7 shouldnt allow letter exchanges', async () => {
+        const remainingLettersInReserve = 4;
+        // eslint-disable-next-line dot-notation
+        game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
+        game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
+        // eslint-disable-next-line dot-notation
+        game['isPlayer0Turn'] = true;
+        game.changeLetters('allo', game.players[MAIN_PLAYER].id);
+        assert(stubError.called);
+    });
+
     it('should calulate the final scores when the mainPlayer rack is empty', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
-        game.reserve.emptyReserve();
+        // eslint-disable-next-line dot-notation
+        game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER].length = 0;
         const result = game.endGameService.calculateFinalScores(scores, game.reserve);
         assert(result);
@@ -244,7 +257,8 @@ describe('Game', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
-        game.reserve.emptyReserve();
+        // eslint-disable-next-line dot-notation
+        game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[OTHER_PLAYER].length = 0;
         const result = game.endGameService.calculateFinalScores(scores, game.reserve);
         assert(result);
