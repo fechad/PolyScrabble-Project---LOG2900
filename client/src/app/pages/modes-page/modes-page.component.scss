@@ -7,3 +7,6 @@
     text-align: right;
     margin-top: -2em;
 }
+.button:disabled {
+    background-color: rgb(87, 87, 87);
+}

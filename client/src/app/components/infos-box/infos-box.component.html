@@ -5,20 +5,17 @@
             <p *ngIf="myRackIsVisible">{{ this.gameContextService.myRackCount | async }} lettres restantes dans le chevalet</p>
         </div>
     </div>
-    <div class="game-infos" *ngIf="this.communicationService.congratulations === undefined">
+    <div class="game-infos">
         <p>{{ this.mode.mode }}</p>
-        <div class="backChrono">
+        <div class="backChrono" *ngIf="this.communicationService.congratulations === undefined">
             <countdown
                 #countdown
                 [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
                 (event)="onTimerFinished($event)"
             ></countdown>
         </div>
+        <p *ngIf="this.communicationService.congratulations !== undefined">👑 {{ this.communicationService.congratulations }} 👑</p>
         <p>{{ this.gameContextService.reserveCount | async }} lettres disponibles dans la réserve</p>
-    </div>
-
-    <div class="game-infos" *ngIf="this.communicationService.congratulations !== undefined">
-        <p>👑 {{ this.communicationService.congratulations }} 👑</p>
     </div>
     <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn | async) }">
         <div class="p-infos">
