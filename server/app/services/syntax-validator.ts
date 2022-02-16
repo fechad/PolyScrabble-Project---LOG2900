@@ -1,10 +1,35 @@
+const specialLetters = {
+    é: 'e',
+    è: 'e',
+    ê: 'e',
+    ë: 'e',
+    à: 'a',
+    â: 'a',
+    ä: 'a',
+    ï: 'i',
+    î: 'i',
+    ô: 'o',
+    ö: 'o',
+    ù: 'u',
+    û: 'u',
+    ü: 'u',
+    ÿ: 'y',
+    ç: 'c',
+};
+
 export class SyntaxValidator {
     separatePosition(position: string): string[] {
         const positionArray: string[] = [];
         positionArray[0] = position.charAt(0);
         if (position.length === 3) {
+            if (isNaN(+position.charAt(2))) {
+                positionArray[1] = position.charAt(1);
+                positionArray[2] = position.charAt(2);
+            } else {
+                positionArray[1] = position.charAt(1) + position.charAt(2);
+            }
+        } else if (position.length === 2) {
             positionArray[1] = position.charAt(1);
-            positionArray[2] = position.charAt(2);
         } else {
             positionArray[1] = position.charAt(1) + position.charAt(2);
             positionArray[2] = position.charAt(3);
@@ -12,9 +37,9 @@ export class SyntaxValidator {
         return positionArray;
     }
 
-    validatePositionSyntax(position: string[]): boolean {
+    validatePositionSyntax(position: string[], oneLetter: boolean): boolean {
         if (position[0].match(/[a-o]/g) !== null) {
-            if (position[2].match(/[hv]/g) !== null) {
+            if ((position[2] === undefined && oneLetter) || position[2].match(/[hv]/g) !== null) {
                 if (position[1].length === 1) {
                     if (position[1].match(/[1-9]/g) !== null) {
                         return true;
@@ -30,18 +55,16 @@ export class SyntaxValidator {
         return false;
     }
 
-    /*
-    validateWordSyntax(words: string[]): string[] {
-        for(let word of words){
-            let separatedWord = word.split(';');
-            if(separatedWord[separatedWord.length -1].length < 2){
-                return [];
-            }
-            for(let letter of separatedWord[separatedWord.length -1]){
-                // TODO: remplacer accents par lettre normale
-                console.log(letter);
+    removeAccents(word: string): string {
+        let returnWord = '';
+        for (const originalLetter of word) {
+            const letter = specialLetters[originalLetter.toLowerCase()];
+            if (letter !== undefined) {
+                returnWord += originalLetter === originalLetter.toLocaleUpperCase() ? letter.toUpperCase() : letter;
+            } else {
+                returnWord += originalLetter;
             }
         }
-        return words;
-    }*/
+        return returnWord;
+    }
 }

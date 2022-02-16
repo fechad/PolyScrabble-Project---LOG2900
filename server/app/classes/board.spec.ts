@@ -80,6 +80,10 @@ describe('Board', () => {
         result = board['isWordInBound'](word.length, positionArray);
         assert(!result);
 
+        positionArray = ['d', '-4', 'h'];
+        result = board['isWordInBound'](word.length, positionArray);
+        assert(!result);
+
         positionArray = ['d', '12', 'h'];
         result = board['isWordInBound'](word.length, positionArray);
         assert(result);
@@ -135,19 +139,46 @@ describe('Board', () => {
         done();
     });
 
-    it('should get an empty array for no contact except first word', (done) => {
+    it('should not let no contact except for first word', (done) => {
         let positionArray = ['f', '11', 'v'];
-        let contacts = board['getContacts'](word.length, positionArray);
-
-        assert(contacts.length === 1);
-        assert(contacts[0][0] === INVALID);
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
 
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
 
-        positionArray = ['i', '6', 'v'];
-        contacts = board['getContacts'](word.length, positionArray);
-        assert(contacts.length === 0);
+        positionArray = ['b', '6', 'v'];
+        assert(!board['isTouchingOtherWord'](word.length, positionArray));
+
+        positionArray = ['f', '3', 'h'];
+        assert(!board['isTouchingOtherWord'](word.length, positionArray));
+        done();
+    });
+
+    it('should validate if word has contact point', (done) => {
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+
+        let positionArray = ['h', '9', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['h', '3', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['i', '7', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['g', '6', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['h', '6', 'h'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+
+        positionArray = ['f', '9', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['g', '6', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['d', '7', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['i', '8', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
+        positionArray = ['f', '8', 'v'];
+        assert(board['isTouchingOtherWord'](word.length, positionArray));
         done();
     });
 
@@ -189,8 +220,16 @@ describe('Board', () => {
         assert(contacts[1][0] === 8);
         assert(contacts[1][1] === 6);
         assert(contacts[1][2] === INVALID);
+
+        positionArray = ['e', '6', 'v'];
+        contacts = board['getContacts'](word.length, positionArray);
+        assert(contacts.length === 1);
+        assert(contacts[0][0] === 7);
+        assert(contacts[0][1] === 5);
+        assert(contacts[0][2] === 3);
         done();
     });
+
     it('should change newly placed word', (done) => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
@@ -219,44 +258,21 @@ describe('Board', () => {
         let wordAndPos = ['h;7;6;as', 'v;9;6;vu'];
         let expectedScore = 7;
         let score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[7][6].newlyPlaced);
-        assert(!board.board[7][7].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
         wordAndPos = ['v;4;5;test', 'h;7;5;tas'];
         expectedScore = 9;
         score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[4][5].newlyPlaced);
-        assert(!board.board[5][5].newlyPlaced);
-        assert(!board.board[6][5].newlyPlaced);
-        assert(!board.board[7][5].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
-        wordAndPos = ['h;5;4;metro', 'v;4;5;test'];
-        expectedScore = 10;
+        wordAndPos = ['h;4;3;metro', 'v;4;5;test'];
+        expectedScore = 16;
         score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[5][4].newlyPlaced);
-        assert(!board.board[5][5].newlyPlaced);
-        assert(!board.board[5][6].newlyPlaced);
-        assert(!board.board[5][7].newlyPlaced);
-        assert(!board.board[5][8].newlyPlaced);
         expect(score).to.equal(expectedScore);
 
         wordAndPos = ['v;7;7;speciale', 'h;7;5;tas'];
         expectedScore = 42;
         score = board['placeWithScore'](wordAndPos);
-
-        assert(!board.board[7][7].newlyPlaced);
-        assert(!board.board[7][8].newlyPlaced);
-        assert(!board.board[7][9].newlyPlaced);
-        assert(!board.board[7][10].newlyPlaced);
-        assert(!board.board[7][11].newlyPlaced);
-        assert(!board.board[7][12].newlyPlaced);
-        assert(!board.board[7][13].newlyPlaced);
-        assert(!board.board[7][14].newlyPlaced);
         expect(score).to.equal(expectedScore);
         done();
     });
@@ -270,11 +286,60 @@ describe('Board', () => {
         expect(result).to.equals(expectedScore);
 
         position = 'f6h';
-        // arts avec la collision avec le premier t de testeur
         attemptedWord = 'ars';
         expectedScore = 13;
 
         result = await board.placeWord(attemptedWord, position);
         expect(result).to.equals(expectedScore);
+    });
+
+    it('should not place a word  if there is something invalid', async () => {
+        let position = 'f16v';
+        let errorMessage = "Erreur de syntaxe dans le placement d'un mot";
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        position = 'f14h';
+        errorMessage = 'Placement invalide le mot ne rentre pas dans la grille';
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        position = 'c2h';
+        errorMessage = 'Placement invalide pour le premier mot';
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+
+        position = 'c2h';
+        errorMessage = 'Placement invalide vous devez toucher un autre mot';
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
+
+        position = 'e8v';
+        errorMessage = 'Un des mots crees ne fait pas partie du dictionnaire';
+        try {
+            await board.placeWord(word, position);
+            assert(false);
+        } catch (error) {
+            expect(error.message).to.equal(errorMessage);
+        }
     });
 });

@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import { assert } from 'console';
 import { GameTile } from './game-tile';
 
@@ -36,6 +37,8 @@ describe('Game Tile', () => {
     });
 
     it('should get the char of the letter', (done) => {
+        assert(gameTile.getChar() === '!');
+
         gameTile.setLetter('a');
 
         // eslint-disable-next-line dot-notation
@@ -45,6 +48,36 @@ describe('Game Tile', () => {
         assert(!gameTile.empty);
         const char = gameTile.getChar();
         assert(char === 'a');
+        done();
+    });
+
+    it('should get the letter', (done) => {
+        let expectedLetter = { id: 1, name: 'A', score: 1, quantity: 9 };
+        let char = 'a';
+        // eslint-disable-next-line dot-notation
+        let result = gameTile['getLetter'](char);
+        expect(result.id).to.equal(expectedLetter.id);
+        expect(result.name).to.equal(expectedLetter.name);
+        expect(result.score).to.equal(expectedLetter.score);
+        expect(result.quantity).to.equal(expectedLetter.quantity);
+
+        expectedLetter = { id: 21, name: 'U', score: 1, quantity: 6 };
+        char = 'u';
+        // eslint-disable-next-line dot-notation
+        result = gameTile['getLetter'](char);
+        expect(result.id).to.equal(expectedLetter.id);
+        expect(result.name).to.equal(expectedLetter.name);
+        expect(result.score).to.equal(expectedLetter.score);
+        expect(result.quantity).to.equal(expectedLetter.quantity);
+
+        expectedLetter = { id: 27, name: '*', score: 0, quantity: 2 };
+        char = '8cjbs';
+        // eslint-disable-next-line dot-notation
+        result = gameTile['getLetter'](char);
+        expect(result.id).to.equal(expectedLetter.id);
+        expect(result.name).to.equal(expectedLetter.name);
+        expect(result.score).to.equal(expectedLetter.score);
+        expect(result.quantity).to.equal(expectedLetter.quantity);
         done();
     });
 
