@@ -220,21 +220,4 @@ export class Board {
             this.board[position[0]][position[1]] = new GameTile(multLetter, multWord);
         }
     }
-
-    // only for debug purpose
-    /*
-    private printBoard() {
-        for (const row of this.board) {
-            for (const tile of row) {
-                if (!tile.empty) {
-                    process.stdout.write(`${tile.getChar().toUpperCase()} `);
-                } else {
-                    process.stdout.write(
-                        tile.wordMultiplier !== 1 ? `x${tile.wordMultiplier}` : tile.multiplier !== 1 ? `${tile.multiplier} ` : '  ',
-                    );
-                }
-            }
-            console.log();
-        }
-    }*/
 }
