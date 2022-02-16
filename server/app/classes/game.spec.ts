@@ -8,6 +8,8 @@ import { Game, MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Parameters } from './parameters';
 import { Player } from './room';
 
+/* eslint-disable dot-notation */
+
 const RESPONSE_DELAY = 400;
 const HALF_LENGTH = 7;
 const BOARD_LENGTH = 15;
@@ -46,7 +48,6 @@ describe('Game', () => {
         game.message(message);
         setTimeout(() => {
             assert(stub.calledWith(message));
-            // eslint-disable-next-line dot-notation
             assert(game['messages'][0] === message);
             done();
         }, RESPONSE_DELAY);
@@ -56,7 +57,6 @@ describe('Game', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
         const letters = game.reserve.letterRacks[0][0].name.toLowerCase() + game.reserve.letterRacks[0][3].name.toLowerCase();
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.changeLetters(letters, game.players[0].id);
         assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
@@ -68,7 +68,6 @@ describe('Game', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
         const letters = 'abcd';
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.changeLetters(letters, '1');
         assert(stub.notCalled);
@@ -92,7 +91,6 @@ describe('Game', () => {
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         await game.placeLetters(letters, position, game.players[0].id);
         assert(stubScore.called);
@@ -105,7 +103,6 @@ describe('Game', () => {
     it('should not place letters when it is not your turn', async () => {
         const letters = 'test';
         const position = 'h7h';
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = false;
         const stubValidCommand = sinon.stub();
         game.eventEmitter.on('valid-command', stubValidCommand);
@@ -121,7 +118,6 @@ describe('Game', () => {
         const position = 'h7h';
         const letters = 'testaaaaaaaaaaa';
         game.eventEmitter.on('score', stub);
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         await game.placeLetters(letters, position, '0');
         assert(stub.notCalled);
@@ -142,44 +138,34 @@ describe('Game', () => {
     });
 
     it('should check turn of player', (done) => {
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        // eslint-disable-next-line dot-notation
         game['checkTurn']('0');
         assert(stubError.notCalled);
-        // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
-        // eslint-disable-next-line dot-notation
         game['checkTurn']('1');
         assert(stubError.called);
         done();
     });
 
     it('should skip turn', (done) => {
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.skipTurn(game.players[0].id, true);
-        // eslint-disable-next-line dot-notation
         assert(!game['isPlayer0Turn']);
         game.skipTurn(game.players[1].id, true);
-        // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
         done();
     });
 
     it('should not skip turn if it is not your turn', (done) => {
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.skipTurn(game.players[1].id, true);
-        // eslint-disable-next-line dot-notation
         assert(game['isPlayer0Turn']);
         assert(stubError.called);
         done();
     });
 
     it('Skipping 6 turns in a row should call endGame', () => {
-        // eslint-disable-next-line dot-notation
         game['skipCounter'] = 5;
         const endGame = sinon.spy(game, 'endGame');
         game.updateSkipCounter(true);
@@ -188,7 +174,6 @@ describe('Game', () => {
 
     it('updating the skipCouter after a valid command should reset the counter', () => {
         game.updateSkipCounter(false);
-        // eslint-disable-next-line dot-notation
         assert(game['skipCounter'] === 0);
     });
 
@@ -222,10 +207,8 @@ describe('Game', () => {
 
     it('empty reserve and empty rack should trigger endGame', async () => {
         const endGame = sinon.stub(game, 'endGame');
-        // eslint-disable-next-line dot-notation
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         await game.placeLetters('allo', 'h7h', game.players[MAIN_PLAYER].id);
         assert(endGame.called);
@@ -233,10 +216,8 @@ describe('Game', () => {
 
     it('Reserve of less than 7 shouldnt allow letter exchanges', async () => {
         const remainingLettersInReserve = 4;
-        // eslint-disable-next-line dot-notation
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.changeLetters('allo', game.players[MAIN_PLAYER].id);
         assert(stubError.called);
@@ -246,7 +227,6 @@ describe('Game', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
-        // eslint-disable-next-line dot-notation
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER].length = 0;
         const result = game.endGameService.calculateFinalScores(scores, game.reserve);
@@ -257,7 +237,6 @@ describe('Game', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
-        // eslint-disable-next-line dot-notation
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[OTHER_PLAYER].length = 0;
         const result = game.endGameService.calculateFinalScores(scores, game.reserve);
@@ -268,7 +247,6 @@ describe('Game', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
 
-        // eslint-disable-next-line dot-notation
         game['sendRack']();
         assert(stub.called);
         done();
@@ -295,7 +273,6 @@ describe('Game', () => {
         const stubReserve = sinon.stub();
         game.eventEmitter.on('reserve', stubReserve);
 
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         game.gameInit();
 
@@ -308,27 +285,21 @@ describe('Game', () => {
     });
 
     it('should get the name of the player', (done) => {
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
         expect(game.getPlayerName()).to.equal(game.players[0].name);
 
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = false;
         expect(game.getPlayerName()).to.equal(game.players[1].name);
         done();
     });
 
     it('should get the id of the player', (done) => {
-        // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        // eslint-disable-next-line dot-notation
         expect(game['getPlayerId'](true)).to.equal(game.players[0].id);
 
-        // eslint-disable-next-line dot-notation
         expect(game['getPlayerId'](false)).to.equal(game.players[1].id);
         done();
     });
-
 
     it('should get reserve called', (done) => {
         const stub = sinon.stub();
@@ -342,8 +313,7 @@ describe('Game', () => {
 
     it('should get formatted board', (done) => {
         game.board.board[HALF_LENGTH][HALF_LENGTH].setLetter('a');
-        const expectedLetter = {id: 1, name: 'A', score: 1, quantity: 9};
-        // eslint-disable-next-line dot-notation
+        const expectedLetter = { id: 1, name: 'A', score: 1, quantity: 9 };
         const formattedBoard = game['formatSendableBoard']();
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
