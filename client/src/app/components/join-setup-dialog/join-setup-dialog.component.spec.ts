@@ -13,8 +13,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { JoinSetupDialogComponent } from './join-setup-dialog.component';
 
-// import SpyObj = jasmine.SpyObj;
-
 const dialogMock = {
     close: () => {
         return;
@@ -32,8 +30,6 @@ class CommunicationServiceMock {
 describe('JoinSetupDialogComponent', () => {
     let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;
-    // let dialogRef: MatDialogRef<JoinSetupDialogComponent>;
-    // let communicationServiceSpy: SpyObj<CommunicationService>;
     let router: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
