@@ -91,7 +91,7 @@ describe('GameSetupDialogComponent', () => {
 
     it('click on closing button should call close on dialog', fakeAsync(() => {
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
-        const button = fixture.debugElement.query(By.css('.icone-cancel'));
+        const button = fixture.debugElement.query(By.css('.icon-cancel'));
         button.nativeElement.click();
         tick();
         expect(closeDialogSpy).toHaveBeenCalled();

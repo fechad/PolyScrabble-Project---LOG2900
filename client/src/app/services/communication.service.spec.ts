@@ -1,13 +1,13 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { Player, Room } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
-import { Letter } from './alphabet';
 import { Board, GameContextService } from './game-context.service';
 
 /* eslint-disable dot-notation, max-lines */
@@ -351,7 +351,7 @@ describe('CommunicationService', () => {
         const NUM_LETTERS = 9;
         const spy = spyOn(gameContext, 'updateRack');
         joinGame();
-        const letters: Letter[] = [{ id: 0, name: 'A', score: 1, quantity: 30 }];
+        const letters: Letter[] = [{ name: 'A', score: 1 }];
         (service['gameSocket'] as unknown as SocketMock).events.emit('rack', letters, NUM_LETTERS);
         expect(spy).toHaveBeenCalledWith(letters, NUM_LETTERS);
     });
@@ -368,7 +368,7 @@ describe('CommunicationService', () => {
 
     it('should set board', async () => {
         joinGame();
-        const board: Board = [[{ id: 0, name: 'A', score: 1, quantity: 3000 }]];
+        const board: Board = [[{ name: 'A', score: 1 }]];
         (service['gameSocket'] as unknown as SocketMock).events.emit('board', board);
         expect(gameContext.board.value).toBe(board);
     });
