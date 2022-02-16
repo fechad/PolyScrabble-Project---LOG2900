@@ -1,9 +1,16 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
+import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
+import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
@@ -25,9 +32,18 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent],
-            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule, FontAwesomeModule],
+            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent, HelpInfoComponent],
+            imports: [
+                RouterTestingModule.withRoutes(routes),
+                HttpClientTestingModule,
+                FontAwesomeModule,
+                MatCardModule,
+                MatToolbarModule,
+                MatIconModule,
+                FormsModule,
+            ],
             providers: [
+                // { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
             ],
