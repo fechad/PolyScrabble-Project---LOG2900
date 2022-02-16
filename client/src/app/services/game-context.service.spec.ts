@@ -18,8 +18,10 @@ describe('GameContextService', () => {
         const beforeRack = service.rack.value;
         service.tempUpdateRack('*');
         expect(beforeRack).toEqual(service.rack.value);
-        // expect(() => service.tempUpdateRack('ù')).toThrow();
-        // expect(() => service.tempUpdateRack('b*»)/')).toThrow();
+        service.tempUpdateRack('b*»)/');
+        expect(beforeRack).toEqual(service.rack.value);
+        service.tempUpdateRack('ù');
+        expect(beforeRack).toEqual(service.rack.value);
     });
 
     it('should not update when characters not in board', () => {
@@ -27,7 +29,6 @@ describe('GameContextService', () => {
         const beforeRack = service.rack.value;
         service.tempUpdateRack('ab');
         expect(beforeRack).toEqual(service.rack.value);
-        // expect(() => service.tempUpdateRack('def')).toThrow();
     });
 
     it('should update the rack', () => {
