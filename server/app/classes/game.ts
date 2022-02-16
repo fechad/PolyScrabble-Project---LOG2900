@@ -17,6 +17,7 @@ export const OTHER_PLAYER = 1;
 const PLAYER_0_TURN_PROBABILITY = 0.5;
 const BOARD_LENGTH = 15;
 const MAX_SKIP_IN_A_ROW = 6;
+const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
 
 export class Game {
     readonly eventEmitter = new EventEmitter();
@@ -79,15 +80,19 @@ export class Game {
 
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
-            this.sendRack();
-            let validMessage = 'Vous avez échangé les lettres:  ' + letters;
-            this.eventEmitter.emit('valid-exchange', playerId, validMessage);
-            validMessage = this.getPlayerName() + ' a échangé ' + letters.length + ' lettres';
-            const opponentId = this.getPlayerId(false);
-            this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
-            this.skipTurn(playerId);
-            this.updateSkipCounter(false);
+            if (this.reserve.getCount() >= MINIMUM_EXCHANGE_RESERVE_COUNT) {
+                this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
+                this.sendRack();
+                let validMessage = 'Vous avez échangé les lettres:  ' + letters;
+                this.eventEmitter.emit('valid-exchange', playerId, validMessage);
+                validMessage = this.getPlayerName() + ' a échangé ' + letters.length + ' lettres';
+                const opponentId = this.getPlayerId(false);
+                this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
+                this.skipTurn(playerId);
+                this.updateSkipCounter(false);
+            } else {
+                this.eventEmitter.emit('game-error', playerId, new Error('La réserve est trop petite pour y échanger des lettres').message);
+            }
         }
     }
 
