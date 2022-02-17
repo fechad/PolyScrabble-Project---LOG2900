@@ -54,7 +54,7 @@ export class GridService {
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
 
-        this.gridContext.fillStyle = '#c4c4c4';
+        this.gridContext.fillStyle = '#575757';
         this.gridContext.strokeStyle = '#B1ACAC';
         const gridOrigin = 20;
         for (let i = 0; i < BOARD_LENGTH; i++) {
@@ -64,7 +64,7 @@ export class GridService {
                 this.gridContext.fill();
                 this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUSTY);
                 this.drawTiles(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUSTY);
-                this.gridContext.fillStyle = '#353535';
+                this.gridContext.fillStyle = '#575757';
             }
         }
     }

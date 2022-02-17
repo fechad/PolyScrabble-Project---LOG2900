@@ -30,16 +30,18 @@
             <div class="play-area-container">
                 <app-play-area class="play-area" tabindex="0"></app-play-area>
             </div>
-            <div class="rackArea">
-                <app-letter-rack></app-letter-rack>
-                <button
-                    class="skip-turn"
-                    title="Passer votre tour"
-                    [disabled]="(gameContextService.isMyTurn | async) === false"
-                    (click)="skipMyTurn()"
-                >
-                    <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
-                </button>
+            <div id="bottom-area">
+                <div class="rackArea">
+                    <app-letter-rack></app-letter-rack>
+                    <button
+                        class="skip-turn"
+                        title="Passer votre tour"
+                        [disabled]="(gameContextService.isMyTurn | async) === false"
+                        (click)="skipMyTurn()"
+                    >
+                        <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="chatArea">
