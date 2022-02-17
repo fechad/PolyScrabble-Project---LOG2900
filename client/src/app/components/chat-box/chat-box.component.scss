@@ -15,6 +15,7 @@ div {
     justify-content: space-between;
     flex-direction: column;
     height: 75vh;
+    float: right;
 }
 .message {
     word-break: break-all;
@@ -32,7 +33,7 @@ div {
     padding: 10px;
     margin: 5% 5% 5% 25%;
     border-radius: 15px;
-    background-color: #838383;
+    background-color: #65ccd2;
 }
 .chat-log-opponent {
     display: flex;

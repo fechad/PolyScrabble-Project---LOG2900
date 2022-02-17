@@ -5,7 +5,7 @@
             <div *ngIf="message.emitter === myId && message.text[0] !== '!'" class="chat-log">
                 <p class="message">{{ message.text }}</p>
             </div>
-            <div *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.text[0] !== '!'" class="chat-log-opponent">
+            <div *ngIf="message.emitter !== myId && message.emitter !== 'local'" class="chat-log-opponent">
                 <p class="message">{{ message.text }}</p>
             </div>
             <div *ngIf="message.emitter === 'local'" class="chat-log-error">
