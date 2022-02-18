@@ -1,5 +1,5 @@
 <div id="wholeBox">
-    <div id="nonWritingBox" #scroll [scrollTop]="scroll.scrollHeight">
+    <div id="nonWritingBox" #scroll>
         <!--<div class="chat-log-opponent"></div>-->
         <div *ngFor="let message of gameContextService.messages | async">
             <div
