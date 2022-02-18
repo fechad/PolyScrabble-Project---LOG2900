@@ -1,7 +1,13 @@
 <div id="wholeBox">
     <div id="nonWritingBox" #scroll>
         <!--<div class="chat-log-opponent"></div>-->
-        <div *ngFor="let message of gameContextService.messages | async">
+        <div *ngFor="let message of gameContextService.messages | async" class="message-container">
+            <div *ngIf="message.emitter === myId">
+                <span class="myself">{{ gameContextService.myName }}</span>
+            </div>
+            <div *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.emitter !== 'command'">
+                <span class="opponent">{{ gameContextService.opponentName }}</span>
+            </div>
             <div
                 [ngClass]="{
                     'chat-log-error': message.emitter === 'local',

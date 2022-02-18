@@ -1,6 +1,5 @@
 import { Component, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
@@ -21,7 +20,6 @@ export class GamePageComponent {
     faAngleDoubleRight = faAngleDoubleRight;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
     constructor(
-        private router: Router,
         public gridService: GridService,
         public communicationService: CommunicationService,
         public dialog: MatDialog,
@@ -35,13 +33,9 @@ export class GamePageComponent {
     openConfirmation() {
         if (confirm('Voulez-vous abandonner la partie?')) {
             this.communicationService.confirmForfeit();
-            this.quitGame();
         }
     }
 
-    quitGame() {
-        this.router.navigateByUrl('http://localhost:4200/');
-    }
     skipMyTurn() {
         this.communicationService.switchTurn(false);
     }

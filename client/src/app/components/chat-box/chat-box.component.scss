@@ -32,7 +32,7 @@ div {
     overflow-y: hidden;
     width: 60%;
     padding: 10px;
-    margin: 5% 5% 5% 25%;
+    margin: 0% 5% 5% 25%;
     border-radius: 15px;
     background-color: #65ccd2;
 }
@@ -43,7 +43,7 @@ div {
     overflow-y: hidden;
     width: 60%;
     padding: 10px;
-    margin: 5% 25% 5% 5%;
+    margin: 0% 25% 5% 5%;
     border-radius: 15px;
     background-color: #ffffff;
 }
@@ -68,7 +68,8 @@ div {
     padding: 10px;
     margin: 4%;
     border-radius: 15px;
-    background-color: #ffffb3;
+    background-color: #f8f847;
+    color: green;
 }
 #writingBox {
     height: 20%;
@@ -101,4 +102,17 @@ textarea {
     height: 1px;
     width: 10px;
     border-radius: 15px;
+}
+
+.myself {
+    float: right;
+    margin-right: 10%;
+}
+.opponent {
+    float: left;
+    margin-left: 5%;
+}
+.message-container {
+    display: flex;
+    flex-direction: column;
 }

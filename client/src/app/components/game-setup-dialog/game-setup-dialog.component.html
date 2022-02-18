@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="row">
-                <button type="submit" class="btn success">Jouer!</button>
+                <button [disabled]="this.gameParametersForm.value.playerName === ''" type="submit" class="btn success">Jouer!</button>
             </div>
         </form>
     </div>

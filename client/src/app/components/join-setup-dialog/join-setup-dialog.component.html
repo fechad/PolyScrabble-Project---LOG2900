@@ -37,7 +37,13 @@
                 </div>
             </div>
             <div class="row">
-                <button type="submit" class="btn success">Jouer!</button>
+                <button
+                    [disabled]="this.joiningRoomForm.value.secondPlayerName === data.name || this.joiningRoomForm.value.secondPlayerName === ''"
+                    type="submit"
+                    class="btn success"
+                >
+                    Jouer!
+                </button>
             </div>
         </form>
     </div>
