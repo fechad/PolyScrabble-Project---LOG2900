@@ -1,7 +1,7 @@
+import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { EndGameService } from '@app/services/end-game.service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
 import { Parameters } from './parameters';
@@ -22,7 +22,6 @@ const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
 export class Game {
     readonly eventEmitter = new EventEmitter();
     readonly reserve = new Reserve();
-    readonly endGameService = new EndGameService();
     readonly messages: Message[] = [];
     readonly board: Board;
     readonly scores: number[] = [0, 0];
@@ -117,10 +116,10 @@ export class Game {
     }
 
     endGame() {
-        const finalScores = this.endGameService.calculateFinalScores(this.scores, this.reserve);
+        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
         this.eventEmitter.emit('score', finalScores[MAIN_PLAYER], this.players[MAIN_PLAYER].id);
         this.eventEmitter.emit('score', finalScores[OTHER_PLAYER], this.players[OTHER_PLAYER].id);
-        this.eventEmitter.emit('game-summary', this.endGameService.createGameSummaryMessage(this.players));
+        this.eventEmitter.emit('game-summary', EndGameCalculator.createGameSummaryMessage(this.players, this.reserve));
         this.eventEmitter.emit('congratulations', this.getWinner(finalScores));
     }
 
