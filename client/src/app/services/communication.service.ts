@@ -118,7 +118,7 @@ export class CommunicationService {
     }
 
     place(letters: string, position: string) {
-        this.gameContextService.tempUpdateRack(letters);
+        this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, position);
         this.gameContextService.allowSwitch(false);
         this.gameSocket?.emit('place-letters', letters, position);

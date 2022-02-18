@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CommandParsing } from '@app/classes/command-parsing';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { BehaviorSubject } from 'rxjs';
@@ -25,7 +26,9 @@ export class GameContextService {
     myName: string;
     opponentName: string;
     skipTurnEnabled: boolean = true;
+    tempRack: Letter[];
     private msgCount: number = 0;
+    private commandParser: CommandParsing = new CommandParsing();
 
     constructor() {
         const grid = [];
@@ -91,17 +94,23 @@ export class GameContextService {
         this.rack.next(newRack);
     }
 
-    tempUpdateRack(lettersToChange: string) {
+    tempUpdateRack() {
+        this.rack.next(this.tempRack);
+    }
+
+    isInMyRack(letters: string) {
+        let response = true;
         const NOT_FOUND = -1;
-        const temporaryRack = this.rack.value;
-        if (!lettersToChange.match(/^[a-z]*$/g)) return;
-        for (const unwantedLetter of lettersToChange) {
-            const idx = temporaryRack.findIndex((letter) => {
-                return unwantedLetter === letter.name.toLowerCase() || letter.name === '*';
+        const tempRack = this.rack.value;
+        for (const letter of letters) {
+            const index = tempRack.findIndex((foundLetter) => {
+                return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && this.commandParser.isUpperCaseLetter(letter));
             });
-            if (idx === NOT_FOUND) return;
-            temporaryRack.splice(idx, 1);
+            if (index === NOT_FOUND) response = false;
+            tempRack[index] = tempRack[tempRack.length - 1];
+            tempRack.pop();
         }
-        this.rack.next(temporaryRack);
+        this.tempRack = tempRack;
+        return response;
     }
 }
