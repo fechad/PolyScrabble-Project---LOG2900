@@ -66,7 +66,6 @@ export class ChatBoxComponent implements AfterViewChecked {
             } else {
                 this.communicationService.sendMessage(this.textValue);
             }
-            // this.scrollToBottom();
         }
         this.clearText();
     }

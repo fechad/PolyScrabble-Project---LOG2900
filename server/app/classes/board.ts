@@ -37,24 +37,18 @@ export class Board {
         const positionArray = this.syntaxValidator.separatePosition(position);
         if (!this.syntaxValidator.validatePositionSyntax(positionArray, word.length === 1))
             throw new Error("Erreur de syntaxe dans le placement d'un mot");
-        console.log('syntax');
         if (!this.isWordInBound(word.length, positionArray)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
-        console.log('depasse grille');
         await new Promise((resolve) => {
             setTimeout(() => {
                 resolve(null);
             }, BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
-        console.log('premier mot touche pas centre');
         if (!this.isTouchingOtherWord(word.length, positionArray)) throw new Error('Placement invalide vous devez toucher un autre mot');
-        console.log('touche pas les autres lettres');
         const contacts = this.getContacts(word.length, positionArray);
         const wordWithoutAccents = this.syntaxValidator.removeAccents(word);
-        console.log(contacts);
         const words = this.wordGetter.getWords(wordWithoutAccents, positionArray, contacts);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
-        console.log('pas dans dict');
         const score = this.placeWithScore(words);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
