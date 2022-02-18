@@ -38,7 +38,7 @@ export class GamePageComponent {
         }
     }
     quitGame() {
-        // this.communicationService.isWinner = false;
+        this.gameContextService.clearMessages();
         this.router.navigateByUrl('http://localhost:4200/');
         this.communicationService.leave();
     }

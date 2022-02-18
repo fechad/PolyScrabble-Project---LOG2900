@@ -51,11 +51,11 @@ describe('AppComponent', () => {
         expect(router.navigate).toHaveBeenCalledOnceWith(['/game']);
     });
 
-    it('should redirect the app when the room is exited', () => {
+    it('should not redirect the app when the room is undefined', () => {
         communicationService.selectedRoom.next(ROOM);
         router.navigate.calls.reset();
         communicationService.selectedRoom.next(undefined);
-        expect(router.navigate).toHaveBeenCalledOnceWith(['/']);
+        expect(router.navigate).not.toHaveBeenCalled();
     });
 
     it('should redirect the app when the room is no longer started', () => {
