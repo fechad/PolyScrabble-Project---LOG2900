@@ -1,5 +1,5 @@
+import { SyntaxValidator } from '@app/classes/syntax-validator';
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { SyntaxValidator } from '@app/services/syntax-validator';
 import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
