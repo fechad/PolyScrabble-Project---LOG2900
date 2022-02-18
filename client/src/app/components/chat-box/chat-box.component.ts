@@ -94,7 +94,8 @@ export class ChatBoxComponent implements AfterViewChecked {
         } else if (this.isInRack(this.commandStructure[WORD_TO_PLACE_INDEX])) {
             if (
                 this.commandStructure[POSITION_BLOCK_INDEX][0].match(/[a-o]/g) &&
-                this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g)
+                (this.commandStructure[1][this.commandStructure[1].length - 1].match(/[hv]/g) ||
+                    this.commandStructure[WORD_TO_PLACE_INDEX].length === 1)
             ) {
                 if (this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MIN_LENGTH) {
                     if (this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1-9]/g)) {

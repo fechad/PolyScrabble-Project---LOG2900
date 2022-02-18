@@ -81,12 +81,16 @@ export class GridService {
     tempUpdateBoard(lettersToAdd: string, position: string) {
         const COMMAND_ORIENTATION_INDEX = position.length - 1;
         const verticalPosition = position.charCodeAt(COMMAND_Y_INDEX) - LOWERCASE_A_ASCII;
-        const horizontalPositionString = position.substring(COMMAND_X_INDEX, COMMAND_ORIENTATION_INDEX);
-        const horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
+        let horizontalPositionString = position.substring(COMMAND_X_INDEX, COMMAND_ORIENTATION_INDEX);
+        let horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
 
-        const isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
+        let isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
+        if (lettersToAdd.length === 1) {
+            horizontalPositionString = position.substring(COMMAND_X_INDEX);
+            horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
+            isVerticalPlacement = true;
+        }
         const iterationPosition = isVerticalPlacement ? verticalPosition : horizontalPosition;
-
         const temporaryBoard = this.gameContext.board.value;
         let letterPosition = 0;
         for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
