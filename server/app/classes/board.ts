@@ -102,6 +102,16 @@ export class Board {
         let collisions = 0;
         if (this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             contacts = [[INVALID]];
+        } else if (position[2] === undefined) {
+            if (!this.board[row][col - 1].empty || !this.board[row][col + 1].empty) {
+                position[2] = 'h';
+            } else {
+                if (position[2] !== undefined) {
+                    contacts.push([row, col, 0]);
+                } else {
+                    position[2] = 'v';
+                }
+            }
         } else if (position[2] === 'h') {
             for (let i = 0; i < wordLength + collisions; i++) {
                 if (!this.board[row][col + i].empty) {
@@ -131,10 +141,19 @@ export class Board {
         const row = position[0].charCodeAt(0) - A_ASCII;
         const col = parseInt(position[1], 10) - 1;
 
+        if (position[2] === undefined) {
+            return this.isWordTouchingOneLetter(row, col);
+        }
         if (position[2] === 'h') {
             return this.isWordTouchingHorizontal(wordLength, row, col);
         }
         return this.isWordTouchingVertical(wordLength, row, col);
+    }
+
+    // fonctionne avec seulement h et v donc pas necessaires
+    private isWordTouchingOneLetter(row: number, col: number): boolean {
+        const valid = !this.board[row][col - 1].empty || !this.board[row][col + 1].empty;
+        return valid || !this.board[row - 1][col] || !this.board[row + 1][col].empty;
     }
 
     private isWordTouchingHorizontal(wordLength: number, row: number, col: number): boolean {
@@ -174,7 +193,7 @@ export class Board {
     private firstWordValidation(wordLength: number, position: string[]): boolean {
         if (!this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             return true;
-        } else {
+        } else if (wordLength > 1) {
             const row = position[0].charCodeAt(0) - A_ASCII;
             const col = parseInt(position[1], 10) - 1;
             if (position[2] === 'h' && row === HALF_LENGTH && col <= HALF_LENGTH && col + wordLength - 1 >= HALF_LENGTH) {
@@ -192,6 +211,7 @@ export class Board {
         let collisionsCol = 0;
         let collisionsRow = 0;
         if (row < 0 || col < 0) return false;
+        if (position[2] === undefined) return row < BOARD_LENGTH && col < BOARD_LENGTH;
 
         if (position[2] === 'h') {
             for (let i = 0; i < wordLength + collisionsCol; i++) {
