@@ -14,7 +14,7 @@ export class WaitingRoomPageComponent {
 
     constructor(public communicationService: CommunicationService, private router: Router) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
-            this.isMainPlayer = this.communicationService.getId().value === room?.mainPlayer.id;
+            this.isMainPlayer = this.communicationService.getId()?.value === room?.mainPlayer.id;
             this.otherPlayerName = room?.otherPlayer?.name;
 
             const hasOtherPlayer = room?.otherPlayer !== undefined;
