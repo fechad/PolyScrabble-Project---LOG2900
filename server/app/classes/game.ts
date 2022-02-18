@@ -50,15 +50,16 @@ export class Game {
         this.eventEmitter.emit('message', message);
     }
 
-    async placeLetters(letters: string, position: string, playerId: PlayerId) {
+    async placeLetters(letters: string, row: number, col: number, playerId: PlayerId, isHorizontal?: boolean) {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             try {
-                const response = await this.board.placeWord(letters, position);
+                const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.eventEmitter.emit('score', response, playerId);
                 this.scores[playerIndex] += response;
-                const validMessage = this.getPlayerName() + ' : !placer ' + position + ' ' + letters;
+                const orientation = isHorizontal === undefined ? '' : isHorizontal ? 'h' : 'v';
+                const validMessage = this.getPlayerName() + ' : !placer ' + row + col + orientation + ' ' + letters;
                 this.eventEmitter.emit('valid-command', validMessage);
                 this.getReserveCount();
                 this.updateSkipCounter(false);

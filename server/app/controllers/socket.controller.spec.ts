@@ -265,7 +265,9 @@ describe('SocketManager service tests', () => {
 
     it('should place letters', async () => {
         const letters = 'as';
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHoriontal = true;
         const expectedPoints = 1;
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
@@ -277,7 +279,7 @@ describe('SocketManager service tests', () => {
         const stub2 = sinon.stub();
         gameSocket.on('score', stub);
         gameSocket2.on('score', stub2);
-        gameSocket.emit('place-letters', letters, position);
+        gameSocket.emit('place-letters', letters, row, col, service.games[0].players[0].id, isHoriontal);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
         // TODO: adapter avec integration validation mots et calcul de points
         expect(stub.args).to.deep.equal([[expectedPoints, identifiers[0].id]]);

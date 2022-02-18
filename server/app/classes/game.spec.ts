@@ -85,14 +85,20 @@ describe('Game', () => {
         game.eventEmitter.on('valid-command', stubValidCommand);
         game.eventEmitter.on('reserve', stubReserve);
         game.eventEmitter.on('board', stubBoard);
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'E', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(letters, position, game.players[0].id);
+        try{
+            await game.placeLetters(letters, row, col, game.players[0].id, isHorizontal);
+        } catch (e) {
+            console.log(e);
+        }
         assert(stubScore.called);
         assert(stubValidCommand.called);
         assert(stubReserve.called);
@@ -102,12 +108,14 @@ describe('Game', () => {
 
     it('should not place letters when it is not your turn', async () => {
         const letters = 'test';
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         game['isPlayer0Turn'] = false;
         const stubValidCommand = sinon.stub();
         game.eventEmitter.on('valid-command', stubValidCommand);
 
-        await game.placeLetters(letters, position, game.players[0].id);
+        await game.placeLetters(letters, row, col, game.players[0].id, isHorizontal);
 
         assert(stubValidCommand.notCalled);
         assert(stubError.called);
@@ -115,23 +123,27 @@ describe('Game', () => {
 
     it('should output an error when not placing letters', async () => {
         const stub = sinon.stub();
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         const letters = 'testaaaaaaaaaaa';
         game.eventEmitter.on('score', stub);
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(letters, position, '0');
+        await game.placeLetters(letters, row, col, game.players[0].id, isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
     });
 
     it('should not place letters if it is not your turn', (done) => {
         const stub = sinon.stub();
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         const letters = 'test';
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(letters, position, '1');
+        game.placeLetters(letters, row, col, game.players[1].id, isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
         done();
@@ -206,11 +218,14 @@ describe('Game', () => {
     });
 
     it('empty reserve and empty rack should trigger endGame', async () => {
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         const endGame = sinon.stub(game, 'endGame');
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
         game['isPlayer0Turn'] = true;
-        await game.placeLetters('allo', 'h7h', game.players[MAIN_PLAYER].id);
+        await game.placeLetters('allo', row, col, game.players[MAIN_PLAYER].id, isHorizontal);
         assert(endGame.called);
     });
 
