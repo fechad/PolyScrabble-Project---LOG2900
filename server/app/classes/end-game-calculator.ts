@@ -4,8 +4,8 @@ import { Player } from '@app/classes/room';
 
 export class EndGameCalculator {
     static calculateFinalScores(scores: number[], reserve: Reserve): number[] {
-        let mainRackScore = reserve.letterRacks[MAIN_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x);
-        let otherRackScore = reserve.letterRacks[OTHER_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x);
+        const mainRackScore = reserve.letterRacks[MAIN_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x);
+        const otherRackScore = reserve.letterRacks[OTHER_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x);
         if (reserve.getCount() !== 0) {
             scores[MAIN_PLAYER] -= mainRackScore;
             scores[OTHER_PLAYER] -= otherRackScore;
@@ -18,10 +18,10 @@ export class EndGameCalculator {
         }
         return scores;
     }
-    
+
     static createGameSummaryMessage(players: Player[], reserve: Reserve): string {
-        let mainLetterList = reserve.letterRacks[MAIN_PLAYER].map(letter => letter.name).join('');
-        let otherLetterList = reserve.letterRacks[OTHER_PLAYER].map(letter => letter.name).join('');
+        const mainLetterList = reserve.letterRacks[MAIN_PLAYER].map((letter) => letter.name).join('');
+        const otherLetterList = reserve.letterRacks[OTHER_PLAYER].map((letter) => letter.name).join('');
         const summary =
             'Fin de partie - lettres restantes \n' +
             `\n${players[MAIN_PLAYER].name}: ${mainLetterList} \n ` +

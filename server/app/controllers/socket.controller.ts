@@ -164,21 +164,7 @@ export class SocketManager {
                 socket.emit('message', message);
             }
 
-            const events: string[] = [
-                'message',
-                'score',
-                'turn',
-                'parameters',
-                'players',
-                'forfeit',
-                'board',
-                'valid-command',
-                'reserve',
-                'rackCount',
-                'congratulations',
-                'game-summary',
-                'its-a-tie',
-            ];
+            const events: string[] = ['message', 'state', 'game-summary'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange'];
             for (const event of specificPlayerEvents) {
@@ -203,7 +189,7 @@ export class SocketManager {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
             });
 
-            game.gameInit();
+            game.sendState();
         });
     }
 }
