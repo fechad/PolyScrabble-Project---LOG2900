@@ -59,9 +59,11 @@ export class GameContextService {
         this.messages.next([]);
     }
 
-    addMessage(message: string, local: boolean) {
+    addMessage(message: string, local: boolean, command: boolean) {
         if (local) {
             this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);
+        } else if (command) {
+            this.messages.next([...this.messages.value, { text: message, emitter: 'command' }]);
         } else {
             this.tempMessages.next([...this.tempMessages.value, message]);
         }
