@@ -98,7 +98,6 @@ export class ChatBoxComponent {
                 if (this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MIN_LENGTH) {
                     if (this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1-9]/g)) {
                         this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
-                        this.communicationService.sendMessage(this.textValue);
                     }
                 } else if (
                     this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MAX_LENGTH &&
@@ -106,7 +105,6 @@ export class ChatBoxComponent {
                     this.commandStructure[POSITION_BLOCK_INDEX][2].match(/[0-5]/g)
                 ) {
                     this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
-                    this.communicationService.sendMessage(this.textValue);
                 }
             } else {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");

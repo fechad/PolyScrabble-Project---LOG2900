@@ -99,12 +99,14 @@ export class CommunicationService {
     }
 
     sendLocalMessage(message: string) {
-        this.gameContextService.addMessage(message, true);
+        this.gameContextService.addMessage(message, true, false);
     }
-
+    sendCommandMessage(message: string) {
+        this.gameContextService.addMessage(message, false, true);
+    }
     sendMessage(message: string) {
         this.gameSocket?.emit('message', message);
-        this.gameContextService.addMessage(message, false);
+        this.gameContextService.addMessage(message, false, false);
     }
 
     getId(): BehaviorSubject<PlayerId | undefined> {
@@ -214,8 +216,8 @@ export class CommunicationService {
             this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
         });
         this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
-        this.gameSocket.on('valid-command', (response: string) => this.sendLocalMessage(response));
-        this.gameSocket.on('valid-exchange', (response: string) => this.sendLocalMessage(response));
+        this.gameSocket.on('valid-command', (response: string) => this.sendCommandMessage(response));
+        this.gameSocket.on('valid-exchange', (response: string) => this.sendCommandMessage(response));
         this.gameSocket.on('reserve', (count: number) => this.gameContextService.reserveCount.next(count));
         this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
             this.gameContextService.updateRack(rack, opponentRackCount);

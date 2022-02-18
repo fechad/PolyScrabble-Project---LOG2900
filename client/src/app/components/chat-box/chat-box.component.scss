@@ -6,8 +6,8 @@ div {
 
 #wholeBox {
     background-color: #e1ac01;
-    margin-left: 5vw;
-    margin-top: 10px;
+    margin-left: 3vw;
+    margin-top: 25px;
     margin-bottom: 20px;
     padding: 20px;
     border-style: solid;
@@ -16,6 +16,7 @@ div {
     flex-direction: column;
     height: 75vh;
     float: right;
+    margin-right: 2vw;
 }
 .message {
     word-break: break-all;
@@ -84,4 +85,8 @@ div {
 
 textarea {
     resize: none;
+}
+
+#nonWritingBox::-webkit-scrollbar {
+    width: 2px;
 }
