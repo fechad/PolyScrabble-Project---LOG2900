@@ -164,7 +164,7 @@ export class SocketManager {
                 socket.emit('message', message);
             }
 
-            const events: string[] = ['message', 'state', 'game-summary'];
+            const events: string[] = ['message', 'state'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange'];
             for (const event of specificPlayerEvents) {
@@ -183,7 +183,10 @@ export class SocketManager {
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
-            socket.on('switch-turn', (timerRequest: boolean) => game.skipTurn(id, timerRequest));
+            socket.on('switch-turn', (userRequest: boolean) => {
+                game.nextTurn(id, userRequest);
+                game.sendState();
+            });
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));

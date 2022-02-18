@@ -31,7 +31,8 @@ type GameState = {
     board: Tile[][];
     turn: PlayerId;
     ended: boolean;
-    winner: PlayerId | undefined;
+    winner?: PlayerId;
+    summary?: string;
 };
 
 export class Game {
@@ -44,9 +45,11 @@ export class Game {
     private skipCounter;
     private ended: boolean = false;
     private winner: PlayerId | undefined = undefined;
+    private summary: string | undefined = undefined;
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
+        setTimeout(() => { /* empty */ }, this.parameters.timer);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
     }
@@ -62,6 +65,7 @@ export class Game {
             turn: this.getCurrentPlayer().id,
             ended: this.ended,
             winner: this.winner,
+            summary: this.summary,
         };
         this.eventEmitter.emit('state', state);
         this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
@@ -83,11 +87,10 @@ export class Game {
                 this.scores[playerIndex] += response;
                 const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'local' } as Message);
-                this.updateSkipCounter(false);
             } catch (e) {
                 this.eventEmitter.emit('game-error', player.id, e.message);
             }
-            this.skipTurn(player.id, false);
+            this.nextTurn(player.id, false);
             if (this.reserve.getCount() === 0 && (this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER))) {
                 this.endGame();
             }
@@ -109,8 +112,7 @@ export class Game {
                 validMessage = this.getCurrentPlayer().name + ' a échangé ' + letters.length + ' lettres';
                 const opponentId = this.getPlayerId(false);
                 this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
-                this.skipTurn(playerId, false);
-                this.updateSkipCounter(false);
+                this.nextTurn(playerId, false);
             } else {
                 this.eventEmitter.emit('game-error', playerId, new Error('La réserve est trop petite pour y échanger des lettres').message);
             }
@@ -118,39 +120,37 @@ export class Game {
         }
     }
 
-    skipTurn(playerId: PlayerId, timerRequest: boolean) {
+    nextTurn(playerId: PlayerId, userRequest: boolean) {
         if (this.checkTurn(playerId)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
-            if (!timerRequest && timerRequest !== undefined) this.updateSkipCounter(true);
-            this.sendState();
+            
+            if (userRequest) this.skipCounter += 1;
+            else this.skipCounter = 0;
+
+            if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
         }
-    }
-
-    updateSkipCounter(playerSkip: boolean) {
-        if (playerSkip) this.skipCounter += 1;
-        else this.skipCounter = 0;
-
-        if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
     }
 
     forfeit(idLoser: PlayerId) {
         this.ended = true;
         this.winner = idLoser === this.players[MAIN_PLAYER].id ? this.players[OTHER_PLAYER].id : this.players[MAIN_PLAYER].id;
+        this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
         this.sendState();
+    }
+
+    getWinner(): PlayerId | undefined {
+        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
+        return undefined;
     }
 
     endGame() {
         this.ended = true;
-        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) this.winner = this.players[MAIN_PLAYER].id;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) this.winner = this.players[OTHER_PLAYER].id;
-        this.sendState();
-        this.eventEmitter.emit(
-            'game-summary',
-            EndGameCalculator.createGameSummaryMessage(
-                this.players.map((p) => p),
-                this.reserve,
-            ),
+        this.winner = this.getWinner();
+        this.summary = EndGameCalculator.createGameSummaryMessage(
+            this.players.map((p) => p),
+            this.reserve,
         );
     }
 

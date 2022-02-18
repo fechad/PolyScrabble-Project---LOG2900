@@ -4,8 +4,8 @@ import { Player } from '@app/classes/room';
 
 export class EndGameCalculator {
     static calculateFinalScores(scores: number[], reserve: Reserve): number[] {
-        const mainRackScore = reserve.letterRacks[MAIN_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x);
-        const otherRackScore = reserve.letterRacks[OTHER_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x);
+        const mainRackScore = reserve.letterRacks[MAIN_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x, 0);
+        const otherRackScore = reserve.letterRacks[OTHER_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x, 0);
         if (reserve.getCount() !== 0) {
             scores[MAIN_PLAYER] -= mainRackScore;
             scores[OTHER_PLAYER] -= otherRackScore;
