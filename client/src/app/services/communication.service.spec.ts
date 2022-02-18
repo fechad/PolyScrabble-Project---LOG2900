@@ -298,21 +298,21 @@ describe('CommunicationService', () => {
         const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('game-error', 'BOBO');
-        expect(spy).toHaveBeenCalledWith('BOBO', true);
+        expect(spy).toHaveBeenCalledWith('BOBO', true, false);
     });
 
     it('should receive valid commands', async () => {
         const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('valid-command', 'BOBO');
-        expect(spy).toHaveBeenCalledWith('BOBO', true);
+        expect(spy).toHaveBeenCalledWith('BOBO', false, true);
     });
 
     it('should receive valid exchanges', async () => {
         const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('valid-exchange', 'BOBO');
-        expect(spy).toHaveBeenCalledWith('BOBO', true);
+        expect(spy).toHaveBeenCalledWith('BOBO', false, true);
     });
 
     it('should accept wins', async () => {
@@ -331,7 +331,7 @@ describe('CommunicationService', () => {
         const spy = spyOn(gameContext, 'addMessage');
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('game-summary', 'BOBO');
-        expect(spy).toHaveBeenCalledWith('BOBO', true);
+        expect(spy).toHaveBeenCalledWith('BOBO', true, false);
     });
 
     it('should accept ties', async () => {
