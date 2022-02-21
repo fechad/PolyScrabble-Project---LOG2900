@@ -105,11 +105,13 @@ textarea {
 }
 
 .myself {
-    float: right;
+    display: flex;
+    justify-content: right;
     margin-right: 10%;
 }
 .opponent {
-    float: left;
+    display: flex;
+    justify-content: left;
     margin-left: 5%;
 }
 .message-container {

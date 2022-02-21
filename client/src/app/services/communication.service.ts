@@ -181,6 +181,7 @@ export class CommunicationService {
     }
 
     private leaveGame() {
+        if (!this.isWinner) this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.selectedRoom.next(undefined);
@@ -190,7 +191,12 @@ export class CommunicationService {
         this.roomSocket = this.io.io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
-            setTimeout("alert('Vous avez été éjecté de la salle de la salle');", 1);
+            swal.fire({
+                title: 'Oh non!',
+                text: 'Vous avez été éjecté de la salle',
+                showCloseButton: true,
+                confirmButtonText: 'Compris!',
+            });
             this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
