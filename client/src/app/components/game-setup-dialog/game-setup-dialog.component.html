@@ -16,10 +16,7 @@
                         <input type="text" formControlName="playerName" class="form-control" />
                     </div>
 
-                    <div
-                        class="requirement"
-                        *ngIf="gameParametersForm.controls['playerName'].errors && gameParametersForm.controls['playerName'].touched"
-                    >
+                    <div class="requirement" *ngIf="gameParametersForm.controls['playerName'].errors && gameParametersForm.value.playerName !== ''">
                         Rentrez un nom contenant seulement des lettres.
                     </div>
 
@@ -46,7 +43,7 @@
                 </div>
             </div>
             <div class="row">
-                <button [disabled]="gameParametersForm.value.playerName === ''" type="submit" class="btn success">Jouer!</button>
+                <button [disabled]="gameParametersForm.controls['playerName'].errors" type="submit" class="btn success">Jouer!</button>
             </div>
         </form>
     </div>
