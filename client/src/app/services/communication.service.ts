@@ -212,6 +212,7 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
+                this.isWinner = true;
                 swal.fire({
                     title: 'Gagnant par défaut',
                     text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner aux menus?',
@@ -220,9 +221,12 @@ export class CommunicationService {
                     confirmButtonText: 'Oui',
                     cancelButtonText: 'Non',
                 }).then((result) => {
-                    if (result.value) this.router.navigate(['/']);
+                    this.gameContextService.clearMessages();
+                    if (result.value) {
+                        this.router.navigate(['/']);
+                        this.isWinner = false;
+                    }
                 });
-                this.isWinner = true;
             } else {
                 this.router.navigate(['/']);
             }

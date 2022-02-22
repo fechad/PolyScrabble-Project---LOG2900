@@ -44,14 +44,23 @@ export class GamePageComponent {
         }).then((result) => {
             if (result.value) this.communicationService.confirmForfeit();
         });
-        // if (confirm('Voulez-vous abandonner la partie?')) {
-        //     this.communicationService.confirmForfeit();
-        // }
     }
     quitGame() {
-        this.gameContextService.clearMessages();
-        this.router.navigateByUrl('http://localhost:4200/');
-        this.communicationService.leave();
+        Swal.fire({
+            title: 'Êtes vous sûr?',
+            text: 'Vous vous apprêtez à quitter la partie',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Quitter',
+            cancelButtonText: 'Rester',
+        }).then((result) => {
+            if (result.value) {
+                this.communicationService.isWinner = false;
+                this.gameContextService.clearMessages();
+                this.router.navigateByUrl('http://localhost:4200/');
+                this.communicationService.leave();
+            }
+        });
     }
     skipMyTurn() {
         this.communicationService.switchTurn(false);
