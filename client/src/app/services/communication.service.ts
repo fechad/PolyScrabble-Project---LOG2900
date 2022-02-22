@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import swal from 'sweetalert2';
 import { Board, GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 
@@ -27,6 +28,7 @@ export class CommunicationService {
     readonly dictionnaries: Promise<Dictionnary[]>;
     congratulations: string | undefined = undefined;
     endGame: boolean = false;
+    isWinner: boolean;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -179,6 +181,7 @@ export class CommunicationService {
     }
 
     private leaveGame() {
+        if (!this.isWinner) this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.selectedRoom.next(undefined);
@@ -188,7 +191,12 @@ export class CommunicationService {
         this.roomSocket = this.io.io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
-            setTimeout("alert('Vous avez été éjecté de la salle d'attente');", 1);
+            swal.fire({
+                title: 'Oh non!',
+                text: 'Vous avez été éjecté de la salle',
+                showCloseButton: true,
+                confirmButtonText: 'Compris!',
+            });
             this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
@@ -204,11 +212,25 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
-                setTimeout("alert('👑 Votre adversaire a abandonné, vous avez gagné! 👑');", 2);
+                this.isWinner = true;
+                swal.fire({
+                    title: 'Gagnant par défaut',
+                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner aux menus?',
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Oui',
+                    cancelButtonText: 'Non',
+                }).then((result) => {
+                    this.gameContextService.clearMessages();
+                    if (result.value) {
+                        this.router.navigate(['/']);
+                        this.isWinner = false;
+                    }
+                });
+            } else {
+                this.router.navigate(['/']);
             }
-            this.gameContextService.clearMessages();
             this.leaveGame();
-            this.router.navigate(['/']);
         });
 
         this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.isMyTurn.next(id === this.myId.value));

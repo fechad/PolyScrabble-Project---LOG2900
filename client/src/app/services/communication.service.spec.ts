@@ -258,21 +258,17 @@ describe('CommunicationService', () => {
     });
 
     it('should forfeit', async () => {
-        const spy = spyOn(gameContext, 'clearMessages');
-        const spy2 = spyOn(service, 'leaveGame' as never);
+        const spy = spyOn(service, 'leaveGame' as never);
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('forfeit', ID);
         expect(spy).toHaveBeenCalled();
-        expect(spy2).toHaveBeenCalled();
     });
 
     it('should allow other player to forfeit', async () => {
-        const spy = spyOn(gameContext, 'clearMessages');
-        const spy2 = spyOn(service, 'leaveGame' as never);
+        const spy = spyOn(service, 'leaveGame' as never);
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('forfeit', 'Dummy');
         expect(spy).toHaveBeenCalled();
-        expect(spy2).toHaveBeenCalled();
     });
 
     it('should set turn', async () => {

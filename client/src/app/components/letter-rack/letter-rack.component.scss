@@ -16,12 +16,14 @@
     margin: 0px 5px 0px 5px;
     display: flex;
     flex-direction: row;
+    align-items: stretch;
     width: 3vw;
     height: 3vw;
     border-radius: 15px;
     border-width: thin;
     border-style: solid;
     background-color: burlywood;
+    padding-top: 0.5vh;
 }
 
 .letter-name,
@@ -30,14 +32,41 @@
 }
 
 .letter-name {
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.big-let {
     font-size: 30px;
     display: flex;
     align-items: center;
-    font-size: 120%;
+    margin-left: 0.5vw;
+}
+
+.small-let {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    margin-left: 1vw;
 }
 
 .letter-score {
     display: flex;
     align-items: flex-end;
     font-size: 80%;
+}
+
+.big-sco {
+    display: flex;
+    align-items: flex-end;
+    font-size: 100%;
+    margin-left: 0.5vw;
+}
+
+.small-sco {
+    display: flex;
+    align-items: flex-end;
+    font-size: 60%;
+    margin-left: 0.5vw;
 }

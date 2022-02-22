@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,6 +16,7 @@ import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import Swal from 'sweetalert2';
 import { GamePageComponent } from './game-page.component';
 
 const dialogMock = {
@@ -23,12 +24,29 @@ const dialogMock = {
         return;
     },
 };
+// export class CommunicationServiceMock {
+//     isWinner = false;
+//     getId(): number {
+//         return 1;
+//     }
+//     confirmForfeit() {
+//         return;
+//     }
+//     leave() {
+//         return;
+//     }
+//     switchTurn(timerRequest: boolean) {
+//         return timerRequest;
+//     }
+// }
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    // let service: CommunicationServiceMock;
 
     beforeEach(async () => {
+        // service = new CommunicationServiceMock();
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent, HelpInfoComponent],
             imports: [
@@ -57,12 +75,45 @@ describe('GamePageComponent', () => {
     });
 
     it('should call openConfirmation() when quit-game button clicked ', fakeAsync(() => {
-        const quitGameSpy = spyOn(component, 'openConfirmation').and.callThrough();
+        const forfeitGameSpy = spyOn(component, 'openConfirmation').and.callThrough();
         const button = fixture.debugElement.query(By.css('#quit-game'));
         button.nativeElement.click();
         tick();
-        expect(quitGameSpy).toHaveBeenCalled();
+        expect(forfeitGameSpy).toHaveBeenCalled();
+        flush();
     }));
+
+    it('should call fire a swal alert when quit-game button clicked ', () => {
+        const swalSpy = spyOn(Swal, 'fire').and.callThrough();
+        component.quitGame();
+        expect(swalSpy).toHaveBeenCalled();
+    });
+
+    it('should forfeit if confirm is clicked in swal', (done) => {
+        const swalConfirmSpy = spyOn(component.communicationService, 'confirmForfeit');
+        component.openConfirmation();
+        Swal.clickConfirm();
+        setTimeout(() => {
+            expect(swalConfirmSpy).toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('should quit if confirm is clicked in swal', (done) => {
+        const swalConfirmSpy = spyOn(component.communicationService, 'leave');
+        component.quitGame();
+        Swal.clickConfirm();
+        setTimeout(() => {
+            expect(swalConfirmSpy).toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('should switch turn if skipTurn() is called', () => {
+        const turnSpy = spyOn(component.communicationService, 'switchTurn').and.callThrough();
+        component.skipMyTurn();
+        expect(turnSpy).toHaveBeenCalled();
+    });
 
     it('click on reducing font size of board should call reduceFont()', fakeAsync(() => {
         const reduceFontSpy = spyOn(component, 'reduceFont').and.callThrough();
