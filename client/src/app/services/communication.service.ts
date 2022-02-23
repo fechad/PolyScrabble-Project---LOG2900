@@ -210,7 +210,7 @@ export class CommunicationService {
             if (idLoser !== this.myId.value) {
                 swal.fire({
                     title: 'Gagnant par défaut',
-                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner aux menus?',
+                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?',
                     showCloseButton: true,
                     showCancelButton: true,
                     confirmButtonText: 'Oui',
