@@ -27,13 +27,16 @@ export class GamePageComponent {
     ) {}
 
     openConfirmation() {
+        let text = [''];
+        if (this.communicationService.endGame) text = ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester'];
+        else text = ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
         Swal.fire({
-            title: 'Êtes vous sûr?',
-            text: 'Vous vous apprêtez à déclarer forfait',
+            title: text[0],
+            text: text[1],
             showCloseButton: true,
             showCancelButton: true,
-            confirmButtonText: 'Abandonner',
-            cancelButtonText: 'Continuer à jouer',
+            confirmButtonText: text[2],
+            cancelButtonText: text[3],
         }).then((result) => {
             if (result.value) this.communicationService.confirmForfeit();
         });
@@ -49,10 +52,9 @@ export class GamePageComponent {
         }).then((result) => {
             if (result.value) {
                 this.communicationService.forfeited = false;
+                this.communicationService.endGame = false;
+                this.communicationService.congratulations = undefined;
                 this.gameContextService.clearMessages();
-                if (this.communicationService.endGame) {
-                    this.communicationService.confirmForfeit();
-                }
                 this.router.navigateByUrl('http://localhost:4200/');
             }
         });
