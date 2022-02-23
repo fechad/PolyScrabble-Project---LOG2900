@@ -16,14 +16,15 @@ export class InfosBoxComponent implements AfterViewInit {
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService, public mode: ModeServiceService) {}
 
     ngAfterViewInit(): void {
-        this.gameContextService.isMyTurn.subscribe(() => {
-            this.reset();
-        });
-        this.gameContextService.myRackCount.subscribe((newCount) => {
-            if (newCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
-        });
-        this.gameContextService.myRackCount.subscribe((newCount) => {
-            if (newCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
+        let prevTurn = this.gameContextService.state.value.turn;
+        this.gameContextService.state.subscribe(state => {
+            if (state.turn !== prevTurn) {
+                prevTurn = state.turn;
+                this.reset();
+            }
+            const [myIdx, otherIdx] = (this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value) ? [0, 1] : [1, 0];
+            if (state.players[myIdx].rackCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
+            if (state.players[otherIdx].rackCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
         });
     }
 
@@ -33,7 +34,7 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     onTimerFinished(e: CountdownEvent) {
-        if (e.action === 'done' && this.gameContextService.skipTurnEnabled && this.gameContextService.isMyTurn.value) {
+        if (e.action === 'done' && this.gameContextService.skipTurnEnabled && this.gameContextService.state.value.turn === this.communicationService.getId().value) {
             this.communicationService.switchTurn(true);
         }
     }

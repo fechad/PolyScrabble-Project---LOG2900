@@ -71,8 +71,8 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
 
     validateCommand(): Error | undefined {
-        if (this.communicationService.congratulations !== undefined) return new Error(' La partie est terminée !');
-        if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
+        if (this.gameContextService.state.value.ended) return new Error(' La partie est terminée !');
+        if (this.gameContextService.state.value.turn !== this.communicationService.getId().value) return new Error("Ce n'est pas votre tour");
         if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.place();
         if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.exchange();
         if (this.commandStructure[COMMAND_INDEX] === '!passer' && this.commandStructure.length === 1) return this.pass();

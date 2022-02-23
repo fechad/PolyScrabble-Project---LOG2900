@@ -35,10 +35,8 @@ export class Board {
         if (!SyntaxValidator.validatePositionSyntax(positionArray, word.length === 1))
             throw new Error("Erreur de syntaxe dans le placement d'un mot");
         if (!this.isWordInBound(word.length, positionArray)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
-        await new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(null);
-            }, BOARD_PLACEMENT_DELAY);
+        await new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
         if (!this.isTouchingOtherWord(word.length, positionArray)) throw new Error('Placement invalide vous devez toucher un autre mot');
@@ -65,9 +63,7 @@ export class Board {
                     this.board[currentRow][currentCol].setLetter(wordAndPos[3].charAt(i));
                 }
                 wordScore += this.board[currentRow][currentCol].getPoints();
-                if (wordMultiplier === 1) {
-                    wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
-                }
+                wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
                 if (wordAndPos[0] === 'h') {
                     currentCol++;
                 } else {

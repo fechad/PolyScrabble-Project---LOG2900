@@ -177,6 +177,10 @@ describe('Game', () => {
     it('getWinner should return the winners id', () => {
         const mainPlayer = game.players[MAIN_PLAYER];
         const otherPlayer = game.players[OTHER_PLAYER];
+
+        game.reserve.letterRacks[0] = [];
+        game.reserve.letterRacks[1] = [];
+
         game.scores[0] = 20;
         game.scores[1] = 10;
         const result1 = game.getWinner();

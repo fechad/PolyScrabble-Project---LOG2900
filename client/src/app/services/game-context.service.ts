@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
+import { GameState, PlayerInfo } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
-import { BehaviorSubject } from 'rxjs';
+import { PlayerId } from '@app/classes/room';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 const BOARD_LENGTH = 15;
 const NORMAL_RACK_LENGTH = 7;
+const RESERVE = 102;
 export type Tile = Letter | null;
 export type Board = Tile[][];
 
@@ -11,36 +16,44 @@ export type Board = Tile[][];
     providedIn: 'root',
 })
 export class GameContextService {
-    letter: Tile;
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
-    readonly board: BehaviorSubject<Board> = new BehaviorSubject([] as Board);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
-    readonly isMyTurn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    readonly myScore: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    readonly opponentScore: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    readonly reserveCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    readonly myRackCount: BehaviorSubject<number> = new BehaviorSubject<number>(NORMAL_RACK_LENGTH);
-    readonly opponentRackCount: BehaviorSubject<number> = new BehaviorSubject<number>(NORMAL_RACK_LENGTH);
-    myName: string;
-    opponentName: string;
+    readonly state: BehaviorSubject<GameState>;
     skipTurnEnabled: boolean = true;
     private msgCount: number = 0;
+    myId: PlayerId;
 
     constructor() {
-        const grid = [];
+        const board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             const row = [];
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 row.push(null);
             }
-            grid.push(row);
+            board.push(row);
         }
-        this.board.next(grid);
+        const turn = 'none';
+        const state: GameState = {
+            players: [{ id: '0', name: 'P1', connected: true }, { id: '1', name: 'P2', connected: true }].map(info => ({ info, score: 0, rackCount: NORMAL_RACK_LENGTH })),
+            reserveCount: RESERVE - 2 * NORMAL_RACK_LENGTH,
+            board,
+            turn,
+            ended: false,
+        };
+        this.state = new BehaviorSubject(state);
     }
 
-    setBoard(board: Board) {
-        this.board.next(board);
+    isMyTurn(): Observable<boolean> {
+        return this.state.pipe(map(state => state.turn === this.myId));
+    }
+
+    me(): Observable<PlayerInfo> {
+        return this.state.pipe(map(state => state.players.find(player => player.info.id === this.myId) as PlayerInfo))
+    }
+
+    other(): Observable<PlayerInfo> {
+        return this.state.pipe(map(state => state.players.find(player => player.info.id !== this.myId) as PlayerInfo))
     }
 
     allowSwitch(isAllowed: boolean) {
@@ -67,28 +80,6 @@ export class GameContextService {
         } else {
             this.tempMessages.next([...this.tempMessages.value, message]);
         }
-    }
-
-    setName(playerName: string, isMe: boolean) {
-        if (isMe) {
-            this.myName = playerName;
-        } else {
-            this.opponentName = playerName;
-        }
-    }
-
-    setScore(score: number, isMe: boolean) {
-        if (isMe) {
-            this.myScore.next(score);
-        } else {
-            this.opponentScore.next(score);
-        }
-    }
-
-    updateRack(newRack: Letter[], opponentCount: number) {
-        this.myRackCount.next(newRack.length);
-        this.opponentRackCount.next(opponentCount);
-        this.rack.next(newRack);
     }
 
     tempUpdateRack(lettersToChange: string) {

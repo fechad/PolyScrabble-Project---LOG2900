@@ -35,6 +35,7 @@ describe('AppComponent', () => {
         communicationService = TestBed.inject(CommunicationService);
         const fixture = TestBed.createComponent(AppComponent);
         app = fixture.componentInstance;
+        router.navigate.calls.reset();
     });
 
     it('should create the app', () => {
@@ -51,17 +52,18 @@ describe('AppComponent', () => {
         expect(router.navigate).toHaveBeenCalledOnceWith(['/game']);
     });
 
-    it('should not redirect the app when the room is undefined', () => {
+    it('should redirect the app when the room is undefined', () => {
         communicationService.selectedRoom.next(ROOM);
         router.navigate.calls.reset();
         communicationService.selectedRoom.next(undefined);
-        expect(router.navigate).not.toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalled();
     });
 
     it('should redirect the app when the room is no longer started', () => {
         communicationService.selectedRoom.next({ ...ROOM, started: true });
-        communicationService.selectedRoom.next(ROOM);
         expect(router.navigate).toHaveBeenCalledWith(['/game']);
+        router.navigate.calls.reset();
+        communicationService.selectedRoom.next(ROOM);
         expect(router.navigate).toHaveBeenCalledWith(['/waiting-room']);
     });
 

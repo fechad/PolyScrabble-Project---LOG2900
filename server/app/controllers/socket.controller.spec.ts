@@ -258,7 +258,6 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('rack', stub2);
         gameSocket.emit('change-letters', letters);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        // TODO: adapter avec integration service
         expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0]]]);
         expect(stub2.args).to.deep.equal([[service.games[0].reserve.letterRacks[1]]]);
     });
@@ -270,8 +269,10 @@ describe('SocketManager service tests', () => {
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         service.games[0]['isPlayer0Turn'] = true;
-        service.games[0].reserve.letterRacks[0].push({ id: 0, name: 'A', score: 1, quantity: 0 });
-        service.games[0].reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 });
+        service.games[0].reserve.letterRacks[0] = [
+            { id: 0, name: 'A', score: 1, quantity: 1 },
+            { id: 1, name: 'S', score: 1, quantity: 1 },
+        ];
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
@@ -279,7 +280,6 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('state', stub2);
         gameSocket.emit('place-letters', letters, position);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        // TODO: adapter avec integration validation mots et calcul de points
         expect(stub.args.map(args => args[0].players[0].score)).to.deep.equal([expectedPoints]);
         expect(stub2.args.map(args => args[0].players[0].score)).to.deep.equal([expectedPoints]);
     });
