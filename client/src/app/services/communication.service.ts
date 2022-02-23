@@ -208,9 +208,16 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
+                let text = [''];
+                if (this.gameContextService.state.value.ended)
+                    text = [
+                        'La salle est devenue bien silencieuse...',
+                        'Votre adversaire a quitté la partie, voulez-vous retourner au menu principal?',
+                    ];
+                else text = ['Gagnant par défaut', '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?'];
                 swal.fire({
-                    title: 'Gagnant par défaut',
-                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?',
+                    title: text[0],
+                    text: text[1],
                     showCloseButton: true,
                     showCancelButton: true,
                     confirmButtonText: 'Oui',
