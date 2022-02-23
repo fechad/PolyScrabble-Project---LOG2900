@@ -48,10 +48,12 @@ export class GamePageComponent {
             cancelButtonText: 'Rester',
         }).then((result) => {
             if (result.value) {
-                this.communicationService.isWinner = false;
+                this.communicationService.forfeited = false;
                 this.gameContextService.clearMessages();
+                if (this.communicationService.endGame) {
+                    this.communicationService.confirmForfeit();
+                }
                 this.router.navigateByUrl('http://localhost:4200/');
-                this.communicationService.leave();
             }
         });
     }

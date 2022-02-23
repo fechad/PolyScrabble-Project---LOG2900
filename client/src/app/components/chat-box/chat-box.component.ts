@@ -64,7 +64,7 @@ export class ChatBoxComponent implements AfterViewChecked {
                 if (error !== undefined) {
                     this.communicationService.sendLocalMessage(error.message);
                 }
-            } else {
+            } else if (!this.communicationService.forfeited) {
                 this.communicationService.sendMessage(this.textValue);
             }
         }

@@ -90,7 +90,6 @@ export class SocketManager {
                 const otherPlayer = room.getOtherPlayer();
                 if (otherPlayer) otherPlayer.connected = true;
             }
-            this.roomsService.unpendDeletion(room.id);
 
             if (room.isStarted()) {
                 socket.emit('join-game', room.id);
@@ -112,22 +111,10 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                if (room.isStarted()) {
-                    this.roomsService.pendDeletion(room.id, () => {
-                        const NOT_FOUND = -1;
-
-                        const idx = this.games.findIndex((game) => game.gameId === room.id);
-                        if (idx !== NOT_FOUND) {
-                            this.games.splice(idx, 1);
-                        }
-                        events.forEach(([name, handler]) => room.off(name, handler));
-                    });
-                } else {
-                    if (isMainPlayer) {
-                        this.roomsService.remove(room.id);
-                    }
-                    events.forEach(([name, handler]) => room.off(name, handler));
+                if (isMainPlayer && !room.isStarted()) {
+                    this.roomsService.remove(room.id);
                 }
+                events.forEach(([name, handler]) => room.off(name, handler));
             });
 
             socket.emit('update-room', room);
@@ -156,7 +143,6 @@ export class SocketManager {
         });
         games.on('connect', (socket) => {
             const id = socket.handshake.auth.id;
-            console.log(id);
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
 

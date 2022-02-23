@@ -28,7 +28,7 @@ export class CommunicationService {
     readonly dictionnaries: Promise<Dictionnary[]>;
     congratulations: string | undefined = undefined;
     endGame: boolean = false;
-    isWinner: boolean;
+    forfeited: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -181,7 +181,7 @@ export class CommunicationService {
     }
 
     private leaveGame() {
-        if (!this.isWinner) this.gameContextService.clearMessages();
+        if (!this.forfeited) this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.selectedRoom.next(undefined);
@@ -212,10 +212,10 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
-                this.isWinner = true;
+                this.forfeited = true;
                 swal.fire({
                     title: 'Gagnant par défaut',
-                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner aux menus?',
+                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?',
                     showCloseButton: true,
                     showCancelButton: true,
                     confirmButtonText: 'Oui',
@@ -224,7 +224,7 @@ export class CommunicationService {
                     if (result.value) {
                         this.gameContextService.clearMessages();
                         this.router.navigate(['/']);
-                        this.isWinner = false;
+                        this.forfeited = false;
                     }
                 });
             } else {

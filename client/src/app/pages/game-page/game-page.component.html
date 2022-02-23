@@ -48,7 +48,7 @@
                 id="quit-game"
                 matTooltip="Abandonner la partie"
                 matTooltipPosition="right"
-                (click)="communicationService.isWinner ? quitGame() : openConfirmation()"
+                (click)="communicationService.forfeited ? quitGame() : openConfirmation()"
             >
                 <fa-icon [icon]="faSignOutAlt"></fa-icon>
             </button>

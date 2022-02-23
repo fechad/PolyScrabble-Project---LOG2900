@@ -38,7 +38,6 @@ export class GameContextService {
         }
         this.board.next(grid);
     }
-
     setBoard(board: Board) {
         this.board.next(board);
     }
@@ -57,6 +56,7 @@ export class GameContextService {
 
     clearMessages() {
         this.messages.next([]);
+        this.tempMessages.next([]);
     }
 
     addMessage(message: string, local: boolean, command: boolean) {

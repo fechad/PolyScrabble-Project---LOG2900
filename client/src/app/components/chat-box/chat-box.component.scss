@@ -77,6 +77,14 @@ div {
     border-style: solid;
     overflow-wrap: break-word;
 }
+
+.disabledBox {
+    height: 20%;
+    border-radius: 15px;
+    border-style: solid;
+    pointer-events: none;
+}
+
 #nonWritingBox {
     padding-right: 20px;
     width: 100%;
