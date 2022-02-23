@@ -1,5 +1,5 @@
-import { Tile } from "@app/services/game-context.service";
-import { Player, PlayerId } from "./room";
+import { Tile } from '@app/services/game-context.service';
+import { Player, PlayerId } from './room';
 
 export type PlayerInfo = {
     info: Player;

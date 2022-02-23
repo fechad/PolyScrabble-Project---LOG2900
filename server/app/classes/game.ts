@@ -49,7 +49,9 @@ export class Game {
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
-        setTimeout(() => { /* empty */ }, this.parameters.timer);
+        setTimeout(() => {
+            /* empty */
+        }, this.parameters.timer);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
     }
@@ -123,7 +125,7 @@ export class Game {
     nextTurn(playerId: PlayerId, userRequest: boolean) {
         if (this.checkTurn(playerId)) {
             this.isPlayer0Turn = !this.isPlayer0Turn;
-            
+
             if (userRequest) this.skipCounter += 1;
             else this.skipCounter = 0;
 

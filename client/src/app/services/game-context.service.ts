@@ -21,8 +21,8 @@ export class GameContextService {
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
     readonly state: BehaviorSubject<GameState>;
     skipTurnEnabled: boolean = true;
-    private msgCount: number = 0;
     myId: PlayerId;
+    private msgCount: number = 0;
 
     constructor() {
         const board = [];
@@ -35,7 +35,10 @@ export class GameContextService {
         }
         const turn = 'none';
         const state: GameState = {
-            players: [{ id: '0', name: 'P1', connected: true }, { id: '1', name: 'P2', connected: true }].map(info => ({ info, score: 0, rackCount: NORMAL_RACK_LENGTH })),
+            players: [
+                { id: '0', name: 'P1', connected: true },
+                { id: '1', name: 'P2', connected: true },
+            ].map((info) => ({ info, score: 0, rackCount: NORMAL_RACK_LENGTH })),
             reserveCount: RESERVE - 2 * NORMAL_RACK_LENGTH,
             board,
             turn,
@@ -45,15 +48,15 @@ export class GameContextService {
     }
 
     isMyTurn(): Observable<boolean> {
-        return this.state.pipe(map(state => state.turn === this.myId));
+        return this.state.pipe(map((state) => state.turn === this.myId));
     }
 
     me(): Observable<PlayerInfo> {
-        return this.state.pipe(map(state => state.players.find(player => player.info.id === this.myId) as PlayerInfo))
+        return this.state.pipe(map((state) => state.players.find((player) => player.info.id === this.myId) as PlayerInfo));
     }
 
     other(): Observable<PlayerInfo> {
-        return this.state.pipe(map(state => state.players.find(player => player.info.id !== this.myId) as PlayerInfo))
+        return this.state.pipe(map((state) => state.players.find((player) => player.info.id !== this.myId) as PlayerInfo));
     }
 
     allowSwitch(isAllowed: boolean) {

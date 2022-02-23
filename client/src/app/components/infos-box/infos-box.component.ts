@@ -17,12 +17,13 @@ export class InfosBoxComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         let prevTurn = this.gameContextService.state.value.turn;
-        this.gameContextService.state.subscribe(state => {
+        this.gameContextService.state.subscribe((state) => {
             if (state.turn !== prevTurn) {
                 prevTurn = state.turn;
                 this.reset();
             }
-            const [myIdx, otherIdx] = (this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value) ? [0, 1] : [1, 0];
+            const [myIdx, otherIdx] =
+                this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
             if (state.players[myIdx].rackCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
             if (state.players[otherIdx].rackCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
         });
@@ -34,7 +35,11 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     onTimerFinished(e: CountdownEvent) {
-        if (e.action === 'done' && this.gameContextService.skipTurnEnabled && this.gameContextService.state.value.turn === this.communicationService.getId().value) {
+        if (
+            e.action === 'done' &&
+            this.gameContextService.skipTurnEnabled &&
+            this.gameContextService.state.value.turn === this.communicationService.getId().value
+        ) {
             this.communicationService.switchTurn(true);
         }
     }

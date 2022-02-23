@@ -87,9 +87,10 @@ export class GridService {
         const isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
 
         const tempState = this.gameContext.state.value;
-        let [dx, dy] = isVerticalPlacement ? [1, 0] : [0, 1];
+        const [dx, dy] = isVerticalPlacement ? [1, 0] : [0, 1];
         [...lettersToAdd].forEach((letter, i) => {
-            const x = verticalPosition + dx * i, y = horizontalPosition + dy * i;
+            const x = verticalPosition + dx * i;
+            const y = horizontalPosition + dy * i;
             const tile = tempState.board[x][y];
             if (tile !== null) return;
             tempState.board[x][y] = {

@@ -240,8 +240,9 @@ describe('CommunicationService', () => {
 
     const DEFAULT_STATE: GameState = {
         players: [
-            { info: { id: ID, name: 'BOB', connected: true}, score: 0, rackCount: 7 },
-            { info: { id: 'Dummy', name: 'Not BOB', connected: true }, score: 0, rackCount: 7 }],
+            { info: { id: ID, name: 'BOB', connected: true }, score: 0, rackCount: 7 },
+            { info: { id: 'Dummy', name: 'Not BOB', connected: true }, score: 0, rackCount: 7 },
+        ],
         reserveCount: 88,
         board: [[]],
         turn: ID,
@@ -264,7 +265,6 @@ describe('CommunicationService', () => {
         joinGame();
         (service['gameSocket'] as unknown as SocketMock).events.emit('state', { ...DEFAULT_STATE, ended: true });
         const emitSpy = (service['gameSocket'] as unknown as SocketMock).emitSpy;
-        console.log(service.gameContextService.state.value);
         service.confirmForfeit();
         expect(emitSpy).toHaveBeenCalledWith('confirm-forfeit');
     });

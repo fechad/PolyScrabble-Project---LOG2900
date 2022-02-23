@@ -224,8 +224,8 @@ describe('SocketManager service tests', () => {
         await waitForCommunication(RESPONSE_DELAY);
         // eslint-disable-next-line dot-notation
         assert(!service.games[0]['isPlayer0Turn'], 'wrong turn');
-        expect(stub.args.map(args => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 1');
-        expect(stub2.args.map(args => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 2');
+        expect(stub.args.map((args) => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 1');
+        expect(stub2.args.map((args) => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 2');
     });
 
     it('should send an error on wrong player skipping turn', async () => {
@@ -280,8 +280,8 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('state', stub2);
         gameSocket.emit('place-letters', letters, position);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        expect(stub.args.map(args => args[0].players[0].score)).to.deep.equal([expectedPoints]);
-        expect(stub2.args.map(args => args[0].players[0].score)).to.deep.equal([expectedPoints]);
+        expect(stub.args.map((args) => args[0].players[0].score)).to.deep.equal([expectedPoints]);
+        expect(stub2.args.map((args) => args[0].players[0].score)).to.deep.equal([expectedPoints]);
     });
 
     // TODO add tests
