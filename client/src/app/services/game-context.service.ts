@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 
 const BOARD_LENGTH = 15;
 const NORMAL_RACK_LENGTH = 7;
-const RESERVE = 102;
+const DEFAULT_RESERVE = 88;
 export type Tile = Letter | null;
 export type Board = Tile[][];
 
@@ -34,12 +34,12 @@ export class GameContextService {
             board.push(row);
         }
         const turn = 'none';
-        const state: GameState = {
+        const state: GameState = { /* Dummy state */
             players: [
                 { id: '0', name: 'P1', connected: true },
                 { id: '1', name: 'P2', connected: true },
             ].map((info) => ({ info, score: 0, rackCount: NORMAL_RACK_LENGTH })),
-            reserveCount: RESERVE - 2 * NORMAL_RACK_LENGTH,
+            reserveCount: DEFAULT_RESERVE,
             board,
             turn,
             ended: false,
@@ -51,11 +51,11 @@ export class GameContextService {
         return this.state.pipe(map((state) => state.turn === this.myId));
     }
 
-    me(): Observable<PlayerInfo> {
+    getMe(): Observable<PlayerInfo> {
         return this.state.pipe(map((state) => state.players.find((player) => player.info.id === this.myId) as PlayerInfo));
     }
 
-    other(): Observable<PlayerInfo> {
+    getOther(): Observable<PlayerInfo> {
         return this.state.pipe(map((state) => state.players.find((player) => player.info.id !== this.myId) as PlayerInfo));
     }
 

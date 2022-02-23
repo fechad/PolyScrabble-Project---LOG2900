@@ -14,6 +14,7 @@ import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.com
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -25,21 +26,22 @@ const dialogMock = {
         return;
     },
 };
-// export class CommunicationServiceMock {
-//     isWinner = false;
-//     getId(): number {
-//         return 1;
-//     }
-//     confirmForfeit() {
-//         return;
-//     }
-//     leave() {
-//         return;
-//     }
-//     switchTurn(timerRequest: boolean) {
-//         return timerRequest;
-//     }
-// }
+
+export class CommunicationServiceMock {
+    isWinner = false;
+    getId(): number {
+        return 1;
+    }
+    confirmForfeit() {
+        return;
+    }
+    leave() {
+        return;
+    }
+    switchTurn(timerRequest: boolean) {
+        return timerRequest;
+    }
+}
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -61,6 +63,7 @@ describe('GamePageComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
+                { provide: CommunicationService, useClass: CommunicationServiceMock },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);

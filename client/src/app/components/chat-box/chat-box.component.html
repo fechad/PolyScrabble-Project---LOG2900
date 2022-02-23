@@ -2,9 +2,9 @@
     <div id="nonWritingBox" #scroll>
         <!--<div class="chat-log-opponent"></div>-->
         <div *ngFor="let message of gameContextService.messages | async" class="message-container">
-            <span *ngIf="message.emitter === myId" class="myself">{{ (gameContextService.me() | async)?.info?.name }}</span>
+            <span *ngIf="message.emitter === myId" class="myself">{{ (gameContextService.getMe() | async)?.info?.name }}</span>
             <span *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.emitter !== 'command'" class="opponent">{{
-                (gameContextService.other() | async)?.info?.name
+                (gameContextService.getOther() | async)?.info?.name
             }}</span>
             <div
                 [ngClass]="{
