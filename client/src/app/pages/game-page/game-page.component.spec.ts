@@ -9,7 +9,6 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
@@ -50,7 +49,7 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent, HelpInfoComponent],
+            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent],
             imports: [
                 RouterTestingModule.withRoutes(routes),
                 HttpClientTestingModule,
@@ -142,13 +141,5 @@ describe('GamePageComponent', () => {
         button.nativeElement.click();
         tick();
         expect(increaseFontSpy).toHaveBeenCalled();
-    }));
-
-    it('click on ? button should call helpInfo()', fakeAsync(() => {
-        const helpSpy = spyOn(component, 'helpInfo').and.callThrough();
-        const button = fixture.debugElement.query(By.css('#help'));
-        button.nativeElement.click();
-        tick();
-        expect(helpSpy).toHaveBeenCalled();
     }));
 });

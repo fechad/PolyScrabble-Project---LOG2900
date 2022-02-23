@@ -1,6 +1,5 @@
 import { Component, Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
+import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
@@ -23,36 +22,26 @@ export class GamePageComponent {
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
-        public dialog: MatDialog,
         public gameContextService: GameContextService,
+        public router: Router,
     ) {}
 
-    helpInfo() {
-        this.dialog.open(HelpInfoComponent);
-    }
-
-    async quitGame() {
-        if (this.gameContextService.state.value.ended) {
-            const { value } = await Swal.fire({
-                title: 'Êtes vous sûr?',
-                text: 'Vous vous apprêtez à quitter la partie',
-                showCloseButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Quitter',
-                cancelButtonText: 'Rester',
-            });
-            if (value) this.communicationService.leave();
-        } else {
-            const { value } = await Swal.fire({
-                title: 'Êtes vous sûr?',
-                text: 'Vous vous apprêtez à déclarer forfait',
-                showCloseButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Abandonner',
-                cancelButtonText: 'Continuer à jouer',
-            });
-            if (value) this.communicationService.confirmForfeit();
-        }
+    quitGame() {
+        let text = [''];
+        if (this.gameContextService.state.value.ended) text = ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester'];
+        else text = ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+        Swal.fire({
+            title: text[0],
+            text: text[1],
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: text[2],
+            cancelButtonText: text[3],
+        }).then((result) => {
+            if (!result.value) return;
+            if (this.gameContextService.state.value.ended) this.communicationService.leave();
+            else this.communicationService.confirmForfeit();
+        });
     }
     skipMyTurn() {
         this.communicationService.switchTurn(false);

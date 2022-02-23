@@ -1,6 +1,5 @@
 {
-  "dependencies": {
-    "eslint": "^8.7.0",
-    "sweetalert2": "^11.4.0"
-  }
+    "dependencies": {
+        "eslint": "^8.7.0"
+    }
 }
