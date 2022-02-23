@@ -8,7 +8,8 @@ const LETTERS_TO_EXCHANGE_INDEX = 1;
 const POSITION_BLOCK_INDEX = 1;
 const WORD_TO_PLACE_INDEX = 2;
 const POSITION_BLOCK_MAX_LENGTH = 4;
-const POSITION_BLOCK_MIN_LENGTH = 3;
+const POSITION_BLOCK_AVG_LENGTH = 4;
+const POSITION_BLOCK_MIN_LENGTH = 2;
 const MAX_TYPED_WORD_LENGTH = 7;
 const MIN_TYPED_WORD_LENGTH = 1;
 const PLACE_COMMAND_LENGTH = 3;
@@ -69,9 +70,12 @@ export class ChatBoxComponent implements AfterViewChecked {
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
             if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
-                const error = this.dispatchCommand(this.commandStructure.length);
-                if (error !== undefined) {
-                    this.communicationService.sendLocalMessage(error.message);
+                try {
+                    this.dispatchCommand(this.commandStructure.length);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (e: any) {
+                    const message = e.message;
+                    this.communicationService.sendLocalMessage(message);
                 }
             } else {
                 this.communicationService.sendMessage(this.textValue);
@@ -80,22 +84,17 @@ export class ChatBoxComponent implements AfterViewChecked {
         this.clearText();
     }
 
-    dispatchCommand(commandLength: number): Error | undefined {
-        if (this.communicationService.congratulations !== undefined) return new Error(' La partie est terminée !');
-        if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
-
-        if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
+    dispatchCommand(commandLength: number) {
+        if (this.communicationService.congratulations !== undefined) throw new Error(' La partie est terminée !');
+        else if (!this.gameContextService.isMyTurn.value) throw new Error("Ce n'est pas votre tour");
+        else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
             this.parsedWord = this.commandParser.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
             this.assignPositionSpec(this.commandStructure[POSITION_BLOCK_INDEX]);
-            return this.place();
-        }
-        if (this.commandStructure[COMMAND_INDEX] === '!échanger' && commandLength === EXCHANGE_COMMAND_LENGTH) return this.exchange();
-        if (this.commandStructure[COMMAND_INDEX] === '!passer' && commandLength === PASS_COMMAND_LENGTH) return this.pass();
-        if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) {
-            this.sendHelp();
-            return undefined;
-        }
-        return new Error(`La commande ${this.commandStructure[COMMAND_INDEX]} ne respecte pas la syntaxe demandée`);
+            this.place();
+        } else if (this.commandStructure[COMMAND_INDEX] === '!échanger' && commandLength === EXCHANGE_COMMAND_LENGTH) this.exchange();
+        else if (this.commandStructure[COMMAND_INDEX] === '!passer' && commandLength === PASS_COMMAND_LENGTH) this.pass();
+        else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
+        else throw new Error(`La commande ${this.commandStructure[COMMAND_INDEX]} ne respecte pas la syntaxe demandée`);
     }
 
     sendHelp() {
@@ -104,10 +103,9 @@ export class ChatBoxComponent implements AfterViewChecked {
         }
     }
 
-    place(): Error | undefined {
-        let error: Error | undefined;
+    place() {
         if (this.commandStructure[WORD_TO_PLACE_INDEX].match(/[^A-Za-zÀ-ú]/g)) {
-            error = new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
+            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
         } else {
             if (this.isInRack(this.parsedWord)) {
                 if (
@@ -130,34 +128,30 @@ export class ChatBoxComponent implements AfterViewChecked {
                         this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
                     }
                 } else {
-                    error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
+                    throw new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
                 }
             } else {
-                error = new Error('Ces lettres ne sont pas dans le chevalet');
+                throw new Error('Ces lettres ne sont pas dans le chevalet');
             }
         }
-        return error;
     }
 
-    exchange(): Error | undefined {
-        let error: Error | undefined;
+    exchange() {
         const isInBound =
             this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
             this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
 
         if (this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].match(/[^a-z*]/g)) {
-            error = new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
+            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         } else {
-            error = new Error('Ces lettres ne sont pas dans le chevalet');
+            throw new Error('Ces lettres ne sont pas dans le chevalet');
         }
-        return error;
     }
 
-    pass(): Error | undefined {
+    pass() {
         this.communicationService.switchTurn(false);
-        return;
     }
 
     isInRack(word: string) {
@@ -171,11 +165,29 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
 
     private assignPositionSpec(positionBlock: string) {
-        this.placementOrientation = positionBlock[positionBlock.length - 1];
         this.verticalPosition = positionBlock[0];
         this.horizontalPosition = positionBlock[1];
-        if (positionBlock.length === POSITION_BLOCK_MAX_LENGTH) {
-            this.horizontalPosition += positionBlock[HORIZONTAL_POSITION_2ND_DIGIT_INDEX];
+
+        switch (positionBlock.length) {
+            case POSITION_BLOCK_MIN_LENGTH: {
+                break;
+            }
+            case POSITION_BLOCK_AVG_LENGTH: {
+                if (isNaN(+positionBlock[positionBlock.length - 1])) {
+                    this.placementOrientation = positionBlock[positionBlock.length - 1];
+                } else {
+                    this.horizontalPosition += positionBlock[positionBlock.length - 1];
+                }
+                break;
+            }
+            case POSITION_BLOCK_MAX_LENGTH: {
+                this.horizontalPosition += positionBlock[HORIZONTAL_POSITION_2ND_DIGIT_INDEX];
+                this.placementOrientation = positionBlock[positionBlock.length - 1];
+                break;
+            }
+            default: {
+                throw new Error('Le coordonnées de positionnement sont invalides');
+            }
         }
     }
 }
