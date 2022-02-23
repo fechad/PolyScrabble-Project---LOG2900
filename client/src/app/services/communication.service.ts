@@ -221,8 +221,8 @@ export class CommunicationService {
                     confirmButtonText: 'Oui',
                     cancelButtonText: 'Non',
                 }).then((result) => {
-                    this.gameContextService.clearMessages();
                     if (result.value) {
+                        this.gameContextService.clearMessages();
                         this.router.navigate(['/']);
                         this.isWinner = false;
                     }

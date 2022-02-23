@@ -10,13 +10,13 @@ import * as io from 'socket.io';
 import { Service } from 'typedi';
 
 type Handlers = [string, (params: unknown[]) => void][];
-
+const AWOL_DELAY = 5000;
 @Service()
 export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
     private logins: LoginsService = new LoginsService();
-
+    private token: number;
     constructor(server: http.Server, public roomsService: RoomsService, private dictionnaryService: DictionnaryService) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -32,6 +32,7 @@ export class SocketManager {
         const mainLobby = new MainLobbyService(this.roomsService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
+            this.token = token;
             socket.emit('id', id, token);
             mainLobby.connect(socket, id);
 
@@ -155,6 +156,7 @@ export class SocketManager {
         });
         games.on('connect', (socket) => {
             const id = socket.handshake.auth.id;
+            console.log(id);
             const game = this.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
 
@@ -201,6 +203,9 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
+                setTimeout(() => {
+                    if (!this.logins.verify(id, this.token)) game.forfeit(id);
+                }, AWOL_DELAY);
             });
 
             game.gameInit();

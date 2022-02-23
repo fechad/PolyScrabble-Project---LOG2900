@@ -1,7 +1,5 @@
 import { Component, Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
@@ -25,13 +23,8 @@ export class GamePageComponent {
         private router: Router,
         public gridService: GridService,
         public communicationService: CommunicationService,
-        public dialog: MatDialog,
         public gameContextService: GameContextService,
     ) {}
-
-    helpInfo() {
-        this.dialog.open(HelpInfoComponent);
-    }
 
     openConfirmation() {
         Swal.fire({

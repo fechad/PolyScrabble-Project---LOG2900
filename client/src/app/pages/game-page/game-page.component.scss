@@ -131,3 +131,7 @@
     display: flex;
     justify-content: flex-end;
 }
+::ng-deep .tooltip {
+    font-size: 20px;
+    max-width: unset !important;
+}
