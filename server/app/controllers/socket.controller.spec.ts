@@ -196,10 +196,8 @@ describe('SocketManager service tests', () => {
             [gameSocket, gameSocket2],
         ];
     };
-
     it('should send and receive a message in game', async () => {
         const message: Message = { text: 'this is a test message', emitter: identifiers[0].id };
-
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         const stub = sinon.stub();
         const stub2 = sinon.stub();
@@ -207,7 +205,6 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('message', stub2);
         gameSocket.emit('message', message.text);
         await waitForCommunication(RESPONSE_DELAY * 2);
-
         expect(service.games[0].messages).to.deep.equal([message], 'Did not register message');
         expect(stub.args).to.deep.equal([[message]], 'Did not send the messages to player 1');
         expect(stub2.args).to.deep.equal([[message]], 'Did not send the messages to player 2');

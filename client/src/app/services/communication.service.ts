@@ -231,16 +231,14 @@ export class CommunicationService {
                     if (result.value) {
                         this.gameContextService.clearMessages();
                         this.forfeited = false;
-                        this.endGame = false;
-                        this.congratulations = undefined;
                         this.router.navigate(['/']);
                     }
                 });
             } else {
-                this.endGame = false;
-                this.congratulations = undefined;
                 this.router.navigate(['/']);
             }
+            this.endGame = false;
+            this.congratulations = undefined;
             this.leaveGame();
         });
 

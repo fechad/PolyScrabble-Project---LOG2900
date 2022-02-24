@@ -56,6 +56,7 @@ export class GamePageComponent {
                 this.communicationService.congratulations = undefined;
                 this.gameContextService.clearMessages();
                 this.router.navigateByUrl('http://localhost:4200/');
+                this.communicationService.leave();
             }
         });
     }
