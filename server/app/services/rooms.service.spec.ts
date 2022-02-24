@@ -24,4 +24,14 @@ describe('Rooms service', () => {
     it('should be created', () => {
         assert(roomsService !== undefined);
     });
+    it('should remove a room from the list of rooms', () => {
+        const size = roomsService.rooms.length;
+        roomsService.remove(0);
+        assert(roomsService.rooms.length === size - 1);
+    });
+    it('should not remove a room from the list of rooms if it doesnt exist', () => {
+        const size = roomsService.rooms.length;
+        roomsService.remove(1);
+        assert(roomsService.rooms.length === size);
+    });
 });
