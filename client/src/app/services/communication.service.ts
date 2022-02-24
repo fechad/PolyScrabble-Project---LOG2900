@@ -27,6 +27,9 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
+    congratulations: string | undefined = undefined;
+    endGame: boolean = false;
+    forfeited: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -175,6 +178,7 @@ export class CommunicationService {
     }
 
     private leaveGame() {
+        if (!this.forfeited) this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.gameSocket?.close();
@@ -222,8 +226,16 @@ export class CommunicationService {
                     showCancelButton: true,
                     confirmButtonText: 'Oui',
                     cancelButtonText: 'Non',
+                }).then((result) => {
+                    if (result.value) {
+                        this.gameContextService.clearMessages();
+                        this.forfeited = false;
+                        this.router.navigate(['/']);
+                    }
                 });
             }
+            this.endGame = false;
+            this.congratulations = undefined;
             this.leaveGame();
         });
 
