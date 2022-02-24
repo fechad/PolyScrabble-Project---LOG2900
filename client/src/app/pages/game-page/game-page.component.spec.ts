@@ -14,7 +14,6 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import Swal from 'sweetalert2';
@@ -45,7 +44,6 @@ export class CommunicationServiceMock {
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    let gameContextService: GameContextService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -66,7 +64,6 @@ describe('GamePageComponent', () => {
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
-        gameContextService = TestBed.inject(GameContextService);
         const router = TestBed.inject(Router);
         router.initialNavigation();
         component = fixture.componentInstance;
@@ -90,27 +87,6 @@ describe('GamePageComponent', () => {
         const swalSpy = spyOn(Swal, 'fire').and.callThrough();
         component.quitGame();
         expect(swalSpy).toHaveBeenCalled();
-    });
-
-    it('should forfeit if confirm is clicked in swal', (done) => {
-        const swalConfirmSpy = spyOn(component.communicationService, 'confirmForfeit');
-        component.quitGame();
-        Swal.clickConfirm();
-        setTimeout(() => {
-            expect(swalConfirmSpy).toHaveBeenCalled();
-            done();
-        });
-    });
-
-    it('should quit if confirm is clicked in swal', (done) => {
-        gameContextService.state.next({ ...gameContextService.state.value, ended: true });
-        const swalConfirmSpy = spyOn(component.communicationService, 'leave');
-        component.quitGame();
-        Swal.clickConfirm();
-        setTimeout(() => {
-            expect(swalConfirmSpy).toHaveBeenCalled();
-            done();
-        });
     });
 
     it('should switch turn if skipTurn() is called', () => {

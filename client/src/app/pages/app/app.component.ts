@@ -12,6 +12,7 @@ export class AppComponent {
     constructor(communicationService: CommunicationService, router: Router) {
         const prevRoom = { exists: false, started: false };
         communicationService.selectedRoom.pipe(skip(1)).subscribe((room) => {
+            console.log(room);
             if (room === undefined && prevRoom.exists && !prevRoom.started) router.navigate(['/']);
             else if (!room?.started && prevRoom.started) router.navigate(['/waiting-room']);
             else if (room?.started && !prevRoom.started) router.navigate(['/game']);
