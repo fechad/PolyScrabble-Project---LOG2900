@@ -30,17 +30,16 @@ export class Board {
     }
 
     async placeWord(word: string, row: number, col: number, isHorizontal?: boolean): Promise<number> {
-        let positionArray = [row, col];
-        if (!this.isWordInBound(word.length, positionArray, isHorizontal)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
+        if (!this.isWordInBound(word.length, row, col, isHorizontal)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
         await new Promise((resolve) => {
             setTimeout(() => {
                 resolve(null);
             }, BOARD_PLACEMENT_DELAY);
         });
-        if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
-        if (!this.isTouchingOtherWord(word.length, positionArray)) throw new Error('Placement invalide vous devez toucher un autre mot');
-        const contacts = this.getContacts(word.length, positionArray);
-        const words = this.wordGetter.getWords(word, positionArray, contacts, isHorizontal);
+        if (!this.firstWordValidation(word.length, row, col, isHorizontal)) throw new Error('Placement invalide pour le premier mot');
+        if (!this.isTouchingOtherWord(word.length, row, col, isHorizontal)) throw new Error('Placement invalide vous devez toucher un autre mot');
+        const contacts = this.getContacts(word.length, row, col, isHorizontal);
+        const words = this.wordGetter.getWords(word, row, col, contacts, isHorizontal);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
@@ -88,132 +87,132 @@ export class Board {
         }
     }
 
-    private getContacts(wordLength: number, pos: number[], isHorizontal?: boolean): number[][] {
+    private getContacts(wordLength: number, row: number, col: number, isHorizontal?: boolean): number[][] {
         let contacts: number[][] = [];
         let collisions = 0;
         if (this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             contacts = [[INVALID]];
         } else if (isHorizontal === undefined) {
-            if (!this.board[pos[0]][pos[1] - 1].empty || !this.board[pos[0]][pos[1] + 1].empty) {
+            if (!this.board[row][col - 1].empty || !this.board[row][col + 1].empty) {
                 isHorizontal = true;
             } else {
                 if (isHorizontal !== undefined) {
-                    contacts.push([pos[0], pos[1], 0]);
+                    contacts.push([row, col, 0]);
                 } else {
                     isHorizontal = false;
                 }
             }
         } else if (isHorizontal) {
             for (let i = 0; i < wordLength + collisions; i++) {
-                if (!this.board[pos[0]][pos[1] + i].empty) {
+                if (!this.board[row][col + i].empty) {
                     collisions++;
-                    contacts.push([pos[0], pos[1] + i, INVALID]);
-                } else if (!this.board[pos[0] - 1][pos[1] + i].empty || !this.board[pos[0] + 1][pos[1] + i].empty) {
-                    contacts.push([pos[0], pos[1] + i, i - collisions]);
+                    contacts.push([row, col + i, INVALID]);
+                } else if (!this.board[row - 1][col + i].empty || !this.board[row + 1][col + i].empty) {
+                    contacts.push([row, col + i, i - collisions]);
                 }
             }
         } else {
             for (let i = 0; i < wordLength + collisions; i++) {
-                if (!this.board[pos[0] + i][pos[1]].empty) {
+                if (!this.board[row + i][col].empty) {
                     collisions++;
-                    contacts.push([pos[0] + i, pos[1], INVALID]);
-                } else if (!this.board[pos[0] + i][pos[1] - 1].empty || !this.board[pos[0] + i][pos[1] + 1].empty) {
-                    contacts.push([pos[0] + i, pos[1], i - collisions]);
+                    contacts.push([row + i, col, INVALID]);
+                } else if (!this.board[row + i][col - 1].empty || !this.board[row + i][col + 1].empty) {
+                    contacts.push([row + i, col, i - collisions]);
                 }
             }
         }
         return contacts;
     }
 
-    private isTouchingOtherWord(wordLength: number, pos: number[], isHorizontal?: boolean): boolean {
+    private isTouchingOtherWord(wordLength: number, row: number, col: number, isHorizontal?: boolean): boolean {
         if (this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             return true;
         }
         if (isHorizontal === undefined) {
-            return this.isWordTouchingOneLetter(pos);
+            return this.isWordTouchingOneLetter(row, col);
         }
         if (isHorizontal) {
-            return this.isWordTouchingHorizontal(wordLength, pos);
+            return this.isWordTouchingHorizontal(wordLength, row, col);
         }
-        return this.isWordTouchingVertical(wordLength, pos);
+        return this.isWordTouchingVertical(wordLength, row, col);
     }
 
     // fonctionne avec seulement h et v donc pas necessaires
-    private isWordTouchingOneLetter(pos: number[]): boolean {
-        const valid = !this.board[pos[0]][pos[1] - 1].empty || !this.board[pos[0]][pos[1] + 1].empty;
-        return valid || !this.board[pos[0] - 1][pos[1]] || !this.board[pos[0] + 1][pos[1]].empty;
+    private isWordTouchingOneLetter(row: number, col: number): boolean {
+        const valid = !this.board[row][col - 1].empty || !this.board[row][col + 1].empty;
+        return valid || !this.board[row - 1][col] || !this.board[row + 1][col].empty;
     }
 
-    private isWordTouchingHorizontal(wordLength: number, pos: number[]): boolean {
-        if ((pos[0] - 1 > 0 && !this.board[pos[0]][pos[1] - 1].empty) || (pos[1] + wordLength < BOARD_LENGTH && !this.board[pos[0]][pos[1] + wordLength].empty)) {
+    private isWordTouchingHorizontal(wordLength: number, row: number, col: number): boolean {
+        if ((row - 1 > 0 && !this.board[row][col - 1].empty) || (col + wordLength < BOARD_LENGTH && !this.board[row][col + wordLength].empty)) {
             return true;
         }
-        for (let i = pos[1]; i < pos[1] + wordLength; i++) {
-            if (!this.board[pos[0]][i].empty) {
+        for (let i = col; i < col + wordLength; i++) {
+            if (!this.board[row][i].empty) {
                 return true;
-            } else if ((pos[0] - 1 >= 0 && !this.board[pos[0] - 1][i].empty) || (pos[0] + 1 < BOARD_LENGTH && !this.board[pos[0] + 1][i].empty)) {
+            } else if ((row - 1 >= 0 && !this.board[row - 1][i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][i].empty)) {
                 return true;
             }
         }
         return false;
     }
 
-    private isWordTouchingVertical(wordLength: number, pos: number[]): boolean {
-        if (pos[0] - 1 > 0 && !this.board[pos[0] - 1][pos[1]].empty) {
+    private isWordTouchingVertical(wordLength: number, row: number, col: number): boolean {
+        if (row - 1 > 0 && !this.board[row - 1][col].empty) {
             return true;
         }
-        if (pos[0] + wordLength < BOARD_LENGTH && !this.board[pos[0] + wordLength][pos[1]].empty) {
+        if (row + wordLength < BOARD_LENGTH && !this.board[row + wordLength][col].empty) {
             return true;
         }
-        for (let i = pos[0]; i < pos[0] + wordLength; i++) {
-            if (!this.board[i][pos[1]].empty) {
+        for (let i = row; i < row + wordLength; i++) {
+            if (!this.board[i][col].empty) {
                 return true;
-            } else if (pos[1] - 1 >= 0 && !this.board[i][pos[1] - 1].empty) {
+            } else if (col - 1 >= 0 && !this.board[i][col - 1].empty) {
                 return true;
             }
-            if (pos[1] + 1 < BOARD_LENGTH && !this.board[i][pos[1] + 1].empty) {
+            if (col + 1 < BOARD_LENGTH && !this.board[i][col + 1].empty) {
                 return true;
             }
         }
         return false;
     }
 
-    private firstWordValidation(wordLength: number, pos: number[], isHorizontal?: boolean): boolean {
+    private firstWordValidation(wordLength: number, row: number, col: number, isHorizontal?: boolean): boolean {
         if (!this.board[HALF_LENGTH][HALF_LENGTH].empty) {
             return true;
         } else if (isHorizontal === undefined) {
-            return pos[0] === HALF_LENGTH && pos[1] === HALF_LENGTH;
+            return row === HALF_LENGTH && col === HALF_LENGTH;
         } else if (wordLength > 1) {
-            if (isHorizontal && pos[0] === HALF_LENGTH && pos[1] <= HALF_LENGTH && pos[1] + wordLength - 1 >= HALF_LENGTH) {
+            if (isHorizontal && row === HALF_LENGTH && col <= HALF_LENGTH && col + wordLength - 1 >= HALF_LENGTH) {
                 return true;
-            } else if (pos[1] === HALF_LENGTH && pos[0] <= HALF_LENGTH && pos[0] + wordLength - 1 >= HALF_LENGTH) {
+            } else if (col === HALF_LENGTH && row <= HALF_LENGTH && row + wordLength - 1 >= HALF_LENGTH) {
                 return true;
             }
         }
         return false;
     }
 
-    private isWordInBound(wordLength: number, pos: number[], isHorizontal?: boolean) {
+    private isWordInBound(wordLength: number, row: number, col: number, isHorizontal?: boolean) {
         let collisionsCol = 0;
         let collisionsRow = 0;
-        if (pos[0] < 0 || pos[1] < 0) return false;
-        if (isHorizontal === undefined) return pos[0] < BOARD_LENGTH && pos[1] < BOARD_LENGTH;
+        if (row < 0 || col < 0) return false;
+        if (isHorizontal === undefined) return row < BOARD_LENGTH && col < BOARD_LENGTH;
 
         if (isHorizontal) {
             for (let i = 0; i < wordLength + collisionsCol; i++) {
-                if (pos[1] + i >= BOARD_LENGTH) {
+                if (col + i >= BOARD_LENGTH) {
                     return false;
                 }
-                if (!this.board[pos[0]][pos[1] + i].empty) {
+                if (!this.board[row][col + i].empty) {
                     collisionsCol++;
                 }
             }
         } else {
             for (let i = 0; i < wordLength + collisionsRow; i++) {
-                if (pos[0] + i >= BOARD_LENGTH) {
+                if (row + i >= BOARD_LENGTH) {
                     return false;
                 }
-                if (!this.board[pos[0] + i][pos[1]].empty) {
+                if (!this.board[row + i][col].empty) {
                     collisionsRow++;
                 }
             }

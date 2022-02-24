@@ -94,7 +94,7 @@ describe('Game', () => {
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
         game['isPlayer0Turn'] = true;
-        try{
+        try {
             await game.placeLetters(letters, row, col, game.players[0].id, isHorizontal);
         } catch (e) {
             console.log(e);

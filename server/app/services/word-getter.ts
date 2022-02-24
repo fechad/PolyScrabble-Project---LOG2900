@@ -6,14 +6,12 @@ const BOARD_LENGTH = 15;
 export class WordGetter {
     constructor(public board: GameTile[][]) {}
 
-    getWords(word: string, pos: number[], contacts: number[][], isHorizontal?: boolean): string[] {
+    getWords(word: string, row: number, col: number, contacts: number[][], isHorizontal?: boolean): string[] {
         const words: string[] = [];
-        const currentRow = pos[0];
-        const currentCol = pos[1];
         isHorizontal = isHorizontal as boolean;
 
         // get attempted word
-        words.push(this.getWord(currentRow, currentCol, word, isHorizontal));
+        words.push(this.getWord(row, col, word, isHorizontal));
 
         // get words by contact
         if (contacts.length > 0 && contacts[0][0] !== INVALID) {
