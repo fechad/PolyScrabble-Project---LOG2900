@@ -2,17 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
+import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { Player, PlayerId, Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import swal from 'sweetalert2';
-import { Board, GameContextService } from './game-context.service';
+import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 
 type Token = number;
@@ -26,9 +27,6 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
-    congratulations: string | undefined = undefined;
-    endGame: boolean = false;
-    isWinner: boolean;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -36,7 +34,6 @@ export class CommunicationService {
     private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined = undefined;
     private gameSocket: Socket | undefined = undefined;
-    private loserId: string | undefined = undefined;
 
     constructor(
         public gameContextService: GameContextService,
@@ -58,6 +55,7 @@ export class CommunicationService {
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
             this.myId.next(id);
             this.token = token;
+            this.gameContextService.myId = id;
 
             addEventListener('beforeunload', () => this.saveAuth(id), { capture: true });
         });
@@ -130,13 +128,9 @@ export class CommunicationService {
         this.gameSocket?.emit('change-letters', letters);
     }
 
-    getLoserId(): string | undefined {
-        return this.loserId;
-    }
-
     confirmForfeit() {
-        this.loserId = this.myId.value;
         this.gameSocket?.emit('confirm-forfeit');
+        this.leaveGame();
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -181,9 +175,11 @@ export class CommunicationService {
     }
 
     private leaveGame() {
-        if (!this.isWinner) this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
+        this.gameSocket?.close();
+        this.gameSocket = undefined;
+        this.gameContextService.clearMessages();
         this.selectedRoom.next(undefined);
     }
 
@@ -212,7 +208,6 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
-                this.isWinner = true;
                 swal.fire({
                     title: 'Gagnant par défaut',
                     text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner aux menus?',
@@ -220,54 +215,20 @@ export class CommunicationService {
                     showCancelButton: true,
                     confirmButtonText: 'Oui',
                     cancelButtonText: 'Non',
-                }).then((result) => {
-                    this.gameContextService.clearMessages();
-                    if (result.value) {
-                        this.router.navigate(['/']);
-                        this.isWinner = false;
-                    }
                 });
-            } else {
-                this.router.navigate(['/']);
             }
             this.leaveGame();
         });
 
-        this.gameSocket.on('turn', (id: PlayerId) => this.gameContextService.isMyTurn.next(id === this.myId.value));
+        this.gameSocket.on('state', (state: GameState) => this.gameContextService.state.next(state));
         this.gameSocket.on('message', (message: Message, msgCount: number) => {
             this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
         });
         this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
-        this.gameSocket.on('valid-command', (response: string) => this.sendCommandMessage(response));
         this.gameSocket.on('valid-exchange', (response: string) => this.sendCommandMessage(response));
-        this.gameSocket.on('reserve', (count: number) => this.gameContextService.reserveCount.next(count));
-        this.gameSocket.on('rack', (rack: Letter[], opponentRackCount: number) => {
-            this.gameContextService.updateRack(rack, opponentRackCount);
+        this.gameSocket.on('rack', (rack: Letter[]) => {
+            this.gameContextService.rack.next(rack);
             this.gameContextService.allowSwitch(true);
-        });
-        this.gameSocket.on('players', (players: Player[]) => {
-            for (const player of players) {
-                this.gameContextService.setName(player.name, player.id === this.myId.value);
-            }
-        });
-        this.gameSocket.on('board', (board: Board) => this.gameContextService.board.next(board));
-        this.gameSocket.on('score', (score: number, player: PlayerId) => {
-            this.gameContextService.setScore(score, this.myId.value === player);
-        });
-        this.gameSocket.on('congratulations', (winner: Player) => {
-            if (winner.id === this.myId.value) {
-                this.congratulations = `Félicitations ${winner.name}, vous avez gagné la partie !!`;
-            } else {
-                this.loserId = this.myId.value;
-                this.congratulations = ' Votre adversaire à gagné la partie !';
-            }
-            this.endGame = true;
-        });
-        this.gameSocket.on('game-summary', (summary: string) => {
-            this.sendLocalMessage(summary);
-        });
-        this.gameSocket.on('its-a-tie', (playerOne: Player, playerTwo: string) => {
-            this.congratulations = `Félicitations, ${playerOne.name} et ${playerTwo}, vous avez gagné la partie !!`;
         });
     }
 

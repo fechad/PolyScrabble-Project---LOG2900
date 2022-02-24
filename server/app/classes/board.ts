@@ -1,5 +1,5 @@
+import { SyntaxValidator } from '@app/classes/syntax-validator';
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { SyntaxValidator } from '@app/services/syntax-validator';
 import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
@@ -13,13 +13,10 @@ const A_ASCII = 'a'.charCodeAt(0);
 const BOARD_PLACEMENT_DELAY = 3000; // ms
 
 export class Board {
-    board: GameTile[][];
-    private syntaxValidator: SyntaxValidator;
+    board: GameTile[][] = [];
     private wordGetter: WordGetter;
 
     constructor(private dictionnary: DictionnaryService) {
-        this.syntaxValidator = new SyntaxValidator();
-        this.board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             this.board[i] = [];
             for (let j = 0; j < BOARD_LENGTH; j++) {
@@ -34,19 +31,17 @@ export class Board {
     }
 
     async placeWord(word: string, position: string): Promise<number> {
-        const positionArray = this.syntaxValidator.separatePosition(position);
-        if (!this.syntaxValidator.validatePositionSyntax(positionArray, word.length === 1))
+        const positionArray = SyntaxValidator.separatePosition(position);
+        if (!SyntaxValidator.validatePositionSyntax(positionArray, word.length === 1))
             throw new Error("Erreur de syntaxe dans le placement d'un mot");
         if (!this.isWordInBound(word.length, positionArray)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
-        await new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(null);
-            }, BOARD_PLACEMENT_DELAY);
+        await new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(word.length, positionArray)) throw new Error('Placement invalide pour le premier mot');
         if (!this.isTouchingOtherWord(word.length, positionArray)) throw new Error('Placement invalide vous devez toucher un autre mot');
         const contacts = this.getContacts(word.length, positionArray);
-        const wordWithoutAccents = this.syntaxValidator.removeAccents(word);
+        const wordWithoutAccents = SyntaxValidator.removeAccents(word);
         const words = this.wordGetter.getWords(wordWithoutAccents, positionArray, contacts);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
@@ -68,9 +63,7 @@ export class Board {
                     this.board[currentRow][currentCol].setLetter(wordAndPos[3].charAt(i));
                 }
                 wordScore += this.board[currentRow][currentCol].getPoints();
-                if (wordMultiplier === 1) {
-                    wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
-                }
+                wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
                 if (wordAndPos[0] === 'h') {
                     currentCol++;
                 } else {

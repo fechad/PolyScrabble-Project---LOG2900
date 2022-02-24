@@ -32,7 +32,7 @@ export class PlayAreaComponent implements AfterViewInit {
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private readonly gridService: GridService, private gameContextService: GameContextService) {
-        this.gameContextService.board.subscribe(() => {
+        this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
     }

@@ -14,6 +14,8 @@ import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.com
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import Swal from 'sweetalert2';
@@ -24,29 +26,29 @@ const dialogMock = {
         return;
     },
 };
-// export class CommunicationServiceMock {
-//     isWinner = false;
-//     getId(): number {
-//         return 1;
-//     }
-//     confirmForfeit() {
-//         return;
-//     }
-//     leave() {
-//         return;
-//     }
-//     switchTurn(timerRequest: boolean) {
-//         return timerRequest;
-//     }
-// }
+
+export class CommunicationServiceMock {
+    isWinner = false;
+    getId(): number {
+        return 1;
+    }
+    confirmForfeit() {
+        return;
+    }
+    leave() {
+        return;
+    }
+    switchTurn(timerRequest: boolean) {
+        return timerRequest;
+    }
+}
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    // let service: CommunicationServiceMock;
+    let gameContextService: GameContextService;
 
     beforeEach(async () => {
-        // service = new CommunicationServiceMock();
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent, HelpInfoComponent],
             imports: [
@@ -61,9 +63,11 @@ describe('GamePageComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
+                { provide: CommunicationService, useClass: CommunicationServiceMock },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
+        gameContextService = TestBed.inject(GameContextService);
         const router = TestBed.inject(Router);
         router.initialNavigation();
         component = fixture.componentInstance;
@@ -75,7 +79,7 @@ describe('GamePageComponent', () => {
     });
 
     it('should call openConfirmation() when quit-game button clicked ', fakeAsync(() => {
-        const forfeitGameSpy = spyOn(component, 'openConfirmation').and.callThrough();
+        const forfeitGameSpy = spyOn(component, 'quitGame').and.callThrough();
         const button = fixture.debugElement.query(By.css('#quit-game'));
         button.nativeElement.click();
         tick();
@@ -91,7 +95,7 @@ describe('GamePageComponent', () => {
 
     it('should forfeit if confirm is clicked in swal', (done) => {
         const swalConfirmSpy = spyOn(component.communicationService, 'confirmForfeit');
-        component.openConfirmation();
+        component.quitGame();
         Swal.clickConfirm();
         setTimeout(() => {
             expect(swalConfirmSpy).toHaveBeenCalled();
@@ -100,6 +104,7 @@ describe('GamePageComponent', () => {
     });
 
     it('should quit if confirm is clicked in swal', (done) => {
+        gameContextService.state.next({ ...gameContextService.state.value, ended: true });
         const swalConfirmSpy = spyOn(component.communicationService, 'leave');
         component.quitGame();
         Swal.clickConfirm();
