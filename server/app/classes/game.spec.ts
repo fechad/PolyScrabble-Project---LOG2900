@@ -81,9 +81,9 @@ describe('Game', () => {
 
         game.eventEmitter.on('message', stubValidCommand);
         game.eventEmitter.on('state', stubState);
-        let row = 7;
-        let col = 6;
-        let isHoriontal = true;
+        const row = 7;
+        const col = 6;
+        const isHoriontal = true;
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'E', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);

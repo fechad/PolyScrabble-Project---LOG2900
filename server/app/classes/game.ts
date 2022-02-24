@@ -87,7 +87,7 @@ export class Game {
                 const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.scores[playerIndex] += response;
-                let position = (isHorizontal ? 'h' : 'v') + row + col;
+                const position = (isHorizontal ? 'h' : 'v') + row + col;
                 const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'local' } as Message);
             } catch (e) {
