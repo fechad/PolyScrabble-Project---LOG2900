@@ -34,7 +34,8 @@ export class GameContextService {
             board.push(row);
         }
         const turn = 'none';
-        const state: GameState = { /* Dummy state */
+        const state: GameState = {
+            /* Dummy state */
             players: [
                 { id: '0', name: 'P1', connected: true },
                 { id: '1', name: 'P2', connected: true },
