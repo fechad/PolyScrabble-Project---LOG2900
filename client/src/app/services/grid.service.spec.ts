@@ -116,6 +116,6 @@ describe('GridService', () => {
     it('should not place two times the same letter', () => {
         service.tempUpdateBoard('V', 'h7v');
         service.tempUpdateBoard('Q', 'h7h');
-        expect(gameContext.board.value[7][6]?.name).toBe('A');
+        expect(gameContext.state.value.board[7][6]?.name).toBe('A');
     });
 });

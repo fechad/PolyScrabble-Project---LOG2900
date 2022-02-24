@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
-import { GameContextService, Tile } from './game-context.service';
+import { GameContextService } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
@@ -70,8 +70,8 @@ export class GridService {
     }
 
     drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
-        if (this.gameContext.board.value[posX][posY] !== undefined && this.gameContext.board.value[posX][posY] !== null) {
-            const tile = this.gameContext.board.value[posX][posY] as Letter;
+        if (this.gameContext.state.value.board[posX][posY] !== undefined && this.gameContext.state.value.board[posX][posY] !== null) {
+            const tile = this.gameContext.state.value.board[posX][posY] as Letter;
             this.gridContext.fillStyle = 'burlywood';
             this.gridContext.fill();
             this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, TILE_SIZE);
@@ -85,23 +85,20 @@ export class GridService {
         const horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
 
         const isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
-        const iterationPosition = isVerticalPlacement ? verticalPosition : horizontalPosition;
 
-        const temporaryBoard = this.gameContext.board.value;
-        let letterPosition = 0;
-        for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
-            if (letterPosition > lettersToAdd.length - 1) break;
-            const tile = isVerticalPlacement ? temporaryBoard[i][horizontalPosition] : temporaryBoard[verticalPosition][i];
-            if (tile !== null) continue;
-            const letter: Tile = {
-                name: lettersToAdd[letterPosition].toUpperCase(),
+        const tempState = this.gameContext.state.value;
+        const [dx, dy] = isVerticalPlacement ? [1, 0] : [0, 1];
+        [...lettersToAdd].forEach((letter, i) => {
+            const x = verticalPosition + dx * i;
+            const y = horizontalPosition + dy * i;
+            const tile = tempState.board[x][y];
+            if (tile !== null) return;
+            tempState.board[x][y] = {
+                name: letter.toUpperCase(),
                 score: 0,
             } as Letter;
-            if (isVerticalPlacement) temporaryBoard[i][horizontalPosition] = letter;
-            else temporaryBoard[verticalPosition][i] = letter;
-            letterPosition++;
-        }
-        this.gameContext.board.next(temporaryBoard);
+        });
+        this.gameContext.state.next(tempState);
     }
 
     bonusConditions(posX: number, posY: number, canvasX: number, canvasY: number) {

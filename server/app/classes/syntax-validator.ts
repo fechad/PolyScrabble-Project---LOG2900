@@ -18,7 +18,7 @@ const specialLetters = {
 };
 
 export class SyntaxValidator {
-    separatePosition(position: string): string[] {
+    static separatePosition(position: string): string[] {
         const positionArray: string[] = [];
         positionArray[0] = position.charAt(0);
         if (position.length === 3) {
@@ -37,7 +37,7 @@ export class SyntaxValidator {
         return positionArray;
     }
 
-    validatePositionSyntax(position: string[], oneLetter: boolean): boolean {
+    static validatePositionSyntax(position: string[], oneLetter: boolean): boolean {
         if (position[0].match(/[a-o]/g) !== null) {
             if ((position[2] === undefined && oneLetter) || position[2].match(/[hv]/g) !== null) {
                 if (position[1].length === 1) {
@@ -55,7 +55,7 @@ export class SyntaxValidator {
         return false;
     }
 
-    removeAccents(word: string): string {
+    static removeAccents(word: string): string {
         let returnWord = '';
         for (const originalLetter of word) {
             const letter = specialLetters[originalLetter.toLowerCase()];

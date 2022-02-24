@@ -20,7 +20,6 @@ export class GamePageComponent {
     faAngleDoubleRight = faAngleDoubleRight;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
     constructor(
-        private router: Router,
         public gridService: GridService,
         public communicationService: CommunicationService,
         public gameContextService: GameContextService,

@@ -215,14 +215,14 @@ describe('SocketManager service tests', () => {
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
-        gameSocket.on('turn', stub);
-        gameSocket2.on('turn', stub2);
+        gameSocket.on('state', stub);
+        gameSocket2.on('state', stub2);
         gameSocket.emit('switch-turn');
         await waitForCommunication(RESPONSE_DELAY);
         // eslint-disable-next-line dot-notation
         assert(!service.games[0]['isPlayer0Turn'], 'wrong turn');
-        expect(stub.args).to.deep.equal([[identifiers[1].id]], 'did not send right idents for player 1');
-        expect(stub2.args).to.deep.equal([[identifiers[1].id]], 'did not send right idents for player 2');
+        expect(stub.args.map((args) => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 1');
+        expect(stub2.args.map((args) => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 2');
     });
 
     it('should send an error on wrong player skipping turn', async () => {
@@ -255,30 +255,30 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('rack', stub2);
         gameSocket.emit('change-letters', letters);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        // TODO: adapter avec integration service
-        expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0], service.games[0].reserve.letterRacks[1].length]]);
-        assert(stub2.notCalled);
+        expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0]]]);
+        expect(stub2.args).to.deep.equal([[service.games[0].reserve.letterRacks[1]]]);
     });
 
     it('should place letters', async () => {
         const letters = 'as';
         const position = 'h7h';
-        const expectedPoints = 1;
+        const expectedPoints = 2;
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         service.games[0]['isPlayer0Turn'] = true;
-        service.games[0].reserve.letterRacks[0].push({ id: 0, name: 'A', score: 1, quantity: 0 });
-        service.games[0].reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 });
+        service.games[0].reserve.letterRacks[0] = [
+            { id: 0, name: 'A', score: 1, quantity: 1 },
+            { id: 1, name: 'S', score: 1, quantity: 1 },
+        ];
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
-        gameSocket.on('score', stub);
-        gameSocket2.on('score', stub2);
+        gameSocket.on('state', stub);
+        gameSocket2.on('state', stub2);
         gameSocket.emit('place-letters', letters, position);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        // TODO: adapter avec integration validation mots et calcul de points
-        expect(stub.args).to.deep.equal([[expectedPoints, identifiers[0].id]]);
-        expect(stub2.args).to.deep.equal([[expectedPoints, identifiers[0].id]]);
+        expect(stub.args.map((args) => args[0].players[0].score)).to.deep.equal([expectedPoints]);
+        expect(stub2.args.map((args) => args[0].players[0].score)).to.deep.equal([expectedPoints]);
     });
 
     // TODO add tests
