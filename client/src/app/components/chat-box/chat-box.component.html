@@ -1,14 +1,19 @@
 <div id="wholeBox">
-    <div id="nonWritingBox" #scroll [scrollTop]="scroll.scrollHeight">
+    <div id="nonWritingBox" #scroll>
         <!--<div class="chat-log-opponent"></div>-->
-        <div *ngFor="let message of gameContextService.messages | async">
-            <div *ngIf="message.emitter === myId && message.text[0] !== '!'" class="chat-log">
-                <p class="message">{{ message.text }}</p>
-            </div>
-            <div *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.text[0] !== '!'" class="chat-log-opponent">
-                <p class="message">{{ message.text }}</p>
-            </div>
-            <div *ngIf="message.emitter === 'local'" class="chat-log-error">
+        <div *ngFor="let message of gameContextService.messages | async" class="message-container">
+            <span *ngIf="message.emitter === myId" class="myself">{{ (gameContextService.getMe() | async)?.info?.name }}</span>
+            <span *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.emitter !== 'command'" class="opponent">{{
+                (gameContextService.getOther() | async)?.info?.name
+            }}</span>
+            <div
+                [ngClass]="{
+                    'chat-log-error': message.emitter === 'local',
+                    'chat-log-opponent': message.emitter !== myId && message.emitter !== 'local' && message.emitter !== 'command',
+                    'chat-log': message.emitter === myId,
+                    'chat-log-feedback': message.emitter === 'command'
+                }"
+            >
                 <p class="message" [innerText]="message.text"></p>
             </div>
         </div>

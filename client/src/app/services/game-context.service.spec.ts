@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { Letter } from './alphabet';
 import { GameContextService } from './game-context.service';
 
 describe('GameContextService', () => {
@@ -14,50 +13,21 @@ describe('GameContextService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should throw when removing weird characters', () => {
-        expect(() => service.tempUpdateRack('*')).toThrow();
-        expect(() => service.tempUpdateRack('ù')).toThrow();
-        expect(() => service.tempUpdateRack('b*»)/')).toThrow();
+    it('should not update when removing weird characters', () => {
+        const beforeRack = service.rack.value;
+        service.tempUpdateRack('*');
+        expect(beforeRack).toEqual(service.rack.value);
+        service.tempUpdateRack('b*»)/');
+        expect(beforeRack).toEqual(service.rack.value);
+        service.tempUpdateRack('ù');
+        expect(beforeRack).toEqual(service.rack.value);
     });
 
-    it('should throw when removing characters not in board', () => {
-        service.rack.next([{ id: 0, name: 'a', score: 1, quantity: 2 }]);
-        expect(() => service.tempUpdateRack('ab')).toThrow();
-        expect(() => service.tempUpdateRack('def')).toThrow();
-    });
-
-    it('should update the rack', () => {
-        const RACK: Letter[] = [
-            { id: 0, name: 'a', score: 1, quantity: 30 },
-            { id: 0, name: 'a', score: 1, quantity: 30 },
-            { id: 1, name: 'b', score: 3, quantity: 5 },
-        ];
-        const OTHER_RACK_LENGTH = 4;
-
-        service.updateRack(RACK, OTHER_RACK_LENGTH);
-        expect(service.rack.value).toBe(RACK);
-        expect(service.myRackCount.value).toBe(RACK.length);
-        expect(service.opponentRackCount.value).toBe(OTHER_RACK_LENGTH);
-    });
-
-    it('should set the score', () => {
-        const MY_SCORE = 30;
-        const OTHER_SCORE = 50;
-
-        service.setScore(MY_SCORE, true);
-        expect(service.myScore.value).toBe(MY_SCORE);
-        service.setScore(OTHER_SCORE, false);
-        expect(service.opponentScore.value).toBe(OTHER_SCORE);
-    });
-
-    it('should set the name', () => {
-        const MY_NAME = 'Bob';
-        const OTHER_NAME = 'Not Bob';
-
-        service.setName(MY_NAME, true);
-        expect(service.myName).toBe(MY_NAME);
-        service.setName(OTHER_NAME, false);
-        expect(service.opponentName).toBe(OTHER_NAME);
+    it('should not update when characters not in board', () => {
+        service.rack.next([{ name: 'a', score: 1 }]);
+        const beforeRack = service.rack.value;
+        service.tempUpdateRack('ab');
+        expect(beforeRack).toEqual(service.rack.value);
     });
 
     it('should clear the messages', () => {

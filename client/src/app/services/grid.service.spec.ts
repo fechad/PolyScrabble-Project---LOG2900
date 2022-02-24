@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { GridService } from '@app/services/grid.service';
 import { GameContextService } from './game-context.service';
-
 export class CanvasTestHelper {
     static createCanvas(width: number, height: number): HTMLCanvasElement {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -10,6 +9,7 @@ export class CanvasTestHelper {
         return canvas;
     }
 }
+
 const CALLNUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
@@ -116,6 +116,6 @@ describe('GridService', () => {
     it('should not place two times the same letter', () => {
         service.tempUpdateBoard('V', 'h7v');
         service.tempUpdateBoard('Q', 'h7h');
-        expect(gameContext.board.value[7][6]?.name).toBe('A');
+        expect(gameContext.state.value.board[7][6]?.name).toBe('A');
     });
 });

@@ -20,7 +20,7 @@ export class MainPageComponent {
             texte: 'Mode LOG2990',
             disabled: true,
         },
-        { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: true },
+        { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: false },
     ];
     constructor(public mode: ModeServiceService) {}
 }

@@ -1,9 +1,21 @@
 <div class="rack-container">
     <div class="letter-container" *ngFor="let letter of letters">
-        <div class="letter-name">
+        <div
+            [ngClass]="{
+                'letter-name': this.gridService.multiplier === 1,
+                'big-let': this.gridService.multiplier === 1.1,
+                'small-let': this.gridService.multiplier === 0.9
+            }"
+        >
             <p>{{ letter.name }}</p>
         </div>
-        <div class="letter-score">
+        <div
+            [ngClass]="{
+                'letter-score': this.gridService.multiplier === 1,
+                'big-sco': this.gridService.multiplier === 1.1,
+                'small-sco': this.gridService.multiplier === 0.9
+            }"
+        >
             <p>{{ letter.score }}</p>
         </div>
     </div>

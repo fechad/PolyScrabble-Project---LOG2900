@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 
@@ -16,7 +16,7 @@ const MIN_TYPED_WORD_LENGTH = 1;
     templateUrl: './chat-box.component.html',
     styleUrls: ['./chat-box.component.scss'],
 })
-export class ChatBoxComponent {
+export class ChatBoxComponent implements AfterViewChecked {
     @ViewChild('scroll') private scroller: ElementRef;
     @ViewChild('writingBox') set writingBoxRef(textarea: ElementRef) {
         if (textarea) {
@@ -41,6 +41,9 @@ export class ChatBoxComponent {
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {
         this.myId = this.communicationService.getId().value;
     }
+    ngAfterViewChecked() {
+        this.scrollToBottom();
+    }
 
     clearText() {
         this.textValue = '';
@@ -63,15 +66,13 @@ export class ChatBoxComponent {
             } else {
                 this.communicationService.sendMessage(this.textValue);
             }
-
-            this.scrollToBottom();
         }
         this.clearText();
     }
 
     validateCommand(): Error | undefined {
-        if (this.communicationService.congratulations !== undefined) return new Error(' La partie est terminée !');
-        if (!this.gameContextService.isMyTurn.value) return new Error("Ce n'est pas votre tour");
+        if (this.gameContextService.state.value.ended) return new Error(' La partie est terminée !');
+        if (this.gameContextService.state.value.turn !== this.communicationService.getId().value) return new Error("Ce n'est pas votre tour");
         if (this.commandStructure[COMMAND_INDEX] === '!placer' && this.commandStructure.length === 3) return this.place();
         if (this.commandStructure[COMMAND_INDEX] === '!échanger' && this.commandStructure.length === 2) return this.exchange();
         if (this.commandStructure[COMMAND_INDEX] === '!passer' && this.commandStructure.length === 1) return this.pass();
@@ -98,7 +99,6 @@ export class ChatBoxComponent {
                 if (this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MIN_LENGTH) {
                     if (this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1-9]/g)) {
                         this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
-                        this.communicationService.sendMessage(this.textValue);
                     }
                 } else if (
                     this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MAX_LENGTH &&
@@ -106,7 +106,6 @@ export class ChatBoxComponent {
                     this.commandStructure[POSITION_BLOCK_INDEX][2].match(/[0-5]/g)
                 ) {
                     this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
-                    this.communicationService.sendMessage(this.textValue);
                 }
             } else {
                 error = new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
@@ -137,12 +136,18 @@ export class ChatBoxComponent {
         return;
     }
     isInRack(word: string) {
-        let lettersInRack = '';
+        const NOT_FOUND = -1;
+        let lettersInRack: string[] = [];
         for (const letter of this.gameContextService.rack.value) {
             lettersInRack = lettersInRack.concat(letter.name);
         }
         for (const letter of word) {
-            if (!lettersInRack.toLowerCase().includes(letter) && !lettersInRack.includes('*')) return false;
+            const index = lettersInRack.findIndex((foundLetter) => {
+                return letter === foundLetter.toLowerCase() || foundLetter === '*';
+            });
+            if (index === NOT_FOUND) return false;
+            lettersInRack[index] = lettersInRack[lettersInRack.length - 1];
+            lettersInRack.pop();
         }
         return true;
     }

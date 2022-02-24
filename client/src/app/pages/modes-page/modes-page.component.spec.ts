@@ -2,6 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatDialog } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { ModesPageComponent } from './modes-page.component';
 
 export class ActivatedRouteMock {
@@ -21,6 +22,7 @@ describe('ModesPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ModesPageComponent],
+            imports: [AppMaterialModule],
             providers: [
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },

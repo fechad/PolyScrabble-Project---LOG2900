@@ -60,9 +60,7 @@ export class Board {
                     this.board[currentRow][currentCol].setLetter(wordAndPos[3].charAt(i));
                 }
                 wordScore += this.board[currentRow][currentCol].getPoints();
-                if (wordMultiplier === 1) {
-                    wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
-                }
+                wordMultiplier *= this.board[currentRow][currentCol].wordMultiplier;
                 if (wordAndPos[0] === 'h') {
                     currentCol++;
                 } else {

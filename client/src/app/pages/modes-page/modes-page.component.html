@@ -6,7 +6,6 @@
             mat-raised-button
             class="button champ.texte"
             [ngClass]="champ.promptsDialog ? champ.texte : ''"
-            [disabled]="champ.disabled"
             *ngFor="let champ of boutons"
             (click)="champ.promptsDialog && openDialog()"
             routerLink="{{ champ.promptsDialog ? '/classic' : champ.route }}"

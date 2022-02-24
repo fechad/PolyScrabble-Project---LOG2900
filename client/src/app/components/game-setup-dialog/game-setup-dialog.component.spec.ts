@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -64,6 +64,7 @@ describe('GameSetupDialogComponent', () => {
                 MatCardModule,
                 MatToolbarModule,
                 MatIconModule,
+                ReactiveFormsModule,
             ],
         }).compileComponents();
 
@@ -91,7 +92,7 @@ describe('GameSetupDialogComponent', () => {
 
     it('click on closing button should call close on dialog', fakeAsync(() => {
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
-        const button = fixture.debugElement.query(By.css('.icone-cancel'));
+        const button = fixture.debugElement.query(By.css('.icon-cancel'));
         button.nativeElement.click();
         tick();
         expect(closeDialogSpy).toHaveBeenCalled();

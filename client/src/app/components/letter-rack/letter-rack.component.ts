@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Letter } from '@app/services/alphabet';
+import { Letter } from '@app/classes/letter';
 import { GameContextService } from '@app/services/game-context.service';
+import { GridService } from '@app/services/grid.service';
 
 // const DELAY = 10;
 @Component({
@@ -11,7 +12,7 @@ import { GameContextService } from '@app/services/game-context.service';
 export class LetterRackComponent implements OnInit {
     letters: Letter[];
     timeOut: number;
-    constructor(public gameContextService: GameContextService) {}
+    constructor(public gameContextService: GameContextService, public gridService: GridService) {}
 
     ngOnInit(): void {
         this.gameContextService.rack.subscribe((newRack) => {

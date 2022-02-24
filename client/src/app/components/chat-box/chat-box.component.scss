@@ -6,8 +6,8 @@ div {
 
 #wholeBox {
     background-color: #e1ac01;
-    margin-left: 5vw;
-    margin-top: 10px;
+    margin-left: 3vw;
+    margin-top: 25px;
     margin-bottom: 20px;
     padding: 20px;
     border-style: solid;
@@ -15,6 +15,8 @@ div {
     justify-content: space-between;
     flex-direction: column;
     height: 75vh;
+    float: right;
+    margin-right: 2vw;
 }
 .message {
     word-break: break-all;
@@ -30,9 +32,9 @@ div {
     overflow-y: hidden;
     width: 60%;
     padding: 10px;
-    margin: 5% 5% 5% 25%;
+    margin: 0% 5% 5% 25%;
     border-radius: 15px;
-    background-color: #838383;
+    background-color: #65ccd2;
 }
 .chat-log-opponent {
     display: flex;
@@ -41,7 +43,7 @@ div {
     overflow-y: hidden;
     width: 60%;
     padding: 10px;
-    margin: 5% 25% 5% 5%;
+    margin: 0% 25% 5% 5%;
     border-radius: 15px;
     background-color: #ffffff;
 }
@@ -66,7 +68,8 @@ div {
     padding: 10px;
     margin: 4%;
     border-radius: 15px;
-    background-color: #ffffb3;
+    background-color: #f8f847;
+    color: green;
 }
 #writingBox {
     height: 20%;
@@ -78,9 +81,40 @@ div {
     padding-right: 20px;
     width: 100%;
     height: 75%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
-
+#chat-container {
+    width: 75%;
+}
 textarea {
     resize: none;
+}
+
+#nonWritingBox::-webkit-scrollbar {
+    height: 1px;
+    width: 10px;
+    border-radius: 15px;
+    background-color: #b6b6b6c0;
+}
+
+#nonWritingBox::-webkit-scrollbar-thumb {
+    background-color: #3d3d3d;
+    height: 1px;
+    width: 10px;
+    border-radius: 15px;
+}
+
+.myself {
+    display: flex;
+    justify-content: right;
+    margin-right: 10%;
+}
+.opponent {
+    display: flex;
+    justify-content: left;
+    margin-left: 5%;
+}
+.message-container {
+    display: flex;
+    flex-direction: column;
 }
