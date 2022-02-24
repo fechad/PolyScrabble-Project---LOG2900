@@ -183,8 +183,8 @@ export class SocketManager {
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
-            socket.on('switch-turn', (userRequest: boolean) => {
-                game.nextTurn(id, userRequest);
+            socket.on('switch-turn', () => {
+                game.nextTurn(id, true);
                 game.sendState();
             });
 
