@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 const BOARD_LENGTH = 15;
 const NORMAL_RACK_LENGTH = 7;
 const DEFAULT_RESERVE = 88;
+
 export type Tile = Letter | null;
 export type Board = Tile[][];
 
