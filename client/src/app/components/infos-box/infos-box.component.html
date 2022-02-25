@@ -8,7 +8,7 @@
             <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} restantes dans le chevalet</p>
         </div>
     </div>
-    <div class="game-infos">
+    <div [ngClass]="{ 'game-infos': !this.gameContextService.state.value.ended, 'endgame-infos': this.gameContextService.state.value.ended }">
         <p>{{ this.mode.mode }}</p>
         <div class="backChrono" *ngIf="!(this.gameContextService.state | async)?.ended">
             <countdown

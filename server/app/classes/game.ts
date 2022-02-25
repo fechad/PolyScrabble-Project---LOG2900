@@ -146,14 +146,23 @@ export class Game {
         else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
         return undefined;
     }
-
+    getWinnerName(): string {
+        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].name;
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].name;
+        return this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name;
+    }
     endGame() {
         this.ended = true;
         this.winner = this.getWinner();
-        this.summary = EndGameCalculator.createGameSummaryMessage(
-            this.players.map((p) => p),
-            this.reserve,
-        );
+        this.summary = '👑 Félicitation ' + this.getWinnerName() + '! 👑';
+        this.eventEmitter.emit('message', {
+            text: EndGameCalculator.createGameSummaryMessage(
+                this.players.map((p) => p),
+                this.reserve,
+            ),
+            emitter: 'local',
+        } as Message);
     }
 
     private getPlayerId(isActivePlayer: boolean) {
