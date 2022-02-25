@@ -53,7 +53,7 @@ export class CommandParsing {
         return returnWord;
     }
 
-    isPlayableWord(playedWord: string) {
+    isNotPlayableWord(playedWord: string) {
         return playedWord.match(/[^A-Za-zÀ-ú]/g);
     }
 

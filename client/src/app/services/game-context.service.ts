@@ -110,7 +110,7 @@ export class GameContextService {
             tempRack[index] = tempRack[tempRack.length - 1];
             tempRack.pop();
         }
-        this.tempRack = tempRack;
+        if (response) this.tempRack = tempRack;
         return response;
     }
 }

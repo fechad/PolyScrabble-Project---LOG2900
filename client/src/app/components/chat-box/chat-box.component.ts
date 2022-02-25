@@ -105,9 +105,9 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
 
     place() {
-        if (this.commandParser.isPlayableWord(this.commandStructure[WORD_TO_PLACE_INDEX])) {
-            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
-        } else if (this.isInRack(this.parsedWord)) {
+        if (this.isInRack(this.parsedWord)) {
+            if (this.commandParser.isNotPlayableWord(this.commandStructure[WORD_TO_PLACE_INDEX]))
+                throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
             if (!this.commandParser.isValidVerticalPosition(this.verticalPosition))
                 throw new Error("La position verticale choisie n'est pas sur la grille de jeu");
             if (!this.commandParser.isValidHorizontalPosition(this.horizontalPosition))
