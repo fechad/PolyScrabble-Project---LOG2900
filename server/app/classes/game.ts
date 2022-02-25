@@ -79,14 +79,15 @@ export class Game {
         this.eventEmitter.emit('message', message);
     }
 
-    async placeLetters(letters: string, position: string, playerId: PlayerId) {
+    async placeLetters(playerId: PlayerId, letters: string, row: number, col: number, isHorizontal?: boolean) {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             const player = this.getCurrentPlayer();
             try {
-                const response = await this.board.placeWord(letters, position);
+                const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.scores[playerIndex] += response;
+                const position = (isHorizontal ? 'h' : 'v') + row + col;
                 const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {

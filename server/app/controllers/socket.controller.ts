@@ -168,7 +168,9 @@ export class SocketManager {
             socket.on('message', (message: string) => game.message({ text: message, emitter: id }));
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
-            socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
+            socket.on('place-letters', async (letters: string, row: number, col: number, isHorizontal?: boolean) =>
+                game.placeLetters(id, letters, row, col, isHorizontal),
+            );
             socket.on('switch-turn', () => game.skipTurn(id));
 
             socket.on('disconnect', () => {
