@@ -67,8 +67,8 @@ export class GridService {
     }
 
     drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
-        if (this.gameContext.board.value[posX][posY] !== undefined && this.gameContext.board.value[posX][posY] !== null) {
-            const tile = this.gameContext.board.value[posX][posY] as Letter;
+        if (this.gameContext.state.value.board[posX][posY] !== undefined && this.gameContext.state.value.board[posX][posY] !== null) {
+            const tile = this.gameContext.state.value.board[posX][posY] as Letter;
             this.gridContext.fillStyle = 'burlywood';
             this.gridContext.fill();
             this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, TILE_SIZE);
@@ -77,7 +77,7 @@ export class GridService {
 
     tempUpdateBoard(lettersToAdd: string, verticalIndex: number, horizontalIndex: number, isHorizontalPlacement: boolean | undefined) {
         const iterationPosition = isHorizontalPlacement ? horizontalIndex : verticalIndex;
-        const temporaryBoard = this.gameContext.board.value;
+        const temporaryBoard = this.gameContext.state.value.board;
         if (isHorizontalPlacement === undefined) {
             const letter: Tile = {
                 name: lettersToAdd[0].toUpperCase(),
@@ -99,7 +99,9 @@ export class GridService {
                 letterPosition++;
             }
         }
-        this.gameContext.board.next(temporaryBoard);
+        const newState = this.gameContext.state.value;
+        newState.board = temporaryBoard;
+        this.gameContext.state.next(newState);
     }
 
     bonusConditions(posX: number, posY: number, canvasX: number, canvasY: number) {

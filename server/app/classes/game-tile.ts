@@ -27,13 +27,11 @@ export class GameTile {
     }
 
     getPoints(): number {
-        if (this.letter !== undefined) {
-            if (this.newlyPlaced) {
-                return this.letter.score * this.multiplier;
-            }
-            return this.letter.score;
+        if (this.letter === undefined) return INVALID;
+        if (this.newlyPlaced) {
+            return this.letter.score * this.multiplier;
         }
-        return INVALID;
+        return this.letter.score;
     }
 
     getChar(): string {
@@ -43,7 +41,7 @@ export class GameTile {
     private getLetter(char: string): Letter {
         for (const letter of alphabetTemplate) {
             if (letter.name === char.toUpperCase()) {
-                return letter;
+                return Object.assign({}, letter);
             }
         }
         return alphabetTemplate[alphabetTemplate.length - 1];

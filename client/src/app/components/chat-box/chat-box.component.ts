@@ -28,6 +28,7 @@ export class ChatBoxComponent implements AfterViewChecked {
 
     ngAfterViewChecked() {
         this.scrollToBottom();
+        this.myId = this.communicationService.getId().value;
     }
 
     scrollToBottom() {

@@ -10,13 +10,13 @@ import * as io from 'socket.io';
 import { Service } from 'typedi';
 
 type Handlers = [string, (params: unknown[]) => void][];
-
+const AWOL_DELAY = 5000;
 @Service()
 export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
     private logins: LoginsService = new LoginsService();
-
+    private token: number;
     constructor(server: http.Server, public roomsService: RoomsService, private dictionnaryService: DictionnaryService) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -32,6 +32,7 @@ export class SocketManager {
         const mainLobby = new MainLobbyService(this.roomsService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
+            this.token = token;
             socket.emit('id', id, token);
             mainLobby.connect(socket, id);
 
@@ -89,7 +90,6 @@ export class SocketManager {
                 const otherPlayer = room.getOtherPlayer();
                 if (otherPlayer) otherPlayer.connected = true;
             }
-            this.roomsService.unpendDeletion(room.id);
 
             if (room.isStarted()) {
                 socket.emit('join-game', room.id);
@@ -111,22 +111,10 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                if (room.isStarted()) {
-                    this.roomsService.pendDeletion(room.id, () => {
-                        const NOT_FOUND = -1;
-
-                        const idx = this.games.findIndex((game) => game.gameId === room.id);
-                        if (idx !== NOT_FOUND) {
-                            this.games.splice(idx, 1);
-                        }
-                        events.forEach(([name, handler]) => room.off(name, handler));
-                    });
-                } else {
-                    if (isMainPlayer) {
-                        this.roomsService.remove(room.id);
-                    }
-                    events.forEach(([name, handler]) => room.off(name, handler));
+                if (isMainPlayer && !room.isStarted()) {
+                    this.roomsService.remove(room.id);
                 }
+                events.forEach(([name, handler]) => room.off(name, handler));
             });
 
             socket.emit('update-room', room);
@@ -164,21 +152,7 @@ export class SocketManager {
                 socket.emit('message', message);
             }
 
-            const events: string[] = [
-                'message',
-                'score',
-                'turn',
-                'parameters',
-                'players',
-                'forfeit',
-                'board',
-                'valid-command',
-                'reserve',
-                'rackCount',
-                'congratulations',
-                'game-summary',
-                'its-a-tie',
-            ];
+            const events: string[] = ['message', 'state'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
             const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange'];
             for (const event of specificPlayerEvents) {
@@ -191,19 +165,22 @@ export class SocketManager {
             }
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
-            socket.on('message', (message: string) => {
-                game.message({ text: message, emitter: id });
-            });
+            socket.on('message', (message: string) => game.message({ text: message, emitter: id }));
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
-            socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
-            socket.on('switch-turn', (timerRequest: boolean) => game.skipTurn(id, timerRequest));
+            socket.on('place-letters', async (letters: string, row: number, col: number, isHorizontal?: boolean) =>
+                game.placeLetters(id, letters, row, col, isHorizontal),
+            );
+            socket.on('switch-turn', () => game.skipTurn(id));
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
+                setTimeout(() => {
+                    if (!this.logins.verify(id, this.token)) game.forfeit(id);
+                }, AWOL_DELAY);
             });
 
-            game.gameInit();
+            game.sendState();
         });
     }
 }

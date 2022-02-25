@@ -16,10 +16,7 @@
                         <input type="text" formControlName="playerName" class="form-control" />
                     </div>
 
-                    <div
-                        class="requirement"
-                        *ngIf="gameParametersForm.controls['playerName'].errors && gameParametersForm.controls['playerName'].touched"
-                    >
+                    <div class="requirement" *ngIf="gameParametersForm.controls['playerName'].errors && gameParametersForm.value.playerName !== ''">
                         Rentrez un nom contenant seulement des lettres.
                     </div>
 
@@ -27,12 +24,21 @@
                         <label>Temps limite par tour: </label>
 
                         <select formControlName="minutes" class="form-control" id="minutes" name="minute">
-                            <option *ngFor="let minute of [0, 1, 2, 3, 4, 5]" [ngValue]="minute" [selected]="minute === 1">{{ minute }}</option>
+                            <option
+                                *ngFor="let minute of [0, 1, 2, 3, 4, 5]; let i = index"
+                                [disabled]="
+                                    (gameParametersForm.value.seconds === 0 && i === 0) || (gameParametersForm.value.seconds === 30 && i === 5)
+                                "
+                                [ngValue]="minute"
+                                [selected]="minute === 1"
+                            >
+                                {{ minute }}
+                            </option>
                         </select>
                         min :
                         <select formControlName="seconds" class="form-control" id="seconds" name="second">
-                            <option [ngValue]="0" selected [disabled]="this.gameParametersForm.value.minutes === 0">00</option>
-                            <option [ngValue]="30" [disabled]="this.gameParametersForm.value.minutes === 5">30</option>
+                            <option [ngValue]="0" selected [disabled]="gameParametersForm.value.minutes === 0">00</option>
+                            <option [ngValue]="30" [disabled]="gameParametersForm.value.minutes === 5">30</option>
                         </select>
                     </div>
                     <div class="col-md-10">
@@ -46,7 +52,7 @@
                 </div>
             </div>
             <div class="row">
-                <button type="submit" class="btn success">Jouer!</button>
+                <button [disabled]="gameParametersForm.controls['playerName'].errors" type="submit" class="btn success">Jouer!</button>
             </div>
         </form>
     </div>

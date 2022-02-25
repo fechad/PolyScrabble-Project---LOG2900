@@ -11,8 +11,8 @@ import { ModeServiceService } from '@app/services/mode-service.service';
 })
 export class ModesPageComponent {
     boutons = [
-        { promptsDialog: true, route: '', toolTip: '', texte: 'Solo', disabled: true },
-        { promptsDialog: true, route: '', toolTip: '', texte: 'Multijoueur', disabled: false },
+        { promptsDialog: true, route: '', toolTip: '', texte: 'Solo' },
+        { promptsDialog: true, route: '', toolTip: '', texte: 'Multijoueur' },
         { promptsDialog: false, route: '/joining-room', toolTip: '', texte: 'Rejoindre une partie' },
         { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', texte: 'Retour' },
     ];

@@ -1,40 +1,38 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { ModeServiceService } from '@app/services/mode-service.service';
-import { CountdownComponent, CountdownEvent } from 'ngx-countdown';
+import { TimerService } from '@app/services/timer.service';
+
 const NORMAL_RACK_LENGTH = 7;
+const SECONDS_IN_MINUTE = 60;
+
 @Component({
     selector: 'app-infos-box',
     templateUrl: './infos-box.component.html',
     styleUrls: ['./infos-box.component.scss'],
 })
-export class InfosBoxComponent implements AfterViewInit {
-    @ViewChild('countdown', { static: false }) cd: CountdownComponent;
+export class InfosBoxComponent {
     myRackIsVisible = false;
     opponentRackIsVisible = false;
-    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService, public mode: ModeServiceService) {}
+    timer: string = '?:??';
 
-    ngAfterViewInit(): void {
-        this.gameContextService.isMyTurn.subscribe(() => {
-            this.reset();
+    constructor(
+        public gameContextService: GameContextService,
+        public communicationService: CommunicationService,
+        timerService: TimerService,
+        public mode: ModeServiceService,
+    ) {
+        this.gameContextService.state.subscribe((state) => {
+            const [myIdx, otherIdx] =
+                this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
+            if (state.players[myIdx].rackCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
+            if (state.players[otherIdx].rackCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
         });
-        this.gameContextService.myRackCount.subscribe((newCount) => {
-            if (newCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
+        timerService.timer.subscribe((t) => {
+            const minutes = Math.floor(t / SECONDS_IN_MINUTE);
+            const secs = t % SECONDS_IN_MINUTE;
+            this.timer = `${minutes}:${String(secs).padStart(2, '0')}`;
         });
-        this.gameContextService.myRackCount.subscribe((newCount) => {
-            if (newCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
-        });
-    }
-
-    reset() {
-        this.cd.restart();
-        this.cd.begin();
-    }
-
-    onTimerFinished(e: CountdownEvent) {
-        if (e.action === 'done' && this.gameContextService.skipTurnEnabled && this.gameContextService.isMyTurn.value) {
-            this.communicationService.switchTurn(true);
-        }
     }
 }

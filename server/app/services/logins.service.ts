@@ -1,7 +1,6 @@
 import { PlayerId } from '@app/classes/room';
 import { randomInt } from 'crypto';
 import { Service } from 'typedi';
-
 type Token = number;
 
 const TIMEOUT_DELETION = 5000; // ms

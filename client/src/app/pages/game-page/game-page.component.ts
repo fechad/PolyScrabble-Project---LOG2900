@@ -1,12 +1,11 @@
 import { Component, Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleRight, faFont, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-game-page',
@@ -21,26 +20,28 @@ export class GamePageComponent {
     faAngleDoubleRight = faAngleDoubleRight;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
     constructor(
-        private router: Router,
         public gridService: GridService,
         public communicationService: CommunicationService,
-        public dialog: MatDialog,
         public gameContextService: GameContextService,
+        public router: Router,
     ) {}
 
-    helpInfo() {
-        this.dialog.open(HelpInfoComponent);
-    }
-
-    openConfirmation() {
-        if (confirm('Voulez-vous abandonner la partie?')) {
-            this.communicationService.confirmForfeit();
-            this.quitGame();
-        }
-    }
-
     quitGame() {
-        this.router.navigateByUrl('http://localhost:4200/');
+        let text = [''];
+        if (this.gameContextService.state.value.ended) text = ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester'];
+        else text = ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+        Swal.fire({
+            title: text[0],
+            text: text[1],
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: text[2],
+            cancelButtonText: text[3],
+        }).then((result) => {
+            if (!result.value) return;
+            if (this.gameContextService.state.value.ended) this.communicationService.leave();
+            else this.communicationService.confirmForfeit();
+        });
     }
     skipMyTurn() {
         this.communicationService.switchTurn(false);

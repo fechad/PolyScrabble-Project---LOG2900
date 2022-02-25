@@ -20,5 +20,6 @@ export class AppComponent {
             prevRoom.exists = room !== undefined;
             prevRoom.started = room?.started || false;
         });
+        router.navigate(['/']);
     }
 }
