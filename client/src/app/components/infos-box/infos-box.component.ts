@@ -32,7 +32,7 @@ export class InfosBoxComponent {
         timerService.timer.subscribe((t) => {
             const minutes = Math.floor(t / SECONDS_IN_MINUTE);
             const secs = t % SECONDS_IN_MINUTE;
-            this.timer = `${minutes}:${String(secs).padStart(2)}`;
+            this.timer = `${minutes}:${String(secs).padStart(2, '0')}`;
         });
     }
 }
