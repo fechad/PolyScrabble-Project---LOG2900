@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { HostListener, Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
 import { GameContextService, Tile } from './game-context.service';
@@ -23,6 +23,9 @@ const AMOUNT_OF_NUMBER = 15;
 const DEFAULT_SIZE = 9;
 const TILE_SIZE = 30;
 const BOARD_LENGTH = 15;
+const offset = BOARD_LENGTH / BOARD_LENGTH;
+const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
+const gridOrigin = 20;
 
 enum Colors {
     Mustard = '#E1AC01',
@@ -39,21 +42,25 @@ export class GridService {
     gridContext: CanvasRenderingContext2D;
     fontSize = '';
     multiplier = 1;
+    buttonPressed = '';
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private gameContext: GameContextService) {}
 
+    @HostListener('keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+    }
+
     drawGrid() {
-        const offset = BOARD_LENGTH / BOARD_LENGTH;
-        const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
+        this.gridContext.clearRect(0, 0, 500, 500);
         this.gridContext.lineWidth = offset;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
 
         this.gridContext.fillStyle = '#575757';
-        this.gridContext.strokeStyle = '#B1ACAC';
-        const gridOrigin = 20;
+        this.gridContext.strokeStyle = '#000';
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 this.gridContext.beginPath();
@@ -66,6 +73,25 @@ export class GridService {
         }
     }
 
+    drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        const x = canvasX;
+        const y = canvasY;
+        this.drawGrid();
+        this.gridContext.fillStyle = '#000';
+        this.gridContext.beginPath();
+        if (isHorizontal) {
+            this.gridContext.moveTo(x, y);
+            this.gridContext.lineTo(x - squareSize / 4, y + squareSize / 4);
+            this.gridContext.lineTo(x - squareSize / 4, y - squareSize / 4);
+            this.gridContext.fill();
+        } else {
+            this.gridContext.moveTo(x - squareSize / 4, y + squareSize / 4);
+            this.gridContext.lineTo(x - squareSize / 2, y);
+            this.gridContext.lineTo(x, y);
+            this.gridContext.fill();
+        }
+    }
+
     drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
         if (this.gameContext.state.value.board[posX][posY] !== undefined && this.gameContext.state.value.board[posX][posY] !== null) {
             const tile = this.gameContext.state.value.board[posX][posY] as Letter;
@@ -73,6 +99,17 @@ export class GridService {
             this.gridContext.fill();
             this.drawMessage(tile.name, canvasX + AJUST_TILE_X, canvasY + AJUST_TILE_Y, TILE_SIZE);
         }
+    }
+    drawTempTiles(letter: string, canvasX: number, canvasY: number) {
+        this.gridContext.rect(
+            (squareSize + offset) * Math.ceil(canvasX / (100 / 3) - 2) + gridOrigin,
+            (squareSize + offset) * Math.ceil(canvasY / (100 / 3) - 2) + gridOrigin,
+            squareSize,
+            squareSize,
+        );
+        this.gridContext.fillStyle = 'burlywood';
+        this.gridContext.fill();
+        this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }
 
     tempUpdateBoard(lettersToAdd: string, verticalIndex: number, horizontalIndex: number, isHorizontalPlacement: boolean | undefined) {
