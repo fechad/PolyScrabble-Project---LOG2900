@@ -16,14 +16,13 @@ describe('GameContextService', () => {
     it('should not update when characters not in rack', () => {
         service.rack.next([{ name: 'a', score: 1 }]);
         const beforeRack = service.rack.value;
-        service.attemptTempRackUpdate('ab');
-        service.tempUpdateRack();
+        expect(() => service.attemptTempRackUpdate('ab')).toThrowError();
         expect(beforeRack).toEqual(service.rack.value);
     });
 
     it('should throw when characters not in rack', () => {
         service.rack.next([{ name: 'a', score: 1 }]);
-        expect(service.attemptTempRackUpdate('ab')).toThrow();
+        expect(() => service.attemptTempRackUpdate('ab')).toThrowError();
     });
 
     it('should clear the messages', () => {

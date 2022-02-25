@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { GridService } from '@app/services/grid.service';
-import { GameContextService } from './game-context.service';
 export class CanvasTestHelper {
     static createCanvas(width: number, height: number): HTMLCanvasElement {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -13,7 +12,7 @@ export class CanvasTestHelper {
 const CALLNUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
-    let gameContext: GameContextService;
+    // let gameContext: GameContextService;
     let ctxStub: CanvasRenderingContext2D;
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
@@ -24,7 +23,7 @@ describe('GridService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(GridService);
-        gameContext = TestBed.inject(GameContextService);
+        // gameContext = TestBed.inject(GameContextService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         service.gridContext = ctxStub;
         service.tempUpdateBoard('a', H7H_INDEX, H7H_INDEX, true);
@@ -114,9 +113,9 @@ describe('GridService', () => {
         expect(drawTripleWordSpy).toHaveBeenCalledTimes(CALLNUMBER);
     });
 
-    it('should not place two times the same letter', () => {
-        service.tempUpdateBoard('V', H7H_INDEX, H7H_INDEX, true);
-        service.tempUpdateBoard('Q', H7H_INDEX, H7H_INDEX, true);
-        expect(gameContext.state.value.board[7][6]?.name).toBe('A');
-    });
+    // it('should not place two times the same letter', () => {
+    //     service.tempUpdateBoard('V', H7H_INDEX, H7H_INDEX, true);
+    //     service.tempUpdateBoard('Q', H7H_INDEX, H7H_INDEX, true);
+    //     expect(gameContext.state.value.board[7][6]?.name).toBe('A');
+    // });
 });
