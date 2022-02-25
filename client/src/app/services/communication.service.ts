@@ -124,7 +124,7 @@ export class CommunicationService {
         this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, verticalIndex, horizonalIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
-        this.gameSocket?.emit('place-letters', letters, horizonalIndex, verticalIndex, isHorizontal);
+        this.gameSocket?.emit('place-letters', letters, verticalIndex, horizonalIndex, isHorizontal);
     }
 
     exchange(letters: string) {
