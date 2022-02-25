@@ -13,21 +13,17 @@ describe('GameContextService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should not update when removing weird characters', () => {
+    it('should not update when characters not in rack', () => {
+        service.rack.next([{ name: 'a', score: 1 }]);
         const beforeRack = service.rack.value;
-        service.tempUpdateRack('*');
-        expect(beforeRack).toEqual(service.rack.value);
-        service.tempUpdateRack('b*»)/');
-        expect(beforeRack).toEqual(service.rack.value);
-        service.tempUpdateRack('ù');
+        service.attemptTempRackUpdate('ab');
+        service.tempUpdateRack();
         expect(beforeRack).toEqual(service.rack.value);
     });
 
-    it('should not update when characters not in board', () => {
+    it('should throw when characters not in rack', () => {
         service.rack.next([{ name: 'a', score: 1 }]);
-        const beforeRack = service.rack.value;
-        service.tempUpdateRack('ab');
-        expect(beforeRack).toEqual(service.rack.value);
+        expect(service.attemptTempRackUpdate('ab')).toThrow();
     });
 
     it('should clear the messages', () => {
