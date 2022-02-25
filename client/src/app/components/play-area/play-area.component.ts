@@ -29,6 +29,10 @@ export enum MouseButton {
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
+<<<<<<< HEAD
+=======
+    letterWrited = 0;
+>>>>>>> 825407e... placing letter on the view, logic is left
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
@@ -37,12 +41,16 @@ export class PlayAreaComponent implements AfterViewInit {
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
+<<<<<<< HEAD
     constructor(
         private readonly gridService: GridService,
         private gameContextService: GameContextService,
         public mouseDetectService: MouseService,
         public communicationservice: CommunicationService,
     ) {
+=======
+    constructor(private readonly gridService: GridService, private gameContextService: GameContextService, public mouseDetectService: MouseService) {
+>>>>>>> 825407e... placing letter on the view, logic is left
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
