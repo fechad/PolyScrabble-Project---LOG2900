@@ -4,6 +4,7 @@ import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
 const INVALID = -1;
+const FIRST_WORD = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
 const WORD_LENGTH_BONUS = 7;
@@ -37,8 +38,10 @@ export class Board {
             }, BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(word.length, row, col, isHorizontal)) throw new Error('Placement invalide pour le premier mot');
-        // if (!this.isTouchingOtherWord(word.length, row, col, isHorizontal)) throw new Error('Placement invalide vous devez toucher un autre mot');
         const contacts = this.getContacts(word.length, row, col, isHorizontal);
+        if (isHorizontal === undefined) {
+            isHorizontal = (col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty);
+        }
         const words = this.wordGetter.getWords(word, row, col, contacts, isHorizontal as boolean);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.placeWithScore(words);
@@ -88,16 +91,13 @@ export class Board {
     private getContacts(wordLength: number, row: number, col: number, isHorizontal?: boolean): number[][] {
         let contacts: number[][] = [];
         if (this.board[HALF_LENGTH][HALF_LENGTH].empty) {
-            return [[INVALID]];
+            return [[FIRST_WORD]];
         }
         if (isHorizontal === undefined) {
             if ((col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty)) {
-                isHorizontal = true;
                 if ((row - 1 >= 0 && !this.board[row - 1][col].empty) || (row + 1 < BOARD_LENGTH && !this.board[row - 1][col].empty)) {
                     contacts.push([row, col, 0]);
                 }
-            } else {
-                isHorizontal = false;
             }
         } else if (isHorizontal) {
             contacts = contacts.concat(this.getContactHorizontal(row, col, wordLength));

@@ -1,6 +1,7 @@
 import { GameTile } from '@app/classes/game-tile';
 
 const INVALID = -1;
+const FIRST_WORD = -1;
 const BOARD_LENGTH = 15;
 
 export class WordGetter {
@@ -14,7 +15,7 @@ export class WordGetter {
         words.push(this.getWord(row, col, word, isHorizontal));
 
         // get words by contact
-        if (contacts[0][0] !== INVALID) {
+        if (contacts[0][0] !== FIRST_WORD) {
             for (const contact of contacts) {
                 words.push(this.getWord(contact[0], contact[1], word, !isHorizontal, contact[2]));
             }
