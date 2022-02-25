@@ -111,6 +111,17 @@ export class GridService {
             this.drawMessage(tile.name, canvasX + AJUST_TILE_X, canvasY + AJUST_TILE_Y, TILE_SIZE);
         }
     }
+    drawTempTiles(letter: string, canvasX: number, canvasY: number) {
+        this.gridContext.rect(
+            (squareSize + offset) * Math.ceil(canvasX / (100 / 3) - 2) + gridOrigin,
+            (squareSize + offset) * Math.ceil(canvasY / (100 / 3) - 2) + gridOrigin,
+            squareSize,
+            squareSize,
+        );
+        this.gridContext.fillStyle = 'burlywood';
+        this.gridContext.fill();
+        this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
+    }
 
     tempUpdateBoard(lettersToAdd: string, verticalIndex: number, horizontalIndex: number, isHorizontalPlacement: boolean | undefined) {
         const iterationPosition = isHorizontalPlacement ? horizontalIndex : verticalIndex;
