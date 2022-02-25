@@ -165,16 +165,11 @@ export class SocketManager {
             }
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
-            socket.on('message', (message: string) => {
-                game.message({ text: message, emitter: id });
-            });
+            socket.on('message', (message: string) => game.message({ text: message, emitter: id }));
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, position: string) => game.placeLetters(letters, position, id));
-            socket.on('switch-turn', () => {
-                game.nextTurn(id, true);
-                game.sendState();
-            });
+            socket.on('switch-turn', () => game.skipTurn(id));
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));

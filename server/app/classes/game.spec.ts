@@ -137,16 +137,16 @@ describe('Game', () => {
     });
 
     it('should skip turn', (done) => {
-        game.nextTurn(game.players[0].id, true);
+        game.skipTurn(game.players[0].id);
         assert(!game['isPlayer0Turn']);
-        game.nextTurn(game.players[1].id, true);
+        game.skipTurn(game.players[1].id);
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
         done();
     });
 
     it('should not skip turn if it is not your turn', (done) => {
-        game.nextTurn(game.players[1].id, true);
+        game.skipTurn(game.players[1].id);
         assert(game['isPlayer0Turn']);
         assert(stubError.called);
         done();
@@ -155,13 +155,13 @@ describe('Game', () => {
     it('Skipping 6 turns in a row should call endGame', () => {
         game['skipCounter'] = 5;
         const endGame = sinon.spy(game, 'endGame');
-        game.nextTurn(game.players[0].id, true);
+        game['nextTurn'](true);
         assert(endGame.called);
     });
 
     it('updating the skipCounter after a valid command should reset the counter', () => {
         game['skipCounter'] = 5;
-        game.nextTurn(game.players[0].id, false);
+        game['nextTurn'](false);
         expect(game['skipCounter']).to.equal(0);
     });
 
