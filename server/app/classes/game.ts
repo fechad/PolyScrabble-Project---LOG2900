@@ -18,6 +18,7 @@ const PLAYER_0_TURN_PROBABILITY = 0.5;
 const BOARD_LENGTH = 15;
 const MAX_SKIP_IN_A_ROW = 6;
 const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
+const SEC_TO_MS = 1000;
 
 type PlayerInfo = {
     info: Player;
@@ -46,12 +47,11 @@ export class Game {
     private ended: boolean = false;
     private winner: PlayerId | undefined = undefined;
     private summary: string | undefined = undefined;
+    private timeout: NodeJS.Timeout | undefined = undefined;
 
     constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
-        setTimeout(() => {
-            /* empty */
-        }, this.parameters.timer);
+        this.timeout = setTimeout(() => this.timeoutHandler(), this.parameters.timer * SEC_TO_MS);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
     }
@@ -89,11 +89,11 @@ export class Game {
                 this.scores[playerIndex] += response;
                 const position = (isHorizontal ? 'h' : 'v') + row + col;
                 const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
-                this.eventEmitter.emit('message', { text: validMessage, emitter: 'local' } as Message);
+                this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
                 this.eventEmitter.emit('game-error', player.id, e.message);
             }
-            this.nextTurn(player.id, false);
+            this.nextTurn(false);
             if (this.reserve.getCount() === 0 && (this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER))) {
                 this.endGame();
             }
@@ -115,7 +115,7 @@ export class Game {
                 validMessage = this.getCurrentPlayer().name + ' a échangé ' + letters.length + ' lettres';
                 const opponentId = this.getPlayerId(false);
                 this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
-                this.nextTurn(playerId, false);
+                this.nextTurn(false);
             } else {
                 this.eventEmitter.emit('game-error', playerId, new Error('La réserve est trop petite pour y échanger des lettres').message);
             }
@@ -123,14 +123,10 @@ export class Game {
         }
     }
 
-    nextTurn(playerId: PlayerId, userRequest: boolean) {
+    skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            this.isPlayer0Turn = !this.isPlayer0Turn;
-
-            if (userRequest) this.skipCounter += 1;
-            else this.skipCounter = 0;
-
-            if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
+            this.nextTurn(true);
+            this.sendState();
         }
     }
 
@@ -147,14 +143,44 @@ export class Game {
         else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
         return undefined;
     }
-
+    getWinnerName(): string {
+        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].name;
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].name;
+        return this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name;
+    }
     endGame() {
         this.ended = true;
         this.winner = this.getWinner();
-        this.summary = EndGameCalculator.createGameSummaryMessage(
-            this.players.map((p) => p),
-            this.reserve,
-        );
+        this.summary = '👑 Félicitation ' + this.getWinnerName() + '! 👑';
+        this.eventEmitter.emit('message', {
+            text: EndGameCalculator.createGameSummaryMessage(
+                this.players.map((p) => p),
+                this.reserve,
+            ),
+            emitter: 'local',
+        } as Message);
+    }
+
+    private timeoutHandler() {
+        this.nextTurn(true);
+        this.sendState();
+    }
+
+    private nextTurn(userRequest: boolean) {
+        this.isPlayer0Turn = !this.isPlayer0Turn;
+
+        if (userRequest) this.skipCounter += 1;
+        else this.skipCounter = 0;
+
+        if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
+
+        if (this.timeout) clearTimeout(this.timeout);
+        if (!this.ended) {
+            this.timeout = setTimeout(() => this.timeoutHandler(), this.parameters.timer * SEC_TO_MS);
+        } else {
+            this.timeout = undefined;
+        }
     }
 
     private getPlayerId(isActivePlayer: boolean) {

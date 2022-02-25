@@ -94,15 +94,22 @@
 }
 
 .skip-turn {
-    margin-left: 1vw;
-    margin-right: 3vw;
+    margin: 1vw 0vw 1vw 2vw;
 }
 
 #quit-game {
-    margin-top: 58vh;
-    margin-left: 4vh;
+    margin: 1vw 0vw 1vw 2vw;
 }
-
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+}
+.params-buttons {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
 .sizing:hover,
 .icon:hover,
 #quit-game:hover,
@@ -129,5 +136,16 @@
 #bottom-area {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+}
+::ng-deep .tooltip {
+    font-size: 20px;
+    max-width: unset !important;
+    background-color: #fff;
+    color: #000 !important;
+    opacity: 0.95;
+}
+::ng-deep .tooltip {
+    font-size: 20px;
+    max-width: unset !important;
 }

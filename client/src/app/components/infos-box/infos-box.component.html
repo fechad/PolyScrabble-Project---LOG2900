@@ -8,15 +8,9 @@
             <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} restantes dans le chevalet</p>
         </div>
     </div>
-    <div class="game-infos">
+    <div [ngClass]="{ 'game-infos': !this.gameContextService.state.value.ended, 'endgame-infos': this.gameContextService.state.value.ended }">
         <p>{{ this.mode.mode }}</p>
-        <div class="backChrono" *ngIf="!(this.gameContextService.state | async)?.ended">
-            <countdown
-                #countdown
-                [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
-                (event)="onTimerFinished($event)"
-            ></countdown>
-        </div>
+        <div class="backChrono" *ngIf="!(this.gameContextService.state | async)?.ended">{{ timer }}</div>
         <p *ngIf="(this.gameContextService.state | async)?.summary !== undefined">{{ (this.gameContextService.state | async)?.summary }}</p>
         <p>{{ (this.gameContextService.state | async)?.reserveCount }} lettres disponibles dans la réserve</p>
     </div>

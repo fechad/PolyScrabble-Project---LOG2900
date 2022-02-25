@@ -6,11 +6,33 @@
 
     <div class="game-container">
         <div id="left-container">
-            <button class="icon" (click)="helpInfo()"><fa-icon id="help" [icon]="faQuestionCircle" size="2x"></fa-icon></button>
-            <div class="size-container">
-                <button class="sizing"><fa-icon id="reduce" [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon></button>
-                <button class="sizing"><fa-icon id="reset" [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon></button>
-                <button class="sizing"><fa-icon id="increase" [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon></button>
+            <div class="params-buttons">
+                <button
+                    class="icon"
+                    matTooltip="Commandes disponibles: &#13;
+                    &#13;!placer [ligne][colonne][(h|v)] [lettres] : ajouter des lettres sur la grille en fonction de la ligne et de la colonne, et du sens désiré.&#13;
+                    exemple: !placer 9gh ment&#13;
+                    &#13;
+                    !échanger [lettre] : échanger les lettres choisies par des nouvelles lettres.&#13;
+                    exemple: !échanger abc&#13;
+                    &#13;
+                    !passer : passer votre tour"
+                    matTooltipPosition="right"
+                    matTooltipClass="tooltip"
+                >
+                    <fa-icon id="help" [icon]="faQuestionCircle" size="2x"></fa-icon>
+                </button>
+                <div class="size-container">
+                    <button class="sizing" matTooltip="Taille minimale">
+                        <fa-icon id="reduce" [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon>
+                    </button>
+                    <button class="sizing" matTooltip="Taille par défaut">
+                        <fa-icon id="reset" [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon>
+                    </button>
+                    <button class="sizing" matTooltip="Taille maximale">
+                        <fa-icon id="increase" [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon>
+                    </button>
+                </div>
             </div>
             <div class="goals" *ngIf="false">
                 <div class="game-goals">
@@ -24,9 +46,20 @@
                     <progress id="personal-goal" value="30" max="100"></progress>
                 </div>
             </div>
-            <button id="quit-game" title="Abandonner la partie" (click)="quitGame()">
-                <fa-icon [icon]="faSignOutAlt"></fa-icon>
-            </button>
+            <div class="action-buttons">
+                <button
+                    class="skip-turn"
+                    matTooltip="Passer votre tour"
+                    matTooltipPosition="right"
+                    [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true"
+                    (click)="skipMyTurn()"
+                >
+                    <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
+                </button>
+                <button id="quit-game" matTooltip="Quitter la partie" matTooltipPosition="right" (click)="quitGame()">
+                    <fa-icon [icon]="faSignOutAlt"></fa-icon>
+                </button>
+            </div>
         </div>
         <div class="center">
             <div class="play-area-container">
@@ -35,14 +68,6 @@
             <div id="bottom-area">
                 <div class="rackArea">
                     <app-letter-rack></app-letter-rack>
-                    <button
-                        class="skip-turn"
-                        title="Passer votre tour"
-                        [disabled]="(gameContextService.isMyTurn() | async) === false"
-                        (click)="skipMyTurn()"
-                    >
-                        <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
-                    </button>
                 </div>
             </div>
         </div>

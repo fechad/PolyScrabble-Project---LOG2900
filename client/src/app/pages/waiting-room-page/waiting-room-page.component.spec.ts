@@ -72,4 +72,34 @@ describe('WaitingRoomPageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('leave should call leave from CommunicationService', () => {
+        const leaveSpy = spyOn(service, 'leave');
+
+        component.leave();
+
+        expect(leaveSpy).toHaveBeenCalled();
+    });
+
+    it('start should call start from CommunicationService', () => {
+        const startSpy = spyOn(service, 'start');
+
+        component.start();
+
+        expect(startSpy).toHaveBeenCalled();
+    });
+    it('kick should call kick from CommunicationService', () => {
+        const kickSpy = spyOn(service, 'kick');
+
+        component.kick();
+
+        expect(kickSpy).toHaveBeenCalled();
+    });
+    it('kickLeave should call kickLeave from CommunicationService', () => {
+        const kickLeaveSpy = spyOn(service, 'kickLeave');
+
+        component.kickLeave();
+
+        expect(kickLeaveSpy).toHaveBeenCalled();
+    });
 });

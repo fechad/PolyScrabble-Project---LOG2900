@@ -43,6 +43,7 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
     ngAfterViewChecked() {
         this.scrollToBottom();
+        this.myId = this.communicationService.getId().value;
     }
 
     clearText() {
@@ -63,7 +64,7 @@ export class ChatBoxComponent implements AfterViewChecked {
                 if (error !== undefined) {
                     this.communicationService.sendLocalMessage(error.message);
                 }
-            } else {
+            } else if (!this.gameContextService.state.value.ended) {
                 this.communicationService.sendMessage(this.textValue);
             }
         }
