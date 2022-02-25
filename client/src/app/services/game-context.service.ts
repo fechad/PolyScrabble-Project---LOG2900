@@ -98,19 +98,17 @@ export class GameContextService {
         this.rack.next(this.tempRack);
     }
 
-    isInMyRack(letters: string) {
-        let response = true;
+    attemptTempRackUpdate(letters: string) {
         const NOT_FOUND = -1;
-        const tempRack = this.rack.value;
+        const tempRack = [...this.rack.value];
         for (const letter of letters) {
             const index = tempRack.findIndex((foundLetter) => {
                 return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && this.commandParser.isUpperCaseLetter(letter));
             });
-            if (index === NOT_FOUND) response = false;
+            if (index === NOT_FOUND) throw new Error('Ces lettres ne sont pas dans le chevalet');
             tempRack[index] = tempRack[tempRack.length - 1];
             tempRack.pop();
         }
-        if (response) this.tempRack = tempRack;
-        return response;
+        this.tempRack = tempRack;
     }
 }

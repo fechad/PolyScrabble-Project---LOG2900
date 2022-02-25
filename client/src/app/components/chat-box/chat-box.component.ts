@@ -36,7 +36,7 @@ export class ChatBoxComponent implements AfterViewChecked {
     yourMessage: boolean = true;
     syntaxIsValid: boolean = true;
     commandStructure: string[] = [];
-    parsedWord: string;
+    parsedLetters: string;
     verticalPosition: string;
     horizontalPosition: string;
     placementOrientation: string | undefined;
@@ -71,8 +71,8 @@ export class ChatBoxComponent implements AfterViewChecked {
         } else if (this.textValue.trim() !== '') {
             this.commandStructure = this.textValue.split(' ');
             if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
+                this.dispatchCommand(this.commandStructure.length);
                 try {
-                    this.dispatchCommand(this.commandStructure.length);
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } catch (e: any) {
                     const message = e.message;
@@ -89,11 +89,13 @@ export class ChatBoxComponent implements AfterViewChecked {
         if (this.communicationService.congratulations !== undefined) throw new Error(' La partie est terminée !');
         else if (!this.gameContextService.isMyTurn.value) throw new Error("Ce n'est pas votre tour");
         else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
-            this.parsedWord = this.commandParser.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
+            this.parsedLetters = this.commandParser.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
             this.assignPositionSpec(this.commandStructure[POSITION_BLOCK_INDEX]);
             this.place();
-        } else if (this.commandStructure[COMMAND_INDEX] === '!échanger' && commandLength === EXCHANGE_COMMAND_LENGTH) this.exchange();
-        else if (this.commandStructure[COMMAND_INDEX] === '!passer' && commandLength === PASS_COMMAND_LENGTH) this.pass();
+        } else if (this.commandStructure[COMMAND_INDEX] === '!échanger' && commandLength === EXCHANGE_COMMAND_LENGTH) {
+            this.parsedLetters = this.commandParser.removeAccents(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
+            this.exchange();
+        } else if (this.commandStructure[COMMAND_INDEX] === '!passer' && commandLength === PASS_COMMAND_LENGTH) this.pass();
         else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
         else throw new Error(`La commande ${this.commandStructure[COMMAND_INDEX]} ne respecte pas la syntaxe demandée`);
     }
@@ -105,49 +107,42 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
 
     place() {
-        if (this.isInRack(this.parsedWord)) {
-            if (this.commandParser.isNotPlayableWord(this.commandStructure[WORD_TO_PLACE_INDEX]))
-                throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
-            if (!this.commandParser.isValidVerticalPosition(this.verticalPosition))
-                throw new Error("La position verticale choisie n'est pas sur la grille de jeu");
-            if (!this.commandParser.isValidHorizontalPosition(this.horizontalPosition))
-                throw new Error("La position horizontale choisie n'est pas sur la grille de jeu");
-            if (this.placementOrientation === undefined) {
-                if (this.commandStructure[WORD_TO_PLACE_INDEX].length !== MIN_TYPED_WORD_LENGTH)
-                    throw new Error("L'orientation du placement n'est pas mentionnée alors que le mot a une longeure supérieur à 1");
-            } else {
-                if (!this.commandParser.isValidOrientation(this.placementOrientation as string))
-                    throw new Error("L'orientation du placement n'est pas valide");
-            }
-            const verticalIndex = this.commandParser.getVerticalIndex(this.verticalPosition);
-            const horizontalIndex = parseInt(this.horizontalPosition, DECIMAL_BASE) - 1;
-            const isHorizontal = this.commandParser.isHorizontalOrientation(this.placementOrientation);
-            this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], verticalIndex, horizontalIndex, isHorizontal);
+        this.gameContextService.attemptTempRackUpdate(this.parsedLetters);
+        if (this.commandParser.isNotPlayableWord(this.parsedLetters))
+            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
+        if (!this.commandParser.isValidVerticalPosition(this.verticalPosition))
+            throw new Error("La position verticale choisie n'est pas sur la grille de jeu");
+        if (!this.commandParser.isValidHorizontalPosition(this.horizontalPosition))
+            throw new Error("La position horizontale choisie n'est pas sur la grille de jeu");
+        if (this.placementOrientation === undefined) {
+            if (this.parsedLetters.length !== MIN_TYPED_WORD_LENGTH)
+                throw new Error("L'orientation du placement n'est pas mentionnée alors que le mot a une longeure supérieur à 1");
         } else {
-            throw new Error('Ces lettres ne sont pas dans le chevalet');
+            if (!this.commandParser.isValidOrientation(this.placementOrientation as string))
+                throw new Error("L'orientation du placement n'est pas valide");
         }
+        const verticalIndex = this.commandParser.getVerticalIndex(this.verticalPosition);
+        const horizontalIndex = parseInt(this.horizontalPosition, DECIMAL_BASE) - 1;
+        console.log(horizontalIndex, verticalIndex);
+        const isHorizontal = this.commandParser.isHorizontalOrientation(this.placementOrientation);
+        this.communicationService.place(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
     }
 
     exchange() {
-        const isInBound =
-            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
-            this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
-
+        const isInBound = this.parsedLetters.length >= MIN_TYPED_WORD_LENGTH && this.parsedLetters.length <= MAX_TYPED_WORD_LENGTH;
         if (this.commandParser.areValidCharactersToExchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX])) {
             throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
-        } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
+        }
+        if (isInBound) {
+            this.gameContextService.attemptTempRackUpdate(this.parsedLetters);
             this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         } else {
-            throw new Error('Ces lettres ne sont pas dans le chevalet');
+            throw new Error("Impossible d'échanger cette quantité de lettres");
         }
     }
 
     pass() {
         this.communicationService.switchTurn(false);
-    }
-
-    isInRack(word: string) {
-        return this.gameContextService.isInMyRack(word);
     }
 
     getLetterExchanged(message: string): number {

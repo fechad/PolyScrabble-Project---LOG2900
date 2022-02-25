@@ -77,7 +77,10 @@ export class CommandParsing {
     }
 
     getVerticalIndex(position: string) {
-        return position.charCodeAt(0) - LOWERCASE_A_ASCII;
+        console.log('here');
+        const value = position.charCodeAt(0) - LOWERCASE_A_ASCII;
+        console.log('hereAfter');
+        return value;
     }
 
     isHorizontalOrientation(orientation: string | undefined) {
