@@ -10,13 +10,13 @@ import * as io from 'socket.io';
 import { Service } from 'typedi';
 
 type Handlers = [string, (params: unknown[]) => void][];
-
+const AWOL_DELAY = 5000;
 @Service()
 export class SocketManager {
     readonly games: Game[] = [];
     private io: io.Server;
     private logins: LoginsService = new LoginsService();
-
+    private token: number;
     constructor(server: http.Server, public roomsService: RoomsService, private dictionnaryService: DictionnaryService) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -32,6 +32,7 @@ export class SocketManager {
         const mainLobby = new MainLobbyService(this.roomsService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
+            this.token = token;
             socket.emit('id', id, token);
             mainLobby.connect(socket, id);
 
@@ -89,7 +90,6 @@ export class SocketManager {
                 const otherPlayer = room.getOtherPlayer();
                 if (otherPlayer) otherPlayer.connected = true;
             }
-            this.roomsService.unpendDeletion(room.id);
 
             if (room.isStarted()) {
                 socket.emit('join-game', room.id);
@@ -111,22 +111,10 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                if (room.isStarted()) {
-                    this.roomsService.pendDeletion(room.id, () => {
-                        const NOT_FOUND = -1;
-
-                        const idx = this.games.findIndex((game) => game.gameId === room.id);
-                        if (idx !== NOT_FOUND) {
-                            this.games.splice(idx, 1);
-                        }
-                        events.forEach(([name, handler]) => room.off(name, handler));
-                    });
-                } else {
-                    if (isMainPlayer) {
-                        this.roomsService.remove(room.id);
-                    }
-                    events.forEach(([name, handler]) => room.off(name, handler));
+                if (isMainPlayer && !room.isStarted()) {
+                    this.roomsService.remove(room.id);
                 }
+                events.forEach(([name, handler]) => room.off(name, handler));
             });
 
             socket.emit('update-room', room);
@@ -190,6 +178,9 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
+                setTimeout(() => {
+                    if (!this.logins.verify(id, this.token)) game.forfeit(id);
+                }, AWOL_DELAY);
             });
 
             game.sendState();

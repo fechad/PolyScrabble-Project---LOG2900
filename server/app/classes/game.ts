@@ -88,7 +88,7 @@ export class Game {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.scores[playerIndex] += response;
                 const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
-                this.eventEmitter.emit('message', { text: validMessage, emitter: 'local' } as Message);
+                this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
                 this.eventEmitter.emit('game-error', player.id, e.message);
             }

@@ -74,6 +74,7 @@ export class GameContextService {
 
     clearMessages() {
         this.messages.next([]);
+        this.tempMessages.next([]);
     }
 
     addMessage(message: string, local: boolean, command: boolean) {

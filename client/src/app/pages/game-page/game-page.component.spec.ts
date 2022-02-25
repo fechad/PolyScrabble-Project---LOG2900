@@ -9,13 +9,11 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import Swal from 'sweetalert2';
@@ -46,11 +44,10 @@ export class CommunicationServiceMock {
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    let gameContextService: GameContextService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent, HelpInfoComponent],
+            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent],
             imports: [
                 RouterTestingModule.withRoutes(routes),
                 HttpClientTestingModule,
@@ -67,7 +64,6 @@ describe('GamePageComponent', () => {
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
-        gameContextService = TestBed.inject(GameContextService);
         const router = TestBed.inject(Router);
         router.initialNavigation();
         component = fixture.componentInstance;
@@ -91,27 +87,6 @@ describe('GamePageComponent', () => {
         const swalSpy = spyOn(Swal, 'fire').and.callThrough();
         component.quitGame();
         expect(swalSpy).toHaveBeenCalled();
-    });
-
-    it('should forfeit if confirm is clicked in swal', (done) => {
-        const swalConfirmSpy = spyOn(component.communicationService, 'confirmForfeit');
-        component.quitGame();
-        Swal.clickConfirm();
-        setTimeout(() => {
-            expect(swalConfirmSpy).toHaveBeenCalled();
-            done();
-        });
-    });
-
-    it('should quit if confirm is clicked in swal', (done) => {
-        gameContextService.state.next({ ...gameContextService.state.value, ended: true });
-        const swalConfirmSpy = spyOn(component.communicationService, 'leave');
-        component.quitGame();
-        Swal.clickConfirm();
-        setTimeout(() => {
-            expect(swalConfirmSpy).toHaveBeenCalled();
-            done();
-        });
     });
 
     it('should switch turn if skipTurn() is called', () => {
@@ -142,13 +117,5 @@ describe('GamePageComponent', () => {
         button.nativeElement.click();
         tick();
         expect(increaseFontSpy).toHaveBeenCalled();
-    }));
-
-    it('click on ? button should call helpInfo()', fakeAsync(() => {
-        const helpSpy = spyOn(component, 'helpInfo').and.callThrough();
-        const button = fixture.debugElement.query(By.css('#help'));
-        button.nativeElement.click();
-        tick();
-        expect(helpSpy).toHaveBeenCalled();
     }));
 });

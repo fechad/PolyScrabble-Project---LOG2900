@@ -27,6 +27,9 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
+    congratulations: string | undefined = undefined;
+    endGame: boolean = false;
+    forfeited: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -175,6 +178,7 @@ export class CommunicationService {
     }
 
     private leaveGame() {
+        if (!this.forfeited) this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.gameSocket?.close();
@@ -208,15 +212,30 @@ export class CommunicationService {
 
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
+                let text = [''];
+                if (this.gameContextService.state.value.ended)
+                    text = [
+                        'La salle est devenue bien silencieuse...',
+                        'Votre adversaire a quitté la partie, voulez-vous retourner au menu principal?',
+                    ];
+                else text = ['Gagnant par défaut', '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?'];
                 swal.fire({
-                    title: 'Gagnant par défaut',
-                    text: '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner aux menus?',
+                    title: text[0],
+                    text: text[1],
                     showCloseButton: true,
                     showCancelButton: true,
                     confirmButtonText: 'Oui',
                     cancelButtonText: 'Non',
+                }).then((result) => {
+                    if (result.value) {
+                        this.gameContextService.clearMessages();
+                        this.forfeited = false;
+                        this.router.navigate(['/']);
+                    }
                 });
             }
+            this.endGame = false;
+            this.congratulations = undefined;
             this.leaveGame();
         });
 
