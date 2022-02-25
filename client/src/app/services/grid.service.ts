@@ -85,11 +85,6 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
-        for (const i of this.letters) {
-            this.rack.push(i);
-            this.gameContext.addTempRack(i);
-        }
-        this.letters = [];
         const x = canvasX;
         const y = canvasY;
         this.gridContext.fillStyle = '#000';
