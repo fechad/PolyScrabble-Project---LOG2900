@@ -28,7 +28,6 @@ export class GameContextService {
     skipTurnEnabled: boolean = true;
     tempRack: Letter[];
     private msgCount: number = 0;
-    private commandParser: CommandParsing = new CommandParsing();
 
     constructor() {
         const grid = [];
@@ -103,7 +102,7 @@ export class GameContextService {
         const tempRack = [...this.rack.value];
         for (const letter of letters) {
             const index = tempRack.findIndex((foundLetter) => {
-                return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && this.commandParser.isUpperCaseLetter(letter));
+                return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && CommandParsing.isUpperCaseLetter(letter));
             });
             if (index === NOT_FOUND) throw new Error('Ces lettres ne sont pas dans le chevalet');
             tempRack[index] = tempRack[tempRack.length - 1];
