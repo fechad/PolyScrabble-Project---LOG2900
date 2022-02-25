@@ -62,7 +62,7 @@ export class ChatBoxLogicService {
 
     private dispatchCommand(commandLength: number) {
         if (this.communicationService.congratulations !== undefined) throw new Error(' La partie est terminée !');
-        else if (!this.gameContextService.isMyTurn.value) throw new Error("Ce n'est pas votre tour");
+        else if (!this.gameContextService.isMyTurn()) throw new Error("Ce n'est pas votre tour");
         else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
             this.assignPositionSpec(this.commandStructure[POSITION_BLOCK_INDEX]);
