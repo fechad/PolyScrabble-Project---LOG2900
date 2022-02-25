@@ -23,15 +23,14 @@ export enum MouseButton {
 })
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
-
     buttonPressed = '';
-    mouseDetectService: MouseService = new MouseService();
+    letterWrited = 0;
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private readonly gridService: GridService, private gameContextService: GameContextService) {
+    constructor(private readonly gridService: GridService, private gameContextService: GameContextService, public mouseDetectService: MouseService) {
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
@@ -40,6 +39,18 @@ export class PlayAreaComponent implements AfterViewInit {
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+        if (this.mouseDetectService.writingAllowed) {
+            this.gridService.drawTempTiles(
+                this.buttonPressed,
+                this.mouseDetectService.mousePosition.x + (this.letterWrited * 100) / 3,
+                this.mouseDetectService.mousePosition.y,
+            );
+            this.letterWrited += 1;
+            if (this.buttonPressed === 'Enter') {
+                this.letterWrited = 0;
+                this.gridService.drawGrid();
+            }
+        }
     }
 
     ngAfterViewInit(): void {
