@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
+import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.component';
 import { ModeServiceService } from '@app/services/mode-service.service';
 
 @Component({
@@ -20,5 +21,9 @@ export class ModesPageComponent {
 
     openDialog() {
         this.matDialog.open(GameSetupDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
+    }
+
+    openSoloDialog() {
+        this.matDialog.open(SoloDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
     }
 }

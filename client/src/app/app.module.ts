@@ -22,6 +22,7 @@ import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { CommunicationService } from './services/communication.service';
+import { SoloDialogComponent } from './components/solo-dialog/solo-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -44,6 +45,7 @@ import { CommunicationService } from './services/communication.service';
         ChatBoxComponent,
         InfosBoxComponent,
         ModesPageComponent,
+        SoloDialogComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -1,11 +1,11 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-
+// deployment - version 2
 export const environment = {
     production: false,
-    serverUrl: 'http://localhost:3000/api',
-    socketUrl: 'http://localhost:3000',
+    serverUrl: 'http://ec2-35-183-104-17.ca-central-1.compute.amazonaws.com:3000/api',
+    socketUrl: 'http://ec2-35-183-104-17.ca-central-1.compute.amazonaws.com:3000',
 };
 
 /*
