@@ -79,7 +79,7 @@ export class Game {
         this.eventEmitter.emit('message', message);
     }
 
-    async placeLetters(letters: string, row: number, col: number, playerId: PlayerId, isHorizontal?: boolean) {
+    async placeLetters(playerId: PlayerId, letters: string, row: number, col: number, isHorizontal?: boolean) {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             const player = this.getCurrentPlayer();

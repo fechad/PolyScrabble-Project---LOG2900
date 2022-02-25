@@ -183,7 +183,7 @@ export class SocketManager {
             socket.on('confirm-forfeit', () => game.forfeit(id));
             socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
             socket.on('place-letters', async (letters: string, row: number, col: number, isHorizontal?: boolean) =>
-                game.placeLetters(letters, row, col, id, isHorizontal),
+                game.placeLetters(id, letters, row, col, isHorizontal),
             );
             socket.on('switch-turn', () => {
                 game.nextTurn(id, true);

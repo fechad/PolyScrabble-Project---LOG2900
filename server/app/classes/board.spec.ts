@@ -168,65 +168,6 @@ describe('Board', () => {
         done();
     });
 
-    it('should not let no contact except for first word', (done) => {
-        let row = 5;
-        let col = 10;
-        let isHoriontal = false;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-
-        board.board[7][6].setLetter('a');
-        board.board[7][7].setLetter('s');
-
-        row = 1;
-        col = 5;
-        isHoriontal = false;
-        assert(!board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-
-        row = 5;
-        col = 2;
-        isHoriontal = true;
-        isHoriontal = true;
-        assert(!board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        done();
-    });
-
-    it('should validate if word has contact point', (done) => {
-        board.board[7][6].setLetter('a');
-        board.board[7][7].setLetter('s');
-
-        let isHoriontal = true;
-        let row = 7;
-        let col = 2;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 8;
-        col = 6;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 6;
-        col = 5;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 7;
-        col = 6;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-
-        isHoriontal = false;
-        row = 5;
-        col = 8;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 6;
-        col = 5;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 3;
-        col = 6;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 8;
-        col = 7;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        row = 5;
-        col = 7;
-        assert(board['isTouchingOtherWord'](word.length, row, col, isHoriontal));
-        done();
-    });
-
     it('should get all the points of contact of the word', (done) => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
@@ -263,14 +204,10 @@ describe('Board', () => {
         col = 6;
         isHoriontal = false;
         contacts = board['getContacts'](word.length, row, col, isHoriontal);
-        assert(contacts.length === 2);
+        assert(contacts.length === 1);
         assert(contacts[0][0] === 7);
         assert(contacts[0][1] === 6);
         assert(contacts[0][2] === INVALID);
-
-        assert(contacts[1][0] === 8);
-        assert(contacts[1][1] === 6);
-        assert(contacts[1][2] === INVALID);
 
         row = 4;
         col = 5;
@@ -280,6 +217,12 @@ describe('Board', () => {
         assert(contacts[0][0] === 7);
         assert(contacts[0][1] === 5);
         assert(contacts[0][2] === 3);
+
+        row = 1;
+        col = 1;
+        isHoriontal = false;
+        contacts = board['getContacts'](word.length, row, col, isHoriontal);
+        assert(contacts.length === 0);
         done();
     });
 

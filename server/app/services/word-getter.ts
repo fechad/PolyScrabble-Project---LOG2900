@@ -6,15 +6,15 @@ const BOARD_LENGTH = 15;
 export class WordGetter {
     constructor(public board: GameTile[][]) {}
 
-    getWords(word: string, row: number, col: number, contacts: number[][], isHorizontal?: boolean): string[] {
+    getWords(word: string, row: number, col: number, contacts: number[][], isHorizontal: boolean): string[] {
+        if (contacts.length === 0) throw new Error('Placement invalide vous devez toucher un autre mot');
         const words: string[] = [];
-        isHorizontal = isHorizontal as boolean;
 
         // get attempted word
         words.push(this.getWord(row, col, word, isHorizontal));
 
         // get words by contact
-        if (contacts.length > 0 && contacts[0][0] !== INVALID) {
+        if (contacts[0][0] !== INVALID) {
             for (const contact of contacts) {
                 words.push(this.getWord(contact[0], contact[1], word, !isHorizontal, contact[2]));
             }

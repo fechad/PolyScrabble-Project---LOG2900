@@ -89,7 +89,7 @@ describe('Game', () => {
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
-        await game.placeLetters(letters, row, col, game.players[0].id, isHoriontal);
+        await game.placeLetters(game.players[0].id, letters, row, col, isHoriontal);
         assert(stubValidCommand.called, 'Did not send message');
         assert(stubState.called, 'Did not update state');
         assert(stubError.notCalled, 'Errored');
@@ -104,7 +104,7 @@ describe('Game', () => {
         const stubValidCommand = sinon.stub();
         game.eventEmitter.on('valid-command', stubValidCommand);
 
-        await game.placeLetters(letters, row, col, game.players[0].id, isHorizontal);
+        await game.placeLetters(game.players[0].id, letters, row, col, isHorizontal);
 
         assert(stubValidCommand.notCalled);
         assert(stubError.called);
@@ -118,7 +118,7 @@ describe('Game', () => {
         const letters = 'testaaaaaaaaaaa';
         game.eventEmitter.on('score', stub);
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(letters, row, col, game.players[0].id, isHorizontal);
+        await game.placeLetters(game.players[0].id, letters, row, col, isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
     });
@@ -132,7 +132,7 @@ describe('Game', () => {
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(letters, row, col, game.players[1].id, isHorizontal);
+        game.placeLetters(game.players[1].id, letters, row, col, isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
         done();
@@ -218,7 +218,7 @@ describe('Game', () => {
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
         game['isPlayer0Turn'] = true;
-        await game.placeLetters('allo', row, col, game.players[MAIN_PLAYER].id, isHorizontal);
+        await game.placeLetters(game.players[MAIN_PLAYER].id, 'allo', row, col, isHorizontal);
         assert(endGame.called);
     });
 
