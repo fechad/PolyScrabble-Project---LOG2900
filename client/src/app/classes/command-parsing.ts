@@ -16,28 +16,10 @@ const specialLetters: { [key: string]: string } = {
     ÿ: 'y',
     ç: 'c',
 };
+const LOWERCASE_A_ASCII = 97;
 export class CommandParsing {
     isUpperCaseLetter(character: string) {
         return character.match(/A-Z/g);
-    }
-
-    separatePosition(position: string): string[] {
-        const positionArray: string[] = [];
-        positionArray[0] = position.charAt(0);
-        if (position.length === 3) {
-            if (isNaN(+position.charAt(2))) {
-                positionArray[1] = position.charAt(1);
-                positionArray[2] = position.charAt(2);
-            } else {
-                positionArray[1] = position.charAt(1) + position.charAt(2);
-            }
-        } else if (position.length === 2) {
-            positionArray[1] = position.charAt(1);
-        } else {
-            positionArray[1] = position.charAt(1) + position.charAt(2);
-            positionArray[2] = position.charAt(3);
-        }
-        return positionArray;
     }
 
     validatePositionSyntax(position: string[], oneLetter: boolean): boolean {
@@ -71,6 +53,14 @@ export class CommandParsing {
         return returnWord;
     }
 
+    isPlayableWord(playedWord: string) {
+        return playedWord.match(/[^A-Za-zÀ-ú]/g);
+    }
+
+    areValidCharactersToExchange(charactersToExchange: string) {
+        return charactersToExchange.match(/[^a-z*]/g);
+    }
+
     isValidVerticalPosition(position: string) {
         return position.match(/[a-o]/g);
     }
@@ -84,5 +74,13 @@ export class CommandParsing {
 
     isValidOrientation(orientation: string) {
         return orientation.match(/[hv]/g);
+    }
+
+    getVerticalIndex(position: string) {
+        return position.charCodeAt(0) - LOWERCASE_A_ASCII;
+    }
+
+    isHorizontalOrientation(orientation: string | undefined) {
+        return orientation === undefined ? undefined : orientation === 'h';
     }
 }

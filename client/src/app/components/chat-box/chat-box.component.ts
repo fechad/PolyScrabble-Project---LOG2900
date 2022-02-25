@@ -6,17 +6,18 @@ import { GameContextService } from '@app/services/game-context.service';
 const COMMAND_INDEX = 0;
 const LETTERS_TO_EXCHANGE_INDEX = 1;
 const POSITION_BLOCK_INDEX = 1;
-const WORD_TO_PLACE_INDEX = 2;
-const POSITION_BLOCK_MAX_LENGTH = 4;
-const POSITION_BLOCK_AVG_LENGTH = 4;
-const POSITION_BLOCK_MIN_LENGTH = 2;
-const MAX_TYPED_WORD_LENGTH = 7;
 const MIN_TYPED_WORD_LENGTH = 1;
-const PLACE_COMMAND_LENGTH = 3;
-const EXCHANGE_COMMAND_LENGTH = 2;
 const HELP_COMMAND_LENGTH = 1;
 const PASS_COMMAND_LENGTH = 1;
+const POSITION_BLOCK_MIN_LENGTH = 2;
+const WORD_TO_PLACE_INDEX = 2;
+const EXCHANGE_COMMAND_LENGTH = 2;
 const HORIZONTAL_POSITION_2ND_DIGIT_INDEX = 2;
+const PLACE_COMMAND_LENGTH = 3;
+const POSITION_BLOCK_AVG_LENGTH = 3;
+const POSITION_BLOCK_MAX_LENGTH = 4;
+const MAX_TYPED_WORD_LENGTH = 7;
+const DECIMAL_BASE = 10;
 
 @Component({
     selector: 'app-chat-box',
@@ -38,7 +39,7 @@ export class ChatBoxComponent implements AfterViewChecked {
     parsedWord: string;
     verticalPosition: string;
     horizontalPosition: string;
-    placementOrientation: string;
+    placementOrientation: string | undefined;
     help: string[] = [
         'Voici ce que vous pouvez faire: \n' +
             '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
@@ -104,35 +105,26 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
 
     place() {
-        if (this.commandStructure[WORD_TO_PLACE_INDEX].match(/[^A-Za-zÀ-ú]/g)) {
+        if (this.commandParser.isPlayableWord(this.commandStructure[WORD_TO_PLACE_INDEX])) {
             throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
-        } else {
-            if (this.isInRack(this.parsedWord)) {
-                if (
-                    this.commandParser.isValidVerticalPosition(this.verticalPosition) &&
-                    (this.commandParser.isValidOrientation(this.placementOrientation) || this.parsedWord.length === 1)
-                ) {
-                    if (
-                        this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MIN_LENGTH ||
-                        (this.commandStructure[POSITION_BLOCK_INDEX].length === 2 && this.commandStructure[WORD_TO_PLACE_INDEX].length === 1)
-                    ) {
-                        if (this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1-9]/g)) {
-                            this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
-                        }
-                    } else if (
-                        (this.commandStructure[POSITION_BLOCK_INDEX].length === POSITION_BLOCK_MAX_LENGTH ||
-                            (this.commandStructure[POSITION_BLOCK_INDEX].length === 3 && this.commandStructure[WORD_TO_PLACE_INDEX].length === 1)) &&
-                        this.commandStructure[POSITION_BLOCK_INDEX][1].match(/[1]/g) &&
-                        this.commandStructure[POSITION_BLOCK_INDEX][2].match(/[0-5]/g)
-                    ) {
-                        this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], this.commandStructure[POSITION_BLOCK_INDEX]);
-                    }
-                } else {
-                    throw new Error("Cette ligne n'existe pas ou l'orientation n'est pas valide");
-                }
+        } else if (this.isInRack(this.parsedWord)) {
+            if (!this.commandParser.isValidVerticalPosition(this.verticalPosition))
+                throw new Error("La position verticale choisie n'est pas sur la grille de jeu");
+            if (!this.commandParser.isValidHorizontalPosition(this.horizontalPosition))
+                throw new Error("La position horizontale choisie n'est pas sur la grille de jeu");
+            if (this.placementOrientation === undefined) {
+                if (this.commandStructure[WORD_TO_PLACE_INDEX].length !== MIN_TYPED_WORD_LENGTH)
+                    throw new Error("L'orientation du placement n'est pas mentionnée alors que le mot a une longeure supérieur à 1");
             } else {
-                throw new Error('Ces lettres ne sont pas dans le chevalet');
+                if (!this.commandParser.isValidOrientation(this.placementOrientation as string))
+                    throw new Error("L'orientation du placement n'est pas valide");
             }
+            const verticalIndex = this.commandParser.getVerticalIndex(this.verticalPosition);
+            const horizontalIndex = parseInt(this.horizontalPosition, DECIMAL_BASE) - 1;
+            const isHorizontal = this.commandParser.isHorizontalOrientation(this.placementOrientation);
+            this.communicationService.place(this.commandStructure[WORD_TO_PLACE_INDEX], verticalIndex, horizontalIndex, isHorizontal);
+        } else {
+            throw new Error('Ces lettres ne sont pas dans le chevalet');
         }
     }
 
@@ -141,8 +133,8 @@ export class ChatBoxComponent implements AfterViewChecked {
             this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length >= MIN_TYPED_WORD_LENGTH &&
             this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].length <= MAX_TYPED_WORD_LENGTH;
 
-        if (this.commandStructure[LETTERS_TO_EXCHANGE_INDEX].match(/[^a-z*]/g)) {
-            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a à z et *");
+        if (this.commandParser.areValidCharactersToExchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX])) {
+            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         } else if (this.isInRack(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]) && isInBound) {
             this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
         } else {
@@ -167,6 +159,7 @@ export class ChatBoxComponent implements AfterViewChecked {
     private assignPositionSpec(positionBlock: string) {
         this.verticalPosition = positionBlock[0];
         this.horizontalPosition = positionBlock[1];
+        this.placementOrientation = undefined;
 
         switch (positionBlock.length) {
             case POSITION_BLOCK_MIN_LENGTH: {
@@ -186,7 +179,7 @@ export class ChatBoxComponent implements AfterViewChecked {
                 break;
             }
             default: {
-                throw new Error('Le coordonnées de positionnement sont invalides');
+                throw new Error('Le coordonnées de positionnement ne respectent pas le format demandé');
             }
         }
     }

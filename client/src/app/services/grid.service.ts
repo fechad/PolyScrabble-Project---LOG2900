@@ -23,9 +23,6 @@ const AMOUNTOFNUMBER = 15;
 const DEFAULT_SIZE = 9;
 const TILE_SIZE = 30;
 const BOARD_LENGTH = 15;
-const COMMAND_X_INDEX = 1;
-const COMMAND_Y_INDEX = 0;
-const LOWERCASE_A_ASCII = 97;
 
 enum Colors {
     Mustard = '#E1AC01',
@@ -78,32 +75,29 @@ export class GridService {
         }
     }
 
-    tempUpdateBoard(lettersToAdd: string, position: string) {
-        const COMMAND_ORIENTATION_INDEX = position.length - 1;
-        const verticalPosition = position.charCodeAt(COMMAND_Y_INDEX) - LOWERCASE_A_ASCII;
-        let horizontalPositionString = position.substring(COMMAND_X_INDEX, COMMAND_ORIENTATION_INDEX);
-        let horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
-
-        let isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
-        if (lettersToAdd.length === 1) {
-            horizontalPositionString = position.substring(COMMAND_X_INDEX);
-            horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
-            isVerticalPlacement = true;
-        }
-        const iterationPosition = isVerticalPlacement ? verticalPosition : horizontalPosition;
+    tempUpdateBoard(lettersToAdd: string, verticalIndex: number, horizontalIndex: number, isHorizontalPlacement: boolean | undefined) {
+        const iterationPosition = isHorizontalPlacement ? horizontalIndex : verticalIndex;
         const temporaryBoard = this.gameContext.board.value;
-        let letterPosition = 0;
-        for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
-            if (letterPosition > lettersToAdd.length - 1) break;
-            const tile = isVerticalPlacement ? temporaryBoard[i][horizontalPosition] : temporaryBoard[verticalPosition][i];
-            if (tile !== null) continue;
+        if (isHorizontalPlacement === undefined) {
             const letter: Tile = {
-                name: lettersToAdd[letterPosition].toUpperCase(),
+                name: lettersToAdd[0].toUpperCase(),
                 score: 0,
             } as Letter;
-            if (isVerticalPlacement) temporaryBoard[i][horizontalPosition] = letter;
-            else temporaryBoard[verticalPosition][i] = letter;
-            letterPosition++;
+            temporaryBoard[verticalIndex][horizontalIndex] = letter;
+        } else {
+            let letterPosition = 0;
+            for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
+                if (letterPosition > lettersToAdd.length - 1) break;
+                const tile = isHorizontalPlacement ? temporaryBoard[verticalIndex][i] : temporaryBoard[i][horizontalIndex];
+                if (tile !== null) continue;
+                const letter: Tile = {
+                    name: lettersToAdd[letterPosition].toUpperCase(),
+                    score: 0,
+                } as Letter;
+                if (isHorizontalPlacement) temporaryBoard[verticalIndex][i] = letter;
+                else temporaryBoard[i][horizontalIndex] = letter;
+                letterPosition++;
+            }
         }
         this.gameContext.board.next(temporaryBoard);
     }
