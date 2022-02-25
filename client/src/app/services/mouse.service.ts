@@ -34,8 +34,6 @@ export class MouseService {
                 this.isHorizontal = !this.isHorizontal;
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
                 this.enter = false;
-            } else {
-                this.isHorizontal = true;
             }
         }
     }
