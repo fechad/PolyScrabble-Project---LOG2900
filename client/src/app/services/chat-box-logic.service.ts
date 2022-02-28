@@ -22,8 +22,6 @@ const DECIMAL_BASE = 10;
     providedIn: 'root',
 })
 export class ChatBoxLogicService {
-    // yourMessage: boolean = true;
-    // syntaxIsValid: boolean = true;
     commandStructure: string[] = [];
     parsedLetters: string;
     verticalPosition: string;
