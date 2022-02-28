@@ -1,5 +1,5 @@
 <div class="rack-container">
-    <div class="letter-container" *ngFor="let letter of letters">
+    <div (contextmenu)="menu()" class="letter-container" id="letter-container" *ngFor="let letter of letters">
         <div
             [ngClass]="{
                 'letter-name': this.gridService.multiplier === 1,
@@ -19,4 +19,12 @@
             <p>{{ letter.score }}</p>
         </div>
     </div>
+</div>
+
+<div id="menu" class="context-menu" 
+    style="display: none">
+    <ul>
+        <li>Echanger</li>
+        <li>Annuler</li>
+    </ul>
 </div>

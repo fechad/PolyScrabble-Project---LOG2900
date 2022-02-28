@@ -69,3 +69,28 @@
     font-size: 60%;
     margin-left: 0.5vw;
 }
+
+#menu {
+    position: fixed;
+    height: 8vh;
+    right: 30%;
+    top: 87%;
+    color: white;
+    
+    
+}
+
+#menu ul {
+    list-style-type: none;
+}
+
+#menu ul li:hover{
+    background-color: #E1AC01;
+    cursor: pointer;
+}
+
+.letter-container#selected {
+    border-color: white;
+    border-width: 3px;
+
+}

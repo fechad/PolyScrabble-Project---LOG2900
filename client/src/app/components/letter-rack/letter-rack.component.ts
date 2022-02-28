@@ -19,4 +19,23 @@ export class LetterRackComponent implements OnInit {
             this.letters = newRack;
         });
     }
+    hideMenu() {
+        const menu = document.getElementById('menu') as HTMLElement;
+        menu.style.display = 'none';
+    }
+
+    menu(): void {
+        window.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            const menu = document.getElementById('menu') as HTMLElement;
+            const letter = event.target as HTMLElement;
+            if (menu.style.display === 'block') {
+                this.hideMenu();
+                letter.removeAttribute('id');
+            } else {
+                menu.style.display = 'block';
+                letter.setAttribute('id', 'selected');
+            }
+        });
+    }
 }
