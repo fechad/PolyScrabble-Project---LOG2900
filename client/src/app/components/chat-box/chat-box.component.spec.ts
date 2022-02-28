@@ -36,7 +36,7 @@ describe('ChatBoxComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('clear text should empty the chatBox textValue', () => {
+    it('validateSyntax() should empty the chatBox textValue', () => {
         component.textValue = 'oejnien  eoij ini eo jo';
         component.validateSyntax();
         expect(component.textValue).toEqual('');

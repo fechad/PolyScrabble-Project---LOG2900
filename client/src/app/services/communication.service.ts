@@ -120,7 +120,7 @@ export class CommunicationService {
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
-    place(letters: string, verticalIndex: number, horizonalIndex: number, isHorizontal: boolean | undefined) {
+    place(letters: string, verticalIndex: number, horizonalIndex: number, isHorizontal?: boolean) {
         this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, verticalIndex, horizonalIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
