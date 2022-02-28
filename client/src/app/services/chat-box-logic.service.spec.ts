@@ -13,7 +13,6 @@ describe('ChatBoxLogicService', () => {
     const invalidExchangeCommands = ['!échanger', '!échanger eT', ' !échanger e23', '!échanger e*'];
 
     beforeEach(async () => {
-        // elemRef = jasmine.createSpyObj('ElementRef', ['nativeElement', 'nativeElement.focus']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [{ provide: Router, useValue: {} }],
