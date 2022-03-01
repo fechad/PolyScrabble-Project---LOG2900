@@ -4,7 +4,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
-// const DELAY = 10;
+const MAX_LETTERS = 7;
 @Component({
     selector: 'app-letter-rack',
     templateUrl: './letter-rack.component.html',
@@ -20,7 +20,9 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         public gridService: GridService,
         private elementRef: ElementRef,
     ) {
-        this.gameContextService.state.subscribe(() => {});
+        this.gameContextService.state.subscribe(() => {
+            return;
+        });
     }
 
     ngOnInit(): void {
@@ -113,6 +115,6 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     }
 
     getReserveCount(): boolean {
-        return this.gameContextService.state.value.reserveCount < 7 ? true : false;
+        return this.gameContextService.state.value.reserveCount < MAX_LETTERS ? true : false;
     }
 }
