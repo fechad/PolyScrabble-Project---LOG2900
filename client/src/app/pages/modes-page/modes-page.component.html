@@ -7,7 +7,7 @@
             class="button champ.texte"
             [ngClass]="champ.promptsDialog ? champ.texte : ''"
             *ngFor="let champ of boutons"
-            (click)="champ.promptsDialog && openDialog()"
+            (click)="champ.promptsDialog && champ.texte === 'Multijoueur' && openDialog() || champ.promptsDialog && champ.texte === 'Solo' && openSoloDialog() "
             routerLink="{{ champ.promptsDialog ? '/classic' : champ.route }}"
             matTooltip="{{ champ.toolTip }}"
             matTooltipPosition="right"
