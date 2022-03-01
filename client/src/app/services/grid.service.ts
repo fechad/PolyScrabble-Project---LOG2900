@@ -63,11 +63,6 @@ export class GridService {
         this.buttonPressed = event.key;
     }
 
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-    }
-
     drawGrid() {
         this.gridContext.clearRect(0, 0, PLAY_AREA_SIZE, PLAY_AREA_SIZE);
         this.gridContext.lineWidth = offset;
@@ -90,6 +85,7 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        this.letters = [];
         const x = canvasX;
         const y = canvasY;
         this.gridContext.fillStyle = '#000';
@@ -116,6 +112,7 @@ export class GridService {
         }
     }
     drawTempTiles(letter: string, canvasX: number, canvasY: number) {
+        this.gridContext.beginPath();
         this.gridContext.rect(
             (squareSize + offset) * Math.ceil(canvasX / (100 / 3) - 2) + gridOrigin,
             (squareSize + offset) * Math.ceil(canvasY / (100 / 3) - 2) + gridOrigin,
@@ -124,6 +121,9 @@ export class GridService {
         );
         this.gridContext.fillStyle = 'burlywood';
         this.gridContext.fill();
+        this.gridContext.lineWidth = 2.5;
+        this.gridContext.strokeStyle = '#000';
+        this.gridContext.stroke();
         this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }
 
