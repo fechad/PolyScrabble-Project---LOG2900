@@ -69,6 +69,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.communicationservice.sendLocalMessage(e.message);
             }
         }
+        return false;
     }
 
     sendPlacedLetters() {
