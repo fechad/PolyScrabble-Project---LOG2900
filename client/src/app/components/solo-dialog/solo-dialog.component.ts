@@ -50,5 +50,7 @@ export class SoloDialogComponent implements OnInit {
                 return;
             }
         }
+
+        this.dialogRef.close();
     }
 }

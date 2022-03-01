@@ -1,9 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Room } from '@app/classes/room';
@@ -78,25 +79,37 @@ describe('SoloDialogComponent', () => {
         expect(component.soloParametersForm.valid).toBeFalsy();
     });
 
-    // it('click on cancel button should call closeDialog() function', fakeAsync(() => {
-    //     spyOn(component, 'closeDialog');
-    //     fixture.debugElement.query(By.css('.icon-cancel')).nativeElement.click();
-    //     tick();
-    //     expect(component.closeDialog).toHaveBeenCalled();
-    // }));
+    it('click on cancel button should call closeDialog() function', fakeAsync(() => {
+        spyOn(component, 'closeDialog');
+        fixture.debugElement.query(By.css('.icon-cancel')).nativeElement.click();
+        tick();
+        expect(component.closeDialog).toHaveBeenCalled();
+    }));
 
-    // it('function closeDialog of component should call close to components dialog', () => {
-    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
-    //     component.closeDialog();
-    //     expect(closeDialogSpy).toHaveBeenCalled();
-    // });
+    it('function closeDialog of component should call close to components dialog', () => {
+        const closeDialogSpy = spyOn(component.dialogRef, 'close');
+        component.closeDialog();
+        expect(closeDialogSpy).toHaveBeenCalled();
+    });
 
-    // it('on submit dialog should close', async () => {
-    //     const playerName = component.joiningRoomForm.controls.secondPlayerName;
-    //     playerName.setValue('Test');
-    //     spyOn(component.communicationService, 'joinRoom');
-    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
-    //     await component.submit();
-    //     expect(closeDialogSpy).toHaveBeenCalled();
-    // });
+    it('switchName function should change opponent name', () => {
+        component.soloParametersForm.controls.playerName.setValue('Anna');
+        component.opponentName = 'Anna';
+        component.switchName('Anna');
+        expect(component.opponentName).not.toBe('Anna');
+    });
+
+    it('on submit dialog should close', async () => {
+        const playerName = component.soloParametersForm.controls.playerName;
+        playerName.setValue('Test');
+        const closeDialogSpy = spyOn(component.dialogRef, 'close');
+        await component.onSubmit();
+        expect(closeDialogSpy).toHaveBeenCalled();
+    });
+
+    it('should not close dialog when error found', async () => {
+        const closeDialogSpy = spyOn(component.dialogRef, 'close');
+        await component.onSubmit();
+        expect(closeDialogSpy).not.toHaveBeenCalled();
+    });
 });
