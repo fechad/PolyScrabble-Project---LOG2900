@@ -130,6 +130,10 @@ export class Game {
         }
     }
 
+    showReserveContent(playerId: PlayerId) {
+        this.eventEmitter.emit('reserve-content', playerId, this.reserve.getContent());
+    }
+
     forfeit(idLoser: PlayerId) {
         this.ended = true;
         this.winner = idLoser === this.players[MAIN_PLAYER].id ? this.players[OTHER_PLAYER].id : this.players[MAIN_PLAYER].id;

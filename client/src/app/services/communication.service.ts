@@ -112,6 +112,8 @@ export class CommunicationService {
         this.gameContextService.addMessage(message, false, false);
     }
 
+    showReserveContent(sortedReserve: Letter[]) {}
+
     getId(): BehaviorSubject<PlayerId | undefined> {
         return this.myId;
     }
@@ -134,6 +136,10 @@ export class CommunicationService {
     confirmForfeit() {
         this.gameSocket?.emit('confirm-forfeit');
         this.leaveGame();
+    }
+
+    getReserve() {
+        this.gameSocket?.emit('reserve-content');
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -249,6 +255,7 @@ export class CommunicationService {
             this.gameContextService.rack.next(rack);
             this.gameContextService.allowSwitch(true);
         });
+        this.gameSocket.on('reserve-content', (sortedReserve: Letter[]) => this.showReserveContent(sortedReserve));
     }
 
     private getAuth(): { id?: PlayerId } {

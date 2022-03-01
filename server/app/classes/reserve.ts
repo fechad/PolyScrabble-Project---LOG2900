@@ -62,6 +62,10 @@ export class Reserve {
         return true;
     }
 
+    getContent() {
+        return this.reserve.sort((a, b) => a.id - b.id);
+    }
+
     private setRacks() {
         const rackLength = 7;
         let rack1: Letter[] = [];

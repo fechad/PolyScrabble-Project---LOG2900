@@ -9,6 +9,7 @@ const POSITION_BLOCK_INDEX = 1;
 const MIN_TYPED_WORD_LENGTH = 1;
 const HELP_COMMAND_LENGTH = 1;
 const PASS_COMMAND_LENGTH = 1;
+const RESERVE_COMMAND_LENGTH = 1;
 const POSITION_BLOCK_MIN_LENGTH = 2;
 const WORD_TO_PLACE_INDEX = 2;
 const EXCHANGE_COMMAND_LENGTH = 2;
@@ -60,6 +61,7 @@ export class ChatBoxLogicService {
 
     private dispatchCommand(commandLength: number) {
         if (this.communicationService.congratulations !== undefined) throw new Error(' La partie est terminée !');
+        else if (this.commandStructure[COMMAND_INDEX] === '!reserve' && commandLength === RESERVE_COMMAND_LENGTH) this.getReserve();
         else if (!this.gameContextService.isMyTurn()) throw new Error("Ce n'est pas votre tour");
         else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
@@ -114,6 +116,10 @@ export class ChatBoxLogicService {
 
     private pass() {
         this.communicationService.switchTurn(false);
+    }
+
+    private getReserve() {
+        this.communicationService.getReserve();
     }
 
     private assignPositionSpec(positionBlock: string) {
