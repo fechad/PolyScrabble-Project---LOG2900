@@ -24,9 +24,9 @@ export enum MouseButton {
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
-    letterWrited = 0;
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
+    rack: string[] = [];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -34,23 +34,70 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
+        this.gameContextService.rack.subscribe((rack) => {
+            for (const i of rack) {
+                if (this.rack.length <= 7) this.rack.push(i.name);
+            }
+        });
     }
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        if (this.mouseDetectService.writingAllowed) {
+        if (this.buttonPressed === 'Enter') {
+            this.gridService.letters = [];
+            this.gridService.drawGrid();
+        } else if (this.buttonPressed === 'Backspace') {
+            this.rack.push(this.gridService.letters[this.gridService.letters.length - 1].toUpperCase());
+            this.gridService.letters.pop();
+            this.gridService.drawGrid();
+            for (let i = 0; i < this.gridService.letters.length; i++) {
+                this.drawRightDirection(this.gridService.letters[i], i);
+            }
+        } else if (
+            this.mouseDetectService.writingAllowed &&
+            this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520 &&
+            this.mouseDetectService.isHorizontal &&
+            this.isInTempRack(this.buttonPressed)
+        ) {
+            this.drawRightDirection(this.buttonPressed, this.gridService.letters.length);
+            this.gridService.letters.push(this.buttonPressed);
+        } else if (
+            this.mouseDetectService.writingAllowed &&
+            this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520 &&
+            !this.mouseDetectService.isHorizontal &&
+            this.isInTempRack(this.buttonPressed)
+        ) {
+            this.drawRightDirection(this.buttonPressed, this.gridService.letters.length);
+            this.gridService.letters.push(this.buttonPressed);
+        }
+    }
+
+    drawRightDirection(letter: string, pos: number) {
+        if (this.mouseDetectService.isHorizontal) {
             this.gridService.drawTempTiles(
-                this.buttonPressed,
-                this.mouseDetectService.mousePosition.x + (this.letterWrited * 100) / 3,
+                letter,
+                this.mouseDetectService.mousePosition.x + (pos * 100) / 3,
                 this.mouseDetectService.mousePosition.y,
             );
-            this.letterWrited += 1;
-            if (this.buttonPressed === 'Enter') {
-                this.letterWrited = 0;
-                this.gridService.drawGrid();
+        } else {
+            this.gridService.drawTempTiles(
+                letter,
+                this.mouseDetectService.mousePosition.x,
+                this.mouseDetectService.mousePosition.y + (pos * 100) / 3,
+            );
+        }
+    }
+
+    isInTempRack(letter: string) {
+        for (let i = 0; i < this.rack.length; i++) {
+            if (this.rack[i] === letter.toUpperCase()) {
+                console.log(this.rack);
+                this.rack.splice(i, 1);
+                return true;
             }
         }
+        return false;
     }
 
     ngAfterViewInit(): void {
