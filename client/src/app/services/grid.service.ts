@@ -81,6 +81,7 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        this.letters = [];
         const x = canvasX;
         const y = canvasY;
         this.drawGrid();
