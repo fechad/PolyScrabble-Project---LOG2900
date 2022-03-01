@@ -12,7 +12,9 @@ import { GridService } from '@app/services/grid.service';
 export class LetterRackComponent implements OnInit, AfterViewInit {
     letters: Letter[];
     timeOut: number;
-    constructor(public gameContextService: GameContextService, public gridService: GridService, private elementRef: ElementRef) {}
+    constructor(public gameContextService: GameContextService, public gridService: GridService, private elementRef: ElementRef) {
+        this.gameContextService.state.subscribe(() => {});
+    }
 
     ngOnInit(): void {
         this.gameContextService.rack.subscribe((newRack) => {
@@ -59,7 +61,17 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         let itemSelected = false;
         window.addEventListener('click', (e) => {
             const selection = e.target as HTMLElement;
-            const parentPossibilities = ['name', 'letter-name', 'letter-container', 'rack-container', 'rackArea', 'context-menu', 'app-letter-rack'];
+            const parentPossibilities = [
+                'name',
+                'letter-name',
+                'letter-container',
+                'rack-container',
+                'rackArea',
+                'context-menu',
+                'app-letter-rack',
+                'letter-score',
+                'score',
+            ];
             const name = selection?.getAttribute('class') as string;
 
             if (!parentPossibilities.includes(name)) {
@@ -75,5 +87,9 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         });
 
         if (!itemSelected) this.hideMenu();
+    }
+
+    getReserveCount(): boolean {
+        return this.gameContextService.state.value.reserveCount < 7 ? true : false;
     }
 }

@@ -16,15 +16,17 @@
                 'small-sco': this.gridService.multiplier === 0.9
             }"
         >
-            <p>{{ letter.score }}</p>
+            <p class="score">{{ letter.score }}</p>
         </div>
     </div>
 </div>
 
 <div id="menu" class="context-menu" 
     style="display: none">
-    <ul>
-        <li>Echanger</li>
-        <li (click)="hideMenu()">Annuler</li>
-    </ul>
+        <button 
+        [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true || 
+        getReserveCount()">
+        Echanger</button>
+        <button (click)="hideMenu()">Annuler</button>
+   
 </div>
