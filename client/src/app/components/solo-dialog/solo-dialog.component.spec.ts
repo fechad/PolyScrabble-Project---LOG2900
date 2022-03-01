@@ -1,25 +1,102 @@
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Room } from '@app/classes/room';
+import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication.service';
+import { BehaviorSubject } from 'rxjs';
 import { SoloDialogComponent } from './solo-dialog.component';
 
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
+
+class CommunicationServiceMock {
+    rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
+
+    async joinRoom() {
+        return;
+    }
+}
+
 describe('SoloDialogComponent', () => {
-  let component: SoloDialogComponent;
-  let fixture: ComponentFixture<SoloDialogComponent>;
+    let component: SoloDialogComponent;
+    let fixture: ComponentFixture<SoloDialogComponent>;
+    let router: jasmine.SpyObj<Router>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ SoloDialogComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        router = jasmine.createSpyObj('Router', ['navigate']);
+        await TestBed.configureTestingModule({
+            declarations: [SoloDialogComponent],
+            imports: [
+                HttpClientTestingModule,
+                MatCardModule,
+                RouterTestingModule.withRoutes(routes),
+                HttpClientModule,
+                AppRoutingModule,
+                ReactiveFormsModule,
+            ],
+            providers: [
+                { provide: CommunicationService, useClass: CommunicationServiceMock },
+                { provide: MatDialogRef, useValue: dialogMock },
+                FormBuilder,
+                { provide: Router, useValue: router },
+                { provide: MAT_DIALOG_DATA, useValue: {} },
+            ],
+        }).compileComponents();
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SoloDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SoloDialogComponent);
+        component = fixture.componentInstance;
+        component.soloParametersForm = new FormGroup({
+            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            difficulty: new FormControl(0, [Validators.required]),
+            minutes: new FormControl(1, [Validators.required]),
+            seconds: new FormControl(0, [Validators.required]),
+            dictionnary: new FormControl(0, [Validators.required]),
+        });
+
+        component.ngOnInit();
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('form invalid if no name entered', () => {
+        expect(component.soloParametersForm.valid).toBeFalsy();
+    });
+
+    // it('click on cancel button should call closeDialog() function', fakeAsync(() => {
+    //     spyOn(component, 'closeDialog');
+    //     fixture.debugElement.query(By.css('.icon-cancel')).nativeElement.click();
+    //     tick();
+    //     expect(component.closeDialog).toHaveBeenCalled();
+    // }));
+
+    // it('function closeDialog of component should call close to components dialog', () => {
+    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
+    //     component.closeDialog();
+    //     expect(closeDialogSpy).toHaveBeenCalled();
+    // });
+
+    // it('on submit dialog should close', async () => {
+    //     const playerName = component.joiningRoomForm.controls.secondPlayerName;
+    //     playerName.setValue('Test');
+    //     spyOn(component.communicationService, 'joinRoom');
+    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
+    //     await component.submit();
+    //     expect(closeDialogSpy).toHaveBeenCalled();
+    // });
 });

@@ -108,7 +108,6 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
             const letterList = letters as HTMLElement;
             if (letters.id === 'selected') {
                 this.selectedLetters += letterList.innerText[0].toLowerCase();
-                console.log(this.selectedLetters);
             }
         });
     }

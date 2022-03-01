@@ -1,4 +1,8 @@
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { LetterRackComponent } from './letter-rack.component';
 
 describe('LetterRackComponent', () => {
@@ -8,6 +12,7 @@ describe('LetterRackComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [LetterRackComponent],
+            imports: [HttpClientTestingModule, RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
         }).compileComponents();
     });
 
