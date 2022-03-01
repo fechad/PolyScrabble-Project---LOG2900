@@ -32,6 +32,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         event.preventDefault();
         const menu = document.getElementById('menu') as HTMLElement;
         const letter = event.target as HTMLElement;
+        letter.parentElement?.parentElement?.parentElement?.focus();
 
         if (letter.parentElement?.parentElement?.id === 'selected') {
             letter.parentElement?.parentElement?.removeAttribute('id');
@@ -39,7 +40,32 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
             menu.style.display = 'block';
             letter.parentElement?.parentElement?.setAttribute('id', 'selected');
         }
+
+        this.checkSelection();
+    }
+
+    clearSelection() {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container).forEach((letters) => {
+            if (letters.id === 'selected') {
+                letters.removeAttribute('id');
+            }
+        });
+
+        this.hideMenu();
+    }
+
+    checkSelection() {
         let itemSelected = false;
+        window.addEventListener('click', (e) => {
+            const selection = e.target as HTMLElement;
+            const parentPossibilities = ['name', 'letter-name', 'letter-container', 'rack-container', 'rackArea', 'context-menu', 'app-letter-rack'];
+            const name = selection?.getAttribute('class') as string;
+
+            if (!parentPossibilities.includes(name)) {
+                this.clearSelection();
+            }
+        });
 
         const container = document.getElementsByClassName('letter-container');
         Array.from(container).forEach((letters) => {
