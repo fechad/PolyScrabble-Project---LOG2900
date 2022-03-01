@@ -43,6 +43,7 @@ export class GridService {
     fontSize = '';
     multiplier = 1;
     buttonPressed = '';
+    letters: string[] = [];
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private gameContext: GameContextService) {}
@@ -74,6 +75,7 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        this.letters = [];
         const x = canvasX;
         const y = canvasY;
         this.drawGrid();
@@ -101,6 +103,7 @@ export class GridService {
         }
     }
     drawTempTiles(letter: string, canvasX: number, canvasY: number) {
+        this.gridContext.beginPath();
         this.gridContext.rect(
             (squareSize + offset) * Math.ceil(canvasX / (100 / 3) - 2) + gridOrigin,
             (squareSize + offset) * Math.ceil(canvasY / (100 / 3) - 2) + gridOrigin,
@@ -109,6 +112,9 @@ export class GridService {
         );
         this.gridContext.fillStyle = 'burlywood';
         this.gridContext.fill();
+        this.gridContext.lineWidth = 2.5;
+        this.gridContext.strokeStyle = '#000';
+        this.gridContext.stroke();
         this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }
 
