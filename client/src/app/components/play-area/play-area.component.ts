@@ -25,9 +25,9 @@ export enum MouseButton {
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
-    letterWrited = 0;
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
+    rack: string[] = [];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -39,6 +39,11 @@ export class PlayAreaComponent implements AfterViewInit {
     ) {
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
+        });
+        this.gameContextService.rack.subscribe((rack) => {
+            for (const i of rack) {
+                if (this.rack.length <= 7) this.rack.push(i.name);
+            }
         });
     }
 
@@ -101,6 +106,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.mouseDetectService.mousePosition.y + (pos * 100) / 3,
             );
         }
+        return false;
     }
 
     ngAfterViewInit(): void {
