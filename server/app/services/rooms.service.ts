@@ -1,3 +1,4 @@
+import { Game } from '@app/classes/game';
 import { Room, RoomId } from '@app/classes/room';
 import { Service } from 'typedi';
 
@@ -7,11 +8,16 @@ const NOT_FOUND = -1;
 @Service()
 export class RoomsService {
     readonly rooms: Room[] = [];
+    readonly games: Game[] = [];
 
     remove(roomId: RoomId) {
-        const idx = this.rooms.findIndex((room) => room.id === roomId);
-        if (idx !== NOT_FOUND) {
-            this.rooms.splice(idx, 1);
+        const roomIdx = this.rooms.findIndex((room) => room.id === roomId);
+        if (roomIdx !== NOT_FOUND) {
+            this.rooms.splice(roomIdx, 1);
+        }
+        const gameIdx = this.games.findIndex((game) => game.gameId === roomId);
+        if (gameIdx !== NOT_FOUND) {
+            this.games.splice(gameIdx, 1);
         }
     }
 }

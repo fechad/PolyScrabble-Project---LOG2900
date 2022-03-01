@@ -13,7 +13,6 @@ type Handlers = [string, (params: unknown[]) => void][];
 const AWOL_DELAY = 5000;
 @Service()
 export class SocketManager {
-    readonly games: Game[] = [];
     private io: io.Server;
     private logins: LoginsService = new LoginsService();
     private token: number;
@@ -104,7 +103,7 @@ export class SocketManager {
                 socket.on('start', () => {
                     room.start();
                     const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters, this.dictionnaryService);
-                    this.games.push(game);
+                    this.roomsService.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
                 });
             }
@@ -125,7 +124,7 @@ export class SocketManager {
         const games = this.io.of(/^\/games\/\d+$/);
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
-            const idx = this.games.findIndex((game) => game.gameId === gameId);
+            const idx = this.roomsService.games.findIndex((game) => game.gameId === gameId);
             const NOT_FOUND = -1;
             if (idx === NOT_FOUND) {
                 next(Error('Invalid game number'));
@@ -143,7 +142,7 @@ export class SocketManager {
         });
         games.on('connect', (socket) => {
             const id = socket.handshake.auth.id;
-            const game = this.games[socket.data.gameIdx];
+            const game = this.roomsService.games[socket.data.gameIdx];
             socket.join(`game-${game.gameId}`);
 
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);

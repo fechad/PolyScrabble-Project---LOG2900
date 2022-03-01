@@ -60,8 +60,8 @@ export class Game {
     sendState() {
         const state: GameState = {
             players: [
-                { info: this.players[MAIN_PLAYER], score: this.scores[MAIN_PLAYER], rackCount: this.reserve.letterRacks[MAIN_PLAYER].length },
-                { info: this.players[OTHER_PLAYER], score: this.scores[OTHER_PLAYER], rackCount: this.reserve.letterRacks[OTHER_PLAYER].length },
+                this.getPlayerInfo(this.players[MAIN_PLAYER].id) as PlayerInfo,
+                this.getPlayerInfo(this.players[OTHER_PLAYER].id) as PlayerInfo,
             ],
             reserveCount: this.reserve.getCount(),
             board: this.formatSendableBoard(),
@@ -73,6 +73,18 @@ export class Game {
         this.eventEmitter.emit('state', state);
         this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
         this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
+    }
+
+    getPlayerInfo(id: PlayerId): PlayerInfo | undefined {
+        let idx;
+        if (id === this.players[MAIN_PLAYER].id) {
+            idx = MAIN_PLAYER;
+        } else if (id === this.players[OTHER_PLAYER].id) {
+            idx = OTHER_PLAYER;
+        } else {
+            return undefined;
+        }
+        return { info: this.players[idx], score: this.scores[idx], rackCount: this.reserve.letterRacks[idx].length };
     }
 
     message(message: Message) {
@@ -139,6 +151,7 @@ export class Game {
     }
 
     forfeit(idLoser: PlayerId) {
+        if (this.ended) return;
         this.ended = true;
         this.winner = idLoser === this.players[MAIN_PLAYER].id ? this.players[OTHER_PLAYER].id : this.players[MAIN_PLAYER].id;
         this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';

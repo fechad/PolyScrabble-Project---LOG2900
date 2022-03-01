@@ -18,6 +18,7 @@ export class Parameters {
     dictionnary: IdDictionnary = 0;
     gameType: GameType = GameType.Multiplayer;
     difficulty?: Difficulty;
+    log2990: boolean = false;
 
     validateParameters(): Error | undefined {
         // TODO: check if dictionnary ID is in the list
