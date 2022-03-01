@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit } from '@angular/core';
 import { Letter } from '@app/classes/letter';
+import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
@@ -12,7 +13,13 @@ import { GridService } from '@app/services/grid.service';
 export class LetterRackComponent implements OnInit, AfterViewInit {
     letters: Letter[];
     timeOut: number;
-    constructor(public gameContextService: GameContextService, public gridService: GridService, private elementRef: ElementRef) {
+    selectedLetters: string = '';
+    constructor(
+        public communicationService: CommunicationService,
+        public gameContextService: GameContextService,
+        public gridService: GridService,
+        private elementRef: ElementRef,
+    ) {
         this.gameContextService.state.subscribe(() => {});
     }
 
@@ -87,6 +94,23 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         });
 
         if (!itemSelected) this.hideMenu();
+    }
+
+    exchange() {
+        this.getSelectedLetters();
+        this.communicationService.exchange(this.selectedLetters);
+        this.selectedLetters = '';
+    }
+
+    getSelectedLetters() {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container).forEach((letters) => {
+            const letterList = letters as HTMLElement;
+            if (letters.id === 'selected') {
+                this.selectedLetters += letterList.innerText[0].toLowerCase();
+                console.log(this.selectedLetters);
+            }
+        });
     }
 
     getReserveCount(): boolean {

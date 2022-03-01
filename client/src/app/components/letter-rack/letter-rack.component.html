@@ -23,7 +23,7 @@
 
 <div id="menu" class="context-menu" 
     style="display: none">
-        <button 
+        <button (click)="exchange()"
         [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true || 
         getReserveCount()">
         Echanger</button>
