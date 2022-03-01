@@ -23,10 +23,10 @@
 
 <div id="menu" class="context-menu" 
     style="display: none">
-        <button (click)="exchange()"
+        <button id="exchange" (click)="exchange()"
         [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true || 
         getReserveCount()">
-        Echanger</button>
-        <button (click)="hideMenu()">Annuler</button>
+        Échanger</button>
+        <button id="cancel" (click)="hideMenu()">Annuler</button>
    
 </div>

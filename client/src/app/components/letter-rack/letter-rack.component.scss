@@ -72,21 +72,36 @@
 
 #menu {
     position: fixed;
-    right: 70%;
+    right: 65%;
     top: 89vh;
     color: white;
 
 }
 
-#menu ul {
-    list-style-type: none;
+#menu button{
+    font-size: 15px;
+    width: 15vh;
+    font-family: Signika Negative;
+    border-radius: 15px;
+    margin: 2px;
+
 }
 
-#menu ul li:hover{
-    background-color: #E1AC01;
+#menu button:hover{
     cursor: pointer;
 }
 
+#menu button:hover:disabled{
+    cursor: default;
+}
+
+#menu button#exchange{
+    background: #25BE4B;
+}
+
+#menu button#cancel{
+    background: red;
+}
 
 .letter-container#selected {
     border-color: white;
