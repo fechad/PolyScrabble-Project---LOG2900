@@ -29,13 +29,13 @@ export class Room extends EventEmitter {
 
     addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
         if (playerName === this.mainPlayer.name) {
-            return Error('this name is already taken');
+            return Error('Ce nom a déjà été prit');
         }
         if (playerId === this.mainPlayer.id) {
-            return Error('Cannot have same id for both players');
+            return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
         }
         if (this.otherPlayer !== undefined) {
-            return Error('already 2 players in the game');
+            return Error('Il y a déjà deux joueurs dans cette partie');
         }
         this.otherPlayer = { id: playerId, name: playerName, connected: true };
         this.emit('update-room');
