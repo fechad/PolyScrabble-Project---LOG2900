@@ -107,4 +107,7 @@ export class GameContextService {
         }
         this.tempRack = tempRack;
     }
+    addTempRack(letter: Letter) {
+        this.tempRack.push(letter);
+    }
 }
