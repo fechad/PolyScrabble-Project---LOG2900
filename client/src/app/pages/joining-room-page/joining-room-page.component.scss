@@ -4,16 +4,21 @@
     font-size: 45px;
     width: 50px;
     color: $primary;
-    margin-left: 20px;
     transition: transform 0.3s ease-in-out;
 }
 
 .material-icons:hover {
     transform: scale(1.2);
+    cursor: pointer;
 }
 
-.home-button:hover {
-    cursor: pointer;
+.button {
+    background-color: $primary;
+    color: $bkg;
+}
+
+.button:disabled {
+    background-color: rgb(87, 87, 87);
 }
 
 .clickable {
@@ -44,28 +49,33 @@
 
 #title {
     font-style: 'Signika Negative';
+    text-align: center;
+    margin: 0;
 }
 
 .title-container {
     color: $primary;
-    padding: 1em;
 }
 
 .header {
     display: flex;
     justify-content: left;
     align-items: center;
-    height: 6em;
+    height: 5em;
     position: sticky;
     top: 0;
     left: 0;
     right: 0;
+    z-index: 10;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background-color: $bkg;
 }
 
-.header > * {
+.header > div {
     width: 33.33%;
 }
 
-.header:nth-child(2) {
-    padding-left: 30px;
+#icon-container {
+    padding-left: 2em;
 }

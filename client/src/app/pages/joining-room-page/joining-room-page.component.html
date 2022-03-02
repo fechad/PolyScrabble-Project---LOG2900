@@ -1,16 +1,20 @@
 <header class="header">
-    <div>
-        <a (click)="location.back()" class="home-button">
-            <i class="material-icons">arrow_back_ios</i>
-        </a>
+    <div id="icon-container">
+        <i class="material-icons" (click)="location.back()">arrow_back_ios</i>
     </div>
-    <div>
-        <div class="title-container">
-            <h1 id="title">Joignez une partie mode classique</h1>
-        </div>
+    <div class="title-container">
+        <h1 id="title">Joignez une partie mode classique</h1>
     </div>
-    <div>
-        <button mat-raised-button class="button">allo</button>
+    <div id="icon-container">
+        <button
+            *ngIf="communicationService.rooms.value.length > 0"
+            [disabled]="communicationService.rooms.value.length <= 1"
+            mat-raised-button
+            class="button"
+            (click)="getRandomRoom()"
+        >
+            Choix aléatoire
+        </button>
     </div>
 </header>
 

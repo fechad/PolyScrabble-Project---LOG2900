@@ -32,4 +32,9 @@ export class JoiningRoomPageComponent implements OnInit {
             },
         });
     }
+
+    getRandomRoom() {
+        const randomNumber = Math.floor(Math.random() * (this.communicationService.rooms.value.length - 1));
+        this.openDialog(this.communicationService.rooms.value[randomNumber]);
+    }
 }
