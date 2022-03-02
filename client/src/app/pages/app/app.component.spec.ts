@@ -72,7 +72,10 @@ describe('AppComponent', () => {
     it('should not redirect when not updating room', () => {
         communicationService.selectedRoom.next(ROOM);
         router.navigate.calls.reset();
-        communicationService.selectedRoom.next({ ...ROOM, otherPlayer: { id: 'Hari Seldons ID', name: 'Hari Seldon', connected: true, virtual: false } });
+        communicationService.selectedRoom.next({
+            ...ROOM,
+            otherPlayer: { id: 'Hari Seldons ID', name: 'Hari Seldon', connected: true, virtual: false },
+        });
         expect(router.navigate).not.toHaveBeenCalled();
     });
 

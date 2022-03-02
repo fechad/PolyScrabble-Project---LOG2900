@@ -10,15 +10,14 @@ import { Service } from 'typedi';
 
 const NEW_SCORE_SCHEMA: ValidateFunction = {
     type: 'object',
-    required: ['name', 'score', 'log2990'],
+    required: ['id', 'token'],
     properties: {
         id: {
             type: 'string',
             minLength: 1,
         },
         token: {
-            type: 'string',
-            minLength: 1,
+            type: 'number',
         },
     },
 };
@@ -55,6 +54,7 @@ export class HttpController {
         });
         this.router.post('/high-scores', validate({ body: NEW_SCORE_SCHEMA }), async (req: Request, res: Response) => {
             if (!this.logins.verify(req.body.id, req.body.token)) return res.sendStatus(StatusCodes.FORBIDDEN);
+
             const result = this.roomsService.rooms
                 .flatMap((r): [Room, Player | undefined][] => [
                     [r, r.mainPlayer],
@@ -66,9 +66,13 @@ export class HttpController {
             const game = this.roomsService.games.find((g) => g.gameId === room.id);
             if (game === undefined) return res.sendStatus(StatusCodes.NOT_FOUND);
             const info = game.getPlayerInfo(player.id);
-            if (info === undefined) return res.sendStatus(StatusCodes.NOT_FOUND);
+            if (info === undefined) {
+                // Impossible during execution, since the game players are the same as the rooms's one
+                console.error('Different players in game and in room??');
+                return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+            }
             if (info.info.virtual) return res.sendStatus(StatusCodes.FORBIDDEN);
-            await this.highScoreService.addScore({ name: player.name, score: info.score, log2990: room.parameters.log2990 });
+            await this.highScoreService.addScore({ name: info.info.name, score: info.score, log2990: room.parameters.log2990 });
             return res.sendStatus(StatusCodes.ACCEPTED);
         });
     }
