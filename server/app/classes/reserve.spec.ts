@@ -5,22 +5,23 @@ import { Reserve } from './reserve';
 
 describe('Reserve', () => {
     let reserve: Reserve;
-    const racksLength = 7;
+    const RACKS_LENGTH = 7;
+    const RESERVE_CONTENT_LENGTH = 27;
 
     beforeEach(() => {
         reserve = new Reserve();
     });
 
     it('should have 7 elements in each rack', (done) => {
-        assert(reserve.letterRacks[0].length === racksLength);
-        assert(reserve.letterRacks[1].length === racksLength);
+        assert(reserve.letterRacks[0].length === RACKS_LENGTH);
+        assert(reserve.letterRacks[1].length === RACKS_LENGTH);
         done();
     });
 
     it('should return the right number of letters', (done) => {
         const numberOfLetters = 4;
         assert(reserve.drawLetters(numberOfLetters).length === numberOfLetters);
-        assert(reserve.drawLetters(racksLength).length === racksLength);
+        assert(reserve.drawLetters(RACKS_LENGTH).length === RACKS_LENGTH);
         done();
     });
 
@@ -90,8 +91,13 @@ describe('Reserve', () => {
     it('should set the racks', (done) => {
         // eslint-disable-next-line dot-notation
         reserve['setRacks']();
-        assert(reserve.letterRacks[0].length === racksLength);
-        assert(reserve.letterRacks[1].length === racksLength);
+        assert(reserve.letterRacks[0].length === RACKS_LENGTH);
+        assert(reserve.letterRacks[1].length === RACKS_LENGTH);
+        done();
+    });
+
+    it('reserve content should show all 27 letters (including *)', (done) => {
+        assert(reserve.getContent().length === RESERVE_CONTENT_LENGTH);
         done();
     });
 });

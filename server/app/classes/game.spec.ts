@@ -162,6 +162,15 @@ describe('Game', () => {
         done();
     });
 
+    it('should show content of reserve', (done) => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('reserve-content', stub);
+        game.showReserveContent('me');
+        assert(stub.calledWith('me', game.reserve.getContent()));
+        assert(stubError.notCalled);
+        done();
+    });
+
     it('Skipping 6 turns in a row should call endGame', () => {
         game['skipCounter'] = 5;
         const endGame = sinon.spy(game, 'endGame');

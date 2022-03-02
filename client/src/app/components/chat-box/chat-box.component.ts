@@ -28,15 +28,15 @@ export class ChatBoxComponent implements AfterViewChecked {
 
     ngAfterViewChecked() {
         this.scrollToBottom();
-        this.myId = this.communicationService.getId().value;
+        this.myId = this.communicationService.getId().value; // needed for 5s reconnexion
     }
 
     scrollToBottom() {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
 
-    validateSyntax() {
-        this.chatBoxLogicService.validateSyntax(this.textValue);
+    async validateSyntax() {
+        await this.chatBoxLogicService.validateSyntax(this.textValue);
         this.textValue = '';
     }
 }

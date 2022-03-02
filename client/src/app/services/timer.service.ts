@@ -20,6 +20,7 @@ export class TimerService {
             if (!room || !room.started) return;
             this.gameContextService.state.subscribe((state) => {
                 if (state.turn === this.prevTurn) return;
+                this.prevTurn = state.turn;
                 if (this.prevSubscription) this.prevSubscription.unsubscribe();
                 this.timer.next(room.parameters.timer);
                 this.prevSubscription = interval(ONE_SECOND)

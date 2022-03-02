@@ -8,6 +8,7 @@ import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
+import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
@@ -112,6 +113,14 @@ export class CommunicationService {
         this.gameContextService.addMessage(message, false, false);
     }
 
+    showReserveContent(sortedReserve: ReserveLetter[]) {
+        let message = '';
+        for (const letter of sortedReserve) {
+            message += letter.name + ' : ' + letter.qtyInReserve + '\n';
+        }
+        this.sendCommandMessage(message);
+    }
+
     getId(): BehaviorSubject<PlayerId | undefined> {
         return this.myId;
     }
@@ -134,6 +143,10 @@ export class CommunicationService {
     confirmForfeit() {
         this.gameSocket?.emit('confirm-forfeit');
         this.leaveGame();
+    }
+
+    getReserve() {
+        this.gameSocket?.emit('reserve-content');
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -249,6 +262,7 @@ export class CommunicationService {
             this.gameContextService.rack.next(rack);
             this.gameContextService.allowSwitch(true);
         });
+        this.gameSocket.on('reserve-content', (sortedReserve: ReserveLetter[]) => this.showReserveContent(sortedReserve));
     }
 
     private getAuth(): { id?: PlayerId } {
