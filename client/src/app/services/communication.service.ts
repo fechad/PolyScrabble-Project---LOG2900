@@ -120,11 +120,11 @@ export class CommunicationService {
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
-    place(letters: string, verticalIndex: number, horizonalIndex: number, isHorizontal?: boolean) {
+    place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
         this.gameContextService.tempUpdateRack();
-        this.gridService.tempUpdateBoard(letters, verticalIndex, horizonalIndex, isHorizontal);
+        this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
-        this.gameSocket?.emit('place-letters', letters, verticalIndex, horizonalIndex, isHorizontal);
+        this.gameSocket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
 
     exchange(letters: string) {

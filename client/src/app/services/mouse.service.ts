@@ -20,18 +20,23 @@ export class MouseService {
 
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
-            this.prevPos = this.mousePosition;
-            this.mousePosition = {
-                x: Math.ceil(((event.offsetX * 500) / 615 - 15) / 33) * 33 + 15,
-                y: Math.ceil(((event.offsetY * 500) / 615 - 5) / 33) * 33 + 5,
-            };
-            if (this.mousePosition.x >= 18 && this.mousePosition.y >= 18) {
+            if (this.gridService.letterWritten !== 0) this.mousePosition = this.prevPos;
+            else {
+                this.prevPos = this.mousePosition;
+                this.mousePosition = {
+                    x: Math.ceil(((event.offsetX * 500) / 615 - 15) / 33) * 33 + 15,
+                    y: Math.ceil(((event.offsetY * 500) / 615 - 5) / 33) * 33 + 5,
+                };
+            }
+            if (this.mousePosition.x >= 18 && this.mousePosition.y >= 18 && this.gridService.letterWritten === 0) {
+                this.gridService.drawGrid();
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, true);
                 this.writingAllowed = true;
                 this.enter = false;
             }
-            if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y) {
+            if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y && this.gridService.letterWritten === 0) {
                 this.isHorizontal = !this.isHorizontal;
+                this.gridService.drawGrid();
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
                 this.enter = false;
             } else {

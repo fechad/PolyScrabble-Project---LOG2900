@@ -28,6 +28,7 @@ export class PlayAreaComponent implements AfterViewInit {
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
+    firstLetter = [0, 0];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -51,16 +52,26 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
+            this.communicationservice.place(
+                this.gridService.letterForServer,
+                this.firstLetter[1],
+                this.firstLetter[0],
+                this.mouseDetectService.isHorizontal,
+            );
+            this.gridService.letterWritten = 0;
             this.gridService.letters = [];
+            this.gridService.letterForServer = '';
             this.gridService.drawGrid();
         } else if (this.buttonPressed === 'Backspace') {
             const letter = this.gridService.letters.pop();
+            this.gridService.letterForServer.slice(0, -1);
             if (letter !== undefined) {
                 this.gridService.rack.push(letter);
                 this.gameContextService.addTempRack(letter);
             }
             this.gameContextService.tempUpdateRack();
             this.gridService.drawGrid();
+            this.gridService.letterWritten -= 1;
             for (let i = 0; i < this.gridService.letters.length; i++) {
                 this.drawRightDirection(this.gridService.letters[i].name.toLowerCase(), i, this.mouseDetectService.isHorizontal);
             }
@@ -68,9 +79,11 @@ export class PlayAreaComponent implements AfterViewInit {
             try {
                 this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
                 this.drawRightDirection(this.buttonPressed, this.gridService.letters.length, this.mouseDetectService.isHorizontal);
+                this.gridService.letterWritten += 1;
                 for (const i of this.gridService.rack) {
                     if (i.name === this.buttonPressed.toUpperCase()) {
                         this.gridService.letters.push(i);
+                        this.gridService.letterForServer += this.buttonPressed;
                         break;
                     }
                 }
@@ -94,16 +107,36 @@ export class PlayAreaComponent implements AfterViewInit {
 
     drawRightDirection(letter: string, pos: number, horizontal: boolean) {
         if (horizontal && this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520) {
+            if (this.gridService.letters.length === 0)
+                this.firstLetter = [
+                    Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
+                    Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
+                ];
             this.gridService.drawTempTiles(
                 letter,
                 this.mouseDetectService.mousePosition.x + (pos * 100) / 3,
                 this.mouseDetectService.mousePosition.y,
             );
+            this.gridService.drawArrow(
+                this.mouseDetectService.mousePosition.x + ((pos + 1) * 100) / 3,
+                this.mouseDetectService.mousePosition.y,
+                true,
+            );
         } else if (!horizontal && this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520) {
+            if (this.gridService.letters.length === 0)
+                this.firstLetter = [
+                    Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
+                    Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
+                ];
             this.gridService.drawTempTiles(
                 letter,
                 this.mouseDetectService.mousePosition.x,
                 this.mouseDetectService.mousePosition.y + (pos * 100) / 3,
+            );
+            this.gridService.drawArrow(
+                this.mouseDetectService.mousePosition.x,
+                this.mouseDetectService.mousePosition.y + ((pos + 1) * 100) / 3,
+                false,
             );
         }
     }
