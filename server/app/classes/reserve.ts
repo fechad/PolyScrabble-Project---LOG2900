@@ -1,5 +1,6 @@
 import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
+import { ReserveLetter } from '@app/reserve-letter';
 import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 
 export class Reserve {
@@ -63,7 +64,15 @@ export class Reserve {
     }
 
     getContent() {
-        return this.reserve.sort((a, b) => a.id - b.id);
+        const reserveToShow: ReserveLetter[] = [];
+        for (const letter of alphabetTemplate) {
+            const letterToShow: ReserveLetter = { name: letter.name, qtyInReserve: 0 };
+            reserveToShow.push(letterToShow);
+        }
+        for (const content of this.reserve) {
+            reserveToShow[content.id - 1].qtyInReserve++;
+        }
+        return reserveToShow;
     }
 
     private setRacks() {
