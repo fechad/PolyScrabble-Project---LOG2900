@@ -30,7 +30,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
-            this.shiftRight(this.buttonPressed);
+            this.shiftLetter(this.buttonPressed);
         } else {
             this.clearSelection('manipulate');
             let index = 0;
@@ -47,7 +47,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         }
     }
 
-    shiftRight(keypress: string) {
+    shiftLetter(keypress: string) {
         const container = document.getElementsByClassName('letter-container');
         let index = 0;
         const tempRack = this.letters.map((x) => x);
@@ -57,21 +57,26 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
                     name: letters.firstChild?.firstChild?.textContent!,
                     score: Number(letters.lastChild?.firstChild?.textContent),
                 };
-                if (keypress === 'ArrowRight') {
+                if (keypress === 'ArrowRight' && index !== this.letters.length - 1) {
                     tempRack[index + 1] = letterToSwap;
                     tempRack[index] = this.letters[index + 1];
                     this.letters = tempRack;
-                }
-                if (keypress === 'ArrowLeft') {
+                } else if (keypress === 'ArrowRight' && index === this.letters.length - 1) {
+                    this.letters.pop();
+                    this.letters.unshift(tempRack[index]);
+                } else if (keypress === 'ArrowLeft' && index !== 0) {
                     tempRack[index - 1] = letterToSwap;
                     tempRack[index] = this.letters[index - 1];
                     this.letters = tempRack;
+                } else {
+                    this.letters.shift();
+                    console.log(this.letters);
+                    this.letters.push(tempRack[index]);
                 }
             }
             index++;
         });
     }
-
     setToManipulate(letter: string, idx: number) {
         const container = document.getElementsByClassName('letter-container');
         let selection = false;
