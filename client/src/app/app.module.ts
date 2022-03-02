@@ -15,6 +15,7 @@ import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteu
 import { CountdownModule } from 'ngx-countdown';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
+import { HighScoresComponent } from './components/high-scores/high-scores.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
 import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
 import { LetterRackComponent } from './components/letter-rack/letter-rack.component';
@@ -46,6 +47,7 @@ import { SoloDialogComponent } from './components/solo-dialog/solo-dialog.compon
         InfosBoxComponent,
         ModesPageComponent,
         SoloDialogComponent,
+        HighScoresComponent,
     ],
     imports: [
         AppMaterialModule,

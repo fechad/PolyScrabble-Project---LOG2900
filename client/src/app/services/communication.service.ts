@@ -42,7 +42,7 @@ export class CommunicationService {
     constructor(
         public gameContextService: GameContextService,
         public gridService: GridService,
-        httpClient: HttpClient,
+        private httpClient: HttpClient,
         private router: Router,
         private io: IoWrapper,
     ) {
@@ -240,6 +240,7 @@ export class CommunicationService {
                         'Votre adversaire a quitté la partie, voulez-vous retourner au menu principal?',
                     ];
                 else text = ['Gagnant par défaut', '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?'];
+                this.httpClient.post(`${environment.serverUrl}/high-scores`, { id: this.myId.value, token: this.token });
                 swal.fire({
                     title: text[0],
                     text: text[1],

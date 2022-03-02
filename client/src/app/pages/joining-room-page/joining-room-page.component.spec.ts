@@ -64,7 +64,7 @@ describe('JoiningRoomPageComponent', () => {
             id: 0,
             name: 'Room',
             parameters: new Parameters(),
-            mainPlayer: { name: 'Player 1', id: '0', connected: true },
+            mainPlayer: { name: 'Player 1', id: '0', connected: true, virtual: false },
             otherPlayer: undefined,
             started: false,
         };

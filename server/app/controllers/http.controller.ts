@@ -67,6 +67,7 @@ export class HttpController {
             if (game === undefined) return res.sendStatus(StatusCodes.NOT_FOUND);
             const info = game.getPlayerInfo(player.id);
             if (info === undefined) return res.sendStatus(StatusCodes.NOT_FOUND);
+            if (info.info.virtual) return res.sendStatus(StatusCodes.FORBIDDEN);
             await this.highScoreService.addScore({ name: player.name, score: info.score, log2990: room.parameters.log2990 });
             return res.sendStatus(StatusCodes.ACCEPTED);
         });

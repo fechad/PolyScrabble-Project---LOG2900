@@ -1,0 +1,22 @@
+<div class="container main-container high-scores">
+    <h1>Meilleurs scores</h1>
+    <b>Mode standard ou LOG2990</b>
+    <mat-slide-toggle ngDefaultControl [(ngModel)]="log2990" (change)="updateView()">Mode 2990</mat-slide-toggle>
+    <table mat-table>
+        <thead>
+            <tr mat-row>
+                <th mat-header-cell>Score</th>
+                <th mat-header-cell>Nom</th>
+            </tr>
+        </thead>
+        <tbody *ngFor="let score of scores" class="score-container">
+            <tr mat-row *ngFor="let name of score.names; let index = index">
+                <td mat-cell *ngIf="index === 0" [rowSpan]="score.names.length" class="score">{{ score.score }}</td>
+                <td mat-cell score="name">{{ name }}</td>
+            </tr>
+            <tr>
+                <td mat-cell class="separator" colspan="2"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -25,7 +25,7 @@ export class MainLobbyService {
                 socket.emit('error', 'Room is no longer available');
                 return;
             }
-            const error = room.addPlayer(id, playerName);
+            const error = room.addPlayer(id, playerName, false);
             if (error !== undefined) {
                 socket.emit('error', error.message);
                 return;

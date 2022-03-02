@@ -32,7 +32,7 @@
             matTooltipPosition="right"
             matTooltipClass="tool"
             routerLink="{{ champ.route }}"
-            (click)="mode.appendMode(champ.texte)"
+            (click)="champ.openPopUp && openPopUp()"
         >
             {{ champ.texte }}
         </button>

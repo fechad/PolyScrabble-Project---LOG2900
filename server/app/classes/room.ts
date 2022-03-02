@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Parameters } from './parameters';
 
-export type Player = { name: string; id: PlayerId; connected: boolean };
+export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -23,11 +23,12 @@ export class Room extends EventEmitter {
             id: playerId,
             name: playerName,
             connected: true,
+            virtual: false,
         };
         this.name = `Partie de ${playerName}`;
     }
 
-    addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
+    addPlayer(playerId: PlayerId, playerName: string, virtual: boolean): Error | undefined {
         if (playerName === this.mainPlayer.name) {
             return Error('Ce nom a déjà été prit');
         }
@@ -37,7 +38,7 @@ export class Room extends EventEmitter {
         if (this.otherPlayer !== undefined) {
             return Error('Il y a déjà deux joueurs dans cette partie');
         }
-        this.otherPlayer = { id: playerId, name: playerName, connected: true };
+        this.otherPlayer = { id: playerId, name: playerName, connected: true, virtual };
         this.emit('update-room');
         return undefined;
     }

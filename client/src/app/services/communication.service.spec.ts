@@ -72,7 +72,7 @@ describe('CommunicationService', () => {
                 id: 0,
                 name: 'Game',
                 parameters: new Parameters(),
-                mainPlayer: { name: 'BOB', id: ID, connected: true },
+                mainPlayer: { name: 'BOB', id: ID, connected: true, virtual: false },
                 otherPlayer: undefined,
                 started: false,
             },
@@ -240,8 +240,8 @@ describe('CommunicationService', () => {
 
     const DEFAULT_STATE: GameState = {
         players: [
-            { info: { id: ID, name: 'BOB', connected: true }, score: 0, rackCount: 7 },
-            { info: { id: 'Dummy', name: 'Not BOB', connected: true }, score: 0, rackCount: 7 },
+            { info: { id: ID, name: 'BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
+            { info: { id: 'Dummy', name: 'Not BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
         ],
         reserveCount: 88,
         board: [[]],

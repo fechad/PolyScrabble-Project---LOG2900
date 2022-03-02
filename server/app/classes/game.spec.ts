@@ -29,8 +29,8 @@ describe('Game', () => {
 
     beforeEach(() => {
         players = [
-            { name: 'Bob', id: '0', connected: true },
-            { name: 'notBob', id: '1', connected: true },
+            { name: 'Bob', id: '0', connected: true, virtual: false },
+            { name: 'notBob', id: '1', connected: true, virtual: false },
         ];
         parameters = new Parameters();
         game = new Game(0, players, parameters, dictionnary);
@@ -188,9 +188,9 @@ describe('Game', () => {
         const calculateFinalScores = sinon.spy(EndGameCalculator, 'calculateFinalScores');
         const createGameSummaryMessage = sinon.spy(EndGameCalculator, 'createGameSummaryMessage');
         game.endGame();
-        assert(calculateFinalScores.called);
-        assert(createGameSummaryMessage.called);
-        assert(game['winner'] !== undefined);
+        assert(calculateFinalScores.called, 'Did not call final scores');
+        assert(createGameSummaryMessage.called, 'Did not call game summary');
+        expect(game['winner']).to.not.equal(undefined);
     });
 
     it('getWinner should return the winners id', () => {
