@@ -34,7 +34,6 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
     firstLetter = [0, 0];
-    shift: number[] = [];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -166,7 +165,6 @@ export class PlayAreaComponent implements AfterViewInit {
     isInTempRack(letter: string) {
         for (let i = 0; i < this.rack.length; i++) {
             if (this.rack[i] === letter.toUpperCase()) {
-                console.log(this.rack);
                 this.rack.splice(i, 1);
                 return true;
             }
