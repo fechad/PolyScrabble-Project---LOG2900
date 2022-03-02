@@ -25,15 +25,29 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
             return;
         });
     }
-    @HostListener('keydown', ['$event'])
+    @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        console.log(this.buttonPressed);
         if (this.buttonPressed === 'ArrowLeft') {
             console.log('left pressed');
         } else if (this.buttonPressed === 'ArrowRight') {
             console.log('right pressed');
+        } else {
+            for (const letter of this.letters) {
+                if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase()) {
+                    this.setToManipulate(this.buttonPressed.toLowerCase());
+                    break;
+                }
+            }
         }
+    }
+
+    setToManipulate(letter: string) {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container).forEach((letters) => {
+            console.log(letters.firstChild?.firstChild?.textContent);
+            if (letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter) letters.setAttribute('id', 'manipulating');
+        });
     }
 
     manipulate(event: Event): void {
