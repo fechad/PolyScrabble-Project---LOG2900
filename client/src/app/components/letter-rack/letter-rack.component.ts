@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
@@ -14,6 +14,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     letters: Letter[];
     timeOut: number;
     selectedLetters: string = '';
+    buttonPressed = '';
     constructor(
         public communicationService: CommunicationService,
         public gameContextService: GameContextService,
@@ -23,6 +24,26 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.gameContextService.state.subscribe(() => {
             return;
         });
+    }
+    @HostListener('keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+        console.log(this.buttonPressed);
+        if (this.buttonPressed === 'ArrowLeft') {
+            console.log('left pressed');
+        } else if (this.buttonPressed === 'ArrowRight') {
+            console.log('right pressed');
+        }
+    }
+
+    manipulate(event: Event): void {
+        const tile = event.target as HTMLElement;
+        if (tile.parentElement?.parentElement?.getAttribute('id') === 'selected') {
+            return;
+        }
+        this.clearSelection('manipulate');
+        tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
+        this.checkSelection();
     }
 
     ngOnInit(): void {
@@ -105,53 +126,6 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.communicationService.exchange(this.selectedLetters);
         this.selectedLetters = '';
     }
-    /*
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-        if (this.buttonPressed === 'Enter') {
-            this.gridService.letters = [];
-            this.gridService.drawGrid();
-        } else if (this.buttonPressed === 'Backspace') {
-            const letter = this.gridService.letters.pop();
-            if (letter !== undefined) {
-                this.gridService.rack.push(letter);
-                this.gameContextService.addTempRack(letter);
-            }
-            this.gameContextService.tempUpdateRack();
-            this.gridService.drawGrid();
-            for (let i = 0; i < this.gridService.letters.length; i++) {
-                this.drawRightDirection(this.gridService.letters[i].name.toLowerCase(), i, this.mouseDetectService.isHorizontal);
-            }
-        } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
-            try {
-                this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
-                this.drawRightDirection(this.buttonPressed, this.gridService.letters.length, this.mouseDetectService.isHorizontal);
-                for (const i of this.gridService.rack) {
-                    if (i.name === this.buttonPressed.toUpperCase()) {
-                        this.gridService.letters.push(i);
-                        break;
-                    }
-                }
-                this.gameContextService.tempUpdateRack();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } catch (e: any) {
-                this.communicationservice.sendLocalMessage(e.message);
-            }
-        }
-    }
-    */
-    manipulate(event: Event): void {
-        const tile = event.target as HTMLElement;
-        if (tile.parentElement?.parentElement?.getAttribute('id') === 'selected') {
-            return;
-        }
-        this.clearSelection('manipulate');
-        console.log(tile);
-        tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
-        this.checkSelection();
-    }
-
     getSelectedLetters() {
         const container = document.getElementsByClassName('letter-container');
         Array.from(container).forEach((letters) => {
