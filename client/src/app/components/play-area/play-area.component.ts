@@ -27,6 +27,7 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
+    rack: string[] = [];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -38,6 +39,11 @@ export class PlayAreaComponent implements AfterViewInit {
     ) {
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
+        });
+        this.gameContextService.rack.subscribe((rack) => {
+            for (const i of rack) {
+                if (this.rack.length <= 7) this.rack.push(i.name);
+            }
         });
     }
 
