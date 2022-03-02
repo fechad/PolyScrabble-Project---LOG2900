@@ -122,7 +122,7 @@ export class GridService {
         this.gridContext.fillStyle = 'burlywood';
         this.gridContext.fill();
         this.gridContext.lineWidth = 2.5;
-        this.gridContext.strokeStyle = '#000';
+        this.gridContext.strokeStyle = '#fff';
         this.gridContext.stroke();
         this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }
