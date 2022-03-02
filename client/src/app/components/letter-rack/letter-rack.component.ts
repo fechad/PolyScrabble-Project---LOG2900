@@ -14,7 +14,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     letters: Letter[];
     timeOut: number;
     selectedLetters: string = '';
-    buttonPressed = '';
+    buttonPressed: string | undefined;
     previousSelection: number;
     constructor(
         public communicationService: CommunicationService,
@@ -27,18 +27,21 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         });
     }
     @HostListener('document:keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
+    @HostListener('document:wheel', ['$event'])
+    buttonDetect(event: KeyboardEvent | undefined) {
+        // e.preventDefault();
+        this.buttonPressed = event?.key;
+        console.log('event');
         if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.shiftLetter(this.buttonPressed);
         } else {
             this.clearSelection('manipulate');
             let index = 0;
             for (const letter of this.letters) {
-                if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase()) {
+                if (letter.name.toLowerCase() === this.buttonPressed?.toLowerCase()) {
                     if (this.previousSelection !== index) {
                         this.previousSelection = index;
-                        this.setToManipulate(this.buttonPressed.toLowerCase(), index);
+                        this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
                         break;
                     }
                 }
@@ -70,7 +73,6 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
                     this.letters = tempRack;
                 } else {
                     this.letters.shift();
-                    console.log(this.letters);
                     this.letters.push(tempRack[index]);
                 }
             }
