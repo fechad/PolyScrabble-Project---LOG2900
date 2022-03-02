@@ -1,5 +1,5 @@
 <div class="rack-container">
-    <div (contextmenu)="menu($event)" class="letter-container" id="letter-container" *ngFor="let letter of letters">
+    <div (click)="manipulate($event)" (contextmenu)="menu($event)" class="letter-container" id="letter-container" *ngFor="let letter of letters">
         <div 
             [ngClass]="{
                 'letter-name': this.gridService.multiplier === 1,

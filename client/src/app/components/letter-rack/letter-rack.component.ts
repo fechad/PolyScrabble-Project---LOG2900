@@ -55,15 +55,16 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.checkSelection();
     }
 
-    clearSelection() {
+    clearSelection(command: string) {
         const container = document.getElementsByClassName('letter-container');
         Array.from(container).forEach((letters) => {
-            if (letters.id === 'selected') {
+            if (command === 'exchange' && letters.id === 'selected') {
+                letters.removeAttribute('id');
+            } else if (command === 'manipulate' && letters.id === 'manipulating') {
                 letters.removeAttribute('id');
             }
         });
-
-        this.hideMenu();
+        if (command === 'exchange') this.hideMenu();
     }
 
     checkSelection() {
@@ -84,7 +85,8 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
             const name = selection?.getAttribute('class') as string;
 
             if (!parentPossibilities.includes(name)) {
-                this.clearSelection();
+                this.clearSelection('exchange');
+                this.clearSelection('manipulate');
             }
         });
 
@@ -102,6 +104,17 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.getSelectedLetters();
         this.communicationService.exchange(this.selectedLetters);
         this.selectedLetters = '';
+    }
+
+    manipulate(event: Event): void {
+        const tile = event.target as HTMLElement;
+        if (tile.parentElement?.parentElement?.getAttribute('id') === 'selected') {
+            return;
+        }
+        this.clearSelection('manipulate');
+        console.log(tile);
+        tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
+        this.checkSelection();
     }
 
     getSelectedLetters() {
