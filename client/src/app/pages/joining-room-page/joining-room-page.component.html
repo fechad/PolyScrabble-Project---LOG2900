@@ -1,13 +1,18 @@
 <header class="header">
-    <a (click)="location.back()" class="home-button">
-        <i class="material-icons">arrow_back_ios</i>
-    </a>
-    <div class="title-container">
-        <h1 id="title">Joignez une partie mode classique</h1>
+    <div>
+        <a (click)="location.back()" class="home-button">
+            <i class="material-icons">arrow_back_ios</i>
+        </a>
+    </div>
+    <div>
+        <div class="title-container">
+            <h1 id="title">Joignez une partie mode classique</h1>
+        </div>
+    </div>
+    <div>
+        <button mat-raised-button class="button">allo</button>
     </div>
 </header>
-
-
 
 <div id="games-list" *ngFor="let game of communicationService.rooms | async">
     <mat-card matRipple class="clickable" (click)="openDialog(game)">
