@@ -29,10 +29,8 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        if (this.buttonPressed === 'ArrowLeft') {
-            console.log('left pressed');
-        } else if (this.buttonPressed === 'ArrowRight') {
-            console.log('right pressed');
+        if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
+            this.shiftRight(this.buttonPressed);
         } else {
             this.clearSelection('manipulate');
             let index = 0;
@@ -47,6 +45,31 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
                 index++;
             }
         }
+    }
+
+    shiftRight(keypress: string) {
+        const container = document.getElementsByClassName('letter-container');
+        let index = 0;
+        const tempRack = this.letters.map((x) => x);
+        Array.from(container).forEach((letters) => {
+            if (letters.getAttribute('id') === 'manipulating') {
+                const letterToSwap: Letter = {
+                    name: letters.firstChild?.firstChild?.textContent!,
+                    score: Number(letters.lastChild?.firstChild?.textContent),
+                };
+                if (keypress === 'ArrowRight') {
+                    tempRack[index + 1] = letterToSwap;
+                    tempRack[index] = this.letters[index + 1];
+                    this.letters = tempRack;
+                }
+                if (keypress === 'ArrowLeft') {
+                    tempRack[index - 1] = letterToSwap;
+                    tempRack[index] = this.letters[index - 1];
+                    this.letters = tempRack;
+                }
+            }
+            index++;
+        });
     }
 
     setToManipulate(letter: string, idx: number) {
