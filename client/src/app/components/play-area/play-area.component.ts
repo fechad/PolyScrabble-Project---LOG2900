@@ -29,44 +29,26 @@ export enum MouseButton {
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    letterWrited = 0;
->>>>>>> 825407e... placing letter on the view, logic is left
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
     firstLetter = [0, 0];
     shift: number[] = [];
-=======
-    // eslint-disable-next-line no-invalid-this
-    mousePosition = this.mouseDetectService.mousePosition;
-    rack: string[] = [];
->>>>>>> eaa2825... inbound and inRack placing work
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-<<<<<<< HEAD
     constructor(
         private readonly gridService: GridService,
         private gameContextService: GameContextService,
         public mouseDetectService: MouseService,
         public communicationservice: CommunicationService,
     ) {
-=======
-    constructor(private readonly gridService: GridService, private gameContextService: GameContextService, public mouseDetectService: MouseService) {
->>>>>>> 825407e... placing letter on the view, logic is left
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
         this.gameContextService.rack.subscribe((rack) => {
             for (const i of rack) {
-<<<<<<< HEAD
                 if (this.rack.length <= MAX_RACK_SIZE) this.rack.push(i.name);
-=======
-                if (this.rack.length <= 7) this.rack.push(i.name);
->>>>>>> eaa2825... inbound and inRack placing work
             }
         });
     }
@@ -75,7 +57,6 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
-<<<<<<< HEAD
             for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
             this.communicationservice.place(
                 this.gridService.letterForServer,
@@ -167,62 +148,9 @@ export class PlayAreaComponent implements AfterViewInit {
             while (board[pos[0] + 1][pos[1]] !== null) {
                 pos[0] += 1;
                 shift += 1;
-=======
-            this.gridService.letters = [];
-            this.gridService.drawGrid();
-        } else if (this.buttonPressed === 'Backspace') {
-            this.rack.push(this.gridService.letters[this.gridService.letters.length - 1].toUpperCase());
-            this.gridService.letters.pop();
-            this.gridService.drawGrid();
-            for (let i = 0; i < this.gridService.letters.length; i++) {
-                this.drawRightDirection(this.gridService.letters[i], i);
-            }
-        } else if (
-            this.mouseDetectService.writingAllowed &&
-            this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520 &&
-            this.mouseDetectService.isHorizontal &&
-            this.isInTempRack(this.buttonPressed)
-        ) {
-            this.drawRightDirection(this.buttonPressed, this.gridService.letters.length);
-            this.gridService.letters.push(this.buttonPressed);
-        } else if (
-            this.mouseDetectService.writingAllowed &&
-            this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520 &&
-            !this.mouseDetectService.isHorizontal &&
-            this.isInTempRack(this.buttonPressed)
-        ) {
-            this.drawRightDirection(this.buttonPressed, this.gridService.letters.length);
-            this.gridService.letters.push(this.buttonPressed);
-        }
-    }
-
-    drawRightDirection(letter: string, pos: number) {
-        if (this.mouseDetectService.isHorizontal) {
-            this.gridService.drawTempTiles(
-                letter,
-                this.mouseDetectService.mousePosition.x + (pos * 100) / 3,
-                this.mouseDetectService.mousePosition.y,
-            );
-        } else {
-            this.gridService.drawTempTiles(
-                letter,
-                this.mouseDetectService.mousePosition.x,
-                this.mouseDetectService.mousePosition.y + (pos * 100) / 3,
-            );
-        }
-    }
-
-    isInTempRack(letter: string) {
-        for (let i = 0; i < this.rack.length; i++) {
-            if (this.rack[i] === letter.toUpperCase()) {
-                console.log(this.rack);
-                this.rack.splice(i, 1);
-                return true;
->>>>>>> eaa2825... inbound and inRack placing work
             }
             return shift;
         }
-        return false;
     }
 
     ngAfterViewInit(): void {
