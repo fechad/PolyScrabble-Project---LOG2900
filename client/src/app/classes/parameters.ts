@@ -7,11 +7,20 @@ export enum GameType {
     Solo,
     Multiplayer,
 }
-
 export enum Difficulty {
-    Beginner,
-    Expert,
+    Beginner = 'debutant',
+    Expert = 'expert',
 }
+export const difficulties = [
+    {
+        id: 0,
+        name: 'Débutant',
+    },
+    {
+        id: 1,
+        name: 'Expert',
+    },
+];
 
 export const DEFAULT_TIMER = 60;
 
