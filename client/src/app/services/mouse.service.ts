@@ -43,12 +43,7 @@ export class MouseService {
                 this.writingAllowed = true;
                 this.enter = false;
             }
-<<<<<<< HEAD
             if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y && this.gridService.letterWritten === 0) {
-=======
-            if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y) {
-                console.log(this.isHorizontal);
->>>>>>> 4a7aacb (inbound and inRack placing work)
                 this.isHorizontal = !this.isHorizontal;
                 this.gridService.drawGrid();
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);

@@ -85,6 +85,10 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        for (const i of this.letters) {
+            this.rack.push(i);
+            this.gameContext.addTempRack(i);
+        }
         this.letters = [];
         const x = canvasX;
         const y = canvasY;
@@ -122,7 +126,7 @@ export class GridService {
         this.gridContext.fillStyle = 'burlywood';
         this.gridContext.fill();
         this.gridContext.lineWidth = 2.5;
-        this.gridContext.strokeStyle = '#000';
+        this.gridContext.strokeStyle = '#fff';
         this.gridContext.stroke();
         this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }

@@ -32,12 +32,15 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
+<<<<<<< HEAD
     rack: string[] = [];
 <<<<<<< HEAD
     firstLetter = [0, 0];
     shift: number[] = [];
 =======
 >>>>>>> 4a7aacb (inbound and inRack placing work)
+=======
+>>>>>>> ed4892f (backspace logic done)
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -50,6 +53,7 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
+<<<<<<< HEAD
         this.gameContextService.rack.subscribe((rack) => {
             for (const i of rack) {
 <<<<<<< HEAD
@@ -59,6 +63,8 @@ export class PlayAreaComponent implements AfterViewInit {
 >>>>>>> 4a7aacb (inbound and inRack placing work)
             }
         });
+=======
+>>>>>>> ed4892f (backspace logic done)
     }
 
     @HostListener('keydown', ['$event'])
@@ -170,39 +176,52 @@ export class PlayAreaComponent implements AfterViewInit {
             this.gridService.letters = [];
             this.gridService.drawGrid();
         } else if (this.buttonPressed === 'Backspace') {
-            this.rack.push(this.gridService.letters[this.gridService.letters.length - 1].toUpperCase());
-            this.gridService.letters.pop();
+            const letter = this.gridService.letters.pop();
+            if (letter !== undefined) {
+                this.gridService.rack.push(letter);
+                this.gameContextService.addTempRack(letter);
+            }
+            this.gameContextService.tempUpdateRack();
             this.gridService.drawGrid();
             for (let i = 0; i < this.gridService.letters.length; i++) {
-                this.drawRightDirection(this.gridService.letters[i], i);
+                this.drawRightDirection(this.gridService.letters[i].name.toLowerCase(), i, this.mouseDetectService.isHorizontal);
             }
-        } else if (
-            this.mouseDetectService.writingAllowed &&
-            this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520 &&
-            this.mouseDetectService.isHorizontal &&
-            this.isInTempRack(this.buttonPressed)
-        ) {
-            this.drawRightDirection(this.buttonPressed, this.gridService.letters.length);
-            this.gridService.letters.push(this.buttonPressed);
-        } else if (
-            this.mouseDetectService.writingAllowed &&
-            this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520 &&
-            !this.mouseDetectService.isHorizontal &&
-            this.isInTempRack(this.buttonPressed)
-        ) {
-            this.drawRightDirection(this.buttonPressed, this.gridService.letters.length);
-            this.gridService.letters.push(this.buttonPressed);
+        } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
+            try {
+                this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
+                this.drawRightDirection(this.buttonPressed, this.gridService.letters.length, this.mouseDetectService.isHorizontal);
+                for (const i of this.gridService.rack) {
+                    if (i.name === this.buttonPressed.toUpperCase()) {
+                        this.gridService.letters.push(i);
+                        break;
+                    }
+                }
+                this.gameContextService.tempUpdateRack();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (e: any) {
+                this.communicationservice.sendLocalMessage(e.message);
+            }
         }
     }
+    isInBound() {
+        if (this.mouseDetectService.isHorizontal && this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520)
+            return true;
+        else if (
+            !this.mouseDetectService.isHorizontal &&
+            this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520
+        )
+            return true;
+        return false;
+    }
 
-    drawRightDirection(letter: string, pos: number) {
-        if (this.mouseDetectService.isHorizontal) {
+    drawRightDirection(letter: string, pos: number, horizontal: boolean) {
+        if (horizontal && this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520) {
             this.gridService.drawTempTiles(
                 letter,
                 this.mouseDetectService.mousePosition.x + (pos * 100) / 3,
                 this.mouseDetectService.mousePosition.y,
             );
-        } else {
+        } else if (!horizontal && this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520) {
             this.gridService.drawTempTiles(
                 letter,
                 this.mouseDetectService.mousePosition.x,
@@ -211,6 +230,7 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
+<<<<<<< HEAD
     isInTempRack(letter: string) {
         for (let i = 0; i < this.rack.length; i++) {
             if (this.rack[i] === letter.toUpperCase()) {
@@ -224,6 +244,8 @@ export class PlayAreaComponent implements AfterViewInit {
         return false;
     }
 
+=======
+>>>>>>> ed4892f (backspace logic done)
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gridService.drawGrid();
