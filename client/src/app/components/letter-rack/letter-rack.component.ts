@@ -105,7 +105,42 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.communicationService.exchange(this.selectedLetters);
         this.selectedLetters = '';
     }
-
+    /*
+    @HostListener('keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+        if (this.buttonPressed === 'Enter') {
+            this.gridService.letters = [];
+            this.gridService.drawGrid();
+        } else if (this.buttonPressed === 'Backspace') {
+            const letter = this.gridService.letters.pop();
+            if (letter !== undefined) {
+                this.gridService.rack.push(letter);
+                this.gameContextService.addTempRack(letter);
+            }
+            this.gameContextService.tempUpdateRack();
+            this.gridService.drawGrid();
+            for (let i = 0; i < this.gridService.letters.length; i++) {
+                this.drawRightDirection(this.gridService.letters[i].name.toLowerCase(), i, this.mouseDetectService.isHorizontal);
+            }
+        } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
+            try {
+                this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
+                this.drawRightDirection(this.buttonPressed, this.gridService.letters.length, this.mouseDetectService.isHorizontal);
+                for (const i of this.gridService.rack) {
+                    if (i.name === this.buttonPressed.toUpperCase()) {
+                        this.gridService.letters.push(i);
+                        break;
+                    }
+                }
+                this.gameContextService.tempUpdateRack();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (e: any) {
+                this.communicationservice.sendLocalMessage(e.message);
+            }
+        }
+    }
+    */
     manipulate(event: Event): void {
         const tile = event.target as HTMLElement;
         if (tile.parentElement?.parentElement?.getAttribute('id') === 'selected') {
