@@ -10,11 +10,6 @@ import { GameContextService } from '@app/services/game-context.service';
 })
 export class ChatBoxComponent implements AfterViewChecked {
     @ViewChild('scroll') private scroller: ElementRef;
-    @ViewChild('writingBox') set writingBoxRef(textarea: ElementRef) {
-        if (textarea) {
-            textarea.nativeElement.focus();
-        }
-    }
     textValue: string = '';
     myId: string | undefined;
 

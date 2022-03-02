@@ -31,7 +31,6 @@ export class MouseService {
                 this.enter = false;
             }
             if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y) {
-                console.log(this.isHorizontal);
                 this.isHorizontal = !this.isHorizontal;
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
                 this.enter = false;

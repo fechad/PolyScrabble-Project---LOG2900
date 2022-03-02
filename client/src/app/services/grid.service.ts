@@ -43,10 +43,15 @@ export class GridService {
     fontSize = '';
     multiplier = 1;
     buttonPressed = '';
-    letters: string[] = [];
+    letters: Letter[] = [];
+    rack: Letter[] = [];
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private gameContext: GameContextService) {}
+    constructor(private gameContext: GameContextService) {
+        this.gameContext.rack.subscribe((rack) => {
+            this.rack = [...rack];
+        });
+    }
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
@@ -54,7 +59,7 @@ export class GridService {
     }
 
     drawGrid() {
-        this.gridContext.clearRect(0, 0, 500, 500);
+        this.gridContext.clearRect(0, 0, 520, 520);
         this.gridContext.lineWidth = offset;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
@@ -75,6 +80,10 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        for (const i of this.letters) {
+            this.rack.push(i);
+            this.gameContext.addTempRack(i);
+        }
         this.letters = [];
         const x = canvasX;
         const y = canvasY;
@@ -113,7 +122,7 @@ export class GridService {
         this.gridContext.fillStyle = 'burlywood';
         this.gridContext.fill();
         this.gridContext.lineWidth = 2.5;
-        this.gridContext.strokeStyle = '#000';
+        this.gridContext.strokeStyle = '#fff';
         this.gridContext.stroke();
         this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }
