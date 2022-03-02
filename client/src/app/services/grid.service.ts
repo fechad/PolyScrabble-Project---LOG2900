@@ -85,11 +85,6 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
-        for (const i of this.letters) {
-            this.rack.push(i);
-            this.gameContext.addTempRack(i);
-        }
-        this.letters = [];
         const x = canvasX;
         const y = canvasY;
         this.gridContext.fillStyle = '#000';
@@ -128,7 +123,7 @@ export class GridService {
         this.gridContext.lineWidth = 2.5;
         this.gridContext.strokeStyle = '#fff';
         this.gridContext.stroke();
-        this.drawMessage(letter, canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
+        this.drawMessage(letter.toUpperCase(), canvasX - squareSize * 0.7, canvasY + AJUST_TILE_Y, TILE_SIZE);
     }
 
     tempUpdateBoard(lettersToAdd: string, verticalIndex: number, horizontalIndex: number, isHorizontalPlacement: boolean | undefined) {
