@@ -188,13 +188,12 @@ export class CommunicationService {
     private handleError(e: string) {
         // eslint-disable-next-line no-console
         if (!environment.production) {
-            console.log(e);
-            // swal.fire({
-            //     title: 'Erreur!',
-            //     text: e,
-            //     showCloseButton: true,
-            //     confirmButtonText: 'Ok!',
-            // });
+            swal.fire({
+                title: 'Erreur!',
+                text: e,
+                showCloseButton: true,
+                confirmButtonText: 'Ok!',
+            });
         }
     }
 

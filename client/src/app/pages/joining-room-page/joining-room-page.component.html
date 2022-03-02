@@ -6,15 +6,7 @@
         <h1 id="title">Joignez une partie mode classique</h1>
     </div>
     <div id="icon-container">
-        <button
-            *ngIf="communicationService.rooms.value.length > 0"
-            [disabled]="communicationService.rooms.value.length <= 1"
-            mat-raised-button
-            class="button"
-            (click)="getRandomRoom()"
-        >
-            Choix aléatoire
-        </button>
+        <button mat-raised-button class="button" *ngIf="nbOfRooms > 0" [disabled]="nbOfRooms <= 1" (click)="getRandomRoom()">Choix aléatoire</button>
     </div>
 </header>
 
