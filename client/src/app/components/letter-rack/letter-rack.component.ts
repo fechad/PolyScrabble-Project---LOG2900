@@ -15,6 +15,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     timeOut: number;
     selectedLetters: string = '';
     buttonPressed = '';
+    previousSelection: number;
     constructor(
         public communicationService: CommunicationService,
         public gameContextService: GameContextService,
@@ -33,20 +34,33 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         } else if (this.buttonPressed === 'ArrowRight') {
             console.log('right pressed');
         } else {
+            this.clearSelection('manipulate');
+            let index = 0;
             for (const letter of this.letters) {
                 if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase()) {
-                    this.setToManipulate(this.buttonPressed.toLowerCase());
-                    break;
+                    if (this.previousSelection !== index) {
+                        this.previousSelection = index;
+                        this.setToManipulate(this.buttonPressed.toLowerCase(), index);
+                        break;
+                    }
                 }
+                index++;
             }
         }
     }
 
-    setToManipulate(letter: string) {
+    setToManipulate(letter: string, idx: number) {
         const container = document.getElementsByClassName('letter-container');
+        let selection = false;
+        let counter = 0;
         Array.from(container).forEach((letters) => {
-            console.log(letters.firstChild?.firstChild?.textContent);
-            if (letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter) letters.setAttribute('id', 'manipulating');
+            if (letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter && idx === counter) {
+                if (!selection) {
+                    letters.setAttribute('id', 'manipulating');
+                    selection = true;
+                }
+            }
+            counter++;
         });
     }
 
