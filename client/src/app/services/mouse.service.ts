@@ -30,19 +30,11 @@ export class MouseService {
             else {
                 this.prevPos = this.mousePosition;
                 this.mousePosition = {
-<<<<<<< HEAD
                     x: Math.ceil(((event.offsetX * GRID_SIZE) / MOUSE_DETECT_SIZE - ADJUST_X) / SQUARE_SIZE) * SQUARE_SIZE + ADJUST_X,
                     y: Math.ceil(((event.offsetY * GRID_SIZE) / MOUSE_DETECT_SIZE - ADJUST_Y) / SQUARE_SIZE) * SQUARE_SIZE + ADJUST_Y,
                 };
             }
             if (this.mousePosition.x >= IN_BOARD_AREA && this.mousePosition.y >= IN_BOARD_AREA && this.gridService.letterWritten === 0) {
-=======
-                    x: Math.ceil(((event.offsetX * 500) / 615 - 15) / 33) * 33 + 15,
-                    y: Math.ceil(((event.offsetY * 500) / 615 - 5) / 33) * 33 + 5,
-                };
-            }
-            if (this.mousePosition.x >= 18 && this.mousePosition.y >= 18 && this.gridService.letterWritten === 0) {
->>>>>>> 7f8a30d... place word work but does not implements everythimgs
                 this.gridService.drawGrid();
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, true);
                 this.writingAllowed = true;
@@ -53,8 +45,6 @@ export class MouseService {
                 this.gridService.drawGrid();
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
                 this.enter = false;
-            } else {
-                this.isHorizontal = true;
             }
         }
     }

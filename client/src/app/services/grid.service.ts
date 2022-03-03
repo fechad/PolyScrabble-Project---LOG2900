@@ -47,14 +47,9 @@ export class GridService {
     buttonPressed = '';
     letters: Letter[] = [];
     rack: Letter[] = [];
-<<<<<<< HEAD
     letterForServer = '';
     letterWritten = 0;
     letterPosition = [[0, 0]];
-=======
-    letterForServer: string;
-    letterWritten = 0;
->>>>>>> 7f8a30d... place word work but does not implements everythimgs
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private gameContext: GameContextService) {
@@ -90,10 +85,7 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
-<<<<<<< HEAD
         // this.drawGrid();
-=======
->>>>>>> 7f8a30d... place word work but does not implements everythimgs
         const x = canvasX;
         const y = canvasY;
         this.gridContext.fillStyle = '#000';
