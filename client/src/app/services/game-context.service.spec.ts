@@ -25,6 +25,11 @@ describe('GameContextService', () => {
         expect(() => service.attemptTempRackUpdate('ab')).toThrowError();
     });
 
+    it('should not throw when upper case characters and * in rack', () => {
+        service.rack.next([{ name: '*', score: 0 }]);
+        expect(() => service.attemptTempRackUpdate('M')).not.toThrowError();
+    });
+
     it('should clear the messages', () => {
         service.messages.next([
             { emitter: 'Obi-wan', text: 'Hello there' },
