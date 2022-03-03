@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
 import { Room } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { Observable } from 'rxjs';
@@ -19,7 +18,6 @@ export class JoinSetupDialogComponent implements OnInit {
     constructor(
         public dialogRef: MatDialogRef<JoinSetupDialogComponent>,
         private formBuilder: FormBuilder,
-        // private router: Router,
         public communicationService: CommunicationService,
         @Inject(MAT_DIALOG_DATA) public data: { room: number; name: string; dictionnary: string; timer: number },
     ) {
@@ -44,6 +42,5 @@ export class JoinSetupDialogComponent implements OnInit {
         }
         this.dialogRef.close();
         await this.communicationService.joinRoom(this.joiningRoomForm.value.secondPlayerName, this.data.room);
-        // this.router.navigate(['/waiting-room']);
     }
 }
