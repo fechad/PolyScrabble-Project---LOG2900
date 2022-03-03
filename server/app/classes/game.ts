@@ -49,7 +49,7 @@ export class Game {
     private summary: string | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
 
-    constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
+    constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, public dictionnaryService: DictionnaryService) {
         this.board = new Board(dictionnaryService);
         this.timeout = setTimeout(() => this.timeoutHandler(), this.parameters.timer * SEC_TO_MS);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;

@@ -1,7 +1,7 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { Game } from "./game";
-import { JoueurVirtuel } from "./joueur-virtuel";
-import { Parameters } from "./parameters";
+import { Game } from './game';
+import { JoueurVirtuel } from './joueur-virtuel';
+import { Parameters } from './parameters';
 
 describe('Joueur virtuel', () => {
     let dictionnary: DictionnaryService;
@@ -14,11 +14,11 @@ describe('Joueur virtuel', () => {
     });
 
     beforeEach(() => {
-        let players = [
+        const players = [
             { name: 'Bob', id: '0', connected: true },
             { name: 'joueur-virtuel', id: 'JV', connected: true },
         ];
-        let parameters = new Parameters();
+        const parameters = new Parameters();
         game = new Game(0, players, parameters, dictionnary);
         jv = new JoueurVirtuel(true, game);
     });

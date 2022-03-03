@@ -4,7 +4,6 @@ import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
 const CONTACT_CHAR = '*';
-const INVALID = -1;
 const FIRST_WORD = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
@@ -14,7 +13,7 @@ const BOARD_PLACEMENT_DELAY = 3000; // ms
 
 export class Board {
     board: GameTile[][];
-    private wordGetter: WordGetter;
+    wordGetter: WordGetter;
 
     constructor(private dictionnary: DictionnaryService) {
         this.board = [];
@@ -113,12 +112,17 @@ export class Board {
         let wordPos = 0;
         const contacts = [];
         while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
-        for (let i = 0; i < wordLength + collisions; i++) {
+        for (let i = 0; i < wordLength + collisions || (col + i < BOARD_LENGTH && !this.board[row][col + i].empty); i++) {
             if ((row - 1 >= 0 && !this.board[row - 1][col + i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][col + i].empty)) {
-                contacts.push([row, col + i, this.board[row][col + i].empty ? wordPos : INVALID]);
+                if (this.board[row][col + i].empty) {
+                    contacts.push([row, col + i, wordPos]);
+                }
             }
             if (this.board[row][col + i].empty) wordPos++;
             else collisions++;
+        }
+        if(collisions !== 0 && contacts.length === 0){
+            contacts.push([FIRST_WORD]);
         }
         return contacts;
     }
@@ -128,12 +132,17 @@ export class Board {
         let wordPos = 0;
         const contacts = [];
         while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
-        for (let i = 0; i < wordLength + collisions; i++) {
+        for (let i = 0; i < wordLength + collisions || (row + i < BOARD_LENGTH && !this.board[row + i][col].empty); i++) {
             if ((col - 1 >= 0 && !this.board[row + i][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row + i][col + 1].empty)) {
-                contacts.push([row + i, col, this.board[row + i][col].empty ? wordPos : INVALID]);
+                if (this.board[row + i][col].empty) {
+                    contacts.push([row + i, col, wordPos]);
+                }
             }
             if (this.board[row + i][col].empty) wordPos++;
             else collisions++;
+        }
+        if(collisions !== 0 && contacts.length === 0){
+            contacts.push([FIRST_WORD]);
         }
         return contacts;
     }
@@ -187,7 +196,7 @@ export class Board {
             array[i] = [];
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 array[i][j] = [];
-                if(!this.board[i][j].empty) {
+                if (!this.board[i][j].empty) {
                     array[i][j][0] = '';
                     array[i][j][1] = '';
                 } else {
@@ -203,7 +212,7 @@ export class Board {
         let position = '';
         let collisions = 0;
         let k = 0;
-        while(j > 0 && !this.board[i][j - 1].empty) j--;
+        while (j > 0 && !this.board[i][j - 1].empty) j--;
         for (k = 0; j + k < BOARD_LENGTH && k < rackLength + collisions; k++) {
             if (!this.board[i][j + k].empty) {
                 position += this.board[i][j + k].getChar();
@@ -214,7 +223,7 @@ export class Board {
                 position += ' ';
             }
         }
-        while(j + k < BOARD_LENGTH && !this.board[i][j + k].empty) {
+        while (j + k < BOARD_LENGTH && !this.board[i][j + k].empty) {
             position += this.board[i][j + k].getChar();
             k++;
         }
@@ -225,7 +234,7 @@ export class Board {
         let collisions = 0;
         let position = '';
         let k = 0;
-        while(i > 0 && !this.board[i - 1][j].empty) i--;
+        while (i > 0 && !this.board[i - 1][j].empty) i--;
         for (k = 0; i + k < BOARD_LENGTH && k < rackLength + collisions; k++) {
             if (!this.board[i + k][j].empty) {
                 position += this.board[i + k][j].getChar();
@@ -236,7 +245,7 @@ export class Board {
                 position += ' ';
             }
         }
-        while(i + k < BOARD_LENGTH && !this.board[i + k][j].empty) {
+        while (i + k < BOARD_LENGTH && !this.board[i + k][j].empty) {
             position += this.board[i + k][j].getChar();
             k++;
         }
