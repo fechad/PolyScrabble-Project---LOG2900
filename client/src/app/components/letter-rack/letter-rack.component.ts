@@ -68,19 +68,15 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         const tempRack = this.letters.map((x) => x);
         Array.from(container).forEach((letters) => {
             if (letters.getAttribute('id') === 'manipulating') {
-                const letterToSwap: Letter = {
-                    name: letters.firstChild?.firstChild?.textContent!,
-                    score: Number(letters.lastChild?.firstChild?.textContent),
-                };
                 if ((keypress === 'ArrowRight' || keypress > 0) && index !== this.letters.length - 1) {
-                    tempRack[index + 1] = letterToSwap;
+                    tempRack[index + 1] = this.letters[index];
                     tempRack[index] = this.letters[index + 1];
                     this.letters = tempRack;
                 } else if ((keypress === 'ArrowRight' || keypress > 0) && index === this.letters.length - 1) {
                     this.letters.pop();
                     this.letters.unshift(tempRack[index]);
                 } else if ((keypress === 'ArrowLeft' || keypress < 0) && index !== 0) {
-                    tempRack[index - 1] = letterToSwap;
+                    tempRack[index - 1] = this.letters[index];
                     tempRack[index] = this.letters[index - 1];
                     this.letters = tempRack;
                 } else {
@@ -91,6 +87,7 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
             index++;
         });
     }
+
     setToManipulate(letter: string, idx: number) {
         const container = document.getElementsByClassName('letter-container');
         let selection = false;
