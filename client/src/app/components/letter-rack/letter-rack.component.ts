@@ -27,11 +27,9 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         });
     }
     @HostListener('document:keydown', ['$event'])
-    @HostListener('document:wheel', ['$event'])
     buttonDetect(event: KeyboardEvent | undefined) {
-        // e.preventDefault();
         this.buttonPressed = event?.key;
-        console.log('event');
+
         if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.shiftLetter(this.buttonPressed);
         } else {
@@ -49,8 +47,12 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
             }
         }
     }
+    @HostListener('document:wheel', ['$event'])
+    scrollDetect(e: WheelEvent) {
+        this.shiftLetter(e.deltaY);
+    }
 
-    shiftLetter(keypress: string) {
+    shiftLetter(keypress: string | number) {
         const container = document.getElementsByClassName('letter-container');
         let index = 0;
         const tempRack = this.letters.map((x) => x);
@@ -60,14 +62,14 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
                     name: letters.firstChild?.firstChild?.textContent!,
                     score: Number(letters.lastChild?.firstChild?.textContent),
                 };
-                if (keypress === 'ArrowRight' && index !== this.letters.length - 1) {
+                if ((keypress === 'ArrowRight' || keypress > 0) && index !== this.letters.length - 1) {
                     tempRack[index + 1] = letterToSwap;
                     tempRack[index] = this.letters[index + 1];
                     this.letters = tempRack;
-                } else if (keypress === 'ArrowRight' && index === this.letters.length - 1) {
+                } else if ((keypress === 'ArrowRight' || keypress > 0) && index === this.letters.length - 1) {
                     this.letters.pop();
                     this.letters.unshift(tempRack[index]);
-                } else if (keypress === 'ArrowLeft' && index !== 0) {
+                } else if ((keypress === 'ArrowLeft' || keypress < 0) && index !== 0) {
                     tempRack[index - 1] = letterToSwap;
                     tempRack[index] = this.letters[index - 1];
                     this.letters = tempRack;
