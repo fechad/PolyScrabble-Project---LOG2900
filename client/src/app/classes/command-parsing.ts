@@ -19,7 +19,7 @@ const specialLetters: { [key: string]: string } = {
 const LOWERCASE_A_ASCII = 97;
 export class CommandParsing {
     static isUpperCaseLetter(character: string) {
-        return character.match(/A-Z/g);
+        return character.match(/[A-Z]/g) !== null;
     }
 
     static removeAccents(word: string): string {
