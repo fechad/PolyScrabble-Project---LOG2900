@@ -1,17 +1,14 @@
-
 <i class="material-icons" routerLink="/" (click)="this.isMainPlayer ? kickLeave() : leave()">cancel</i>
 
-
-<div class="ring">
-    <h1 id="txt">En attente...</h1>
-</div>
-
-<div class= "big-box" *ngIf="isMainPlayer">
-    <div class='container'>
-        <p *ngIf="otherPlayerName !== undefined" class="opponent" >{{otherPlayerName}} veut joindre votre partie</p>
+<div class="big-box">
+    <div class="container" *ngIf="isMainPlayer">
+        <p *ngIf="otherPlayerName !== undefined" class="opponent">{{ otherPlayerName }} veut joindre votre partie</p>
         <p *ngIf="otherPlayerName === undefined" class="opponent"></p>
     </div>
-    <div class="options">
+    <div class="ring">
+        <h1 id="txt">En attente...</h1>
+    </div>
+    <div class="options" *ngIf="isMainPlayer">
         <button class="start" [disabled]="!canControl" (click)="start()">Démarrer</button>
         <button class="reject" [disabled]="!canControl" (click)="kick()">Rejeter</button>
     </div>
