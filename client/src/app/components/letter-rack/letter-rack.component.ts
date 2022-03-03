@@ -52,6 +52,16 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.shiftLetter(e.deltaY);
     }
 
+    ngOnInit(): void {
+        this.gameContextService.rack.subscribe((newRack) => {
+            this.letters = newRack;
+        });
+    }
+
+    ngAfterViewInit() {
+        this.elementRef.nativeElement.querySelector('#letter-container')?.addEventListener('contextmenu', this.menu.bind(this));
+    }
+
     shiftLetter(keypress: string | number) {
         const container = document.getElementsByClassName('letter-container');
         let index = 0;
@@ -106,15 +116,6 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.checkSelection();
     }
 
-    ngOnInit(): void {
-        this.gameContextService.rack.subscribe((newRack) => {
-            this.letters = newRack;
-        });
-    }
-
-    ngAfterViewInit() {
-        this.elementRef.nativeElement.querySelector('#letter-container')?.addEventListener('contextmenu', this.menu.bind(this));
-    }
     hideMenu() {
         const menu = document.getElementById('menu') as HTMLElement;
         menu.style.display = 'none';

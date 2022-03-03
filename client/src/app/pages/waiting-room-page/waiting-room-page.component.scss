@@ -142,3 +142,62 @@ span:before {
     line-height: 1.2;
     margin-bottom: 1em;
 }
+
+//toggle button
+.togbtn {
+  display: flex;
+  margin-top: 300px;
+  margin-left: -60vw;
+}
+
+*, *:after, *:before {
+	box-sizing: border-box;
+}
+
+body {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+input[type="checkbox"] {
+	visibility: hidden;
+	&:checked + label {
+		transform: rotate(450deg);
+		background-color: #E1AC01;
+		&:before {
+			transform: translateX(90px);
+			background-color: #FFF;
+		}
+	}
+}
+
+label {
+  transform: rotate(90deg);
+	display: flex;
+	width: 180px;
+	height: 90px;
+  color: white;
+	border: 6px solid;
+	border-radius: 99em;
+	position: relative;
+	transition: transform .75s ease-in-out;
+	transform-origin: 50% 50%;
+	cursor: pointer;
+	
+	&:before {
+		transition: transform .75s ease;
+		transition-delay: .5s;
+		content: "";
+		display: block;
+		position: absolute;
+		width: 54px;
+		height: 54px;
+		background-color: #E1AC01;
+		border-radius: 50%;
+		top: 12px;
+		left: 12px;
+  
+	}
+}
