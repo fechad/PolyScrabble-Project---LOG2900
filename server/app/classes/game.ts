@@ -19,6 +19,7 @@ const BOARD_LENGTH = 15;
 const MAX_SKIP_IN_A_ROW = 6;
 const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
 const SEC_TO_MS = 1000;
+const ASCII_LOWERCASE_A = 97;
 
 type PlayerInfo = {
     info: Player;
@@ -87,7 +88,10 @@ export class Game {
                 const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.scores[playerIndex] += response;
-                const position = (isHorizontal ? 'h' : 'v') + row + col;
+                const columnOnBoard = col + 1;
+                const rowOnBoard = String.fromCharCode(row + ASCII_LOWERCASE_A);
+                const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
+                const position = rowOnBoard + columnOnBoard + orientation;
                 const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
