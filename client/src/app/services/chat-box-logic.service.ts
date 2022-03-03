@@ -64,6 +64,7 @@ export class ChatBoxLogicService {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
         if (this.communicationService.congratulations !== undefined) throw new Error(' La partie est terminée !');
         else if (this.commandStructure[COMMAND_INDEX] === '!réserve' && commandLength === RESERVE_COMMAND_LENGTH) this.getReserve();
+        else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
         else if (!myTurn) throw new Error("Ce n'est pas votre tour");
         else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
@@ -73,13 +74,12 @@ export class ChatBoxLogicService {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
             this.exchange();
         } else if (this.commandStructure[COMMAND_INDEX] === '!passer' && commandLength === PASS_COMMAND_LENGTH) this.pass();
-        else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
         else throw new Error(`La commande ${this.commandStructure[COMMAND_INDEX]} ne respecte pas la syntaxe demandée`);
     }
 
     private sendHelp() {
         for (const message of this.help) {
-            this.communicationService.sendLocalMessage(message);
+            this.communicationService.sendCommandMessage(message);
         }
     }
 

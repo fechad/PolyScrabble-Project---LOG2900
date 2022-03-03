@@ -20,11 +20,10 @@ export class Reserve {
         const lettersToSend: Letter[] = [];
         const pullableQuantity = this.reserve.length > quantity ? quantity : this.reserve.length;
         for (let i = 0; i < pullableQuantity; i++) {
-            const listLength: number = this.reserve.length - 1;
-            const index: number = Math.floor(Math.random() * listLength); // random number from array
+            const index: number = Math.floor(Math.random() * this.reserve.length); // random number from array
             lettersToSend.push(this.reserve[index]);
             // remove chosen element
-            this.reserve[index] = this.reserve[listLength];
+            this.reserve[index] = this.reserve[this.reserve.length - 1];
             this.reserve.pop();
         }
         return lettersToSend;

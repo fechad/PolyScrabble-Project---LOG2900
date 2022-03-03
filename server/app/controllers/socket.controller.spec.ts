@@ -143,7 +143,7 @@ describe('SocketManager service tests', () => {
         playersSocket[2].on('error', stub2);
         playersSocket[2].emit('join-room', 0);
         await waitForCommunication(RESPONSE_DELAY);
-        assert(stub2.calledWith('already 2 players in the game'));
+        assert(stub2.calledWith('Il y a déjà deux joueurs dans cette partie'));
     });
 
     const createRoom = async (): Promise<[Socket, Socket]> => {

@@ -185,9 +185,17 @@ export class CommunicationService {
         if (this.waitingRoomsSocket.connected) this.waitingRoomsSocket.disconnect();
     }
 
-    private handleError(e: string | Error) {
+    private handleError(e: string) {
         // eslint-disable-next-line no-console
         if (!environment.production) console.error(e);
+        if (e === 'Il y a déjà deux joueurs dans cette partie') {
+            swal.fire({
+                title: 'Erreur!',
+                text: e,
+                showCloseButton: true,
+                confirmButtonText: 'Ok!',
+            });
+        }
     }
 
     private leaveGame() {
@@ -213,7 +221,7 @@ export class CommunicationService {
             this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
-        this.roomSocket.on('error', (e) => this.handleError(e));
+        this.roomSocket.on('error', (error: string) => this.handleError(error));
 
         this.roomSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId);

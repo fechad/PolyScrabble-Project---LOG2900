@@ -72,4 +72,18 @@ describe('JoiningRoomPageComponent', () => {
         component.openDialog(testRoom);
         expect(openDialogSpy).toHaveBeenCalled();
     });
+    it('getRandomRoom should call openDialog', () => {
+        const testRoom: Room = {
+            id: 0,
+            name: 'Room',
+            parameters: new Parameters(),
+            mainPlayer: { name: 'Player 1', id: '0', connected: true },
+            otherPlayer: undefined,
+            started: false,
+        };
+        component.communicationService.rooms?.next([testRoom]);
+        const openDialogSpy = spyOn(component, 'openDialog');
+        component.getRandomRoom();
+        expect(openDialogSpy).toHaveBeenCalled();
+    });
 });
