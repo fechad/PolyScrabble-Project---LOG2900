@@ -34,6 +34,7 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
     firstLetter = [0, 0];
+    shift: number[] = [];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
