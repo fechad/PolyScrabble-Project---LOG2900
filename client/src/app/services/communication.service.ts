@@ -187,7 +187,8 @@ export class CommunicationService {
 
     private handleError(e: string) {
         // eslint-disable-next-line no-console
-        if (!environment.production) {
+        if (!environment.production) console.error(e);
+        if (e === 'Il y a déjà deux joueurs dans cette partie') {
             swal.fire({
                 title: 'Erreur!',
                 text: e,
