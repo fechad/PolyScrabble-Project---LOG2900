@@ -19,6 +19,7 @@ export class MouseService {
     constructor(public gridService: GridService) {}
 
     mouseHitDetect(event: MouseEvent) {
+        if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
         if (event.button === MouseButton.Left) {
             if (this.gridService.letterWritten !== 0) this.mousePosition = this.prevPos;
             else {
@@ -39,8 +40,6 @@ export class MouseService {
                 this.gridService.drawGrid();
                 this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
                 this.enter = false;
-            } else {
-                this.isHorizontal = true;
             }
         }
     }
