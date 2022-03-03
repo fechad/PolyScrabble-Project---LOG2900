@@ -122,8 +122,8 @@ describe('ChatBoxLogicService', () => {
         await service.validateSyntax(invalidText);
         expect(sendLocalMessage).not.toHaveBeenCalled();
     });
-    it('validateSyntax should call communicationService.sendLocalMessage for the !aide command', async () => {
-        const sendLocalMessage = spyOn(service.communicationService, 'sendLocalMessage').and.callThrough();
+    it('validateSyntax should call communicationService.sendCommandMessage for the !aide command', async () => {
+        const sendLocalMessage = spyOn(service.communicationService, 'sendCommandMessage').and.callThrough();
         await service.validateSyntax('!aide');
         expect(sendLocalMessage).toHaveBeenCalled();
     });
