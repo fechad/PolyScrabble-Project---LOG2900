@@ -45,7 +45,7 @@ export class GridService {
     buttonPressed = '';
     letters: Letter[] = [];
     rack: Letter[] = [];
-    letterForServer: string;
+    letterForServer = '';
     letterWritten = 0;
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -82,6 +82,7 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        // this.drawGrid();
         const x = canvasX;
         const y = canvasY;
         this.gridContext.fillStyle = '#000';
