@@ -7,6 +7,7 @@ import { GridService } from '@app/services/grid.service';
 const MAX_LETTERS = 7;
 const LETTER_CONTAINER = document.getElementsByClassName('letter-container');
 const LIMIT = 6;
+const UNDEFINED = -1;
 @Component({
     selector: 'app-letter-rack',
     templateUrl: './letter-rack.component.html',
@@ -17,7 +18,8 @@ export class LetterRackComponent implements OnInit {
     timeOut: number;
     selectedLetters: string = '';
     buttonPressed: string | undefined;
-    previousSelection: number;
+    prevKey: string | undefined;
+    previousSelection = UNDEFINED;
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService, public gridService: GridService) {
         this.gameContextService.state.subscribe(() => {
             return;
@@ -27,18 +29,35 @@ export class LetterRackComponent implements OnInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
 
-        if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
-            this.shiftLetter(this.buttonPressed);
-        } else {
-            this.clearSelection('manipulate');
-            let index = 0;
-            for (const letter of this.letters) {
-                if (letter.name.toLowerCase() === this.buttonPressed?.toLowerCase() && this.previousSelection !== index) {
-                    this.previousSelection = index;
-                    this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
-                    break;
+        if (!(document.getElementById('writingBox') === document.activeElement)) {
+            if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
+                this.shiftLetter(this.buttonPressed);
+            } else {
+                this.clearSelection('manipulate');
+                let index = 0;
+                const occurrences = this.checkOccurrences(this.buttonPressed);
+
+                if (this.prevKey !== this.buttonPressed) this.previousSelection = UNDEFINED;
+
+                for (const letter of this.letters) {
+                    if (
+                        letter.name.toLowerCase() === this.buttonPressed.toLowerCase() &&
+                        this.previousSelection !== index &&
+                        this.previousSelection < index
+                    ) {
+                        this.previousSelection = index;
+                        this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
+
+                        if (this.previousSelection === occurrences[occurrences.length - 1]) {
+                            this.previousSelection = UNDEFINED;
+                        }
+
+                        break;
+                    }
+                    index++;
                 }
-                index++;
+
+                this.prevKey = this.buttonPressed;
             }
         }
     }
@@ -78,6 +97,18 @@ export class LetterRackComponent implements OnInit {
         this.gameContextService.rack.subscribe((newRack) => {
             this.letters = newRack;
         });
+    }
+
+    checkOccurrences(key: string): number[] {
+        const indices = [];
+        let index = 0;
+        for (const letter of this.letters) {
+            if (letter.name.toLowerCase() === key.toLowerCase()) {
+                indices.push(index);
+            }
+            index++;
+        }
+        return indices;
     }
 
     shiftLetter(keypress: string | number) {

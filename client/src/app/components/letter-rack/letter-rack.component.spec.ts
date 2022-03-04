@@ -30,6 +30,20 @@ describe('LetterRackComponent', () => {
             { name: 'f', score: 1 },
             { name: 'f', score: 1 },
         ];
+
+        const element = document.createElement('div');
+        element.classList.add('letter-container');
+        const child1 = document.createElement('div');
+        child1.classList.add('letter-name');
+        const p1 = document.createElement('p');
+        // p1.innerText = component.letters[0].name;
+        document.body.appendChild(element);
+
+        const child2 = document.createElement('div');
+        child2.classList.add('letter-name');
+        element.appendChild(child1);
+        child1.appendChild(p1);
+        element.appendChild(child2);
     });
 
     it('should create', () => {
@@ -61,17 +75,15 @@ describe('LetterRackComponent', () => {
         expect(shiftLetterSpy).toHaveBeenCalled();
     });
 
-    // it('swap letter position to the right if ArrowRight pressed and letter is set to manipulate', async () => {
-    //     window.addEventListener('load', () => {
-    //         const container = document.getElementsByClassName('letter-container');
-    //         Array.from(container)[0].setAttribute('id', 'manipulating');
-    //         component.shiftLetter('ArrowRight');
-    //         expect(component.letters[1]).toBe({ name: 'a', score: 1 });
-    //         expect(component.letters[0]).toBe({ name: 'b', score: 1 });
-    //     });
-    // });
+    it('swap letter position to the right if ArrowRight pressed and letter is set to manipulate', () => {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container)[0].setAttribute('id', 'manipulating');
+        component.shiftLetter('ArrowRight');
+        expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
+        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+    });
 
-    // it('swap letter position to the left if ArrowLeft pressed and letter is set to manipulate', async () => {
+    // it('swap letter position to the left if ArrowLeft pressed and letter is set to manipulate', () => {
     //     const container = document.getElementsByClassName('letter-container');
     //     Array.from(container)[1].setAttribute('id', 'manipulating');
     //     component.shiftLetter('ArrowLeft');
@@ -79,23 +91,19 @@ describe('LetterRackComponent', () => {
     //     expect(component.letters[1]).toBe({ name: 'a', score: 1 });
     // });
 
-    // it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', async () => {
-    //     window.addEventListener('load', () => {
-    //         const container = document.getElementsByClassName('letter-container');
-    //         Array.from(container)[6].setAttribute('id', 'manipulating');
-    //         component.shiftLetter('ArrowRight');
-    //         expect(component.letters[0]).toBe({ name: 'f', score: 1 });
-    //         expect(component.letters[6]).toBe({ name: 'f', score: 1 });
-    //     });
+    // it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', () => {
+    //     const container = document.getElementsByClassName('letter-container');
+    //     Array.from(container)[6].setAttribute('id', 'manipulating');
+    //     component.shiftLetter('ArrowRight');
+    //     expect(component.letters[0]).toBe({ name: 'f', score: 1 });
+    //     expect(component.letters[6]).toBe({ name: 'f', score: 1 });
     // });
 
-    // it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', async () => {
-    //     window.addEventListener('load', () => {
-    //         const container = document.getElementsByClassName('letter-container');
-    //         Array.from(container)[0].setAttribute('id', 'manipulating');
-    //         component.shiftLetter('ArrowLeft');
-    //         expect(component.letters[0]).toBe({ name: 'b', score: 1 });
-    //         expect(component.letters[6]).toBe({ name: 'a', score: 1 });
-    //     });
+    // it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', () => {
+    //     const container = document.getElementsByClassName('letter-container');
+    //     Array.from(container)[0].setAttribute('id', 'manipulating');
+    //     component.shiftLetter('ArrowLeft');
+    //     expect(component.letters[0]).toBe({ name: 'b', score: 1 });
+    //     expect(component.letters[6]).toBe({ name: 'a', score: 1 });
     // });
 });
