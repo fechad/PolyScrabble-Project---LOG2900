@@ -40,11 +40,7 @@ export class LetterRackComponent implements OnInit {
                 if (this.prevKey !== this.buttonPressed) this.previousSelection = UNDEFINED;
 
                 for (const letter of this.letters) {
-                    if (
-                        letter.name.toLowerCase() === this.buttonPressed.toLowerCase() &&
-                        this.previousSelection !== index &&
-                        this.previousSelection < index
-                    ) {
+                    if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase() && this.previousSelection < index) {
                         this.previousSelection = index;
                         this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
 
@@ -113,6 +109,7 @@ export class LetterRackComponent implements OnInit {
 
     shiftLetter(keypress: string | number) {
         let index = 0;
+
         const tempRack = this.letters.map((x) => x);
         Array.from(LETTER_CONTAINER).forEach((letters) => {
             if (letters.getAttribute('id') === 'manipulating') {

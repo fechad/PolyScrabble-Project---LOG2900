@@ -75,10 +75,6 @@ describe('JoinSetupDialogComponent', () => {
         expect(component.joiningRoomForm.valid).toBeFalsy();
     });
 
-    it('form invalid if no name entered', () => {
-        expect(component.joiningRoomForm.valid).toBeFalsy();
-    });
-
     it('click on cancel button should call closeDialog() function', fakeAsync(() => {
         spyOn(component, 'closeDialog');
         fixture.debugElement.query(By.css('.icon-cancel')).nativeElement.click();

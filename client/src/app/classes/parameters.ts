@@ -14,11 +14,11 @@ export enum Difficulty {
 export const difficulties = [
     {
         id: 0,
-        name: 'Débutant',
+        name: 'débutant',
     },
     {
         id: 1,
-        name: 'Expert',
+        name: 'expert',
     },
 ];
 
