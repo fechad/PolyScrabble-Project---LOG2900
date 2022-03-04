@@ -5,6 +5,53 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { LetterRackComponent } from './letter-rack.component';
 
+const setHTML = () => {
+    const element = document.createElement('div');
+    element.classList.add('letter-container');
+    const element2 = document.createElement('div');
+    element2.classList.add('letter-container');
+    const element3 = document.createElement('div');
+    element3.classList.add('letter-container');
+    const element4 = document.createElement('div');
+    element4.classList.add('letter-container');
+    const element5 = document.createElement('div');
+    element5.classList.add('letter-container');
+    const element6 = document.createElement('div');
+    element6.classList.add('letter-container');
+    const element7 = document.createElement('div');
+    element7.classList.add('letter-container');
+    document.body.appendChild(element);
+    document.body.appendChild(element2);
+    document.body.appendChild(element3);
+    document.body.appendChild(element4);
+    document.body.appendChild(element5);
+    document.body.appendChild(element6);
+    document.body.appendChild(element7);
+
+    const child1 = document.createElement('div');
+    child1.classList.add('letter-name');
+    const child2 = document.createElement('div');
+    child2.classList.add('letter-name');
+    const child3 = document.createElement('div');
+    child3.classList.add('letter-name');
+    const child4 = document.createElement('div');
+    child4.classList.add('letter-name');
+    const child5 = document.createElement('div');
+    child5.classList.add('letter-name');
+    const child6 = document.createElement('div');
+    child6.classList.add('letter-name');
+    const child7 = document.createElement('div');
+    child7.classList.add('letter-name');
+
+    element.appendChild(child1);
+    element2.appendChild(child2);
+    element3.appendChild(child3);
+    element4.appendChild(child4);
+    element5.appendChild(child5);
+    element6.appendChild(child6);
+    element7.appendChild(child7);
+};
+
 describe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
@@ -31,19 +78,9 @@ describe('LetterRackComponent', () => {
             { name: 'f', score: 1 },
         ];
 
-        const element = document.createElement('div');
-        element.classList.add('letter-container');
-        const child1 = document.createElement('div');
-        child1.classList.add('letter-name');
-        const p1 = document.createElement('p');
-        // p1.innerText = component.letters[0].name;
-        document.body.appendChild(element);
+        setHTML();
 
-        const child2 = document.createElement('div');
-        child2.classList.add('letter-name');
-        element.appendChild(child1);
-        child1.appendChild(p1);
-        element.appendChild(child2);
+        fixture.detectChanges();
     });
 
     it('should create', () => {
@@ -87,23 +124,30 @@ describe('LetterRackComponent', () => {
     //     const container = document.getElementsByClassName('letter-container');
     //     Array.from(container)[1].setAttribute('id', 'manipulating');
     //     component.shiftLetter('ArrowLeft');
-    //     expect(component.letters[0]).toBe({ name: 'b', score: 1 });
-    //     expect(component.letters[1]).toBe({ name: 'a', score: 1 });
+    //     expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+    //     expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
     // });
 
     // it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', () => {
     //     const container = document.getElementsByClassName('letter-container');
     //     Array.from(container)[6].setAttribute('id', 'manipulating');
     //     component.shiftLetter('ArrowRight');
-    //     expect(component.letters[0]).toBe({ name: 'f', score: 1 });
-    //     expect(component.letters[6]).toBe({ name: 'f', score: 1 });
+    //     expect(component.letters[0]).toEqual({ name: 'f', score: 1 });
+    //     expect(component.letters[6]).toEqual({ name: 'f', score: 1 });
     // });
 
     // it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', () => {
     //     const container = document.getElementsByClassName('letter-container');
     //     Array.from(container)[0].setAttribute('id', 'manipulating');
     //     component.shiftLetter('ArrowLeft');
-    //     expect(component.letters[0]).toBe({ name: 'b', score: 1 });
-    //     expect(component.letters[6]).toBe({ name: 'a', score: 1 });
+    //     expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+    //     expect(component.letters[6]).toEqual({ name: 'a', score: 1 });
+    // });
+
+    // it('should set letter pressed to manipulation mode', () => {
+    //     const container = document.getElementsByClassName('letter-container');
+    //     component.setToManipulate('a', 0);
+    //     console.log(container[0]);
+    //     expect(Array.from(container)[0].getAttribute('id')).toBe('manipulating');
     // });
 });

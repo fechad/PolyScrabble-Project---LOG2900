@@ -43,4 +43,11 @@ describe('ModesPageComponent', () => {
         tick();
         expect(openDialogSpy).toHaveBeenCalled();
     }));
+
+    it('click on solo mode should open solo dialog', fakeAsync(() => {
+        const openDialogSpy = spyOn(component, 'openSoloDialog').and.callThrough();
+        fixture.debugElement.query(By.css('.Solo')).nativeElement.click();
+        tick();
+        expect(openDialogSpy).toHaveBeenCalled();
+    }));
 });
