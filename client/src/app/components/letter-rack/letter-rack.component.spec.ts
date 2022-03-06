@@ -52,6 +52,8 @@ const setHTML = () => {
     element7.appendChild(child7);
 };
 
+// const clearHTML = () => (document.body.innerHTML = '');
+
 describe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
