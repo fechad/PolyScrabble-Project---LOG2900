@@ -162,14 +162,14 @@ span:before {
   border-radius: 0.25em;
 }
 
-.button:hover:not(:active):not(:disabled) {
+.convert:hover:not(:active):not(:disabled) {
   cursor: pointer;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
   transform: scale(1.01);
 }
 
 .convert {
-    margin-right: 75em;
+    margin-right: 70vw;
     width: 250px;
     font-size: 20px;
 }
