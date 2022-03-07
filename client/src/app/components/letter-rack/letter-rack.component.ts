@@ -34,6 +34,7 @@ export class LetterRackComponent implements OnInit {
                 this.shiftLetter(this.buttonPressed);
             } else {
                 this.clearSelection('manipulate');
+                this.clearSelection('exchange');
                 let index = 0;
                 const occurrences = this.checkOccurrences(this.buttonPressed);
 
@@ -156,6 +157,7 @@ export class LetterRackComponent implements OnInit {
             )
         ) {
             this.clearSelection('manipulate');
+            this.clearSelection('exchange');
             tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
             this.checkSelection();
         }
@@ -176,6 +178,7 @@ export class LetterRackComponent implements OnInit {
         } else {
             menu.style.display = 'block';
             letter.parentElement?.parentElement?.setAttribute('id', 'selected');
+            this.clearSelection('manipulate');
         }
 
         this.checkSelection();
