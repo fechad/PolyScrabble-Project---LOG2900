@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-body {
-    margin: 0;
-    padding: 0;
-    background: #262626;
-=======
 @import '../../styles/colors.scss';
 body
 {
   margin:0;
   padding:0;
   background:#262626;
->>>>>>> b70380f... add convert button in waiting-room
 }
 
 .material-icons {
@@ -97,9 +90,12 @@ span:before {
 }
 
 .options {
+    display: flex;
+    align-items: center;
     margin-top: 2em;
 }
 
+.convert,
 .reject,
 .start {
     font-family: Signika Negative;
@@ -170,4 +166,10 @@ span:before {
   cursor: pointer;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
   transform: scale(1.01);
+}
+
+.convert {
+    margin-right: 75em;
+    width: 250px;
+    font-size: 20px;
 }
