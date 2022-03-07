@@ -1,6 +1,8 @@
 import { HttpClientModule } from '@angular/common/http';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
@@ -42,6 +44,12 @@ export class CommunicationServiceMock {
     }
 }
 
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
+
 describe('WaitingRoomPageComponent', () => {
     let component: WaitingRoomPageComponent;
     let fixture: ComponentFixture<WaitingRoomPageComponent>;
@@ -53,8 +61,14 @@ describe('WaitingRoomPageComponent', () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             declarations: [WaitingRoomPageComponent],
-            providers: [{ provide: CommunicationService, useValue: service }],
-        }).compileComponents();
+            providers: [
+                { provide: CommunicationService, useValue: service },
+                { provide: MatDialog, useValue: dialogMock },
+                { provide: ActivatedRoute, useValue: {} },
+            ],
+        })
+            .overrideComponent(WaitingRoomPageComponent, { set: { changeDetection: ChangeDetectionStrategy.Default } })
+            .compileComponents();
     });
 
     beforeEach(() => {

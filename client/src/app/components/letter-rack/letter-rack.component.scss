@@ -104,7 +104,12 @@
 }
 
 .letter-container#selected {
-    border-color: white;
+    border-color: #25BE4B;
     border-width: 3px;
 
+}
+
+.letter-container#manipulating {
+    border-color: white;
+    border-width: 3px;
 }

@@ -2,13 +2,20 @@
     <div class="header-container">
         <div
             class="apropos"
-            matTooltip="Etienne Aumais-Boucher&#13;
+            matTooltip="
+                Etienne Aumais-Boucher&#13;
+                &#13;
                 Fedwin Chatelier&#13;
+                &#13;
                 Anna Guo&#13;
+                &#13;
                 Xavier L'Heureux&#13;
+                &#13;
                 Justin St-Arnaud&#13;
+                &#13;
                 Francois Tourigny"
             matTooltipPosition="above"
+            matTooltipClass="tool"
         >
             Auteurs
         </div>
@@ -23,6 +30,7 @@
             [disabled]="champ.disabled"
             matTooltip="{{ champ.toolTip }}"
             matTooltipPosition="right"
+            matTooltipClass="tool"
             routerLink="{{ champ.route }}"
             (click)="mode.appendMode(champ.texte)"
         >

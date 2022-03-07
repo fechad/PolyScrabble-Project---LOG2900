@@ -1,28 +1,92 @@
-import { AfterViewInit, Component, ElementRef, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
 const MAX_LETTERS = 7;
+const LETTER_CONTAINER = document.getElementsByClassName('letter-container');
+const LIMIT = 6;
+const UNDEFINED = -1;
 @Component({
     selector: 'app-letter-rack',
     templateUrl: './letter-rack.component.html',
     styleUrls: ['./letter-rack.component.scss'],
 })
-export class LetterRackComponent implements OnInit, AfterViewInit {
+export class LetterRackComponent implements OnInit {
     letters: Letter[];
     timeOut: number;
     selectedLetters: string = '';
-    constructor(
-        public communicationService: CommunicationService,
-        public gameContextService: GameContextService,
-        public gridService: GridService,
-        private elementRef: ElementRef,
-    ) {
+    buttonPressed: string | undefined;
+    prevKey: string | undefined;
+    previousSelection = UNDEFINED;
+    constructor(public communicationService: CommunicationService, public gameContextService: GameContextService, public gridService: GridService) {
         this.gameContextService.state.subscribe(() => {
             return;
         });
+    }
+    @HostListener('document:keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+
+        if (!(document.getElementById('writingBox') === document.activeElement)) {
+            if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
+                this.shiftLetter(this.buttonPressed);
+            } else {
+                this.clearSelection('manipulate');
+                let index = 0;
+                const occurrences = this.checkOccurrences(this.buttonPressed);
+
+                if (this.prevKey !== this.buttonPressed) this.previousSelection = UNDEFINED;
+
+                for (const letter of this.letters) {
+                    if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase() && this.previousSelection < index) {
+                        this.previousSelection = index;
+                        this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
+
+                        if (this.previousSelection === occurrences[occurrences.length - 1]) {
+                            this.previousSelection = UNDEFINED;
+                        }
+
+                        break;
+                    }
+                    index++;
+                }
+
+                this.prevKey = this.buttonPressed;
+            }
+        }
+    }
+
+    @HostListener('document:wheel', ['$event'])
+    scrollDetect(e: WheelEvent) {
+        this.shiftLetter(e.deltaY);
+    }
+
+    @HostListener('document:click', ['$event'])
+    clear(e: MouseEvent) {
+        const selection = e.target as HTMLElement;
+        const parentPossibilities = [
+            'name',
+            'letter-name',
+            'big-let',
+            'small-let',
+            'letter-container',
+            'rack-container',
+            'rackArea',
+            'context-menu',
+            'letter-rack',
+            'letter-score',
+            'big-sco',
+            'small-sco',
+            'score',
+        ];
+        const name = selection?.getAttribute('class') as string;
+
+        if (!parentPossibilities.includes(name)) {
+            this.clearSelection('exchange');
+            this.clearSelection('manipulate');
+        }
     }
 
     ngOnInit(): void {
@@ -31,9 +95,72 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         });
     }
 
-    ngAfterViewInit() {
-        this.elementRef.nativeElement.querySelector('#letter-container')?.addEventListener('contextmenu', this.menu.bind(this));
+    checkOccurrences(key: string): number[] {
+        const indices = [];
+        let index = 0;
+        for (const letter of this.letters) {
+            if (letter.name.toLowerCase() === key.toLowerCase()) {
+                indices.push(index);
+            }
+            index++;
+        }
+        return indices;
     }
+
+    shiftLetter(keypress: string | number) {
+        let index = 0;
+
+        const tempRack = this.letters.map((x) => x);
+        Array.from(LETTER_CONTAINER).forEach((letters) => {
+            if (letters.getAttribute('id') === 'manipulating') {
+                if ((keypress === 'ArrowRight' || keypress > 0) && index !== LIMIT) {
+                    tempRack[index + 1] = this.letters[index];
+                    tempRack[index] = this.letters[index + 1];
+                    this.letters = tempRack;
+                } else if ((keypress === 'ArrowRight' || keypress > 0) && index === LIMIT) {
+                    this.letters.pop();
+                    this.letters.unshift(tempRack[index]);
+                } else if ((keypress === 'ArrowLeft' || keypress < 0) && index !== 0) {
+                    tempRack[index - 1] = this.letters[index];
+                    tempRack[index] = this.letters[index - 1];
+                    this.letters = tempRack;
+                } else {
+                    this.letters.shift();
+                    this.letters.push(tempRack[index]);
+                }
+            }
+            index++;
+        });
+    }
+
+    setToManipulate(letter: string, idx: number) {
+        let selection = false;
+        let index = 0;
+        Array.from(LETTER_CONTAINER).forEach((letters) => {
+            if (letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter && idx === index && !selection) {
+                letters.setAttribute('id', 'manipulating');
+                selection = true;
+            }
+            index++;
+        });
+    }
+
+    manipulate(event: Event): void {
+        const tile = event.target as HTMLElement;
+
+        if (
+            !(
+                tile.parentElement?.parentElement?.getAttribute('id') === 'selected' ||
+                tile.parentElement?.getAttribute('id') === 'selected' ||
+                tile.getAttribute('id') === 'selected'
+            )
+        ) {
+            this.clearSelection('manipulate');
+            tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
+            this.checkSelection();
+        }
+    }
+
     hideMenu() {
         const menu = document.getElementById('menu') as HTMLElement;
         menu.style.display = 'none';
@@ -43,7 +170,6 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         event.preventDefault();
         const menu = document.getElementById('menu') as HTMLElement;
         const letter = event.target as HTMLElement;
-        letter.parentElement?.parentElement?.parentElement?.focus();
 
         if (letter.parentElement?.parentElement?.id === 'selected') {
             letter.parentElement?.parentElement?.removeAttribute('id');
@@ -55,44 +181,22 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
         this.checkSelection();
     }
 
-    clearSelection() {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container).forEach((letters) => {
-            if (letters.id === 'selected') {
+    clearSelection(command: string) {
+        Array.from(LETTER_CONTAINER).forEach((letters) => {
+            if (command === 'exchange' && letters.id === 'selected') {
+                letters.removeAttribute('id');
+            } else if (command === 'manipulate' && letters.id === 'manipulating') {
                 letters.removeAttribute('id');
             }
         });
-
-        this.hideMenu();
+        if (command === 'exchange') this.hideMenu();
     }
 
     checkSelection() {
         let itemSelected = false;
-        window.addEventListener('click', (e) => {
-            const selection = e.target as HTMLElement;
-            const parentPossibilities = [
-                'name',
-                'letter-name',
-                'letter-container',
-                'rack-container',
-                'rackArea',
-                'context-menu',
-                'app-letter-rack',
-                'letter-score',
-                'score',
-            ];
-            const name = selection?.getAttribute('class') as string;
 
-            if (!parentPossibilities.includes(name)) {
-                this.clearSelection();
-            }
-        });
-
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container).forEach((letters) => {
-            if (letters.id === 'selected') {
-                itemSelected = true;
-            }
+        Array.from(LETTER_CONTAINER).forEach((letters) => {
+            if (letters.id === 'selected') itemSelected = true;
         });
 
         if (!itemSelected) this.hideMenu();
@@ -105,12 +209,9 @@ export class LetterRackComponent implements OnInit, AfterViewInit {
     }
 
     getSelectedLetters() {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container).forEach((letters) => {
+        Array.from(LETTER_CONTAINER).forEach((letters) => {
             const letterList = letters as HTMLElement;
-            if (letters.id === 'selected') {
-                this.selectedLetters += letterList.innerText[0].toLowerCase();
-            }
+            if (letters.id === 'selected') this.selectedLetters += letterList.innerText[0].toLowerCase();
         });
     }
 

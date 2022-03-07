@@ -8,7 +8,11 @@
     <div class="ring">
         <h1 id="txt">En attente...</h1>
     </div>
+
+    <div *ngIf="isMainPlayer"><button class="convert" (click)="openSoloDialog()">Convertir en mode solo</button></div>
+
     <div class="options" *ngIf="isMainPlayer">
+        
         <button class="start" [disabled]="!canControl" (click)="start()">Démarrer</button>
         <button class="reject" [disabled]="!canControl" (click)="kick()">Rejeter</button>
     </div>
