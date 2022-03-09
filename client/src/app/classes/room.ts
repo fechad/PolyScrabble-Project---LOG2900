@@ -3,6 +3,12 @@ import { Parameters } from './parameters';
 export type RoomId = number;
 export type PlayerId = string;
 export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
+export enum State {
+    Setup,
+    Started,
+    Ended,
+    Aborted,
+}
 
 export class Room {
     readonly parameters: Parameters;
@@ -10,5 +16,5 @@ export class Room {
     readonly id: RoomId;
     readonly mainPlayer: Player;
     readonly otherPlayer: Player | undefined;
-    readonly started: boolean;
+    readonly state: State;
 }

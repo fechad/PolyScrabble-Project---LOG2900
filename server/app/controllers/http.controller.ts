@@ -1,4 +1,4 @@
-import { Player, Room } from '@app/classes/room';
+import { Player, Room, State } from '@app/classes/room';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
@@ -53,7 +53,7 @@ export class HttpController {
             res.json(scores);
         });
         this.router.post('/high-scores', validate({ body: NEW_SCORE_SCHEMA }), async (req: Request, res: Response) => {
-            if (!this.logins.verify(req.body.id, req.body.token)) return res.sendStatus(StatusCodes.FORBIDDEN);
+            if (!this.logins.verify(req.body.id, req.body.token)) return res.sendStatus(StatusCodes.UNAUTHORIZED);
 
             const result = this.roomsService.rooms
                 .flatMap((r): [Room, Player | undefined][] => [
@@ -63,7 +63,7 @@ export class HttpController {
                 .find(([_, p]) => p?.id === req.body.id);
             if (!result || !result[1]) return res.sendStatus(StatusCodes.NOT_FOUND);
             const [room, player] = result;
-            const game = this.roomsService.games.find((g) => g.gameId === room.id);
+            const game = this.roomsService.games.find((g) => g.id === room.id);
             if (game === undefined) return res.sendStatus(StatusCodes.NOT_FOUND);
             const info = game.getPlayerInfo(player.id);
             if (info === undefined) {
@@ -72,6 +72,7 @@ export class HttpController {
                 return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
             }
             if (info.info.virtual) return res.sendStatus(StatusCodes.FORBIDDEN);
+            if (room.getState() === State.Aborted) return res.sendStatus(StatusCodes.UNPROCESSABLE_ENTITY);
             await this.highScoreService.addScore({ name: info.info.name, score: info.score, log2990: room.parameters.log2990 });
             return res.sendStatus(StatusCodes.ACCEPTED);
         });

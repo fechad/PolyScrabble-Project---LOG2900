@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.component';
 import { CommunicationService } from '@app/services/communication.service';
 
@@ -18,7 +18,6 @@ export class WaitingRoomPageComponent {
         public communicationService: CommunicationService,
         public matDialog: MatDialog,
         public route: ActivatedRoute,
-        private router: Router,
     ) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
             this.isMainPlayer = this.communicationService.getId()?.value === room?.mainPlayer.id;
@@ -31,23 +30,5 @@ export class WaitingRoomPageComponent {
 
     openSoloDialog() {
         this.matDialog.open(SoloDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
-    }
-
-    leave() {
-        this.communicationService.leave();
-        this.router.navigate(['/joining-room']);
-    }
-
-    start() {
-        this.communicationService.start();
-    }
-
-    kick() {
-        this.communicationService.kick();
-    }
-
-    kickLeave() {
-        this.communicationService.kickLeave();
-        this.router.navigate(['/classic']);
     }
 }

@@ -1,5 +1,5 @@
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { RoomsService } from './rooms.service';
@@ -13,7 +13,9 @@ export class MainLobbyService {
     constructor(private roomsService: RoomsService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
-        const alreadyJoinedRoom = this.roomsService.rooms.find((r) => r.mainPlayer.id === id || r.getOtherPlayer()?.id === id);
+        const alreadyJoinedRoom = this.roomsService.rooms
+            .filter((r) => r.getState() === State.Started)
+            .find((r) => r.mainPlayer.id === id || r.getOtherPlayer()?.id === id);
         if (alreadyJoinedRoom) {
             socket.emit('join', alreadyJoinedRoom.id);
         }

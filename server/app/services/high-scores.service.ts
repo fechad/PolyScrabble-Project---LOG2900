@@ -4,10 +4,10 @@ import { Service } from 'typedi';
 type User = { name: string; score: number; log2990: boolean };
 type Score = { score: number; names: string[] };
 
-const DB_USERNAME = 'tp5_2078098_2086143';
-const DB_PASSWORD = 'yl%3CNRowlS%27%7C%2CVmTMOTc9%25fQwJ';
+const DB_USERNAME = 'default-user';
+const DB_PASSWORD = 'Oh6Hj7L7aCXZQfAb';
 const DB_URL = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.407r1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const DB_DB = 'tp5';
+const DB_DB = 'scores';
 const DB_COLLECTION = 'scores';
 
 export const DEFAULT_USERS: Score[] = [

@@ -5,7 +5,7 @@ import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { Room } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
@@ -74,7 +74,7 @@ describe('CommunicationService', () => {
                 parameters: new Parameters(),
                 mainPlayer: { name: 'BOB', id: ID, connected: true, virtual: false },
                 otherPlayer: undefined,
-                started: false,
+                state: State.Setup,
             },
         ];
         (service['waitingRoomsSocket'] as unknown as SocketMock).events.emit('broadcast-rooms', rooms);

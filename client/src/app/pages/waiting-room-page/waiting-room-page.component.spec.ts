@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
-import { Room } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
@@ -19,7 +19,7 @@ export class CommunicationServiceMock {
         parameters: new Parameters(),
         mainPlayer: { name: 'Player 1', id: '0', connected: true },
         otherPlayer: undefined,
-        started: false,
+        state: State.Setup,
     } as Room);
     dictionnaries: Promise<Dictionnary[]> = Promise.resolve([{ id: 0, name: 'français' }]);
 
@@ -77,7 +77,7 @@ describe('WaitingRoomPageComponent', () => {
         router.initialNavigation();
         service.selectedRoom.subscribe(async (room) => {
             if (room === undefined) router.navigate(['/']);
-            else if (room.started) router.navigate(['/game']);
+            else if (room.state === State.Started) router.navigate(['/game']);
             fixture.detectChanges();
         });
         component = fixture.componentInstance;
@@ -85,35 +85,5 @@ describe('WaitingRoomPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('leave should call leave from CommunicationService', () => {
-        const leaveSpy = spyOn(service, 'leave');
-
-        component.leave();
-
-        expect(leaveSpy).toHaveBeenCalled();
-    });
-
-    it('start should call start from CommunicationService', () => {
-        const startSpy = spyOn(service, 'start');
-
-        component.start();
-
-        expect(startSpy).toHaveBeenCalled();
-    });
-    it('kick should call kick from CommunicationService', () => {
-        const kickSpy = spyOn(service, 'kick');
-
-        component.kick();
-
-        expect(kickSpy).toHaveBeenCalled();
-    });
-    it('kickLeave should call kickLeave from CommunicationService', () => {
-        const kickLeaveSpy = spyOn(service, 'kickLeave');
-
-        component.kickLeave();
-
-        expect(kickLeaveSpy).toHaveBeenCalled();
     });
 });

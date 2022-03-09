@@ -4,6 +4,7 @@ import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { SocketManager } from './controllers/socket.controller';
 import { DictionnaryService } from './services/dictionnary.service';
+import { LoginsService } from './services/logins.service';
 import { RoomsService } from './services/rooms.service';
 
 @Service()
@@ -17,6 +18,7 @@ export class Server {
     constructor(
         private readonly application: Application,
         private readonly roomsService: RoomsService,
+        private readonly logins: LoginsService,
         private dictionnnaryService: DictionnaryService,
     ) {}
 
@@ -35,7 +37,7 @@ export class Server {
 
         this.server = http.createServer(this.application.app);
 
-        this.socketManager = new SocketManager(this.server, this.roomsService, this.dictionnnaryService);
+        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService);
         this.socketManager.init();
 
         this.server.listen(Server.appPort);

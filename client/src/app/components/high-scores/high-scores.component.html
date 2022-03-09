@@ -1,22 +1,33 @@
-<div class="container main-container high-scores">
-    <h1>Meilleurs scores</h1>
-    <b>Mode standard ou LOG2990</b>
-    <mat-slide-toggle ngDefaultControl [(ngModel)]="log2990" (change)="updateView()">Mode 2990</mat-slide-toggle>
-    <table mat-table>
-        <thead>
-            <tr mat-row>
-                <th mat-header-cell>Score</th>
-                <th mat-header-cell>Nom</th>
-            </tr>
-        </thead>
-        <tbody *ngFor="let score of scores" class="score-container">
-            <tr mat-row *ngFor="let name of score.names; let index = index">
-                <td mat-cell *ngIf="index === 0" [rowSpan]="score.names.length" class="score">{{ score.score }}</td>
-                <td mat-cell score="name">{{ name }}</td>
-            </tr>
-            <tr>
-                <td mat-cell class="separator" colspan="2"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<mat-card-title>👑 Meilleurs scores 👑</mat-card-title>
+
+<mat-card-content>
+    <div class="container main-container high-scores">
+        <mat-tab-group>
+            <mat-tab *ngFor="let page of pages" [label]="page.name">
+                <table mat-table>
+                    <thead>
+                        <tr mat-row>
+                            <th mat-header-cell>Score</th>
+                            <th mat-header-cell>Nom</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let score of page.scores" class="score-container">
+                        <tr mat-row *ngFor="let name of score.names; let index = index">
+                            <td mat-cell *ngIf="index === 0" [rowSpan]="score.names.length" class="score">{{ score.score }}</td>
+                            <td mat-cell score="name">{{ name }}</td>
+                        </tr>
+                        <tr>
+                            <td mat-cell class="separator" colspan="2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</mat-card-content>
+
+<mat-card-actions>
+    <button mat-flat-button (click)="dialogRef.close()" class="close">
+        Fermer
+    </button>
+</mat-card-actions>

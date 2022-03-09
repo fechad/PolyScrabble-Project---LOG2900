@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Parameters } from '@app/classes/parameters';
-import { Room } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CommunicationService } from '@app/services/communication.service';
@@ -20,7 +20,7 @@ describe('AppComponent', () => {
             virtual: false,
         },
         otherPlayer: undefined,
-        started: false,
+        state: State.Setup,
     };
 
     let router: jasmine.SpyObj<Router>;
@@ -50,7 +50,7 @@ describe('AppComponent', () => {
     });
 
     it('should redirect the app when the room is started', () => {
-        communicationService.selectedRoom.next({ ...ROOM, started: true });
+        communicationService.selectedRoom.next({ ...ROOM, state: State.Started });
         expect(router.navigate).toHaveBeenCalledOnceWith(['/game']);
     });
 
@@ -62,7 +62,7 @@ describe('AppComponent', () => {
     });
 
     it('should redirect the app when the room is no longer started', () => {
-        communicationService.selectedRoom.next({ ...ROOM, started: true });
+        communicationService.selectedRoom.next({ ...ROOM, state: State.Started });
         expect(router.navigate).toHaveBeenCalledWith(['/game']);
         router.navigate.calls.reset();
         communicationService.selectedRoom.next(ROOM);

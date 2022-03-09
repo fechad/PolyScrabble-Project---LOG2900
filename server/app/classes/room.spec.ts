@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { Parameters } from './parameters';
-import { Room } from './room';
+import { Room, State } from './room';
 
 // For to.be.undefined for chai
 /* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions */
@@ -130,8 +130,7 @@ describe('Room', () => {
         expect(result).to.be.undefined;
         room.start();
         assert(stub.called);
-        // eslint-disable-next-line dot-notation
-        assert(room['started']);
+        expect(room.getState()).to.equal(State.Started);
         done();
     });
 
@@ -147,17 +146,13 @@ describe('Room', () => {
     });
 
     it('should return if game is started', (done) => {
-        // eslint-disable-next-line dot-notation
-        assert(!room['started']);
-        assert(!room.isStarted());
+        assert(room.getState() === State.Setup);
 
         const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
         expect(result).to.be.undefined;
         room.start();
 
-        // eslint-disable-next-line dot-notation
-        assert(room['started']);
-        assert(room.isStarted());
+        assert(room.getState() === State.Started);
         done();
     });
 

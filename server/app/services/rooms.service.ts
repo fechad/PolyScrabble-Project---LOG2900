@@ -15,7 +15,7 @@ export class RoomsService {
         if (roomIdx !== NOT_FOUND) {
             this.rooms.splice(roomIdx, 1);
         }
-        const gameIdx = this.games.findIndex((game) => game.gameId === roomId);
+        const gameIdx = this.games.findIndex((game) => game.id === roomId);
         if (gameIdx !== NOT_FOUND) {
             this.games.splice(gameIdx, 1);
         }

@@ -1,5 +1,5 @@
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room } from '@app/classes/room';
+import { PlayerId, Room, State } from '@app/classes/room';
 import { Message } from '@app/message';
 import { RoomsService } from '@app/services/rooms.service';
 import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/services/waiting-room.service';
@@ -174,7 +174,7 @@ describe('SocketManager service tests', () => {
         expect(service.roomsService.rooms.length).to.equal(1);
         roomSocket.emit('start');
         await waitForCommunication(RESPONSE_DELAY);
-        expect(service.roomsService.rooms[0].isStarted()).to.equal(true);
+        expect(service.roomsService.rooms[0].getState()).to.equal(State.Started);
         expect(Container.get(RoomsService).games.length).to.equal(1);
     });
 

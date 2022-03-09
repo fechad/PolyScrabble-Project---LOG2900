@@ -1,6 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 import { HighScoresComponent } from './high-scores.component';
+
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
 
 describe('HighScoresComponent', () => {
     let component: HighScoresComponent;
@@ -10,6 +17,7 @@ describe('HighScoresComponent', () => {
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [HighScoresComponent],
+            providers: [{ provide: MatDialogRef, useValue: dialogMock }],
         }).compileComponents();
     });
 
