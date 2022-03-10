@@ -11,7 +11,7 @@ const MAX_RACK_SIZE = 7;
 const LAST_INDEX = -1;
 const CANVAS_SQUARE_SIZE = 33;
 const PLAY_AREA_SIZE = 520;
-const ADJUSTMENT = 1;
+const ADJUSTMENT = 2;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
