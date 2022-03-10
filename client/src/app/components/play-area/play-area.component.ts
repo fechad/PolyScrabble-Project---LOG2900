@@ -7,6 +7,10 @@ import { MouseService } from '@app/services/mouse.service';
 // TODO : Avoir un fichier séparé pour les constantes!
 export const DEFAULT_WIDTH = 525;
 export const DEFAULT_HEIGHT = 525;
+const MAX_RACK_SIZE = 7;
+const LAST_INDEX = -1;
+const CANVAS_SQUARE_SIZE = 33;
+const PLAY_AREA_SIZE = 520;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -44,7 +48,7 @@ export class PlayAreaComponent implements AfterViewInit {
         });
         this.gameContextService.rack.subscribe((rack) => {
             for (const i of rack) {
-                if (this.rack.length <= 7) this.rack.push(i.name);
+                if (this.rack.length <= MAX_RACK_SIZE) this.rack.push(i.name);
             }
         });
     }
@@ -69,7 +73,7 @@ export class PlayAreaComponent implements AfterViewInit {
             const letter = this.gridService.letters.pop();
             const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
             this.gridService.letterPosition.pop();
-            this.gridService.letterForServer = this.gridService.letterForServer.slice(0, -1);
+            this.gridService.letterForServer = this.gridService.letterForServer.slice(0, LAST_INDEX);
             if (letter !== undefined) {
                 this.gridService.rack.push(letter);
                 this.gameContextService.addTempRack(letter);
@@ -93,13 +97,13 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.gridService.drawGrid();
                 if (this.gridService.letters.length === 1)
                     this.firstLetter = [
-                        Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
-                        Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
+                        Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - 2,
+                        Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - 2,
                     ];
                 this.gridService.tempUpdateBoard(
                     this.buttonPressed,
-                    Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
-                    Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
+                    Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - 2,
+                    Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - 2,
                     this.mouseDetectService.isHorizontal,
                 );
                 const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
@@ -114,15 +118,18 @@ export class PlayAreaComponent implements AfterViewInit {
 
     drawShiftedArrow(pos: number[], shift: number) {
         if (this.mouseDetectService.isHorizontal)
-            this.gridService.drawArrow(((pos[1] + shift) * 100) / 3, this.mouseDetectService.mousePosition.y, true);
-        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, ((pos[0] + shift) * 100) / 3, false);
+            this.gridService.drawArrow((pos[1] + shift) * CANVAS_SQUARE_SIZE, this.mouseDetectService.mousePosition.y, true);
+        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, (pos[0] + shift) * CANVAS_SQUARE_SIZE, false);
     }
     isInBound() {
-        if (this.mouseDetectService.isHorizontal && this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520)
+        if (
+            this.mouseDetectService.isHorizontal &&
+            this.mouseDetectService.mousePosition.x + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE
+        )
             return true;
         else if (
             !this.mouseDetectService.isHorizontal &&
-            this.mouseDetectService.mousePosition.y + (this.gridService.letters.length * 100) / 3 <= 520
+            this.mouseDetectService.mousePosition.y + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE
         )
             return true;
         return false;
@@ -134,9 +141,7 @@ export class PlayAreaComponent implements AfterViewInit {
         if (this.mouseDetectService.isHorizontal) {
             while (board[pos[0]][pos[1] + 1] !== null) {
                 pos[1] += 1;
-                console.log(pos[1]);
                 shift += 1;
-                console.log(shift);
             }
             return shift;
         } else {
