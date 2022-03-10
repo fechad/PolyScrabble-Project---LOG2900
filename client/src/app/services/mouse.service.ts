@@ -5,12 +5,16 @@ import { MouseButton } from '@app/components/play-area/play-area.component';
 import { GridService } from './grid.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-const GRID_SIZE = 500;
-const MOUSE_DETECT_SIZE = 615;
-const ADJUST_X = 15;
-const ADJUST_Y = 5;
-const SQUARE_SIZE = 33;
-const IN_BOARD_AREA = 18;
+
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+const GRID_BORDERS = [20, 500];
+const offset = 1;
+const numberOfTiles = 15;
+const SQR_SIZE = GRID_BORDERS[1] / numberOfTiles - offset;
+const GRID_ORIGIN = 20;
+const CANVAS_ADJUSTMENT = 16;
+const IN_BOARD_AREA = 0;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -25,14 +29,15 @@ export class MouseService {
 
     mouseHitDetect(event: MouseEvent) {
         if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
-        if (event.button === MouseButton.Left) {
+        if (event.button === MouseButton.Left && this.isInBound(event)) {
             if (this.gridService.letterWritten !== 0) this.mousePosition = this.prevPos;
             else {
                 this.prevPos = this.mousePosition;
                 this.mousePosition = {
-                    x: Math.ceil(((event.offsetX * GRID_SIZE) / MOUSE_DETECT_SIZE - ADJUST_X) / SQUARE_SIZE) * SQUARE_SIZE + ADJUST_X,
-                    y: Math.ceil(((event.offsetY * GRID_SIZE) / MOUSE_DETECT_SIZE - ADJUST_Y) / SQUARE_SIZE) * SQUARE_SIZE + ADJUST_Y,
+                    x: this.calculateX(event.offsetX),
+                    y: this.calculateY(event.offsetY),
                 };
+                // console.log(this.mousePosition.x, this.mousePosition.y);
             }
             if (this.mousePosition.x >= IN_BOARD_AREA && this.mousePosition.y >= IN_BOARD_AREA && this.gridService.letterWritten === 0) {
                 this.gridService.drawGrid();
@@ -47,5 +52,24 @@ export class MouseService {
                 this.enter = false;
             }
         }
+    }
+
+    isInBound(event: MouseEvent): boolean {
+        if (
+            event.offsetX >= GRID_BORDERS[0] &&
+            event.offsetX <= GRID_BORDERS[1] &&
+            event.offsetY >= GRID_BORDERS[0] &&
+            event.offsetY <= GRID_BORDERS[1]
+        )
+            return true;
+        return false;
+    }
+    calculateX(xPosition: number): number {
+        const x = Math.floor((xPosition / GRID_BORDERS[1]) * numberOfTiles);
+        return (SQR_SIZE + offset) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+    }
+    calculateY(yPosition: number): number {
+        const y = Math.floor((yPosition / GRID_BORDERS[1]) * numberOfTiles);
+        return (SQR_SIZE + offset) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
 }
