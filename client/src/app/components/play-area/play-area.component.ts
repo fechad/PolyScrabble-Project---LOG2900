@@ -156,21 +156,11 @@ export class PlayAreaComponent implements AfterViewInit {
             return shift;
         } else {
             while (board[pos[0] + 1][pos[1]] !== null) {
-                pos[0]++;
-                shift++;
+                pos[0] += 1;
+                shift += 1;
             }
             return shift;
         }
-    }
-
-    isInTempRack(letter: string) {
-        for (let i = 0; i < this.rack.length; i++) {
-            if (this.rack[i] === letter.toUpperCase()) {
-                this.rack.splice(i, 1);
-                return true;
-            }
-        }
-        return false;
     }
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
