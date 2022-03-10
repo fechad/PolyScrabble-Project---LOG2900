@@ -30,18 +30,25 @@ const setHTML = () => {
 
     const child1 = document.createElement('div');
     child1.classList.add('letter-name');
+    child1.textContent = 'a';
     const child2 = document.createElement('div');
     child2.classList.add('letter-name');
+    child2.textContent = 'b';
     const child3 = document.createElement('div');
     child3.classList.add('letter-name');
+    child3.textContent = 'c';
     const child4 = document.createElement('div');
     child4.classList.add('letter-name');
+    child4.textContent = 'd';
     const child5 = document.createElement('div');
     child5.classList.add('letter-name');
+    child5.textContent = 'e';
     const child6 = document.createElement('div');
     child6.classList.add('letter-name');
+    child6.textContent = 'f';
     const child7 = document.createElement('div');
     child7.classList.add('letter-name');
+    child7.textContent = 'g';
 
     element.appendChild(child1);
     element2.appendChild(child2);
@@ -54,7 +61,7 @@ const setHTML = () => {
 
 // const clearHTML = () => (document.body.innerHTML = '');
 
-describe('LetterRackComponent', () => {
+fdescribe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
 
@@ -83,6 +90,7 @@ describe('LetterRackComponent', () => {
         setHTML();
 
         fixture.detectChanges();
+        component.clearSelection('manipulate');
     });
 
     it('should create', () => {
@@ -122,34 +130,34 @@ describe('LetterRackComponent', () => {
         expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
     });
 
-    // it('swap letter position to the left if ArrowLeft pressed and letter is set to manipulate', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     Array.from(container)[1].setAttribute('id', 'manipulating');
-    //     component.shiftLetter('ArrowLeft');
-    //     expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
-    //     expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
-    // });
+    it('swap letter position to the left if ArrowLeft pressed and letter is set to manipulate', () => {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container)[1].setAttribute('id', 'manipulating');
+        component.shiftLetter('ArrowLeft');
+        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+        expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
+    });
 
-    // it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     Array.from(container)[6].setAttribute('id', 'manipulating');
-    //     component.shiftLetter('ArrowRight');
-    //     expect(component.letters[0]).toEqual({ name: 'f', score: 1 });
-    //     expect(component.letters[6]).toEqual({ name: 'f', score: 1 });
-    // });
+    it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', () => {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container)[6].setAttribute('id', 'manipulating');
+        component.shiftLetter('ArrowRight');
+        expect(component.letters[0]).toEqual({ name: 'f', score: 1 });
+        expect(component.letters[6]).toEqual({ name: 'f', score: 1 });
+    });
 
-    // it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     Array.from(container)[0].setAttribute('id', 'manipulating');
-    //     component.shiftLetter('ArrowLeft');
-    //     expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
-    //     expect(component.letters[6]).toEqual({ name: 'a', score: 1 });
-    // });
+    it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', () => {
+        const container = document.getElementsByClassName('letter-container');
+        Array.from(container)[0].setAttribute('id', 'manipulating');
+        component.shiftLetter('ArrowLeft');
+        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+        expect(component.letters[6]).toEqual({ name: 'a', score: 1 });
+    });
 
-    // it('should set letter pressed to manipulation mode', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     component.setToManipulate('a', 0);
-    //     console.log(container[0]);
-    //     expect(Array.from(container)[0].getAttribute('id')).toBe('manipulating');
-    // });
+    it('should set letter pressed to manipulation mode', () => {
+        const container = document.getElementsByClassName('letter-container');
+        const keypress = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonDetect(keypress);
+        expect(Array.from(container)[0].getAttribute('id')).toBe('manipulating');
+    });
 });
