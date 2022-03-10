@@ -6,6 +6,10 @@ import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { LetterRackComponent } from './letter-rack.component';
 
 const setHTML = () => {
+    const page = document.createElement('div');
+    const rackContainer = document.createElement('div');
+    rackContainer.classList.add('rack-container');
+
     const element = document.createElement('div');
     element.classList.add('letter-container');
     const element2 = document.createElement('div');
@@ -20,13 +24,13 @@ const setHTML = () => {
     element6.classList.add('letter-container');
     const element7 = document.createElement('div');
     element7.classList.add('letter-container');
-    document.body.appendChild(element);
-    document.body.appendChild(element2);
-    document.body.appendChild(element3);
-    document.body.appendChild(element4);
-    document.body.appendChild(element5);
-    document.body.appendChild(element6);
-    document.body.appendChild(element7);
+    rackContainer.appendChild(element);
+    rackContainer.appendChild(element2);
+    rackContainer.appendChild(element3);
+    rackContainer.appendChild(element4);
+    rackContainer.appendChild(element5);
+    rackContainer.appendChild(element6);
+    rackContainer.appendChild(element7);
 
     const child1 = document.createElement('div');
     child1.classList.add('letter-name');
@@ -57,13 +61,28 @@ const setHTML = () => {
     element5.appendChild(child5);
     element6.appendChild(child6);
     element7.appendChild(child7);
+
+    page.appendChild(rackContainer);
+    document.body.appendChild(page);
 };
 
 // const clearHTML = () => (document.body.innerHTML = '');
 
-fdescribe('LetterRackComponent', () => {
+describe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
+    /*
+    const menu = document.createElement('div');
+    menu.classList.add('context-menu');
+    menu.id = 'menu';
+
+    const button1 = document.createElement('button');
+    button1.id = 'exchange';
+    button1.addEventListener('click', () => component.exchange());
+
+    const button2 = document.createElement('button');
+    button2.id = 'cancel';
+    button2.addEventListener('click', () => component.hideMenu()); */
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -91,6 +110,7 @@ fdescribe('LetterRackComponent', () => {
 
         fixture.detectChanges();
         component.clearSelection('manipulate');
+        component.clearSelection('exchange');
     });
 
     it('should create', () => {
@@ -159,5 +179,112 @@ fdescribe('LetterRackComponent', () => {
         const keypress = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonDetect(keypress);
         expect(Array.from(container)[0].getAttribute('id')).toBe('manipulating');
+    });
+
+    it('exchange should call getSelectedLetters', () => {
+        const spy = spyOn(component, 'getSelectedLetters').and.callThrough();
+        component.exchange();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should exchange a selected letter', () => {
+        const container = document.getElementsByClassName('letter-container');
+        const exchangeSpy = spyOn(component.communicationService, 'exchange').and.callThrough();
+        container[0].setAttribute('id', 'selected');
+        component.exchange();
+        expect(exchangeSpy).toHaveBeenCalled();
+    });
+
+    it('getSelectedLetters should update the list of selectedLetters', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].setAttribute('id', 'selected');
+        expect(component.selectedLetters.length).toBe(0);
+        component.getSelectedLetters();
+        expect(component.selectedLetters.length).toBe(1);
+        expect(component.selectedLetters[0]).toBe('a');
+    });
+
+    it('checkSelection should not call hideMenu if letters are selected', () => {
+        const container = document.getElementsByClassName('letter-container');
+        const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
+        container[2].setAttribute('id', 'selected');
+        component.checkSelection();
+        expect(hideMenuSpy).not.toHaveBeenCalled();
+    });
+
+    it('checkSelection should call hideMenu if no letters are selected', () => {
+        component.clearSelection('exchange');
+        const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
+        component.checkSelection();
+        expect(hideMenuSpy).toHaveBeenCalled();
+    });
+
+    it('getReserveCount should return a boolean', () => {
+        const reserveStatus = component.getReserveCount();
+        expect(typeof reserveStatus).toBe('boolean');
+    });
+
+    it('clearSelection should remove all letter selection ids', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[1].setAttribute('id', 'selected');
+        container[0].setAttribute('id', 'manipulating');
+        component.clearSelection('exchange');
+        component.clearSelection('manipulate');
+        let everythingIsCleared = true;
+        Array.from(container).forEach((letter) => {
+            if (letter.getAttribute('id') === 'selected' || letter.getAttribute('id') === 'manipulating') {
+                everythingIsCleared = false;
+            }
+        });
+        expect(everythingIsCleared).toBeTrue();
+    });
+
+    it('clear should clear every selection', () => {
+        const clearSelectionSPy = spyOn(component, 'clearSelection').and.callThrough();
+        const mockClick = new MouseEvent('click');
+        component.clear(mockClick);
+        expect(clearSelectionSPy).toHaveBeenCalledTimes(2);
+    });
+
+    it('click should call manipulate', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].addEventListener('click', (event) => component.manipulate(event));
+        const manipulateSPy = spyOn(component, 'manipulate').and.callThrough();
+        const mockClick = new MouseEvent('click');
+        container[0].dispatchEvent(mockClick);
+        expect(manipulateSPy).toHaveBeenCalled();
+        container[0].removeEventListener('click', component.manipulate);
+    });
+
+    it('rightClick should call menu', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].addEventListener('contextmenu', (event) => component.menu(event));
+        const menuSPy = spyOn(component, 'menu').and.callThrough();
+        const mockRightClick = new MouseEvent('contextmenu');
+        container[0].dispatchEvent(mockRightClick);
+        expect(menuSPy).toHaveBeenCalled();
+        container[0].removeEventListener('contextmenu', component.menu);
+    });
+
+    it('click on a selected letter for manipulation should remove selection id', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].setAttribute('id', 'manipulating');
+        container[0].addEventListener('click', (event) => component.manipulate(event));
+        const mockClick = new MouseEvent('click');
+        container[0].dispatchEvent(mockClick);
+        component.menu(mockClick);
+        expect(container[0].getAttribute('id')).toEqual(null);
+        container[0].removeEventListener('click', component.menu);
+    });
+
+    it('rightClick on a selected letter for exchange should remove selection id', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].setAttribute('id', 'selected');
+        container[0].addEventListener('contextmenu', (event) => component.menu(event));
+        const mockRightClick = new MouseEvent('contextmenu');
+        container[0].dispatchEvent(mockRightClick);
+        component.menu(mockRightClick);
+        expect(container[0].getAttribute('id')).toEqual(null);
+        container[0].removeEventListener('contextmenu', component.menu);
     });
 });
