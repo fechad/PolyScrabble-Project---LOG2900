@@ -9,6 +9,7 @@ import { GridService } from './grid.service';
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const GRID_BORDERS = [20, 500];
 const offset = 1;
+const TILE = 32;
 const numberOfTiles = 15;
 const SQR_SIZE = GRID_BORDERS[1] / numberOfTiles - offset;
 const GRID_ORIGIN = 20;
@@ -65,11 +66,13 @@ export class MouseService {
         return false;
     }
     calculateX(xPosition: number): number {
-        const x = Math.floor((xPosition / GRID_BORDERS[1]) * numberOfTiles);
+        let x = Math.floor((xPosition - GRID_ORIGIN) / TILE);
+        if (x < 0) x = 0;
         return (SQR_SIZE + offset) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
     calculateY(yPosition: number): number {
-        const y = Math.floor((yPosition / GRID_BORDERS[1]) * numberOfTiles);
+        let y = Math.floor((yPosition - GRID_ORIGIN) / TILE);
+        if (y < 0) y = 0;
         return (SQR_SIZE + offset) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
 }
