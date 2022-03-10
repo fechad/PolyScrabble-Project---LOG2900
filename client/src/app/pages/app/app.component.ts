@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { State } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { map, skip } from 'rxjs/operators';
 
@@ -15,9 +15,9 @@ export class AppComponent {
         communicationService.selectedRoom
             .pipe(
                 skip(1),
-                map((room) => room?.state),
+                map((room: Room) => room?.state),
             )
-            .subscribe((state) => {
+            .subscribe((state: State) => {
                 if (prevState === state) return;
 
                 if (state === State.Setup) router.navigate(['/waiting-room']);
