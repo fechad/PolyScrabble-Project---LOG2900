@@ -5,6 +5,7 @@ import { GameContextService, Tile } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
+const PLAY_AREA_SIZE = 520;
 const CENTER_TILE = 7;
 const AJUST_Y = 16;
 const AJUST_TILE_Y = 10;
@@ -23,6 +24,7 @@ const AMOUNT_OF_NUMBER = 15;
 const DEFAULT_SIZE = 9;
 const TILE_SIZE = 30;
 const BOARD_LENGTH = 15;
+const FOURTH_SQUARE = 4;
 const offset = BOARD_LENGTH / BOARD_LENGTH;
 const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
 const gridOrigin = 20;
@@ -62,7 +64,7 @@ export class GridService {
     }
 
     drawGrid() {
-        this.gridContext.clearRect(0, 0, 520, 520);
+        this.gridContext.clearRect(0, 0, PLAY_AREA_SIZE, PLAY_AREA_SIZE);
         this.gridContext.lineWidth = offset;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
@@ -90,11 +92,11 @@ export class GridService {
         this.gridContext.beginPath();
         if (isHorizontal) {
             this.gridContext.moveTo(x, y);
-            this.gridContext.lineTo(x - squareSize / 4, y + squareSize / 4);
-            this.gridContext.lineTo(x - squareSize / 4, y - squareSize / 4);
+            this.gridContext.lineTo(x - squareSize / FOURTH_SQUARE, y + squareSize / FOURTH_SQUARE);
+            this.gridContext.lineTo(x - squareSize / FOURTH_SQUARE, y - squareSize / FOURTH_SQUARE);
             this.gridContext.fill();
         } else {
-            this.gridContext.moveTo(x - squareSize / 4, y + squareSize / 4);
+            this.gridContext.moveTo(x - squareSize / FOURTH_SQUARE, y + squareSize / FOURTH_SQUARE);
             this.gridContext.lineTo(x - squareSize / 2, y);
             this.gridContext.lineTo(x, y);
             this.gridContext.fill();
