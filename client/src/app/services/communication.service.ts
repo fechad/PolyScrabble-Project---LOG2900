@@ -27,7 +27,6 @@ const IDS_KEY = 'ids';
 export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
-    readonly isInSoloGame: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined as boolean | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
@@ -52,7 +51,6 @@ export class CommunicationService {
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId);
-            this.isInSoloGame.next(true);
         });
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
@@ -216,7 +214,6 @@ export class CommunicationService {
         this.gameSocket = undefined;
         this.gameContextService.clearMessages();
         this.selectedRoom.next(undefined);
-        this.isInSoloGame.next(false);
     }
 
     private joinRoomHandler(roomId: RoomId) {

@@ -3,6 +3,7 @@ import { Board } from './board';
 import { Game } from './game';
 
 const AI_ID = 1;
+const THRESHOLD = 0.5;
 
 export class VirtualPlayer {
     board: Board;
@@ -19,7 +20,7 @@ export class VirtualPlayer {
         } else if (this.isBeginner && random === 1) {
             let list = '';
             this.myRack.map((letter) => {
-                if (Math.random() >= 0.5) {
+                if (Math.random() >= THRESHOLD) {
                     list += letter.name.toLowerCase();
                 }
             });

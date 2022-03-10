@@ -15,9 +15,9 @@ export class AppComponent {
         communicationService.selectedRoom
             .pipe(
                 skip(1),
-                map((room: Room) => room?.state),
+                map((room: Room | undefined) => room?.state),
             )
-            .subscribe((state: State) => {
+            .subscribe((state: State | undefined) => {
                 if (prevState === state) return;
 
                 if (state === State.Setup) router.navigate(['/waiting-room']);

@@ -57,6 +57,6 @@ export class SoloDialogComponent implements OnInit {
         parameters.difficulty = Difficulty.Beginner;
         parameters.gameType = GameType.Solo;
         await this.communicationService.createRoom(this.soloParametersForm.value.playerName, parameters, this.opponentName);
-        this.dialogRef.close();
+        this.closeDialog();
     }
 }
