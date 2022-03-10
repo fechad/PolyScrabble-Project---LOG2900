@@ -11,6 +11,7 @@ const MAX_RACK_SIZE = 7;
 const LAST_INDEX = -1;
 const CANVAS_SQUARE_SIZE = 33;
 const PLAY_AREA_SIZE = 520;
+const ADJUSTMENT = 1;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -97,13 +98,13 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.gridService.drawGrid();
                 if (this.gridService.letters.length === 1)
                     this.firstLetter = [
-                        Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - 2,
-                        Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - 2,
+                        Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+                        Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
                     ];
                 this.gridService.tempUpdateBoard(
                     this.buttonPressed,
-                    Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - 2,
-                    Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - 2,
+                    Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+                    Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
                     this.mouseDetectService.isHorizontal,
                 );
                 const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
