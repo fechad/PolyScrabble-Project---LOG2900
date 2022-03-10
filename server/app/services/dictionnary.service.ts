@@ -19,7 +19,6 @@ export class DictionnaryService {
     }
 
     isValidWord(playedWord: string) {
-        console.log(playedWord);
         if (!this.isWord(playedWord)) {
             return false;
         }
