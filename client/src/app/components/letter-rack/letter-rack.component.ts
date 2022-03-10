@@ -34,6 +34,7 @@ export class LetterRackComponent implements OnInit {
                 this.shiftLetter(this.buttonPressed);
             } else {
                 this.clearSelection('manipulate');
+                this.clearSelection('exchange');
                 let index = 0;
                 const occurrences = this.checkOccurrences(this.buttonPressed);
 
@@ -147,7 +148,6 @@ export class LetterRackComponent implements OnInit {
 
     manipulate(event: Event): void {
         const tile = event.target as HTMLElement;
-
         if (
             !(
                 tile.parentElement?.parentElement?.getAttribute('id') === 'selected' ||
@@ -156,6 +156,7 @@ export class LetterRackComponent implements OnInit {
             )
         ) {
             this.clearSelection('manipulate');
+            this.clearSelection('exchange');
             tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
             this.checkSelection();
         }
@@ -171,13 +172,19 @@ export class LetterRackComponent implements OnInit {
         const menu = document.getElementById('menu') as HTMLElement;
         const letter = event.target as HTMLElement;
 
-        if (letter.parentElement?.parentElement?.id === 'selected') {
+        if (
+            letter.parentElement?.parentElement?.getAttribute('id') === 'selected' ||
+            letter.parentElement?.getAttribute('id') === 'selected' ||
+            letter.getAttribute('id') === 'selected'
+        ) {
             letter.parentElement?.parentElement?.removeAttribute('id');
+            letter.parentElement?.removeAttribute('id');
+            letter.removeAttribute('id');
         } else {
             menu.style.display = 'block';
             letter.parentElement?.parentElement?.setAttribute('id', 'selected');
+            this.clearSelection('manipulate');
         }
-
         this.checkSelection();
     }
 
