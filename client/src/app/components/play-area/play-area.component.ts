@@ -53,35 +53,35 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
-            this.shift = [];
+            for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
             this.communicationservice.place(
                 this.gridService.letterForServer,
                 this.firstLetter[1],
                 this.firstLetter[0],
                 this.mouseDetectService.isHorizontal,
             );
+            this.gridService.letterPosition = [[0, 0]];
             this.gridService.letterWritten = 0;
             this.gridService.letters = [];
             this.gridService.letterForServer = '';
             this.gridService.drawGrid();
-        } else if (this.buttonPressed === 'Backspace') {
+        } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
             const letter = this.gridService.letters.pop();
+            const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
+            this.gridService.letterPosition.pop();
             this.gridService.letterForServer = this.gridService.letterForServer.slice(0, -1);
             if (letter !== undefined) {
                 this.gridService.rack.push(letter);
                 this.gameContextService.addTempRack(letter);
             }
-            this.gameContextService.tempUpdateRack();
+            if (letterRemoved[0] !== undefined && letterRemoved[0] !== undefined)
+                this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
             this.gridService.drawGrid();
+            this.drawShiftedArrow(letterRemoved, 1);
             this.gridService.letterWritten -= 1;
-            this.shift = [];
-            for (let i = 0; i < this.gridService.letters.length; i++) {
-                this.drawRightDirection(this.gridService.letters[i].name.toLowerCase(), i, this.mouseDetectService.isHorizontal);
-            }
         } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
             try {
                 this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
-                // this.drawRightDirection(this.buttonPressed, this.gridService.letters.length, this.mouseDetectService.isHorizontal);
                 this.gridService.letterWritten += 1;
                 for (const i of this.gridService.rack) {
                     if (i.name === this.buttonPressed.toUpperCase()) {
@@ -91,15 +91,31 @@ export class PlayAreaComponent implements AfterViewInit {
                     }
                 }
                 this.gridService.drawGrid();
-                for (let i = 0; i < this.gridService.letters.length; i++) {
-                    this.drawRightDirection(this.gridService.letters[i].name.toLowerCase(), i, this.mouseDetectService.isHorizontal);
-                }
+                if (this.gridService.letters.length === 1)
+                    this.firstLetter = [
+                        Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
+                        Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
+                    ];
+                this.gridService.tempUpdateBoard(
+                    this.buttonPressed,
+                    Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
+                    Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
+                    this.mouseDetectService.isHorizontal,
+                );
+                const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
+                this.drawShiftedArrow(lastLetter, 2);
                 this.gameContextService.tempUpdateRack();
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
                 this.communicationservice.sendLocalMessage(e.message);
             }
         }
+    }
+
+    drawShiftedArrow(pos: number[], shift: number) {
+        if (this.mouseDetectService.isHorizontal)
+            this.gridService.drawArrow(((pos[1] + shift) * 100) / 3, this.mouseDetectService.mousePosition.y, true);
+        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, ((pos[0] + shift) * 100) / 3, false);
     }
     isInBound() {
         if (this.mouseDetectService.isHorizontal && this.mouseDetectService.mousePosition.x + (this.gridService.letters.length * 100) / 3 <= 520)
@@ -112,66 +128,24 @@ export class PlayAreaComponent implements AfterViewInit {
         return false;
     }
 
-    getShift() {
-        let shift = 0;
-        for (const i of this.shift) {
-            shift += i;
+    getShift(pos: number[]): number {
+        const board = this.gameContextService.state.value.board;
+        let shift = 2;
+        if (this.mouseDetectService.isHorizontal) {
+            while (board[pos[0]][pos[1] + 1] !== null) {
+                pos[1] += 1;
+                console.log(pos[1]);
+                shift += 1;
+                console.log(shift);
+            }
+            return shift;
+        } else {
+            while (board[pos[0] + 1][pos[1]] !== null) {
+                pos[0] += 1;
+                shift += 1;
+            }
+            return shift;
         }
-        return shift;
-    }
-
-    isCollision(pos: number, horizontal: boolean) {
-        console.log(this.gameContextService.state.value.board);
-        console.log(Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2, pos);
-        console.log(this.shift);
-        if (horizontal) return this.gameContextService.state.value.board[Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2][pos] !== null;
-        else return this.gameContextService.state.value.board[pos][Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2] !== null;
-    }
-
-    drawRightDirection(letter: string, pos: number, horizontal: boolean) {
-        if (horizontal && this.mouseDetectService.mousePosition.x + ((this.gridService.letters.length + this.getShift()) * 100) / 3 <= 520) {
-            if (this.gridService.letters.length === 1)
-                this.firstLetter = [
-                    Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
-                    Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
-                ];
-            this.gridService.drawTempTiles(
-                letter,
-                this.mouseDetectService.mousePosition.x + ((pos + this.getShift()) * 100) / 3,
-                this.mouseDetectService.mousePosition.y,
-            );
-            this.gridService.drawArrow(
-                this.mouseDetectService.mousePosition.x + ((pos + this.getShift() + 1) * 100) / 3,
-                this.mouseDetectService.mousePosition.y,
-                true,
-            );
-        } else if (!horizontal && this.mouseDetectService.mousePosition.y + ((this.gridService.letters.length + this.getShift()) * 100) / 3 <= 520) {
-            if (this.gridService.letters.length === 1)
-                this.firstLetter = [
-                    Math.ceil(this.mouseDetectService.mousePosition.x / 33) - 2,
-                    Math.ceil(this.mouseDetectService.mousePosition.y / 33) - 2,
-                ];
-            this.gridService.drawTempTiles(
-                letter,
-                this.mouseDetectService.mousePosition.x,
-                this.mouseDetectService.mousePosition.y + (pos * 100) / 3,
-            );
-            this.gridService.drawArrow(
-                this.mouseDetectService.mousePosition.x,
-                this.mouseDetectService.mousePosition.y + ((pos + 1) * 100) / 3,
-                false,
-            );
-        }
-        if (
-            horizontal &&
-            this.isCollision(
-                Math.ceil((this.mouseDetectService.mousePosition.x + ((this.gridService.letters.length + this.getShift()) * 100) / 3) / 33) - 2,
-                horizontal,
-            )
-        ) {
-            this.shift.push(1);
-        } else this.shift.push(0);
-        // console.log((this.mouseDetectService.mousePosition.x + ((this.gridService.letters.length + this.getShift() + 1) * 100) / 3) / 33 - 2);
     }
 
     ngAfterViewInit(): void {

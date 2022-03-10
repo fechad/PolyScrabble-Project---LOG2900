@@ -47,6 +47,7 @@ export class GridService {
     rack: Letter[] = [];
     letterForServer = '';
     letterWritten = 0;
+    letterPosition = [[0, 0]];
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private gameContext: GameContextService) {
@@ -143,8 +144,13 @@ export class GridService {
                     name: lettersToAdd[letterPosition].toUpperCase(),
                     score: 0,
                 } as Letter;
-                if (isHorizontalPlacement) temporaryBoard[verticalIndex][i] = letter;
-                else temporaryBoard[i][horizontalIndex] = letter;
+                if (isHorizontalPlacement) {
+                    temporaryBoard[verticalIndex][i] = letter;
+                    this.letterPosition.push([verticalIndex, i]);
+                } else {
+                    temporaryBoard[i][horizontalIndex] = letter;
+                    this.letterPosition.push([i, horizontalIndex]);
+                }
                 letterPosition++;
             }
         }
