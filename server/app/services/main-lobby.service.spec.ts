@@ -36,6 +36,14 @@ describe('MainLobby service tests', () => {
         done();
     });
 
+    it('should create a room with virtual player', (done) => {
+        const parameters = new Parameters();
+        playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
+        const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
+        expect(rooms.rooms).to.deep.equal([expectedRoom]);
+        done();
+    });
+
     it('should join a room', (done) => {
         const parameters = new Parameters();
         playersSocket[0].emit('create-room', 'Dummy', parameters);
