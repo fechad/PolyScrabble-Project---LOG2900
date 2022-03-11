@@ -31,6 +31,10 @@ export class Room extends EventEmitter {
         this.name = `Partie de ${playerName}`;
     }
 
+    needsOtherPlayer(): boolean {
+        return this.otherPlayer === undefined && this.mainPlayer.connected && this.state === State.Setup;
+    }
+
     addPlayer(playerId: PlayerId, playerName: string, virtual: boolean): Error | undefined {
         if (playerName === this.mainPlayer.name) {
             return Error('Ce nom a déjà été prit');
@@ -48,6 +52,7 @@ export class Room extends EventEmitter {
 
     quit(mainPlayer: boolean) {
         if (mainPlayer && this.state === State.Setup) {
+            this.mainPlayer.connected = false;
             this.emit('kick');
         } else if (this.state === State.Setup) {
             this.otherPlayer = undefined;

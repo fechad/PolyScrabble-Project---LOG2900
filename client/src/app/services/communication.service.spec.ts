@@ -193,7 +193,7 @@ describe('CommunicationService', () => {
 
     it('should create room', async () => {
         const promise = service.createRoom('aldabob', new Parameters());
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters());
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters(), undefined);
         createRoom();
         setTimeout(() => createRoom(), 0);
         await promise;
@@ -201,7 +201,7 @@ describe('CommunicationService', () => {
 
     it('should not create room when already in one', async () => {
         const promise = service.createRoom('aldabob', new Parameters());
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters());
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters(), undefined);
         createRoom();
         setTimeout(() => createRoom(), 0);
         await promise;

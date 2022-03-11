@@ -169,9 +169,9 @@ export class CommunicationService {
         await this.selectedRoom.pipe(take(2)).toPromise();
     }
 
-    async createRoom(playerName: string, parameters: Parameters) {
+    async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-        this.mainSocket.emit('create-room', playerName, parameters);
+        this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
     }
 

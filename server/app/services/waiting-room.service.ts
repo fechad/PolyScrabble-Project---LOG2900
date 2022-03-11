@@ -15,7 +15,7 @@ export class WaitingRoomService extends EventEmitter {
     constructor(private roomsService: RoomsService) {
         super();
         setInterval(() => {
-            const newRooms = this.roomsService.rooms.filter((room) => !room.hasOtherPlayer());
+            const newRooms = this.roomsService.rooms.filter((room) => room.needsOtherPlayer());
             if (!isDeepStrictEqual(newRooms, this.prevRooms)) {
                 this.emit('broadcast-rooms', newRooms);
                 this.prevRooms = newRooms;

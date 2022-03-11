@@ -14,11 +14,7 @@ export class WaitingRoomPageComponent {
     isMainPlayer: boolean;
     otherPlayerName: string | undefined;
 
-    constructor(
-        public communicationService: CommunicationService,
-        public matDialog: MatDialog,
-        public route: ActivatedRoute,
-    ) {
+    constructor(public communicationService: CommunicationService, public matDialog: MatDialog, public route: ActivatedRoute) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
             this.isMainPlayer = this.communicationService.getId()?.value === room?.mainPlayer.id;
             this.otherPlayerName = room?.otherPlayer?.name;

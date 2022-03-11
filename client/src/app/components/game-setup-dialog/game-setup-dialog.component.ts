@@ -43,7 +43,7 @@ export class GameSetupDialogComponent implements OnInit {
         const parameters = new Parameters();
         parameters.timer = this.gameParametersForm.value.minutes * SEC_CONVERT + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
-        await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters);
+        await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters, undefined);
         this.dialogRef.close();
     }
 }

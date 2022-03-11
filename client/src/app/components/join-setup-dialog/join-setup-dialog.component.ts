@@ -40,6 +40,7 @@ export class JoinSetupDialogComponent implements OnInit {
                 return;
             }
         }
+        this.communicationService.joinRoom(this.joiningRoomForm.value.secondPlayerName, this.data.room);
         this.dialogRef.close();
     }
 }
