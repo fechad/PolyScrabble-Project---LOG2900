@@ -36,7 +36,6 @@ export class MouseService {
                     x: this.calculateX(event.offsetX),
                     y: this.calculateY(event.offsetY),
                 };
-                // console.log(this.mousePosition.x, this.mousePosition.y);
             }
             if (this.mousePosition.x >= IN_BOARD_AREA && this.mousePosition.y >= IN_BOARD_AREA && this.gridService.letterWritten === 0) {
                 this.gridService.drawGrid();

@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Vec2 } from '@app/classes/vec2';
 import { MouseService } from './mouse.service';
 
-describe('MouseDetect', () => {
+fdescribe('MouseDetect', () => {
     let service: MouseService;
     let mouseEvent: MouseEvent;
 
@@ -12,16 +12,16 @@ describe('MouseDetect', () => {
         service = TestBed.inject(MouseService);
     });
 
-    // it('mouseHitDetect should assign the mouse position to mousePosition variable', () => {
-    //     const expectedPosition: Vec2 = { x: 100, y: 200 };
-    //     mouseEvent = {
-    //         offsetX: expectedPosition.x,
-    //         offsetY: expectedPosition.y,
-    //         button: 0,
-    //     } as MouseEvent;
-    //     service.mouseHitDetect(mouseEvent);
-    //     expect(service.mousePosition).toEqual(expectedPosition);
-    // });
+    it('mouseHitDetect should assign the mouse position to mousePosition variable', () => {
+        const expectedPosition: Vec2 = { x: 100, y: 200 };
+        mouseEvent = {
+            offsetX: expectedPosition.x,
+            offsetY: expectedPosition.y,
+            button: 0,
+        } as MouseEvent;
+        service.mouseHitDetect(mouseEvent);
+        expect(service.mousePosition).toEqual(expectedPosition);
+    });
 
     /* eslint-disable @typescript-eslint/no-magic-numbers -- Add reason */
     it('mouseHitDetect should not change the mouse position if it is not a left click', () => {
