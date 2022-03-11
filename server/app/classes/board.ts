@@ -16,7 +16,7 @@ export class Board {
     board: GameTile[][];
     wordGetter: WordGetter;
 
-    constructor(private dictionnary: DictionnaryService) {
+    constructor(public dictionnary: DictionnaryService) {
         this.board = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             this.board[i] = [];

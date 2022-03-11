@@ -9,7 +9,7 @@ export class JoueurVirtuel {
     board: Board;
     myRack: Letter[];
 
-    constructor(readonly isDebutant: boolean, private game: Game) {
+    constructor(readonly isDebutant: boolean, game: Game) {
         this.board = game.board;
         this.myRack = game.reserve.letterRacks[AI_ID];
     }
@@ -62,7 +62,7 @@ export class JoueurVirtuel {
                     for (const rackLetter of this.myRack) {
                         // verify if replace only the first *
                         const attemptedWord = crossWord.replace('*', rackLetter.name.toLowerCase());
-                        if (this.game.dictionnaryService.isValidWord(attemptedWord)) {
+                        if (this.board.dictionnary.isValidWord(attemptedWord)) {
                             console.log(attemptedWord);
                             // TODO
                         }
