@@ -85,6 +85,7 @@ export class GridService {
     }
 
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        console.log('entered');
         const x = canvasX;
         const y = canvasY;
         this.gridContext.fillStyle = '#000';

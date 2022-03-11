@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { MouseButton } from '@app/components/play-area/play-area.component';
@@ -6,12 +5,10 @@ import { GridService } from './grid.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-const GRID_BORDERS = [20, 500];
+const DEFAULT_SIZE = 500;
 const offset = 1;
 const TILE = 32;
-const numberOfTiles = 15;
-const SQR_SIZE = GRID_BORDERS[1] / numberOfTiles - offset;
+const NUMBER_OF_TILES = 15;
 const GRID_ORIGIN = 20;
 const CANVAS_ADJUSTMENT = 16;
 const IN_BOARD_AREA = 0;
@@ -26,6 +23,7 @@ export class MouseService {
     isHorizontal = true;
     writingAllowed = false;
     enter = false;
+
     constructor(public gridService: GridService) {}
 
     mouseHitDetect(event: MouseEvent) {
@@ -56,23 +54,31 @@ export class MouseService {
     }
 
     isInBound(event: MouseEvent): boolean {
+        const size = document.getElementById('canvas')?.clientWidth;
+        const GRID_BORDERS = [20, size];
         if (
-            event.offsetX >= GRID_BORDERS[0] &&
-            event.offsetX <= GRID_BORDERS[1] &&
-            event.offsetY >= GRID_BORDERS[0] &&
-            event.offsetY <= GRID_BORDERS[1]
+            event.offsetX >= GRID_BORDERS[0]?.valueOf()! &&
+            event.offsetX <= GRID_BORDERS[1]?.valueOf()! &&
+            event.offsetY >= GRID_BORDERS[0]?.valueOf()! &&
+            event.offsetY <= GRID_BORDERS[1]?.valueOf()!
         )
             return true;
         return false;
     }
     calculateX(xPosition: number): number {
-        let x = Math.floor((xPosition - GRID_ORIGIN) / TILE);
+        const size = document.getElementById('canvas')?.clientWidth;
+        const sqr_size = DEFAULT_SIZE / NUMBER_OF_TILES;
+        const converted = (xPosition * DEFAULT_SIZE) / size?.valueOf()!;
+        let x = Math.floor((converted - GRID_ORIGIN) / TILE);
         if (x < 0) x = 0;
-        return (SQR_SIZE + offset) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+        return (sqr_size + offset) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
     calculateY(yPosition: number): number {
-        let y = Math.floor((yPosition - GRID_ORIGIN) / TILE);
+        const size = document.getElementById('canvas')?.clientWidth;
+        const sqr_size = DEFAULT_SIZE / NUMBER_OF_TILES - offset;
+        const converted = (yPosition * DEFAULT_SIZE) / size?.valueOf()!;
+        let y = Math.floor((converted - GRID_ORIGIN) / TILE);
         if (y < 0) y = 0;
-        return (SQR_SIZE + offset) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+        return (sqr_size + offset) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
 }
