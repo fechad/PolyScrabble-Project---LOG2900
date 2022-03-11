@@ -1,17 +1,17 @@
+import { LetterNode } from '@app/classes/letter-node';
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { LetterNode } from './letter-node';
+import { Service } from 'typedi';
 
-export class DictionnaryTree {
+@Service()
+export class DictionnaryTrieService {
     dictionnaryTree: LetterNode = new LetterNode('*');
     constructor(private dictionnary: DictionnaryService) {
         for (const word of this.dictionnary.dictionnaries[0].words) {
             let actualNode = this.dictionnaryTree;
-            console.log(word);
-            for (let i = 0; i < word.length; i++) {
-                const letter = word[i];
+            [...word].forEach((letter, i) => {
                 actualNode = actualNode.getNext(letter);
                 if (i === word.length - 1) actualNode.final = true;
-            }
+            });
         }
     }
 }

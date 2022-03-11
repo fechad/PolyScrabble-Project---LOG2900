@@ -8,7 +8,7 @@ export class LetterNode {
 
     getNext(letter: string) {
         let nextNode = this.nextNodes.find((node) => {
-            return (node.value = letter);
+            return node.value === letter;
         });
         if (nextNode === undefined) {
             nextNode = new LetterNode(letter);
