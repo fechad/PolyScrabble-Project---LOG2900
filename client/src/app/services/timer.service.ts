@@ -1,35 +1,45 @@
 import { Injectable } from '@angular/core';
 import { PlayerId, State } from '@app/classes/room';
-import { interval, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, concat, from, interval, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { CommunicationService } from './communication.service';
 import { GameContextService } from './game-context.service';
 
-const ONE_SECOND = 1000;
+export const ONE_SECOND = 1000;
+const SECONDS_IN_MINUTE = 60;
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimerService {
-    readonly timer: Subject<number> = new Subject();
-    private prevTurn: PlayerId;
+    readonly timer: BehaviorSubject<string> = new BehaviorSubject('?:??');
     private prevSubscription: Subscription | undefined = undefined;
 
     constructor(private communicationService: CommunicationService, private gameContextService: GameContextService) {
         this.communicationService.selectedRoom.subscribe((room) => {
-            if (!room || room.state === State.Setup) return;
+            if (!room || room.state !== State.Started) return;
+            if (this.prevSubscription) this.prevSubscription.unsubscribe();
+            let prevTurn: PlayerId;
             this.gameContextService.state.subscribe((state) => {
-                if (state.turn === this.prevTurn) return;
-                this.prevTurn = state.turn;
+                if (state.turn === prevTurn) return;
+                prevTurn = state.turn;
                 if (this.prevSubscription) this.prevSubscription.unsubscribe();
-                this.timer.next(room.parameters.timer);
-                this.prevSubscription = interval(ONE_SECOND)
-                    .pipe(
+                this.prevSubscription = concat(
+                    from([room.parameters.timer]),
+                    interval(ONE_SECOND).pipe(
                         take(room.parameters.timer),
                         map((t) => room.parameters.timer - t - 1),
-                    )
+                    ),
+                )
+                    .pipe(map((t) => this.convert(t)))
                     .subscribe(this.timer);
             });
         });
+    }
+
+    private convert(t: number): string {
+        const minutes = Math.floor(t / SECONDS_IN_MINUTE);
+        const secs = t % SECONDS_IN_MINUTE;
+        return `${minutes}:${String(secs).padStart(2, '0')}`;
     }
 }
