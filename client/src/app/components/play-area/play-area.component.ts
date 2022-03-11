@@ -150,14 +150,14 @@ export class PlayAreaComponent implements AfterViewInit {
         let shift = 2;
         if (this.mouseDetectService.isHorizontal) {
             while (board[pos[0]][pos[1] + 1] !== null) {
-                pos[1] += 1;
-                shift += 1;
+                pos[1]++;
+                shift++;
             }
             return shift;
         } else {
             while (board[pos[0] + 1][pos[1]] !== null) {
-                pos[0] += 1;
-                shift += 1;
+                pos[0]++;
+                shift++;
             }
             return shift;
         }
