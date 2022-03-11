@@ -3,8 +3,8 @@ import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
-const INVALID = -1;
 const FIRST_WORD = -1;
+const VALID_CONTACT = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
 const WORD_LENGTH_BONUS = 7;
@@ -112,12 +112,17 @@ export class Board {
         let wordPos = 0;
         const contacts = [];
         while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
-        for (let i = 0; i < wordLength + collisions; i++) {
+        for (let i = 0; i < wordLength + collisions || (col + i < BOARD_LENGTH && !this.board[row][col + i].empty); i++) {
             if ((row - 1 >= 0 && !this.board[row - 1][col + i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][col + i].empty)) {
-                contacts.push([row, col + i, this.board[row][col + i].empty ? wordPos : INVALID]);
+                if (this.board[row][col + i].empty) {
+                    contacts.push([row, col + i, wordPos]);
+                }
             }
             if (this.board[row][col + i].empty) wordPos++;
             else collisions++;
+        }
+        if (collisions !== 0 && contacts.length === 0) {
+            contacts.push([VALID_CONTACT]);
         }
         return contacts;
     }
@@ -127,12 +132,17 @@ export class Board {
         let wordPos = 0;
         const contacts = [];
         while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
-        for (let i = 0; i < wordLength + collisions; i++) {
+        for (let i = 0; i < wordLength + collisions || (row + i < BOARD_LENGTH && !this.board[row + i][col].empty); i++) {
             if ((col - 1 >= 0 && !this.board[row + i][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row + i][col + 1].empty)) {
-                contacts.push([row + i, col, this.board[row + i][col].empty ? wordPos : INVALID]);
+                if (this.board[row + i][col].empty) {
+                    contacts.push([row + i, col, wordPos]);
+                }
             }
             if (this.board[row + i][col].empty) wordPos++;
             else collisions++;
+        }
+        if (collisions !== 0 && contacts.length === 0) {
+            contacts.push([VALID_CONTACT]);
         }
         return contacts;
     }
