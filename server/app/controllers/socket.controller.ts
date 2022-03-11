@@ -115,7 +115,7 @@ export class SocketManager {
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                if (isMainPlayer && room.getState() !== State.Setup) {
+                if (isMainPlayer && room.getState() === State.Setup) {
                     this.roomsService.remove(room.id);
                 }
                 events.forEach(([name, handler]) => room.off(name, handler));
