@@ -47,10 +47,7 @@ export class WordGetter {
         let letterCount = 0;
         let letters = '';
         while (col < BOARD_LENGTH && row < BOARD_LENGTH) {
-            if (
-                letterCount < testedWord.length ||
-                (isHorizontal ? col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty : row + 1 < BOARD_LENGTH && !this.board[row + 1][col].empty)
-            ) {
+            if (letterCount < testedWord.length || !this.board[row][col].empty) {
                 if (this.board[row][col].empty) {
                     letters += testedWord.charAt(letterCount);
                     letterCount++;
