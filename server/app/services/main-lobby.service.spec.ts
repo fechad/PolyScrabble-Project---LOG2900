@@ -3,6 +3,7 @@ import { Room } from '@app/classes/room';
 import { assert, expect } from 'chai';
 import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
+import { DictionnaryService } from './dictionnary.service';
 import { MainLobbyService } from './main-lobby.service';
 import { RoomsService } from './rooms.service';
 
@@ -10,10 +11,11 @@ describe('MainLobby service tests', () => {
     let service: MainLobbyService;
     let rooms: RoomsService;
     let playersSocket: EventEmitter[];
+    let dictionnaryService: DictionnaryService;
 
     beforeEach(async () => {
         rooms = new RoomsService();
-        service = new MainLobbyService(rooms);
+        service = new MainLobbyService(rooms, dictionnaryService);
 
         const player1 = new EventEmitter();
         service.connect(player1, 'DummyId');
