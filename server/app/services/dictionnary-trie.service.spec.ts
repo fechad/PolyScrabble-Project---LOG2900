@@ -13,4 +13,10 @@ describe('Dictionnary Trie', () => {
     it('should create tree', () => {
         expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
     });
+    it('should create all perm', () => {
+        expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
+        const b = [...'seanmdjoeldjdsopi'];
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        console.log(dictionnaryTrieService.generateLeftParts(b, 'd', 5));
+    });
 });
