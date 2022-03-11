@@ -2,7 +2,9 @@
     <mat-toolbar class="toolbar">
         <mat-card-title>Paramètres de la partie multijoueur</mat-card-title>
         <span class="toolbar-spacer"></span>
-        <mat-icon class="icon-cancel" (click)="closeDialog()">cancel</mat-icon>
+        <button mat-icon-button aria-label="Fermer la fenêtre" (click)="closeDialog()">
+            <mat-icon class="icon-cancel">cancel</mat-icon>
+        </button>
     </mat-toolbar>
 </mat-card-header>
 

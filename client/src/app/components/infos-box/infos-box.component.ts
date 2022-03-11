@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
-import { ModeServiceService } from '@app/services/mode-service.service';
 import { TimerService } from '@app/services/timer.service';
 
 const NORMAL_RACK_LENGTH = 7;
@@ -17,12 +16,7 @@ export class InfosBoxComponent {
     opponentRackIsVisible = false;
     timer: string = '?:??';
 
-    constructor(
-        public gameContextService: GameContextService,
-        public communicationService: CommunicationService,
-        timerService: TimerService,
-        public mode: ModeServiceService,
-    ) {
+    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService, timerService: TimerService) {
         this.gameContextService.state.subscribe((state) => {
             const [myIdx, otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];

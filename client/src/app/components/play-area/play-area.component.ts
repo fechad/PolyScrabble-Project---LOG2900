@@ -11,6 +11,10 @@ const MAX_RACK_SIZE = 7;
 const LAST_INDEX = -1;
 const CANVAS_SQUARE_SIZE = 33;
 const PLAY_AREA_SIZE = 520;
+<<<<<<< HEAD
+=======
+const ADJUSTMENT = 2;
+>>>>>>> f9a225f3a7214ac71c016e1b099e3a3044533292
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -57,6 +61,7 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
+<<<<<<< HEAD
             for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
             this.communicationservice.place(
                 this.gridService.letterForServer,
@@ -109,6 +114,14 @@ export class PlayAreaComponent implements AfterViewInit {
                 const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
                 this.drawShiftedArrow(lastLetter, 2);
                 this.gameContextService.tempUpdateRack();
+=======
+            this.sendPlacedLetters();
+        } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
+            this.removeLetterOnCanvas();
+        } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
+            try {
+                this.placeWordOnCanvas();
+>>>>>>> f9a225f3a7214ac71c016e1b099e3a3044533292
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
                 this.communicationservice.sendLocalMessage(e.message);
@@ -116,6 +129,67 @@ export class PlayAreaComponent implements AfterViewInit {
         }
     }
 
+<<<<<<< HEAD
+=======
+    sendPlacedLetters() {
+        for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
+        this.communicationservice.place(
+            this.gridService.letterForServer,
+            this.firstLetter[1],
+            this.firstLetter[0],
+            this.mouseDetectService.isHorizontal,
+        );
+        this.gridService.letterPosition = [[0, 0]];
+        this.gridService.letterWritten = 0;
+        this.gridService.letters = [];
+        this.gridService.letterForServer = '';
+        this.gridService.drawGrid();
+    }
+
+    removeLetterOnCanvas() {
+        const letter = this.gridService.letters.pop();
+        const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
+        this.gridService.letterPosition.pop();
+        this.gridService.letterForServer = this.gridService.letterForServer.slice(0, LAST_INDEX);
+        if (letter !== undefined) {
+            this.gridService.rack.push(letter);
+            this.gameContextService.addTempRack(letter);
+        }
+        if (letterRemoved[0] !== undefined && letterRemoved[0] !== undefined)
+            this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
+        this.gridService.drawGrid();
+        this.drawShiftedArrow(letterRemoved, 1);
+        this.gridService.letterWritten -= 1;
+    }
+
+    placeWordOnCanvas() {
+        this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
+        this.gridService.letterWritten += 1;
+        for (const i of this.gridService.rack) {
+            if (i.name === this.buttonPressed.toUpperCase()) {
+                this.gridService.letters.push(i);
+                this.gridService.letterForServer += this.buttonPressed;
+                break;
+            }
+        }
+        this.gridService.drawGrid();
+        if (this.gridService.letters.length === 1)
+            this.firstLetter = [
+                Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+                Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+            ];
+        this.gridService.tempUpdateBoard(
+            this.buttonPressed,
+            Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+            Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+            this.mouseDetectService.isHorizontal,
+        );
+        const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
+        this.drawShiftedArrow(lastLetter, 2);
+        this.gameContextService.tempUpdateRack();
+    }
+
+>>>>>>> f9a225f3a7214ac71c016e1b099e3a3044533292
     drawShiftedArrow(pos: number[], shift: number) {
         if (this.mouseDetectService.isHorizontal)
             this.gridService.drawArrow((pos[1] + shift) * CANVAS_SQUARE_SIZE, this.mouseDetectService.mousePosition.y, true);
@@ -123,6 +197,7 @@ export class PlayAreaComponent implements AfterViewInit {
     }
     isInBound() {
         if (
+<<<<<<< HEAD
             this.mouseDetectService.isHorizontal &&
             this.mouseDetectService.mousePosition.x + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE
         )
@@ -130,6 +205,12 @@ export class PlayAreaComponent implements AfterViewInit {
         else if (
             !this.mouseDetectService.isHorizontal &&
             this.mouseDetectService.mousePosition.y + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE
+=======
+            (this.mouseDetectService.isHorizontal &&
+                this.mouseDetectService.mousePosition.x + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE) ||
+            (!this.mouseDetectService.isHorizontal &&
+                this.mouseDetectService.mousePosition.y + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE)
+>>>>>>> f9a225f3a7214ac71c016e1b099e3a3044533292
         )
             return true;
         return false;
@@ -140,14 +221,24 @@ export class PlayAreaComponent implements AfterViewInit {
         let shift = 2;
         if (this.mouseDetectService.isHorizontal) {
             while (board[pos[0]][pos[1] + 1] !== null) {
+<<<<<<< HEAD
                 pos[1] += 1;
                 shift += 1;
+=======
+                pos[1]++;
+                shift++;
+>>>>>>> f9a225f3a7214ac71c016e1b099e3a3044533292
             }
             return shift;
         } else {
             while (board[pos[0] + 1][pos[1]] !== null) {
+<<<<<<< HEAD
                 pos[0] += 1;
                 shift += 1;
+=======
+                pos[0]++;
+                shift++;
+>>>>>>> f9a225f3a7214ac71c016e1b099e3a3044533292
             }
             return shift;
         }

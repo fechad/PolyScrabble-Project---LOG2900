@@ -49,14 +49,16 @@ describe('MainLobby service tests', () => {
         assert(stub.calledWith(0));
 
         const expectedRoom2 = new Room(0, 'DummyId', 'Dummy', parameters);
-        expectedRoom2.addPlayer('NotDummyId', 'NotDummy');
+        expectedRoom2.addPlayer('NotDummyId', 'NotDummy', false);
         expect(rooms.rooms).to.deep.equal([expectedRoom2]);
         done();
     });
 
     it('should emit join if already joined room', (done) => {
-        const parameters = new Parameters();
-        playersSocket[0].emit('create-room', 'Dummy', parameters);
+        const room = new Room(0, 'DummyId', 'Dummy', new Parameters());
+        room.addPlayer('NotDummyId', 'NotDummy', false);
+        room.start();
+        rooms.rooms.push(room);
 
         const stub = sinon.stub();
         playersSocket[0].on('join', stub);

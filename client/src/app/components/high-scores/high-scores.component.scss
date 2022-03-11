@@ -1,0 +1,49 @@
+@import '../../styles/colors.scss';
+
+.high-scores {
+    font-size: 1.5em;
+}
+
+h1, b {
+    text-align: center;
+}
+
+.high-scores .mat-slide-toggle {
+    margin: 0 auto;
+}
+
+.separator {
+    border-bottom: 1px solid $bkg;
+    padding: 0;
+}
+
+.score {
+    text-align: center;
+    padding: 1em 0;
+}
+
+table {
+    margin: .5em;
+}
+
+th {
+    padding: 1.2em
+}
+
+td {
+    padding: .2em .7em;
+}
+
+.score-container {
+    padding: .5em 0;
+}
+
+.mat-card-title {
+    text-align: center;
+    margin: 1em 0;
+    display: block;
+}
+
+.close {
+    width: 100%;
+}

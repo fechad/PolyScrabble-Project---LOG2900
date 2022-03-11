@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlayerId } from '@app/classes/room';
+import { PlayerId, State } from '@app/classes/room';
 import { interval, Subject, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { CommunicationService } from './communication.service';
@@ -17,7 +17,7 @@ export class TimerService {
 
     constructor(private communicationService: CommunicationService, private gameContextService: GameContextService) {
         this.communicationService.selectedRoom.subscribe((room) => {
-            if (!room || !room.started) return;
+            if (!room || room.state === State.Setup) return;
             this.gameContextService.state.subscribe((state) => {
                 if (state.turn === this.prevTurn) return;
                 this.prevTurn = state.turn;

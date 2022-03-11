@@ -9,7 +9,7 @@
         </div>
     </div>
     <div [ngClass]="{ 'game-infos': !this.gameContextService.state.value.ended, 'endgame-infos': this.gameContextService.state.value.ended }">
-        <p>{{ this.mode.mode }}</p>
+        <p>{{ (communicationService.selectedRoom | async)?.parameters?.log2990 ? 'Mode LOG2990' : 'Mode standard' }}</p>
         <div class="backChrono" *ngIf="!(this.gameContextService.state | async)?.ended">{{ timer }}</div>
         <p *ngIf="(this.gameContextService.state | async)?.summary !== undefined">{{ (this.gameContextService.state | async)?.summary }}</p>
         <p>{{ (this.gameContextService.state | async)?.reserveCount }} lettres disponibles dans la réserve</p>

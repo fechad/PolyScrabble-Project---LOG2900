@@ -1,5 +1,5 @@
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room } from '@app/classes/room';
+import { PlayerId, Room, State } from '@app/classes/room';
 import { Message } from '@app/message';
 import { RoomsService } from '@app/services/rooms.service';
 import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/services/waiting-room.service';
@@ -30,10 +30,10 @@ describe('SocketManager service tests', () => {
     beforeEach(async () => {
         server = Container.get(Server);
         Container.get(RoomsService).rooms.splice(0);
+        Container.get(RoomsService).games.splice(0);
         server.init();
         // eslint-disable-next-line dot-notation
         service = server['socketManager'];
-        service.games.splice(0);
         // eslint-disable-next-line dot-notation
         service['logins']['users'] = {};
         playersSocket = [ioClient(`${urlString}/`, { forceNew: true }), ioClient(`${urlString}/`, { forceNew: true })];
@@ -174,8 +174,8 @@ describe('SocketManager service tests', () => {
         expect(service.roomsService.rooms.length).to.equal(1);
         roomSocket.emit('start');
         await waitForCommunication(RESPONSE_DELAY);
-        expect(service.roomsService.rooms[0].isStarted()).to.equal(true);
-        expect(service.games.length).to.equal(1);
+        expect(service.roomsService.rooms[0].getState()).to.equal(State.Started);
+        expect(Container.get(RoomsService).games.length).to.equal(1);
     });
 
     const joinGame = async (): Promise<[[Socket, Socket], [Socket, Socket]]> => {
@@ -183,13 +183,13 @@ describe('SocketManager service tests', () => {
 
         roomSocket.emit('start');
         await waitForCommunication(RESPONSE_DELAY);
-        expect(service.games.length).to.equal(1);
+        expect(Container.get(RoomsService).games.length).to.equal(1);
 
         const gameSocket = ioClient(`${urlString}/games/0`, { auth: identifiers[0], forceNew: true });
         const gameSocket2 = ioClient(`${urlString}/games/0`, { auth: identifiers[1], forceNew: true });
         await waitForCommunication(RESPONSE_DELAY);
         // eslint-disable-next-line dot-notation
-        service.games[0]['isPlayer0Turn'] = true;
+        Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
 
         return [
             [roomSocket, roomSocket2],
@@ -205,7 +205,7 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('message', stub2);
         gameSocket.emit('message', message.text);
         await waitForCommunication(RESPONSE_DELAY * 2);
-        expect(service.games[0].messages).to.deep.equal([message], 'Did not register message');
+        expect(Container.get(RoomsService).games[0].messages).to.deep.equal([message], 'Did not register message');
         expect(stub.args).to.deep.equal([[message]], 'Did not send the messages to player 1');
         expect(stub2.args).to.deep.equal([[message]], 'Did not send the messages to player 2');
     });
@@ -220,7 +220,7 @@ describe('SocketManager service tests', () => {
         gameSocket.emit('switch-turn');
         await waitForCommunication(RESPONSE_DELAY);
         // eslint-disable-next-line dot-notation
-        assert(!service.games[0]['isPlayer0Turn'], 'wrong turn');
+        assert(!Container.get(RoomsService).games[0]['isPlayer0Turn'], 'wrong turn');
         expect(stub.args.map((args) => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 1');
         expect(stub2.args.map((args) => args[0].turn)).to.deep.equal([identifiers[1].id], 'did not send right idents for player 2');
     });
@@ -238,7 +238,7 @@ describe('SocketManager service tests', () => {
         await waitForCommunication(RESPONSE_DELAY);
         assert(stub.called, 'not called error');
         // eslint-disable-next-line dot-notation
-        assert(service.games[0]['isPlayer0Turn'], 'wrong turn');
+        assert(Container.get(RoomsService).games[0]['isPlayer0Turn'], 'wrong turn');
         assert(stub2.notCalled, 'did not call turn');
         assert(stub3.notCalled, 'did not call turn for other player');
     });
@@ -246,8 +246,8 @@ describe('SocketManager service tests', () => {
     it('should change letters', async () => {
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
-        service.games[0]['isPlayer0Turn'] = true;
-        const letters = service.games[0].reserve.letterRacks[0][0].name.toLowerCase();
+        Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
+        const letters = Container.get(RoomsService).games[0].reserve.letterRacks[0][0].name.toLowerCase();
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
@@ -255,8 +255,8 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('rack', stub2);
         gameSocket.emit('change-letters', letters);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        expect(stub.args).to.deep.equal([[service.games[0].reserve.letterRacks[0]]]);
-        expect(stub2.args).to.deep.equal([[service.games[0].reserve.letterRacks[1]]]);
+        expect(stub.args).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[0]]]);
+        expect(stub2.args).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[1]]]);
     });
 
     it('should place letters', async () => {
@@ -267,8 +267,8 @@ describe('SocketManager service tests', () => {
         const expectedPoints = 2;
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
-        service.games[0]['isPlayer0Turn'] = true;
-        service.games[0].reserve.letterRacks[0] = [
+        Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
+        Container.get(RoomsService).games[0].reserve.letterRacks[0] = [
             { id: 0, name: 'A', score: 1, quantity: 1 },
             { id: 1, name: 'S', score: 1, quantity: 1 },
         ];

@@ -4,9 +4,8 @@ import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
-import { Parameters } from './parameters';
 import { Reserve } from './reserve';
-import { Player, PlayerId } from './room';
+import { Player, PlayerId, Room, State } from './room';
 
 export type GameId = number;
 type Tile = Letter | undefined;
@@ -43,36 +42,54 @@ export class Game {
     readonly board: Board;
     readonly messages: Message[] = [];
     readonly scores: number[] = [0, 0];
+    readonly players: Player[];
     private isPlayer0Turn: boolean;
     private skipCounter;
-    private ended: boolean = false;
     private winner: PlayerId | undefined = undefined;
     private summary: string | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
 
-    constructor(readonly gameId: GameId, readonly players: Player[], private parameters: Parameters, dictionnaryService: DictionnaryService) {
+    constructor(private room: Room, dictionnaryService: DictionnaryService) {
+        if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
+        this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board(dictionnaryService);
-        this.timeout = setTimeout(() => this.timeoutHandler(), this.parameters.timer * SEC_TO_MS);
+        this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
         this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
+    }
+
+    get id(): number {
+        return this.room.id;
     }
 
     sendState() {
         const state: GameState = {
             players: [
-                { info: this.players[MAIN_PLAYER], score: this.scores[MAIN_PLAYER], rackCount: this.reserve.letterRacks[MAIN_PLAYER].length },
-                { info: this.players[OTHER_PLAYER], score: this.scores[OTHER_PLAYER], rackCount: this.reserve.letterRacks[OTHER_PLAYER].length },
+                this.getPlayerInfo(this.players[MAIN_PLAYER].id) as PlayerInfo,
+                this.getPlayerInfo(this.players[OTHER_PLAYER].id) as PlayerInfo,
             ],
             reserveCount: this.reserve.getCount(),
             board: this.formatSendableBoard(),
             turn: this.getCurrentPlayer().id,
-            ended: this.ended,
+            ended: this.room.getState() === State.Ended || this.room.getState() === State.Aborted,
             winner: this.winner,
             summary: this.summary,
         };
         this.eventEmitter.emit('state', state);
         this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
         this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
+    }
+
+    getPlayerInfo(id: PlayerId): PlayerInfo | undefined {
+        let idx;
+        if (id === this.players[MAIN_PLAYER].id) {
+            idx = MAIN_PLAYER;
+        } else if (id === this.players[OTHER_PLAYER].id) {
+            idx = OTHER_PLAYER;
+        } else {
+            return undefined;
+        }
+        return { info: this.players[idx], score: this.scores[idx], rackCount: this.reserve.letterRacks[idx].length };
     }
 
     message(message: Message) {
@@ -139,7 +156,8 @@ export class Game {
     }
 
     forfeit(idLoser: PlayerId) {
-        this.ended = true;
+        if (this.room.getState() !== State.Started) return;
+        this.room.end(true);
         this.winner = idLoser === this.players[MAIN_PLAYER].id ? this.players[OTHER_PLAYER].id : this.players[MAIN_PLAYER].id;
         this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
         this.sendState();
@@ -158,7 +176,7 @@ export class Game {
         return this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name;
     }
     endGame() {
-        this.ended = true;
+        this.room.end(false);
         this.winner = this.getWinner();
         this.summary = '👑 Félicitation ' + this.getWinnerName() + '! 👑';
         this.eventEmitter.emit('message', {
@@ -184,8 +202,8 @@ export class Game {
         if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
 
         if (this.timeout) clearTimeout(this.timeout);
-        if (!this.ended) {
-            this.timeout = setTimeout(() => this.timeoutHandler(), this.parameters.timer * SEC_TO_MS);
+        if (this.room.getState() === State.Started) {
+            this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
         } else {
             this.timeout = undefined;
         }

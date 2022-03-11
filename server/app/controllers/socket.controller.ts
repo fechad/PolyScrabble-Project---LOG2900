@@ -1,5 +1,5 @@
 import { Game } from '@app/classes/game';
-import { Player, PlayerId, Room } from '@app/classes/room';
+import { PlayerId, Room, State } from '@app/classes/room';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { LoginsService } from '@app/services/logins.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
@@ -13,11 +13,15 @@ type Handlers = [string, (params: unknown[]) => void][];
 const AWOL_DELAY = 5000;
 @Service()
 export class SocketManager {
-    readonly games: Game[] = [];
     private io: io.Server;
-    private logins: LoginsService = new LoginsService();
     private token: number;
-    constructor(server: http.Server, public roomsService: RoomsService, private dictionnaryService: DictionnaryService) {
+
+    constructor(
+        server: http.Server,
+        public roomsService: RoomsService,
+        private logins: LoginsService,
+        private dictionnaryService: DictionnaryService,
+    ) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
@@ -91,7 +95,7 @@ export class SocketManager {
                 if (otherPlayer) otherPlayer.connected = true;
             }
 
-            if (room.isStarted()) {
+            if (room.getState() === State.Started) {
                 socket.emit('join-game', room.id);
             }
 
@@ -103,15 +107,15 @@ export class SocketManager {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => {
                     room.start();
-                    const game = new Game(room.id, [room.mainPlayer, room.getOtherPlayer() as Player], room.parameters, this.dictionnaryService);
-                    this.games.push(game);
-                    rooms.to(`room-${room.id}`).emit('join-game', game.gameId);
+                    const game = new Game(room, this.dictionnaryService);
+                    this.roomsService.games.push(game);
+                    rooms.to(`room-${room.id}`).emit('join-game', game.id);
                 });
             }
 
             socket.on('disconnect', () => {
                 room.quit(isMainPlayer);
-                if (isMainPlayer && !room.isStarted()) {
+                if (isMainPlayer && room.getState() === State.Setup) {
                     this.roomsService.remove(room.id);
                 }
                 events.forEach(([name, handler]) => room.off(name, handler));
@@ -125,7 +129,7 @@ export class SocketManager {
         const games = this.io.of(/^\/games\/\d+$/);
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
-            const idx = this.games.findIndex((game) => game.gameId === gameId);
+            const idx = this.roomsService.games.findIndex((game) => game.id === gameId);
             const NOT_FOUND = -1;
             if (idx === NOT_FOUND) {
                 next(Error('Invalid game number'));
@@ -143,8 +147,8 @@ export class SocketManager {
         });
         games.on('connect', (socket) => {
             const id = socket.handshake.auth.id;
-            const game = this.games[socket.data.gameIdx];
-            socket.join(`game-${game.gameId}`);
+            const game = this.roomsService.games[socket.data.gameIdx];
+            socket.join(`game-${game.id}`);
 
             console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
 

@@ -122,13 +122,6 @@ describe('GameSetupDialogComponent', () => {
         expect(closeDialogSpy).toHaveBeenCalled();
     });
 
-    it('when form is valid player should be redirected to waiting-room', async () => {
-        const playerName = component.gameParametersForm.controls.playerName;
-        playerName.setValue('Test');
-        await component.onSubmit();
-        expect(router.navigate).toHaveBeenCalled();
-    });
-
     it('should not close dialog when error found', async () => {
         const parameters = new ParametersMock();
         const closeDialogSpy = spyOn(component.dialogRef, 'close');

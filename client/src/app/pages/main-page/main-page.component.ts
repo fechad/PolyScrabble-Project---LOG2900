@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { ModeServiceService } from '@app/services/mode-service.service';
+import { MatDialog } from '@angular/material/dialog';
+import { HighScoresComponent } from '@app/components/high-scores/high-scores.component';
 
 @Component({
     selector: 'app-main-page',
@@ -13,14 +14,20 @@ export class MainPageComponent {
             toolTip: 'Une partie de Scrabble avec les règles standards.',
             texte: 'Mode Classique',
             disabled: false,
+            openPopUp: false,
         },
         {
             route: '/2990',
             toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
             texte: 'Mode LOG2990',
             disabled: true,
+            openPopUp: false,
         },
-        { route: '', toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: false },
+        { route: undefined, toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: false, openPopUp: true },
     ];
-    constructor(public mode: ModeServiceService) {}
+    constructor(private readonly matDialog: MatDialog) {}
+
+    openPopUp() {
+        this.matDialog.open(HighScoresComponent);
+    }
 }
