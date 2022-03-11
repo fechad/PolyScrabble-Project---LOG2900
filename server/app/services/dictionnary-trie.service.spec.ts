@@ -11,6 +11,6 @@ describe('Dictionnary Trie', () => {
         dictionnaryTrieService = new DictionnaryTrieService(dictionnary);
     });
     it('should create tree', () => {
-        expect(dictionnaryTrieService.dictionnaryTree.value).to.equal('*');
+        expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
     });
 });

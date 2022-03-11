@@ -7,7 +7,7 @@ describe('Letter Node', () => {
         letterNode = new LetterNode('a');
     });
     it('should create letter node', () => {
-        expect(letterNode.value).to.equal('a');
+        expect(letterNode.letter).to.equal('a');
         expect(letterNode.final).to.equal(false);
     });
     it('should add node if there is none', () => {
