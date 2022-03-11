@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { HostListener, Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
 import { GameContextService, Tile } from './game-context.service';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
+const PLAY_AREA_SIZE = 520;
 const CENTER_TILE = 7;
 const AJUST_Y = 16;
 const AJUST_TILE_Y = 10;
@@ -23,6 +24,10 @@ const AMOUNT_OF_NUMBER = 15;
 const DEFAULT_SIZE = 9;
 const TILE_SIZE = 30;
 const BOARD_LENGTH = 15;
+const FOURTH_SQUARE = 4;
+const offset = BOARD_LENGTH / BOARD_LENGTH;
+const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
+const gridOrigin = 20;
 
 enum Colors {
     Mustard = '#E1AC01',
@@ -39,21 +44,34 @@ export class GridService {
     gridContext: CanvasRenderingContext2D;
     fontSize = '';
     multiplier = 1;
+    buttonPressed = '';
+    letters: Letter[] = [];
+    rack: Letter[] = [];
+    letterForServer = '';
+    letterWritten = 0;
+    letterPosition = [[0, 0]];
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private gameContext: GameContextService) {}
+    constructor(private gameContext: GameContextService) {
+        this.gameContext.rack.subscribe((rack) => {
+            this.rack = [...rack];
+        });
+    }
+
+    @HostListener('keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+    }
 
     drawGrid() {
-        const offset = BOARD_LENGTH / BOARD_LENGTH;
-        const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
+        this.gridContext.clearRect(0, 0, PLAY_AREA_SIZE, PLAY_AREA_SIZE);
         this.gridContext.lineWidth = offset;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
 
         this.gridContext.fillStyle = '#575757';
-        this.gridContext.strokeStyle = '#B1ACAC';
-        const gridOrigin = 20;
+        this.gridContext.strokeStyle = '#000';
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 this.gridContext.beginPath();
@@ -63,6 +81,24 @@ export class GridService {
                 this.drawTiles(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUST_Y);
                 this.gridContext.fillStyle = '#575757';
             }
+        }
+    }
+
+    drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        const x = canvasX;
+        const y = canvasY;
+        this.gridContext.fillStyle = '#000';
+        this.gridContext.beginPath();
+        if (isHorizontal) {
+            this.gridContext.moveTo(x, y);
+            this.gridContext.lineTo(x - squareSize / FOURTH_SQUARE, y + squareSize / FOURTH_SQUARE);
+            this.gridContext.lineTo(x - squareSize / FOURTH_SQUARE, y - squareSize / FOURTH_SQUARE);
+            this.gridContext.fill();
+        } else {
+            this.gridContext.moveTo(x - squareSize / FOURTH_SQUARE, y + squareSize / FOURTH_SQUARE);
+            this.gridContext.lineTo(x - squareSize / 2, y);
+            this.gridContext.lineTo(x, y);
+            this.gridContext.fill();
         }
     }
 
@@ -94,8 +130,13 @@ export class GridService {
                     name: lettersToAdd[letterPosition].toUpperCase(),
                     score: 0,
                 } as Letter;
-                if (isHorizontalPlacement) temporaryBoard[verticalIndex][i] = letter;
-                else temporaryBoard[i][horizontalIndex] = letter;
+                if (isHorizontalPlacement) {
+                    temporaryBoard[verticalIndex][i] = letter;
+                    this.letterPosition.push([verticalIndex, i]);
+                } else {
+                    temporaryBoard[i][horizontalIndex] = letter;
+                    this.letterPosition.push([i, horizontalIndex]);
+                }
                 letterPosition++;
             }
         }

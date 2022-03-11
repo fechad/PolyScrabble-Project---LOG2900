@@ -2,6 +2,7 @@ import { HttpException } from '@app/classes/http.exception';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
+import { ValidationError } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import * as swaggerJSDoc from 'swagger-jsdoc';
@@ -57,6 +58,15 @@ export class Application {
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
             const err: HttpException = new HttpException('Not Found');
             next(err);
+        });
+
+        // validation error handling
+        this.app.use((error: Error, request: express.Request, response: express.Response, next: express.NextFunction) => {
+            if (error instanceof ValidationError) {
+                response.status(StatusCodes.BAD_REQUEST).send(error.validationErrors);
+            } else {
+                next(error);
+            }
         });
 
         // development error handler

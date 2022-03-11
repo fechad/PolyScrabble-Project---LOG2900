@@ -5,6 +5,7 @@ import * as Multipliers from './multipliers';
 
 const CONTACT_CHAR = '*';
 const FIRST_WORD = -1;
+const VALID_CONTACT = -1;
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
 const WORD_LENGTH_BONUS = 7;
@@ -121,8 +122,8 @@ export class Board {
             if (this.board[row][col + i].empty) wordPos++;
             else collisions++;
         }
-        if(collisions !== 0 && contacts.length === 0){
-            contacts.push([FIRST_WORD]);
+        if (collisions !== 0 && contacts.length === 0) {
+            contacts.push([VALID_CONTACT]);
         }
         return contacts;
     }
@@ -141,8 +142,8 @@ export class Board {
             if (this.board[row + i][col].empty) wordPos++;
             else collisions++;
         }
-        if(collisions !== 0 && contacts.length === 0){
-            contacts.push([FIRST_WORD]);
+        if (collisions !== 0 && contacts.length === 0) {
+            contacts.push([VALID_CONTACT]);
         }
         return contacts;
     }

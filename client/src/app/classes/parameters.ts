@@ -7,11 +7,20 @@ export enum GameType {
     Solo,
     Multiplayer,
 }
-
 export enum Difficulty {
-    Beginner,
-    Expert,
+    Beginner = 'debutant',
+    Expert = 'expert',
 }
+export const difficulties = [
+    {
+        id: 0,
+        name: 'débutant',
+    },
+    {
+        id: 1,
+        name: 'expert',
+    },
+];
 
 export const DEFAULT_TIMER = 60;
 
@@ -20,4 +29,5 @@ export class Parameters {
     dictionnary: IdDictionnary = 0;
     gameType: GameType = GameType.Multiplayer;
     difficulty?: Difficulty;
+    log2990: boolean = false;
 }

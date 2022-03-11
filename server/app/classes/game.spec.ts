@@ -7,7 +7,7 @@ import * as sinon from 'sinon';
 import { EndGameCalculator } from './end-game-calculator';
 import { Game, MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Parameters } from './parameters';
-import { Player } from './room';
+import { Player, Room } from './room';
 
 /* eslint-disable dot-notation */
 
@@ -29,11 +29,13 @@ describe('Game', () => {
 
     beforeEach(() => {
         players = [
-            { name: 'Bob', id: '0', connected: true },
-            { name: 'notBob', id: '1', connected: true },
+            { name: 'Bob', id: '0', connected: true, virtual: false },
+            { name: 'notBob', id: '1', connected: true, virtual: false },
         ];
         parameters = new Parameters();
-        game = new Game(0, players, parameters, dictionnary);
+        const room = new Room(0, players[0].id, players[0].name, parameters);
+        room.addPlayer(players[1].id, players[1].name, false);
+        game = new Game(room, dictionnary);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
         game['isPlayer0Turn'] = true;
@@ -162,6 +164,15 @@ describe('Game', () => {
         done();
     });
 
+    it('should show content of reserve', (done) => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('reserve-content', stub);
+        game.showReserveContent('me');
+        assert(stub.calledWith('me', game.reserve.getContent()));
+        assert(stubError.notCalled);
+        done();
+    });
+
     it('Skipping 6 turns in a row should call endGame', () => {
         game['skipCounter'] = 5;
         const endGame = sinon.spy(game, 'endGame');
@@ -179,9 +190,9 @@ describe('Game', () => {
         const calculateFinalScores = sinon.spy(EndGameCalculator, 'calculateFinalScores');
         const createGameSummaryMessage = sinon.spy(EndGameCalculator, 'createGameSummaryMessage');
         game.endGame();
-        assert(calculateFinalScores.called);
-        assert(createGameSummaryMessage.called);
-        assert(game['winner'] !== undefined);
+        assert(calculateFinalScores.called, 'Did not call final scores');
+        assert(createGameSummaryMessage.called, 'Did not call game summary');
+        expect(game['winner']).to.not.equal(undefined);
     });
 
     it('getWinner should return the winners id', () => {

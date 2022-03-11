@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { Parameters } from '@app/classes/parameters';
 import { CommunicationService } from '@app/services/communication.service';
 
@@ -15,7 +14,6 @@ const SEC_CONVERT = 60;
 export class GameSetupDialogComponent implements OnInit {
     gameParametersForm: FormGroup;
     constructor(
-        private router: Router,
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<GameSetupDialogComponent>,
         public communicationService: CommunicationService,
@@ -45,8 +43,7 @@ export class GameSetupDialogComponent implements OnInit {
         const parameters = new Parameters();
         parameters.timer = this.gameParametersForm.value.minutes * SEC_CONVERT + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
-        await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters);
+        await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters, undefined);
         this.dialogRef.close();
-        this.router.navigate(['/waiting-room']);
     }
 }

@@ -8,6 +8,7 @@ import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
+import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
@@ -27,9 +28,6 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
-    congratulations: string | undefined = undefined;
-    endGame: boolean = false;
-    forfeited: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -41,7 +39,7 @@ export class CommunicationService {
     constructor(
         public gameContextService: GameContextService,
         public gridService: GridService,
-        httpClient: HttpClient,
+        private httpClient: HttpClient,
         private router: Router,
         private io: IoWrapper,
     ) {
@@ -62,6 +60,14 @@ export class CommunicationService {
 
             addEventListener('beforeunload', () => this.saveAuth(id), { capture: true });
         });
+    }
+
+    async saveScore() {
+        try {
+            await this.httpClient.post(`${environment.serverUrl}/high-scores`, { id: this.myId.value, token: this.token }).toPromise();
+        } catch (e) {
+            /* Discard errors */
+        }
     }
 
     isMainPlayer(): boolean {
@@ -112,6 +118,14 @@ export class CommunicationService {
         this.gameContextService.addMessage(message, false, false);
     }
 
+    showReserveContent(sortedReserve: ReserveLetter[]) {
+        let message = '';
+        for (const letter of sortedReserve) {
+            message += letter.name + ' : ' + letter.qtyInReserve + '\n';
+        }
+        this.sendCommandMessage(message);
+    }
+
     getId(): BehaviorSubject<PlayerId | undefined> {
         return this.myId;
     }
@@ -120,11 +134,11 @@ export class CommunicationService {
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
-    place(letters: string, verticalIndex: number, horizonalIndex: number, isHorizontal?: boolean) {
+    place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
         this.gameContextService.tempUpdateRack();
-        this.gridService.tempUpdateBoard(letters, verticalIndex, horizonalIndex, isHorizontal);
+        this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
-        this.gameSocket?.emit('place-letters', letters, verticalIndex, horizonalIndex, isHorizontal);
+        this.gameSocket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
 
     exchange(letters: string) {
@@ -134,6 +148,10 @@ export class CommunicationService {
     confirmForfeit() {
         this.gameSocket?.emit('confirm-forfeit');
         this.leaveGame();
+    }
+
+    getReserve() {
+        this.gameSocket?.emit('reserve-content');
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -151,9 +169,9 @@ export class CommunicationService {
         await this.selectedRoom.pipe(take(2)).toPromise();
     }
 
-    async createRoom(playerName: string, parameters: Parameters) {
+    async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-        this.mainSocket.emit('create-room', playerName, parameters);
+        this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
     }
 
@@ -172,13 +190,21 @@ export class CommunicationService {
         if (this.waitingRoomsSocket.connected) this.waitingRoomsSocket.disconnect();
     }
 
-    private handleError(e: string | Error) {
+    private handleError(e: string) {
         // eslint-disable-next-line no-console
         if (!environment.production) console.error(e);
+        if (e === 'Il y a déjà deux joueurs dans cette partie') {
+            swal.fire({
+                title: 'Erreur!',
+                text: e,
+                showCloseButton: true,
+                confirmButtonText: 'Ok!',
+            });
+        }
     }
 
     private leaveGame() {
-        if (!this.forfeited) this.gameContextService.clearMessages();
+        this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.gameSocket?.close();
@@ -200,7 +226,7 @@ export class CommunicationService {
             this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
-        this.roomSocket.on('error', (e) => this.handleError(e));
+        this.roomSocket.on('error', (error: string) => this.handleError(error));
 
         this.roomSocket.on('join-game', (gameId) => {
             this.joinGameHandler(gameId);
@@ -229,13 +255,10 @@ export class CommunicationService {
                 }).then((result) => {
                     if (result.value) {
                         this.gameContextService.clearMessages();
-                        this.forfeited = false;
                         this.router.navigate(['/']);
                     }
                 });
             }
-            this.endGame = false;
-            this.congratulations = undefined;
             this.leaveGame();
         });
 
@@ -249,6 +272,7 @@ export class CommunicationService {
             this.gameContextService.rack.next(rack);
             this.gameContextService.allowSwitch(true);
         });
+        this.gameSocket.on('reserve-content', (sortedReserve: ReserveLetter[]) => this.showReserveContent(sortedReserve));
     }
 
     private getAuth(): { id?: PlayerId } {

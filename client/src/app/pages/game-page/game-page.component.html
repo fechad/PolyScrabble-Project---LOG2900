@@ -23,13 +23,13 @@
                     <fa-icon id="help" [icon]="faQuestionCircle" size="2x"></fa-icon>
                 </button>
                 <div class="size-container">
-                    <button class="sizing" matTooltip="Taille minimale">
+                    <button class="sizing" matTooltip="Taille minimale" matTooltipClass="tool">
                         <fa-icon id="reduce" [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon>
                     </button>
-                    <button class="sizing" matTooltip="Taille par défaut">
+                    <button class="sizing" matTooltip="Taille par défaut" matTooltipClass="tool">
                         <fa-icon id="reset" [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon>
                     </button>
-                    <button class="sizing" matTooltip="Taille maximale">
+                    <button class="sizing" matTooltip="Taille maximale" matTooltipClass="tool">
                         <fa-icon id="increase" [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon>
                     </button>
                 </div>
@@ -51,12 +51,13 @@
                     class="skip-turn"
                     matTooltip="Passer votre tour"
                     matTooltipPosition="right"
+                    matTooltipClass="tool"
                     [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true"
                     (click)="skipMyTurn()"
                 >
                     <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
                 </button>
-                <button id="quit-game" matTooltip="Quitter la partie" matTooltipPosition="right" (click)="quitGame()">
+                <button id="quit-game" matTooltip="Quitter la partie" matTooltipPosition="right" matTooltipClass="tool" (click)="quitGame()">
                     <fa-icon [icon]="faSignOutAlt"></fa-icon>
                 </button>
             </div>
@@ -67,7 +68,7 @@
             </div>
             <div id="bottom-area">
                 <div class="rackArea">
-                    <app-letter-rack></app-letter-rack>
+                    <app-letter-rack class="letter-rack"></app-letter-rack>
                 </div>
             </div>
         </div>

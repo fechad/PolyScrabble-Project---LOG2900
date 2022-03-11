@@ -36,9 +36,9 @@ describe('ChatBoxComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('validateSyntax() should empty the chatBox textValue', () => {
+    it('validateSyntax() should empty the chatBox textValue', async () => {
         component.textValue = 'oejnien  eoij ini eo jo';
-        component.validateSyntax();
+        await component.validateSyntax();
         expect(component.textValue).toEqual('');
     });
 });

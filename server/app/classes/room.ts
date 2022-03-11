@@ -1,51 +1,60 @@
 import { EventEmitter } from 'events';
 import { Parameters } from './parameters';
 
-export type Player = { name: string; id: PlayerId; connected: boolean };
+export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
 
 export type RoomId = number;
 export type PlayerId = string;
 
+export enum State {
+    Setup,
+    Started,
+    Ended,
+    Aborted,
+}
+
 export class Room extends EventEmitter {
-    readonly parameters: Parameters;
     readonly name: string;
-    readonly id: RoomId;
     readonly mainPlayer: Player;
     private otherPlayer: Player | undefined;
-    private started: boolean = false;
+    private state: State = State.Setup;
 
-    constructor(id: RoomId, playerId: PlayerId, playerName: string, parameters: Parameters) {
+    constructor(readonly id: RoomId, playerId: PlayerId, playerName: string, readonly parameters: Parameters) {
         super();
 
-        this.id = id;
-        this.parameters = parameters;
         this.mainPlayer = {
             id: playerId,
             name: playerName,
             connected: true,
+            virtual: false,
         };
         this.name = `Partie de ${playerName}`;
     }
 
-    addPlayer(playerId: PlayerId, playerName: string): Error | undefined {
+    needsOtherPlayer(): boolean {
+        return this.otherPlayer === undefined && this.mainPlayer.connected && this.state === State.Setup;
+    }
+
+    addPlayer(playerId: PlayerId, playerName: string, virtual: boolean): Error | undefined {
         if (playerName === this.mainPlayer.name) {
-            return Error('this name is already taken');
+            return Error('Ce nom a déjà été prit');
         }
         if (playerId === this.mainPlayer.id) {
-            return Error('Cannot have same id for both players');
+            return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
         }
         if (this.otherPlayer !== undefined) {
-            return Error('already 2 players in the game');
+            return Error('Il y a déjà deux joueurs dans cette partie');
         }
-        this.otherPlayer = { id: playerId, name: playerName, connected: true };
+        this.otherPlayer = { id: playerId, name: playerName, connected: true, virtual };
         this.emit('update-room');
         return undefined;
     }
 
     quit(mainPlayer: boolean) {
-        if (mainPlayer && !this.started) {
+        if (mainPlayer && this.state === State.Setup) {
+            this.mainPlayer.connected = false;
             this.emit('kick');
-        } else if (!this.started) {
+        } else if (this.state === State.Setup) {
             this.otherPlayer = undefined;
         } else if (mainPlayer) {
             this.mainPlayer.connected = false;
@@ -56,14 +65,21 @@ export class Room extends EventEmitter {
     }
 
     start() {
-        if (this.otherPlayer && !this.started) {
-            this.started = true;
+        if (this.otherPlayer && this.state === State.Setup) {
+            this.state = State.Started;
+            this.emit('update-room');
+        }
+    }
+
+    end(forfeit: boolean) {
+        if (this.state === State.Started) {
+            this.state = forfeit ? State.Aborted : State.Ended;
             this.emit('update-room');
         }
     }
 
     kickOtherPlayer() {
-        if (this.otherPlayer && !this.started) {
+        if (this.otherPlayer && this.state === State.Setup) {
             console.log(`Kicked player from room ${this.id}`);
             this.otherPlayer = undefined;
             this.emit('kick');
@@ -79,7 +95,7 @@ export class Room extends EventEmitter {
         return this.otherPlayer;
     }
 
-    isStarted(): boolean {
-        return this.started;
+    getState(): State {
+        return this.state;
     }
 }

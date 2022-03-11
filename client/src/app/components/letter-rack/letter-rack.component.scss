@@ -69,3 +69,47 @@
     font-size: 60%;
     margin-left: 0.5vw;
 }
+
+#menu {
+    position: fixed;
+    right: 65%;
+    top: 89vh;
+    color: white;
+
+}
+
+#menu button{
+    font-size: 15px;
+    width: 15vh;
+    font-family: Signika Negative;
+    border-radius: 15px;
+    margin: 2px;
+
+}
+
+#menu button:hover{
+    cursor: pointer;
+}
+
+#menu button:hover:disabled{
+    cursor: default;
+}
+
+#menu button#exchange{
+    background: #25BE4B;
+}
+
+#menu button#cancel{
+    background: red;
+}
+
+.letter-container#selected {
+    border-color: #25BE4B;
+    border-width: 3px;
+
+}
+
+.letter-container#manipulating {
+    border-color: white;
+    border-width: 3px;
+}

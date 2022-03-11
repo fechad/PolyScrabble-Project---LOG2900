@@ -1,5 +1,6 @@
 import { alphabetTemplate } from '@app/alphabet-template';
 import { Letter } from '@app/letter';
+import { ReserveLetter } from '@app/reserve-letter';
 import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 
 export class Reserve {
@@ -19,11 +20,10 @@ export class Reserve {
         const lettersToSend: Letter[] = [];
         const pullableQuantity = this.reserve.length > quantity ? quantity : this.reserve.length;
         for (let i = 0; i < pullableQuantity; i++) {
-            const listLength: number = this.reserve.length - 1;
-            const index: number = Math.floor(Math.random() * listLength); // random number from array
+            const index: number = Math.floor(Math.random() * this.reserve.length); // random number from array
             lettersToSend.push(this.reserve[index]);
             // remove chosen element
-            this.reserve[index] = this.reserve[listLength];
+            this.reserve[index] = this.reserve[this.reserve.length - 1];
             this.reserve.pop();
         }
         return lettersToSend;
@@ -60,6 +60,18 @@ export class Reserve {
             if (letter !== undefined) return false;
         }
         return true;
+    }
+
+    getContent() {
+        const reserveToShow: ReserveLetter[] = [];
+        for (const letter of alphabetTemplate) {
+            const letterToShow: ReserveLetter = { name: letter.name, qtyInReserve: 0 };
+            reserveToShow.push(letterToShow);
+        }
+        for (const content of this.reserve) {
+            reserveToShow[content.id - 1].qtyInReserve++;
+        }
+        return reserveToShow;
     }
 
     private setRacks() {

@@ -6,7 +6,7 @@ export type DictionnaryInfo = { id: number; name: string; words: string[] };
 
 @Service()
 export class DictionnaryService {
-    private dictionnaries: Dictionnary[] = [];
+    dictionnaries: Dictionnary[] = [];
 
     async init() {
         const fileBuffer = await promises.readFile('./assets/dictionnary.json');

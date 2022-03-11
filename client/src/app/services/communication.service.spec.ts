@@ -5,7 +5,7 @@ import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { Room } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
@@ -72,9 +72,9 @@ describe('CommunicationService', () => {
                 id: 0,
                 name: 'Game',
                 parameters: new Parameters(),
-                mainPlayer: { name: 'BOB', id: ID, connected: true },
+                mainPlayer: { name: 'BOB', id: ID, connected: true, virtual: false },
                 otherPlayer: undefined,
-                started: false,
+                state: State.Setup,
             },
         ];
         (service['waitingRoomsSocket'] as unknown as SocketMock).events.emit('broadcast-rooms', rooms);
@@ -193,7 +193,7 @@ describe('CommunicationService', () => {
 
     it('should create room', async () => {
         const promise = service.createRoom('aldabob', new Parameters());
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters());
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters(), undefined);
         createRoom();
         setTimeout(() => createRoom(), 0);
         await promise;
@@ -201,7 +201,7 @@ describe('CommunicationService', () => {
 
     it('should not create room when already in one', async () => {
         const promise = service.createRoom('aldabob', new Parameters());
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters());
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('create-room', 'aldabob', new Parameters(), undefined);
         createRoom();
         setTimeout(() => createRoom(), 0);
         await promise;
@@ -240,8 +240,8 @@ describe('CommunicationService', () => {
 
     const DEFAULT_STATE: GameState = {
         players: [
-            { info: { id: ID, name: 'BOB', connected: true }, score: 0, rackCount: 7 },
-            { info: { id: 'Dummy', name: 'Not BOB', connected: true }, score: 0, rackCount: 7 },
+            { info: { id: ID, name: 'BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
+            { info: { id: 'Dummy', name: 'Not BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
         ],
         reserveCount: 88,
         board: [[]],

@@ -10,11 +10,6 @@ import { GameContextService } from '@app/services/game-context.service';
 })
 export class ChatBoxComponent implements AfterViewChecked {
     @ViewChild('scroll') private scroller: ElementRef;
-    @ViewChild('writingBox') set writingBoxRef(textarea: ElementRef) {
-        if (textarea) {
-            textarea.nativeElement.focus();
-        }
-    }
     textValue: string = '';
     myId: string | undefined;
 
@@ -28,15 +23,15 @@ export class ChatBoxComponent implements AfterViewChecked {
 
     ngAfterViewChecked() {
         this.scrollToBottom();
-        this.myId = this.communicationService.getId().value;
+        this.myId = this.communicationService.getId().value; // needed for 5s reconnexion
     }
 
     scrollToBottom() {
         this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
 
-    validateSyntax() {
-        this.chatBoxLogicService.validateSyntax(this.textValue);
+    async validateSyntax() {
+        await this.chatBoxLogicService.validateSyntax(this.textValue);
         this.textValue = '';
     }
 }

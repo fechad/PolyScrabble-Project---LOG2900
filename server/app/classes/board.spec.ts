@@ -191,23 +191,18 @@ describe('Board', () => {
         col = 5;
         isHoriontal = true;
         contacts = board['getContacts'](word.length, row, col, isHoriontal);
-        assert(contacts.length === 2);
-        assert(contacts[0][0] === 8);
-        assert(contacts[0][1] === 6);
-        assert(contacts[0][2] === INVALID);
+        assert(contacts.length === 1);
 
-        assert(contacts[1][0] === 8);
-        assert(contacts[1][1] === 7);
-        assert(contacts[1][2] === 1);
+        assert(contacts[0][0] === 8);
+        assert(contacts[0][1] === 7);
+        assert(contacts[0][2] === 1);
 
         row = 4;
         col = 6;
         isHoriontal = false;
         contacts = board['getContacts'](word.length, row, col, isHoriontal);
         assert(contacts.length === 1);
-        assert(contacts[0][0] === 7);
-        assert(contacts[0][1] === 6);
-        assert(contacts[0][2] === INVALID);
+        assert(contacts[0][0] === INVALID);
 
         row = 4;
         col = 5;
@@ -287,7 +282,7 @@ describe('Board', () => {
         col = 5;
         isHoriontal = true;
         attemptedWord = 'ars';
-        expectedScore = 13;
+        expectedScore = 6;
 
         result = await board.placeWord(attemptedWord, row, col, isHoriontal);
         expect(result).to.equals(expectedScore);

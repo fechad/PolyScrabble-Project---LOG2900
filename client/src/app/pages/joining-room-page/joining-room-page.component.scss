@@ -1,21 +1,24 @@
-.material-icons{
+@import '../../styles/colors.scss';
+.material-icons {
     text-align: center;
-    font-size: 65px;
+    font-size: 45px;
     width: 50px;
-    color: #E1AC01;
-    margin-top: 20px;
-    margin-left: 20px;
+    color: $primary;
     transition: transform 0.3s ease-in-out;
-  
 }
 
-.material-icons:hover{
-  transform: scale(1.2);
-  
-}
-
-.home-button:hover{
+.material-icons:hover {
+    transform: scale(1.2);
     cursor: pointer;
+}
+
+.button {
+    background-color: $primary;
+    color: $bkg;
+}
+
+.button:disabled {
+    background-color: rgb(87, 87, 87);
 }
 
 .clickable {
@@ -31,11 +34,10 @@
     transition: box-shadow 0.1s ease-in-out;
     transition: transform 0.3s ease-in-out;
 }
-      
 
-.clickable:hover{
+.clickable:hover {
     cursor: pointer;
-    box-shadow: 0 5px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
     transform: scale(1.1);
 }
 
@@ -45,25 +47,35 @@
     color: #576877;
 }
 
-#title{
-    font-style: Signika Negative;
-    margin-left: -20px;
+#title {
+    font-style: 'Signika Negative';
+    text-align: center;
+    margin: 0;
 }
 
-.title-container{
-    color: #E1AC01;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 15px;
-    width: 60%;
-    height: 5%;
-    margin-left: 17vw;
+.title-container {
+    color: $primary;
 }
 
-.header{
+.header {
     display: flex;
     justify-content: left;
     align-items: center;
+    height: 5em;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background-color: $bkg;
 }
 
+.header > div {
+    width: 33.33%;
+}
+
+#icon-container {
+    padding-left: 2em;
+}

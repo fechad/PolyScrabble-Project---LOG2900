@@ -1,5 +1,6 @@
 import { Component, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
@@ -26,22 +27,25 @@ export class GamePageComponent {
         public router: Router,
     ) {}
 
-    quitGame() {
+    async quitGame() {
         let text = [''];
         if (this.gameContextService.state.value.ended) text = ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester'];
         else text = ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
-        Swal.fire({
+        const result = await Swal.fire({
             title: text[0],
             text: text[1],
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: text[2],
             cancelButtonText: text[3],
-        }).then((result) => {
-            if (!result.value) return;
-            if (this.gameContextService.state.value.ended) this.communicationService.leave();
-            else this.communicationService.confirmForfeit();
         });
+        if (!result.value) return;
+        if (this.gameContextService.state.value.ended) {
+            if (this.communicationService.selectedRoom.value?.state === State.Ended) await this.communicationService.saveScore();
+            this.communicationService.leave();
+        } else {
+            this.communicationService.confirmForfeit();
+        }
     }
     skipMyTurn() {
         this.communicationService.switchTurn(false);

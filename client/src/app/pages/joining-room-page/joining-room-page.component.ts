@@ -13,10 +13,12 @@ import { CommunicationService } from '@app/services/communication.service';
 })
 export class JoiningRoomPageComponent implements OnInit {
     dictionnaries: Dictionnary[] | undefined = undefined;
+    nbOfRooms: number = 0;
 
     constructor(public dialog: MatDialog, public communicationService: CommunicationService, public location: Location) {}
 
     ngOnInit() {
+        this.communicationService.rooms?.subscribe((rooms) => (this.nbOfRooms = rooms.length));
         this.communicationService.dictionnaries.then((dictionnaries) => {
             this.dictionnaries = dictionnaries;
         });
@@ -31,5 +33,10 @@ export class JoiningRoomPageComponent implements OnInit {
                 timer: room.parameters.timer,
             },
         });
+    }
+
+    getRandomRoom() {
+        const randomIndex = Math.floor(Math.random() * this.communicationService.rooms?.value.length);
+        this.openDialog(this.communicationService.rooms?.value[randomIndex]);
     }
 }

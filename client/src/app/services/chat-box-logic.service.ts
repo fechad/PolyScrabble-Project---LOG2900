@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
+import { take } from 'rxjs/operators';
 
 const COMMAND_INDEX = 0;
 const LETTERS_TO_EXCHANGE_INDEX = 1;
@@ -9,6 +10,7 @@ const POSITION_BLOCK_INDEX = 1;
 const MIN_TYPED_WORD_LENGTH = 1;
 const HELP_COMMAND_LENGTH = 1;
 const PASS_COMMAND_LENGTH = 1;
+const RESERVE_COMMAND_LENGTH = 1;
 const POSITION_BLOCK_MIN_LENGTH = 2;
 const WORD_TO_PLACE_INDEX = 2;
 const EXCHANGE_COMMAND_LENGTH = 2;
@@ -39,14 +41,14 @@ export class ChatBoxLogicService {
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {}
 
-    validateSyntax(textValue: string) {
+    async validateSyntax(textValue: string) {
         if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '') {
             this.communicationService.sendLocalMessage('Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *');
         } else if (textValue.trim() !== '') {
             this.commandStructure = textValue.split(' ');
             if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
                 try {
-                    this.dispatchCommand(this.commandStructure.length);
+                    await this.dispatchCommand(this.commandStructure.length);
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } catch (e: any) {
                     const message = e.message;
@@ -58,9 +60,12 @@ export class ChatBoxLogicService {
         }
     }
 
-    private dispatchCommand(commandLength: number) {
-        if (this.communicationService.congratulations !== undefined) throw new Error(' La partie est terminée !');
-        else if (!this.gameContextService.isMyTurn()) throw new Error("Ce n'est pas votre tour");
+    private async dispatchCommand(commandLength: number) {
+        const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
+        if (this.gameContextService.state.value.ended) throw new Error(' La partie est terminée !');
+        else if (this.commandStructure[COMMAND_INDEX] === '!réserve' && commandLength === RESERVE_COMMAND_LENGTH) this.getReserve();
+        else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
+        else if (!myTurn) throw new Error("Ce n'est pas votre tour");
         else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
             this.assignPositionSpec(this.commandStructure[POSITION_BLOCK_INDEX]);
@@ -69,13 +74,12 @@ export class ChatBoxLogicService {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
             this.exchange();
         } else if (this.commandStructure[COMMAND_INDEX] === '!passer' && commandLength === PASS_COMMAND_LENGTH) this.pass();
-        else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
         else throw new Error(`La commande ${this.commandStructure[COMMAND_INDEX]} ne respecte pas la syntaxe demandée`);
     }
 
     private sendHelp() {
         for (const message of this.help) {
-            this.communicationService.sendLocalMessage(message);
+            this.communicationService.sendCommandMessage(message);
         }
     }
 
@@ -114,6 +118,10 @@ export class ChatBoxLogicService {
 
     private pass() {
         this.communicationService.switchTurn(false);
+    }
+
+    private getReserve() {
+        this.communicationService.getReserve();
     }
 
     private assignPositionSpec(positionBlock: string) {
