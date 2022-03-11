@@ -18,7 +18,7 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
+    imports: [RouterModule.forRoot(routes)], // check initial commit
     exports: [RouterModule],
 })
 export class AppRoutingModule {}
