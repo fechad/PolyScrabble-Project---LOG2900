@@ -203,7 +203,7 @@ describe('Board', () => {
         contacts = board['getContacts'](word.length, row, col, isHoriontal);
         assert(contacts.length === 1);
         assert(contacts[0][0] === INVALID);
-        
+
         row = 4;
         col = 5;
         isHoriontal = false;
