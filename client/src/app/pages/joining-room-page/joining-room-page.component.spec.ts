@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Parameters } from '@app/classes/parameters';
-import { Room } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
@@ -26,7 +26,7 @@ export class CommunicationServiceMock {
         parameters: new Parameters(),
         mainPlayer: { name: 'Player 1', id: '0', connected: true },
         otherPlayer: undefined,
-        started: false,
+        state: State.Setup,
     } as Room);
     dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
 }
@@ -64,9 +64,9 @@ describe('JoiningRoomPageComponent', () => {
             id: 0,
             name: 'Room',
             parameters: new Parameters(),
-            mainPlayer: { name: 'Player 1', id: '0', connected: true },
+            mainPlayer: { name: 'Player 1', id: '0', connected: true, virtual: false },
             otherPlayer: undefined,
-            started: false,
+            state: State.Setup,
         };
         const openDialogSpy = spyOn(component.dialog, 'open');
         component.openDialog(testRoom);
@@ -77,9 +77,9 @@ describe('JoiningRoomPageComponent', () => {
             id: 0,
             name: 'Room',
             parameters: new Parameters(),
-            mainPlayer: { name: 'Player 1', id: '0', connected: true },
+            mainPlayer: { name: 'Player 1', id: '0', connected: true, virtual: false },
             otherPlayer: undefined,
-            started: false,
+            state: State.Setup,
         };
         component.communicationService.rooms?.next([testRoom]);
         const openDialogSpy = spyOn(component, 'openDialog');

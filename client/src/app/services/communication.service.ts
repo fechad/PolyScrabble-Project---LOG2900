@@ -28,9 +28,6 @@ export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
     readonly dictionnaries: Promise<Dictionnary[]>;
-    congratulations: string | undefined = undefined;
-    endGame: boolean = false;
-    forfeited: boolean = false;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -42,7 +39,7 @@ export class CommunicationService {
     constructor(
         public gameContextService: GameContextService,
         public gridService: GridService,
-        httpClient: HttpClient,
+        private httpClient: HttpClient,
         private router: Router,
         private io: IoWrapper,
     ) {
@@ -63,6 +60,14 @@ export class CommunicationService {
 
             addEventListener('beforeunload', () => this.saveAuth(id), { capture: true });
         });
+    }
+
+    async saveScore() {
+        try {
+            await this.httpClient.post(`${environment.serverUrl}/high-scores`, { id: this.myId.value, token: this.token }).toPromise();
+        } catch (e) {
+            /* Discard errors */
+        }
     }
 
     isMainPlayer(): boolean {
@@ -164,9 +169,9 @@ export class CommunicationService {
         await this.selectedRoom.pipe(take(2)).toPromise();
     }
 
-    async createRoom(playerName: string, parameters: Parameters) {
+    async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-        this.mainSocket.emit('create-room', playerName, parameters);
+        this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
     }
 
@@ -199,7 +204,7 @@ export class CommunicationService {
     }
 
     private leaveGame() {
-        if (!this.forfeited) this.gameContextService.clearMessages();
+        this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
         this.gameSocket?.close();
@@ -250,13 +255,10 @@ export class CommunicationService {
                 }).then((result) => {
                     if (result.value) {
                         this.gameContextService.clearMessages();
-                        this.forfeited = false;
                         this.router.navigate(['/']);
                     }
                 });
             }
-            this.endGame = false;
-            this.congratulations = undefined;
             this.leaveGame();
         });
 

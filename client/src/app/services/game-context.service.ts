@@ -41,8 +41,8 @@ export class GameContextService {
         const state: GameState = {
             /* Dummy state */
             players: [
-                { id: '0', name: 'P1', connected: true },
-                { id: '1', name: 'P2', connected: true },
+                { id: '0', name: 'P1', connected: true, virtual: false },
+                { id: '1', name: 'P2', connected: true, virtual: false },
             ].map((info) => ({ info, score: 0, rackCount: NORMAL_RACK_LENGTH })),
             reserveCount: DEFAULT_RESERVE,
             board,
