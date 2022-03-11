@@ -33,7 +33,7 @@ export class SocketManager {
     }
 
     private initLobby(): void {
-        const mainLobby = new MainLobbyService(this.roomsService);
+        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
             this.token = token;
