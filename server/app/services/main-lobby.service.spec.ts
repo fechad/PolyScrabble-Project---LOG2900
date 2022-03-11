@@ -1,4 +1,4 @@
-import { Parameters } from '@app/classes/parameters';
+import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
 import { assert, expect } from 'chai';
 import { EventEmitter } from 'events';
@@ -38,8 +38,13 @@ describe('MainLobby service tests', () => {
 
     it('should create a room with virtual player', (done) => {
         const parameters = new Parameters();
+        parameters.dictionnary = 0;
+        parameters.difficulty = Difficulty.Beginner;
+        parameters.gameType = GameType.Solo;
         playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
         const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
+        expectedRoom.addPlayer('virtual', 'Anna', true);
+        expectedRoom.start();
         expect(rooms.rooms).to.deep.equal([expectedRoom]);
         done();
     });
