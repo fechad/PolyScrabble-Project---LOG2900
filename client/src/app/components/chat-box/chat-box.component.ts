@@ -10,7 +10,6 @@ import { GameContextService } from '@app/services/game-context.service';
 })
 export class ChatBoxComponent implements AfterViewChecked {
     @ViewChild('scroll') private scroller: ElementRef;
-
     textValue: string = '';
     myId: string | undefined;
 
