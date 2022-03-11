@@ -81,7 +81,8 @@
 }
 
 #quit-game,
-.skip-turn {
+.skip-turn,
+.play {
     background-color: #e1ac01;
     height: 6vh;
     width: 8vh;
@@ -93,11 +94,9 @@
     transition: transform 0.3s ease-in-out;
 }
 
-.skip-turn {
-    margin: 1vw 0vw 1vw 2vw;
-}
-
-#quit-game {
+.skip-turn,
+#quit-game,
+.play {
     margin: 1vw 0vw 1vw 2vw;
 }
 .action-buttons {
@@ -127,7 +126,8 @@
     background-color: darken(desaturate(#e1ac01, 70%), 35%);
 }
 
-.skip-turn:disabled {
+.skip-turn:disabled,
+.play:disabled {
     cursor: default;
     opacity: 0.5;
     transform: scale(1);

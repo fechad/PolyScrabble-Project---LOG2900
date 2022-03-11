@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
+import { take } from 'rxjs/operators';
 
 // TODO : Avoir un fichier séparé pour les constantes!
 export const DEFAULT_WIDTH = 525;
@@ -28,12 +29,12 @@ export enum MouseButton {
     styleUrls: ['./play-area.component.scss'],
 })
 export class PlayAreaComponent implements AfterViewInit {
+    @Input() sending: boolean = false;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
-    firstLetter = [0, 0];
     shift: number[] = [];
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
@@ -53,31 +54,59 @@ export class PlayAreaComponent implements AfterViewInit {
             }
         });
     }
+    @HostListener('document:click', ['$event'])
+    async click(event: MouseEvent) {
+        const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
+        if (this.sending && myTurn) {
+            this.sendPlacedLetters();
+            this.sending = false;
+        } else if (this.gridCanvas.nativeElement !== event.target && myTurn) this.removeWord();
+    }
 
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-        if (this.buttonPressed === 'Enter') {
-            this.sendPlacedLetters();
-        } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
-            this.removeLetterOnCanvas();
-        } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
-            try {
-                this.placeWordOnCanvas();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } catch (e: any) {
-                this.communicationservice.sendLocalMessage(e.message);
+    async buttonDetect(event: KeyboardEvent) {
+        const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
+        if (myTurn) {
+            this.buttonPressed = event.key;
+            if (this.buttonPressed === 'Enter') {
+                this.sendPlacedLetters();
+            } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
+                this.removeLetterOnCanvas();
+            } else if (this.buttonPressed === 'Escape') {
+                this.removeWord();
+            } else if (this.mouseDetectService.writingAllowed && this.isInBound() && this.buttonPressed.match(/[A-Za-z]/g)?.length === 1) {
+                try {
+                    this.placeWordOnCanvas();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (e: any) {
+                    this.communicationservice.sendLocalMessage(e.message);
+                }
             }
         }
         return false;
+    }
+
+    removeWord() {
+        for (const elem of this.gridService.letters) {
+            this.gridService.rack.push(elem);
+            this.gameContextService.addTempRack(elem);
+        }
+        for (const elem of this.gridService.letterPosition) {
+            this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
+        }
+        this.gridService.letterPosition = [[0, 0]];
+        this.gridService.letterWritten = 0;
+        this.gridService.letters = [];
+        this.gridService.letterForServer = '';
+        this.gridService.drawGrid();
     }
 
     sendPlacedLetters() {
         for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
         this.communicationservice.place(
             this.gridService.letterForServer,
-            this.firstLetter[1],
-            this.firstLetter[0],
+            this.gridService.firstLetter[1],
+            this.gridService.firstLetter[0],
             this.mouseDetectService.isHorizontal,
         );
         this.gridService.letterPosition = [[0, 0]];
@@ -115,7 +144,7 @@ export class PlayAreaComponent implements AfterViewInit {
         }
         this.gridService.drawGrid();
         if (this.gridService.letters.length === 1)
-            this.firstLetter = [
+            this.gridService.firstLetter = [
                 Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
                 Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             ];
@@ -126,7 +155,7 @@ export class PlayAreaComponent implements AfterViewInit {
             this.mouseDetectService.isHorizontal,
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
-        this.drawShiftedArrow(lastLetter, 2);
+        if (lastLetter[0] < 14 && lastLetter[1] < 14) this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
         this.gameContextService.tempUpdateRack();
     }
 
@@ -149,16 +178,18 @@ export class PlayAreaComponent implements AfterViewInit {
     getShift(pos: number[]): number {
         const board = this.gameContextService.state.value.board;
         let shift = 2;
+        let y = pos[0];
+        let x = pos[1];
         if (this.mouseDetectService.isHorizontal) {
-            while (board[pos[0]][pos[1] + 1] !== null) {
-                pos[1]++;
+            while (board[y][x + 1]) {
+                x++;
                 shift++;
             }
             return shift;
         } else {
-            while (board[pos[0] + 1][pos[1]] !== null) {
-                pos[0] += 1;
-                shift += 1;
+            while (board[y + 1][x]) {
+                y++;
+                shift++;
             }
             return shift;
         }

@@ -50,6 +50,7 @@ export class GridService {
     letterForServer = '';
     letterWritten = 0;
     letterPosition = [[0, 0]];
+    firstLetter = [0, 0];
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(private gameContext: GameContextService) {
@@ -79,7 +80,18 @@ export class GridService {
                 this.gridContext.fill();
                 this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUST_Y);
                 this.drawTiles(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUST_Y);
+                this.drawWhiteSquare(i, j);
                 this.gridContext.fillStyle = '#575757';
+            }
+        }
+    }
+
+    drawWhiteSquare(posX: number, posY: number) {
+        for (const elem of this.letterPosition) {
+            if (elem[1] === posX && elem[0] === posY && this.gameContext.state.value.board[posY][posX] !== null) {
+                this.gridContext.strokeStyle = '#fff';
+                this.gridContext.lineWidth = 2.5;
+                this.gridContext.stroke();
             }
         }
     }
