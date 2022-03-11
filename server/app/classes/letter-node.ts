@@ -1,15 +1,10 @@
 export class LetterNode {
-    value: string;
     nextNodes: LetterNode[] = [];
     final: boolean = false;
-    constructor(letter: string) {
-        this.value = letter;
-    }
+    constructor(readonly letter: string) {}
 
     getNext(letter: string) {
-        let nextNode = this.nextNodes.find((node) => {
-            return node.value === letter;
-        });
+        let nextNode = this.nextNodes.find((node) => node.letter === letter);
         if (nextNode === undefined) {
             nextNode = new LetterNode(letter);
             this.nextNodes.push(nextNode);
