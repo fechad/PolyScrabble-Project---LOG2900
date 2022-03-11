@@ -1,4 +1,4 @@
-<div class="rack-container">
+<div class="rack-container" #letterContainer>
     <div (click)="manipulate($event)" (contextmenu)="menu($event)" class="letter-container" id="letter-container" *ngFor="let letter of letters">
         <div 
             [ngClass]="{

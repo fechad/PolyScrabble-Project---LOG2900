@@ -1,11 +1,11 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
 const MAX_LETTERS = 7;
-const LETTER_CONTAINER = document.getElementsByClassName('letter-container');
+// const LETTER_CONTAINER = document.getElementsByClassName('letter-container');
 const LIMIT = 6;
 const UNDEFINED = -1;
 @Component({
@@ -14,6 +14,7 @@ const UNDEFINED = -1;
     styleUrls: ['./letter-rack.component.scss'],
 })
 export class LetterRackComponent implements OnInit {
+    @ViewChild('letter-container', { static: false }) private container: HTMLCollection;
     letters: Letter[];
     timeOut: number;
     selectedLetters: string = '';
@@ -28,7 +29,7 @@ export class LetterRackComponent implements OnInit {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-
+        // console.log(this.container);
         if (!(document.getElementById('writingBox') === document.activeElement)) {
             if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
                 this.shiftLetter(this.buttonPressed);
@@ -111,7 +112,7 @@ export class LetterRackComponent implements OnInit {
         let index = 0;
 
         const tempRack = this.letters.map((x) => x);
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
+        Array.from(this.container as HTMLCollectionOf<Element>).forEach((letters) => {
             if (letters.getAttribute('id') === 'manipulating') {
                 if ((keypress === 'ArrowRight' || keypress > 0) && index !== LIMIT) {
                     tempRack[index + 1] = this.letters[index];
@@ -136,7 +137,7 @@ export class LetterRackComponent implements OnInit {
     setToManipulate(letter: string, idx: number) {
         let selection = false;
         let index = 0;
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
+        Array.from(this.container as HTMLCollectionOf<Element>).forEach((letters) => {
             if (
                 letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter &&
                 idx === index &&
@@ -177,6 +178,7 @@ export class LetterRackComponent implements OnInit {
         event.preventDefault();
         const menu = document.getElementById('menu') as HTMLElement;
         const letter = event.target as HTMLElement;
+        console.log(event.target);
 
         if (
             letter.parentElement?.parentElement?.getAttribute('id') === 'selected' ||
@@ -195,7 +197,10 @@ export class LetterRackComponent implements OnInit {
     }
 
     clearSelection(command: string) {
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
+        console.log('Clear Select');
+        console.log(this.container);
+        Array.from(this.container as HTMLCollectionOf<Element>).forEach((letters) => {
+            console.log('ID:', letters.id);
             if (command === 'exchange' && letters.id === 'selected') {
                 letters.removeAttribute('id');
             } else if (command === 'manipulate' && letters.id === 'manipulating') {
@@ -208,7 +213,7 @@ export class LetterRackComponent implements OnInit {
     checkSelection() {
         let itemSelected = false;
 
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
+        Array.from(this.container as HTMLCollectionOf<Element>).forEach((letters) => {
             if (letters.id === 'selected') itemSelected = true;
         });
 
@@ -222,7 +227,7 @@ export class LetterRackComponent implements OnInit {
     }
 
     getSelectedLetters() {
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
+        Array.from(this.container as HTMLCollectionOf<Element>).forEach((letters) => {
             const letterList = letters as HTMLElement;
             if (letters.id === 'selected') this.selectedLetters += letterList.innerText[0].toLowerCase();
         });
