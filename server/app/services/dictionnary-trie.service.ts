@@ -54,19 +54,22 @@ export class DictionnaryTrieService {
     removeDuplicates(initialArray: string[][]) {
         const finalArray: string[][] = [];
         initialArray.forEach((item) => {
-            let different = true;
+            let isUniqueElement = true;
             finalArray.forEach((word) => {
-                different = false;
+                let isSameWord = true;
                 word.forEach((letter, index) => {
                     if (letter !== item[index]) {
-                        different = true;
+                        isSameWord = false;
                         return;
                     }
                 });
-                if (!different) return;
+                if (isSameWord) {
+                    isUniqueElement = false;
+                    return;
+                }
             });
 
-            if (different) {
+            if (isUniqueElement) {
                 finalArray.push(item.slice());
             }
         });
