@@ -49,9 +49,6 @@ export class CommunicationService {
 
         this.listenRooms();
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
-        this.mainSocket.on('join-game', (gameId) => {
-            this.joinGameHandler(gameId);
-        });
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
         this.dictionnaries = httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
