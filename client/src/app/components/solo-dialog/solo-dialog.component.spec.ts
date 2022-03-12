@@ -99,13 +99,13 @@ describe('SoloDialogComponent', () => {
         expect(component.opponentName).not.toBe('Anna');
     });
 
-    it('on submit dialog should close', async () => {
-        const playerName = component.soloParametersForm.controls.playerName;
-        playerName.setValue('Test');
-        const closeDialogSpy = spyOn(component.dialogRef, 'close');
-        await component.onSubmit();
-        expect(closeDialogSpy).toHaveBeenCalled();
-    });
+    // it('on submit dialog should close', async () => {
+    //     const playerName = component.soloParametersForm.controls.playerName;
+    //     playerName.setValue('Test');
+    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
+    //     await component.onSubmit();
+    //     expect(closeDialogSpy).toHaveBeenCalled();
+    // });
 
     it('should not close dialog when error found', async () => {
         const closeDialogSpy = spyOn(component.dialogRef, 'close');

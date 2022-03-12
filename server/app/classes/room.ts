@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Parameters } from './parameters';
+import { GameType, Parameters } from './parameters';
 
 export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
 
@@ -32,7 +32,12 @@ export class Room extends EventEmitter {
     }
 
     needsOtherPlayer(): boolean {
-        return this.otherPlayer === undefined && this.mainPlayer.connected && this.state === State.Setup;
+        return (
+            this.otherPlayer === undefined &&
+            this.parameters.gameType === GameType.Multiplayer &&
+            this.mainPlayer.connected &&
+            this.state === State.Setup
+        );
     }
 
     addPlayer(playerId: PlayerId, playerName: string, virtual: boolean): Error | undefined {
@@ -65,7 +70,7 @@ export class Room extends EventEmitter {
     }
 
     start() {
-        if (this.otherPlayer && this.state === State.Setup) {
+        if (!this.needsOtherPlayer() && this.state === State.Setup) {
             this.state = State.Started;
             this.emit('update-room');
         }

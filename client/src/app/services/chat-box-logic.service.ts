@@ -34,7 +34,7 @@ export class ChatBoxLogicService {
             '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
             'ex: !placer g10v abc placera les lettres\n' +
             'abc verticalement à partir de la position g10\n' +
-            '\n!passer permet de pass votre tour\n' +
+            '\n!passer permet de passer votre tour\n' +
             '\n!échanger permet changer vos lettres\n' +
             'ex: !échanger abc',
     ];
