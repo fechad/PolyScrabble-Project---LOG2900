@@ -108,6 +108,15 @@ export class LetterRackComponent {
         this.exchanging = [];
     }
 
+    select(e: Event, idx: number) {
+        e.preventDefault();
+        if (this.exchanging.includes(idx)) {
+            const letter = this.exchanging.indexOf(idx);
+            this.exchanging.splice(letter, 1);
+        } else this.exchanging.push(idx);
+        this.manipulating = undefined;
+    }
+
     exchange() {
         const selectedLetters = this.exchanging.map((letter) => this.letters[letter].name.toLowerCase()).join('');
         this.communicationService.exchange(selectedLetters);

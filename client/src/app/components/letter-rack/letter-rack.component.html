@@ -2,7 +2,7 @@
     <div
         *ngFor="let letter of letters; let idx = index"
         (click)="manipulate(idx)"
-        (contextmenu)="exchanging.push(idx); manipulating = undefined"
+        (contextmenu)="select($event, idx)"
         class="letter-container"
         [ngClass]="{ manipulating: manipulating === idx, exchanging: exchanging.includes(idx) }"
     >
