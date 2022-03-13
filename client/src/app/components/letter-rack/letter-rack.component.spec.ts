@@ -3,11 +3,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
-import { CommunicationService } from '@app/services/communication.service';
 import { LetterRackComponent } from './letter-rack.component';
 
 const setHTML = () => {
-    document.body.innerHTML = '';
     const page = document.createElement('div');
     const rackContainer = document.createElement('div');
     rackContainer.classList.add('rack-container');
@@ -71,7 +69,7 @@ const setHTML = () => {
 describe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
-    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+    // let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
     /*
     const menu = document.createElement('div');
     menu.classList.add('context-menu');
@@ -89,7 +87,7 @@ describe('LetterRackComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [LetterRackComponent],
             imports: [HttpClientTestingModule, RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
-            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
+            // providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
         }).compileComponents();
     });
 
@@ -104,7 +102,7 @@ describe('LetterRackComponent', () => {
             { name: 'c', score: 1 },
             { name: 'd', score: 1 },
             { name: 'e', score: 1 },
-            { name: 'f', score: 1 },
+            { name: 'e', score: 1 },
             { name: 'f', score: 1 },
         ];
 
@@ -142,49 +140,88 @@ describe('LetterRackComponent', () => {
     });
 
     it('swap letter position to the right if ArrowRight pressed and letter is set to manipulate', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[0].setAttribute('id', 'manipulating');
+        const keypress = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonDetect(keypress);
         component.shiftLetter('ArrowRight');
-        expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
-        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+        expect(component.manipulating).toEqual(1);
     });
 
     it('swap letter position to the left if ArrowLeft pressed and letter is set to manipulate', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[1].setAttribute('id', 'manipulating');
+        const keypress = new KeyboardEvent('keydown', { key: 'b' });
+        component.buttonDetect(keypress);
         component.shiftLetter('ArrowLeft');
-        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
-        expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
+        expect(component.manipulating).toEqual(0);
     });
 
     it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[6].setAttribute('id', 'manipulating');
-        component.shiftLetter('ArrowRight');
-        expect(component.letters[0]).toEqual({ name: 'f', score: 1 });
-        expect(component.letters[6]).toEqual({ name: 'f', score: 1 });
+        const LAST = 6;
+        const keypress = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonDetect(keypress);
+        component.shiftLetter('ArrowLeft');
+        expect(component.manipulating).toEqual(LAST);
     });
 
     it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[0].setAttribute('id', 'manipulating');
-        component.shiftLetter('ArrowLeft');
-        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
-        expect(component.letters[6]).toEqual({ name: 'a', score: 1 });
+        const keypress = new KeyboardEvent('keydown', { key: 'f' });
+        component.buttonDetect(keypress);
+        component.shiftLetter('ArrowRight');
+        expect(component.manipulating).toEqual(0);
     });
 
     it('should set letter pressed to manipulation mode', () => {
-        const container = document.getElementsByClassName('letter-container');
         const keypress = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonDetect(keypress);
-        expect(Array.from(container)[0].getAttribute('id')).toBe('manipulating');
+        expect(component.manipulating).not.toBeUndefined();
     });
 
-    // it('exchange should call communicationService exchange', () => {
-    //     const spy = spyOn(component, 'getSelectedLetters').and.callThrough();
-    //     component.exchange();
-    //     expect(spy).toHaveBeenCalled();
-    // });
+    it('exchange should call communicationService exchange', () => {
+        const exchangeSpy = spyOn(component.communicationService, 'exchange').and.callThrough();
+        component.exchange();
+        expect(exchangeSpy).toHaveBeenCalled();
+    });
+
+    it('should not assign index to manipulating if key is not in rack', () => {
+        const keypress = new KeyboardEvent('keydown', { key: 'p' });
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('should select second occurrence of letter if keypress is the same letter two times in a row', () => {
+        const INDEX = 4;
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toEqual(INDEX);
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toEqual(INDEX + 1);
+    });
+
+    it('should select the letter clicked on to be manipulated and remove all selection for exchange', () => {
+        component.manipulate(0);
+        expect(component.manipulating).toEqual(0);
+        expect(component.exchanging).toEqual([]);
+    });
+
+    it('should assign index of letter to exchanging if right clicked on', () => {
+        const mockClick = new MouseEvent('contextmenu');
+        component.select(mockClick, 0);
+        expect(component.exchanging).toEqual([0]);
+        component.select(mockClick, 2);
+        expect(component.exchanging).toEqual([0, 2]);
+    });
+
+    it('should remove index of letter of exchanging if was already set to exchange', () => {
+        const mockClick = new MouseEvent('contextmenu');
+        component.select(mockClick, 0);
+        expect(component.exchanging).toEqual([0]);
+        component.select(mockClick, 1);
+        component.select(mockClick, 0);
+        expect(component.exchanging).toEqual([1]);
+    });
+
+    it('getReserveCount should return a boolean', () => {
+        const reserveStatus = component.getReserveCount();
+        expect(typeof reserveStatus).toBe('boolean');
+    });
 
     // it('should exchange a selected letter', () => {
     //     const container = document.getElementsByClassName('letter-container');
@@ -216,11 +253,6 @@ describe('LetterRackComponent', () => {
     //     const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
     //     component.checkSelection();
     //     expect(hideMenuSpy).toHaveBeenCalled();
-    // });
-
-    // it('getReserveCount should return a boolean', () => {
-    //     const reserveStatus = component.getReserveCount();
-    //     expect(typeof reserveStatus).toBe('boolean');
     // });
 
     // it('clearSelection should remove all letter selection ids', () => {
