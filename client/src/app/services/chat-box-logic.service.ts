@@ -36,7 +36,9 @@ export class ChatBoxLogicService {
             'abc verticalement à partir de la position g10\n' +
             '\n!passer permet de passer votre tour\n' +
             '\n!échanger permet changer vos lettres\n' +
-            'ex: !échanger abc',
+            'ex: !échanger abc\n' +
+            '\n!réserve : afficher la quantité restante de chaque lettre dans la réserve\n' +
+            '\n!indice : obtenir 3 choix de mots à placer\n',
     ];
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {}

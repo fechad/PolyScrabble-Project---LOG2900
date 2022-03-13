@@ -25,7 +25,7 @@ export class LetterRackComponent {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         const buttonPressed = event.key;
-        if (document.getElementById('writingBox') === document.activeElement) return;
+        if (document.getElementById('writingBox') === document.activeElement || document.getElementById('canvas') === document.activeElement) return;
         if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') {
             this.shiftLetter(buttonPressed);
         } else {
@@ -50,7 +50,6 @@ export class LetterRackComponent {
     @HostListener('document:click', ['$event'])
     clear(e: MouseEvent) {
         const selection = e.target as HTMLElement;
-        console.log(selection);
         const parentPossibilities = [
             'name',
             'letter-name',

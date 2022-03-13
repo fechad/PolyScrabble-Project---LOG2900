@@ -21,11 +21,11 @@ export class GameSetupDialogComponent implements OnInit, AfterViewChecked {
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 
-    closeDialog(): void {
+    closeDialog() {
         this.dialogRef.close();
     }
 
-    ngOnInit(): void {
+    ngOnInit() {
         this.gameParametersForm = this.formBuilder.group({
             playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
             minutes: new FormControl(1, [Validators.required]),
