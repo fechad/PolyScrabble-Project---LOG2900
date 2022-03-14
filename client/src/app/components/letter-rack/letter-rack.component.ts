@@ -33,8 +33,6 @@ export class LetterRackComponent implements OnInit {
             if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
                 this.shiftLetter(this.buttonPressed);
             } else {
-                this.clearSelection('manipulate');
-                this.clearSelection('exchange');
                 let index = 0;
                 const occurrences = this.checkOccurrences(this.buttonPressed);
 
@@ -44,12 +42,13 @@ export class LetterRackComponent implements OnInit {
                     if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase() && this.previousSelection < index) {
                         this.previousSelection = index;
                         this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
-
                         if (this.previousSelection === occurrences[occurrences.length - 1]) {
                             this.previousSelection = UNDEFINED;
                         }
 
                         break;
+                    } else {
+                        this.clearSelection('manipulate');
                     }
                     index++;
                 }
@@ -138,7 +137,14 @@ export class LetterRackComponent implements OnInit {
         let selection = false;
         let index = 0;
         Array.from(LETTER_CONTAINER).forEach((letters) => {
-            if (letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter && idx === index && !selection) {
+            if (
+                letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter &&
+                idx === index &&
+                !selection &&
+                letters.getAttribute('id') !== 'selected'
+            ) {
+                this.clearSelection('manipulate');
+                this.clearSelection('exchange');
                 letters.setAttribute('id', 'manipulating');
                 selection = true;
             }

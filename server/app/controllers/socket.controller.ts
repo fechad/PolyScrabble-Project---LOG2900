@@ -33,12 +33,23 @@ export class SocketManager {
     }
 
     private initLobby(): void {
-        const mainLobby = new MainLobbyService(this.roomsService);
+        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
             this.token = token;
             socket.emit('id', id, token);
             mainLobby.connect(socket, id);
+
+            // socket.on('solo-game', (playerName: string, isBeginner: boolean, parameters: Parameters, aiName: string) => {
+            //     const roomId = mainLobby.getNewRoomId();
+            //     const player: Player = { name: playerName, id, connected: true, virtual: true };
+            //     const virtualPlayer: Player = { name: aiName, id: 'VP', connected: true, virtual: true };
+            //     const game = new Game(roomId, [player, virtualPlayer], parameters, this.dictionnaryService, isBeginner);
+            //     this.games.push(game);
+            //     new VirtualPlayer(isBeginner, game);
+            //     socket.emit('join-game', game.gameId);
+            //     console.log(`Created solo-game ${game.gameId} for player ${playerName} and virtual player ${aiName}.`);
+            // });
 
             socket.on('disconnect', (reason) => {
                 console.log(`Raison de deconnexion : ${reason}`);
