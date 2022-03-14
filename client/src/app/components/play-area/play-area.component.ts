@@ -125,7 +125,7 @@ export class PlayAreaComponent implements AfterViewInit {
             this.gridService.rack.push(letter);
             this.gameContextService.addTempRack(letter);
         }
-        if (letterRemoved[0] !== undefined && letterRemoved[0] !== undefined)
+        if (letterRemoved[1] !== undefined && letterRemoved[0] !== undefined)
             this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
@@ -136,13 +136,16 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
         this.gridService.letterWritten += 1;
         for (const i of this.gridService.rack) {
-            if (i.name === this.buttonPressed.toUpperCase()) {
+            if (i.name === this.buttonPressed.toUpperCase() && i.name !== '*') {
                 this.gridService.letters.push(i);
-                this.gridService.letterForServer += this.buttonPressed;
+                break;
+            }
+            if (i.name === '*' && this.buttonPressed.toUpperCase() === this.buttonPressed) {
+                this.gridService.letters.push(i);
                 break;
             }
         }
-        this.gridService.drawGrid();
+        this.gridService.letterForServer += this.buttonPressed;
         if (this.gridService.letters.length === 1)
             this.gridService.firstLetter = [
                 Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
@@ -155,7 +158,11 @@ export class PlayAreaComponent implements AfterViewInit {
             this.mouseDetectService.isHorizontal,
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
-        if (lastLetter[0] < 14 && lastLetter[1] < 14) this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
+        if (
+            (this.getShift(lastLetter) + lastLetter[1] < 16 && this.mouseDetectService.isHorizontal) ||
+            (this.getShift(lastLetter) + lastLetter[0] < 16 && !this.mouseDetectService.isHorizontal)
+        )
+            this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
         this.gameContextService.tempUpdateRack();
     }
 
@@ -187,7 +194,7 @@ export class PlayAreaComponent implements AfterViewInit {
             }
             return shift;
         } else {
-            while (board[y + 1][x]) {
+            while (y + 1 !== 15 && board[y + 1][x]) {
                 y++;
                 shift++;
             }
