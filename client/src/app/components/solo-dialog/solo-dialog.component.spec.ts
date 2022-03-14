@@ -14,31 +14,12 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { SoloDialogComponent } from './solo-dialog.component';
 
-const HALFMINUTE = 30;
-const TENMINUTES = 600;
-
 const dialogMock = {
     close: () => {
         return;
     },
 };
 
-export class ParametersMock {
-    timer: number = 0;
-    dictionnary: number = 0;
-    gameType: 'solo';
-    difficulty?: undefined;
-
-    validateParameters() {
-        if (this.timer <= 0 || this.timer % HALFMINUTE !== 0 || this.timer > TENMINUTES) {
-            return Error('Timer should be divisible by 30 and be between 0 and 600');
-        }
-        if (this.gameType === 'solo' && this.difficulty === undefined) {
-            return Error('Difficulty is needed for Solo mode');
-        }
-        return;
-    }
-}
 class CommunicationServiceMock {
     rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
 

@@ -77,19 +77,6 @@ const setHTML = () => {
 describe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
-    // let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
-    /*
-    const menu = document.createElement('div');
-    menu.classList.add('context-menu');
-    menu.id = 'menu';
-
-    const button1 = document.createElement('button');
-    button1.id = 'exchange';
-    button1.addEventListener('click', () => component.exchange());
-
-    const button2 = document.createElement('button');
-    button2.id = 'cancel';
-    button2.addEventListener('click', () => component.hideMenu()); */
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -176,12 +163,6 @@ describe('LetterRackComponent', () => {
         expect(component.manipulating).toEqual(0);
     });
 
-    it('should set letter pressed to manipulation mode', () => {
-        const keypress = new KeyboardEvent('keydown', { key: 'a' });
-        component.buttonDetect(keypress);
-        expect(component.manipulating).not.toBeUndefined();
-    });
-
     it('exchange should call communicationService exchange', () => {
         const exchangeSpy = spyOn(component.communicationService, 'exchange').and.callThrough();
         component.exchange();
@@ -209,7 +190,7 @@ describe('LetterRackComponent', () => {
         expect(component.exchanging).toEqual([]);
     });
 
-    it('click should set to manipulate only if letter is not already set for exchange', () => {
+    it('click should not set to manipulate if letter is already set for exchange', () => {
         component.exchanging = [0];
         component.manipulate(0);
         expect(component.exchanging).toEqual([0]);
@@ -254,7 +235,7 @@ describe('LetterRackComponent', () => {
         expect(manipulateSPy).toHaveBeenCalled();
     });
 
-    it('rightClick should call exchange', () => {
+    it('right click should call exchange', () => {
         const container = document.getElementsByClassName('letter-container');
         container[0].addEventListener('contextmenu', () => component.exchange());
         const menuSpy = spyOn(component, 'exchange').and.callThrough();
@@ -299,15 +280,6 @@ describe('LetterRackComponent', () => {
         expect(component.manipulating).toBeUndefined();
     });
 
-    it('should not select any letter on keypress if focus is on chatbox', () => {
-        const shiftSpy = spyOn(component, 'shiftLetter').and.callThrough();
-        const chat = document.getElementById('writingBox');
-        chat?.focus();
-        const keypress = new KeyboardEvent('keydown', { key: 'e' });
-        chat?.addEventListener('click', () => component.buttonDetect(keypress));
-        expect(shiftSpy).not.toHaveBeenCalled();
-    });
-
     it('checkOccurrences should return all indices of present keypress', () => {
         const FIRST_IDX = 4;
         const SECOND_IDX = 5;
@@ -315,7 +287,7 @@ describe('LetterRackComponent', () => {
         expect(result).toEqual([FIRST_IDX, SECOND_IDX]);
     });
 
-    it('checkOccurrences should return -1 if no occurrence was found', () => {
+    it('checkOccurrences should have no index if no occurrence was found', () => {
         const result = component.checkOccurrences('z');
         expect(result.length).toEqual(0);
     });

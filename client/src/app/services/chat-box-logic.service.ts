@@ -30,7 +30,7 @@ export class ChatBoxLogicService {
     horizontalPosition: string;
     placementOrientation: string | undefined;
     help: string[] = [
-        'Voici ce que vous pouvez faire: \n' +
+        '-- Voici ce que vous pouvez faire: --\n' +
             '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
             'ex: !placer g10v abc placera les lettres\n' +
             'abc verticalement à partir de la position g10\n' +
@@ -38,7 +38,14 @@ export class ChatBoxLogicService {
             '\n!échanger permet changer vos lettres\n' +
             'ex: !échanger abc\n' +
             '\n!réserve : afficher la quantité restante de chaque lettre dans la réserve\n' +
-            '\n!indice : obtenir 3 choix de mots à placer\n',
+            '\n!indice : obtenir 3 choix de mots à placer\n' +
+            '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
+            '\ncliquer sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
+            '\nou taper sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
+            '\nfaites un clic droit sur les tuiles pour sélectionner des lettres à échanger\n' +
+            '\ncliquer sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
+            'en tapant les touches correspondantes du clavier,\n' +
+            'cliquer une seconde fois pour placer verticalement\n',
     ];
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {}
