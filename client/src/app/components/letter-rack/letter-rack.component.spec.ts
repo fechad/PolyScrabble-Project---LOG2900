@@ -82,7 +82,6 @@ describe('LetterRackComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [LetterRackComponent],
             imports: [HttpClientTestingModule, RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
-            // providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
         }).compileComponents();
     });
 
