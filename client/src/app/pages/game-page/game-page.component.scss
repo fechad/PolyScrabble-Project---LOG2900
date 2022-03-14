@@ -112,7 +112,8 @@
 .sizing:hover,
 .icon:hover,
 #quit-game:hover,
-.skip-turn:hover {
+.skip-turn:hover,
+.play {
     cursor: pointer;
 
     transform: scale(1.1);
