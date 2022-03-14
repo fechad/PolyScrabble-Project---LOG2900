@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { CommandParsing } from '@app/classes/command-parsing';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
@@ -74,7 +75,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.removeLetterOnCanvas();
             } else if (this.buttonPressed === 'Escape') {
                 this.removeWord();
-            } else if (this.mouseDetectService.writingAllowed && this.isInBound() && this.buttonPressed.match(/[A-Za-z]/g)?.length === 1) {
+            } else if (this.mouseDetectService.writingAllowed && this.isInBound() && this.buttonPressed.match(/[A-Za-zÀ-ú]/g)?.length === 1) {
                 try {
                     this.placeWordOnCanvas();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -132,26 +133,27 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     placeWordOnCanvas() {
-        this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
+        const word = CommandParsing.removeAccents(this.buttonPressed);
+        this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         for (const i of this.gridService.rack) {
-            if (i.name === this.buttonPressed.toUpperCase() && i.name !== '*') {
+            if (i.name === word.toUpperCase() && i.name !== '*') {
                 this.gridService.letters.push(i);
                 break;
             }
-            if (i.name === '*' && this.buttonPressed.toUpperCase() === this.buttonPressed) {
+            if (i.name === '*' && word.toUpperCase() === word) {
                 this.gridService.letters.push(i);
                 break;
             }
         }
-        this.gridService.letterForServer += this.buttonPressed;
+        this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
             this.gridService.firstLetter = [
                 Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
                 Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             ];
         this.gridService.tempUpdateBoard(
-            this.buttonPressed,
+            word,
             Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             this.mouseDetectService.isHorizontal,
