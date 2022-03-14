@@ -25,10 +25,11 @@ export class LetterRackComponent {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         const buttonPressed = event.key;
-        if (document.getElementById('writingBox') === document.activeElement || document.getElementById('canvas') === document.activeElement) return;
-        if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') {
-            this.shiftLetter(buttonPressed);
-        } else {
+        if (event.target instanceof Element) {
+            if (event.target.id === 'writingBox' || event.target.id === 'canvas') return;
+        }
+        if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);
+        else {
             const occurrences = this.checkOccurrences(buttonPressed);
             if (occurrences.length === 0) {
                 this.manipulating = undefined;
@@ -76,21 +77,19 @@ export class LetterRackComponent {
     checkOccurrences(key: string): number[] {
         const identicalLetters = this.letters.map((letter, idx) => {
             if (letter.name.toLowerCase() === key.toLowerCase()) return idx;
-            else return -1;
+            else return UNDEFINED;
         });
-        return identicalLetters.filter((value) => value !== -1);
+        return identicalLetters.filter((value) => value !== UNDEFINED);
     }
 
     shiftLetter(keypress: string | number) {
         if (this.manipulating === undefined) return;
-        let newIndex: number;
+        let newIndex = UNDEFINED;
 
         if (keypress === 'ArrowRight' || keypress > 0) {
             newIndex = (this.manipulating + 1) % this.letters.length;
         } else if (keypress === 'ArrowLeft' || keypress < 0) {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
-        } else {
-            return;
         }
         this.updateLetterList(newIndex, this.manipulating);
     }

@@ -223,99 +223,41 @@ describe('LetterRackComponent', () => {
         expect(typeof reserveStatus).toBe('boolean');
     });
 
-    // it('should exchange a selected letter', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     const exchangeSpy = spyOn(component.communicationService, 'exchange').and.callThrough();
-    //     container[0].setAttribute('id', 'selected');
-    //     component.exchange();
-    //     expect(exchangeSpy).toHaveBeenCalled();
-    // });
+    it('click should call manipulate', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].addEventListener('click', () => component.manipulate(0));
+        const manipulateSPy = spyOn(component, 'manipulate').and.callThrough();
+        const mockClick = new MouseEvent('click');
+        container[0].dispatchEvent(mockClick);
+        expect(manipulateSPy).toHaveBeenCalled();
+    });
 
-    // it('getSelectedLetters should update the list of selectedLetters', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     container[0].setAttribute('id', 'selected');
-    //     expect(component.selectedLetters.length).toBe(0);
-    //     component.getSelectedLetters();
-    //     expect(component.selectedLetters.length).toBe(1);
-    //     expect(component.selectedLetters[0]).toBe('a');
-    // });
+    it('rightClick should call exchange', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].addEventListener('contextmenu', () => component.exchange());
+        const menuSpy = spyOn(component, 'exchange').and.callThrough();
+        const mockRightClick = new MouseEvent('contextmenu');
+        container[0].dispatchEvent(mockRightClick);
+        expect(menuSpy).toHaveBeenCalled();
+        container[0].removeEventListener('contextmenu', component.exchange);
+    });
 
-    // it('checkSelection should not call hideMenu if letters are selected', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
-    //     container[2].setAttribute('id', 'selected');
-    //     component.checkSelection();
-    //     expect(hideMenuSpy).not.toHaveBeenCalled();
-    // });
+    it('clear should clear every selection', () => {
+        const clearSelectionSpy = spyOn(component, 'clear').and.callThrough();
+        const mockClick = new MouseEvent('click');
+        component.clear(mockClick);
+        expect(clearSelectionSpy).toHaveBeenCalled();
+        expect(component.manipulating).toBeUndefined();
+        expect(component.exchanging).toEqual([]);
+    });
 
-    // it('checkSelection should call hideMenu if no letters are selected', () => {
-    //     component.clearSelection('exchange');
-    //     const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
-    //     component.checkSelection();
-    //     expect(hideMenuSpy).toHaveBeenCalled();
-    // });
-
-    // it('clearSelection should remove all letter selection ids', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     container[1].setAttribute('id', 'selected');
-    //     container[0].setAttribute('id', 'manipulating');
-    //     component.clearSelection('exchange');
-    //     component.clearSelection('manipulate');
-    //     let everythingIsCleared = true;
-    //     Array.from(container).forEach((letter) => {
-    //         if (letter.getAttribute('id') === 'selected' || letter.getAttribute('id') === 'manipulating') {
-    //             everythingIsCleared = false;
-    //         }
-    //     });
-    //     expect(everythingIsCleared).toBeTrue();
-    // });
-
-    // it('clear should clear every selection', () => {
-    //     const clearSelectionSPy = spyOn(component, 'clearSelection').and.callThrough();
-    //     const mockClick = new MouseEvent('click');
-    //     component.clear(mockClick);
-    //     expect(clearSelectionSPy).toHaveBeenCalledTimes(2);
-    // });
-
-    // it('click should call manipulate', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     container[0].addEventListener('click', (event) => component.manipulate(event));
-    //     const manipulateSPy = spyOn(component, 'manipulate').and.callThrough();
-    //     const mockClick = new MouseEvent('click');
-    //     container[0].dispatchEvent(mockClick);
-    //     expect(manipulateSPy).toHaveBeenCalled();
-    //     container[0].removeEventListener('click', component.manipulate);
-    // });
-
-    // it('rightClick should call menu', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     container[0].addEventListener('contextmenu', (event) => component.menu(event));
-    //     const menuSPy = spyOn(component, 'menu').and.callThrough();
-    //     const mockRightClick = new MouseEvent('contextmenu');
-    //     container[0].dispatchEvent(mockRightClick);
-    //     expect(menuSPy).toHaveBeenCalled();
-    //     container[0].removeEventListener('contextmenu', component.menu);
-    // });
-
-    // it('click on a selected letter for manipulation should remove selection id', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     container[0].setAttribute('id', 'manipulating');
-    //     container[0].addEventListener('click', (event) => component.manipulate(event));
-    //     const mockClick = new MouseEvent('click');
-    //     container[0].dispatchEvent(mockClick);
-    //     component.menu(mockClick);
-    //     expect(container[0].getAttribute('id')).toEqual(null);
-    //     container[0].removeEventListener('click', component.menu);
-    // });
-
-    // it('rightClick on a selected letter for exchange should remove selection id', () => {
-    //     const container = document.getElementsByClassName('letter-container');
-    //     container[0].setAttribute('id', 'selected');
-    //     container[0].addEventListener('contextmenu', (event) => component.menu(event));
-    //     const mockRightClick = new MouseEvent('contextmenu');
-    //     container[0].dispatchEvent(mockRightClick);
-    //     component.menu(mockRightClick);
-    //     expect(container[0].getAttribute('id')).toEqual(null);
-    //     container[0].removeEventListener('contextmenu', component.menu);
-    // });
+    it('clear should not clear selection', () => {
+        const container = document.getElementsByClassName('letter-container');
+        container[0].addEventListener('click', () => component.manipulate(0));
+        const mockClick = new MouseEvent('click');
+        container[0].dispatchEvent(mockClick);
+        expect(component.manipulating).toEqual(0);
+        container[0].dispatchEvent(mockClick);
+        expect(component.manipulating).toEqual(0);
+    });
 });
