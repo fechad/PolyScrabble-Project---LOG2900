@@ -28,6 +28,7 @@ export class LetterRackComponent {
         if (event.target instanceof Element) {
             if (event.target.id === 'writingBox' || event.target.id === 'canvas') return;
         }
+
         if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);
         else {
             const occurrences = this.checkOccurrences(buttonPressed);

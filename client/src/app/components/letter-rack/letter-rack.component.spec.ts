@@ -10,6 +10,14 @@ const setHTML = () => {
     const rackContainer = document.createElement('div');
     rackContainer.classList.add('rack-container');
 
+    const canvas = document.createElement('div');
+    canvas.id = 'canvas';
+    rackContainer.appendChild(canvas);
+
+    const chatbox = document.createElement('div');
+    canvas.id = 'writingBox';
+    canvas.appendChild(chatbox);
+
     const element = document.createElement('div');
     element.classList.add('letter-container');
     const element2 = document.createElement('div');
@@ -201,6 +209,20 @@ describe('LetterRackComponent', () => {
         expect(component.exchanging).toEqual([]);
     });
 
+    it('click should set to manipulate only if letter is not already set for exchange', () => {
+        component.exchanging = [0];
+        component.manipulate(0);
+        expect(component.exchanging).toEqual([0]);
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('should do nothing if no letter was selected to be manipulated', () => {
+        const updateSpy = spyOn(component, 'updateLetterList').and.callThrough();
+        component.manipulating = undefined;
+        component.shiftLetter('z');
+        expect(updateSpy).not.toHaveBeenCalled();
+    });
+
     it('should assign index of letter to exchanging if right clicked on', () => {
         const mockClick = new MouseEvent('contextmenu');
         component.select(mockClick, 0);
@@ -259,5 +281,49 @@ describe('LetterRackComponent', () => {
         expect(component.manipulating).toEqual(0);
         container[0].dispatchEvent(mockClick);
         expect(component.manipulating).toEqual(0);
+    });
+
+    it('should not select any letter on keypress if focus is on canvas', () => {
+        const canvas = document.getElementById('canvas');
+        canvas?.focus();
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        canvas?.addEventListener('click', () => component.buttonDetect(keypress));
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('should not select any letter on keypress if focus is on chatbox', () => {
+        const chat = document.getElementById('writingBox');
+        chat?.focus();
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        chat?.addEventListener('click', () => component.buttonDetect(keypress));
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('should not select any letter on keypress if focus is on chatbox', () => {
+        const shiftSpy = spyOn(component, 'shiftLetter').and.callThrough();
+        const chat = document.getElementById('writingBox');
+        chat?.focus();
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        chat?.addEventListener('click', () => component.buttonDetect(keypress));
+        expect(shiftSpy).not.toHaveBeenCalled();
+    });
+
+    it('checkOccurrences should return all indices of present keypress', () => {
+        const FIRST_IDX = 4;
+        const SECOND_IDX = 5;
+        const result = component.checkOccurrences('e');
+        expect(result).toEqual([FIRST_IDX, SECOND_IDX]);
+    });
+
+    it('checkOccurrences should return -1 if no occurrence was found', () => {
+        const result = component.checkOccurrences('z');
+        expect(result.length).toEqual(0);
+    });
+
+    it('should return first occurrence of letter if keypress of a letter in rack', () => {
+        const keypress = new KeyboardEvent('keydown', { key: 'c' });
+        const index = component.checkOccurrences(keypress.key);
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toEqual(index[0]);
     });
 });

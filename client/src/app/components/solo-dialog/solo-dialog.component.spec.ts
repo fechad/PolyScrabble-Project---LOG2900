@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -13,12 +14,31 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { SoloDialogComponent } from './solo-dialog.component';
 
+const HALFMINUTE = 30;
+const TENMINUTES = 600;
+
 const dialogMock = {
     close: () => {
         return;
     },
 };
 
+export class ParametersMock {
+    timer: number = 0;
+    dictionnary: number = 0;
+    gameType: 'solo';
+    difficulty?: undefined;
+
+    validateParameters() {
+        if (this.timer <= 0 || this.timer % HALFMINUTE !== 0 || this.timer > TENMINUTES) {
+            return Error('Timer should be divisible by 30 and be between 0 and 600');
+        }
+        if (this.gameType === 'solo' && this.difficulty === undefined) {
+            return Error('Difficulty is needed for Solo mode');
+        }
+        return;
+    }
+}
 class CommunicationServiceMock {
     rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
 
@@ -31,9 +51,11 @@ describe('SoloDialogComponent', () => {
     let component: SoloDialogComponent;
     let fixture: ComponentFixture<SoloDialogComponent>;
     let router: jasmine.SpyObj<Router>;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['createRoom']);
         await TestBed.configureTestingModule({
             declarations: [SoloDialogComponent],
             imports: [
@@ -45,7 +67,7 @@ describe('SoloDialogComponent', () => {
                 ReactiveFormsModule,
             ],
             providers: [
-                { provide: CommunicationService, useClass: CommunicationServiceMock },
+                { provide: CommunicationService, useClass: CommunicationServiceMock, useValue: communicationServiceSpy },
                 { provide: MatDialogRef, useValue: dialogMock },
                 FormBuilder,
                 { provide: Router, useValue: router },
@@ -99,13 +121,13 @@ describe('SoloDialogComponent', () => {
         expect(component.opponentName).not.toBe('Anna');
     });
 
-    // it('on submit dialog should close', async () => {
-    //     const playerName = component.soloParametersForm.controls.playerName;
-    //     playerName.setValue('Test');
-    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
-    //     await component.onSubmit();
-    //     expect(closeDialogSpy).toHaveBeenCalled();
-    // });
+    it('on submit dialog should close', async () => {
+        const playerName = component.soloParametersForm.controls.playerName;
+        playerName.setValue('Test');
+        const closeDialogSpy = spyOn(component.dialogRef, 'close');
+        await component.onSubmit();
+        expect(closeDialogSpy).toHaveBeenCalled();
+    });
 
     it('should not close dialog when error found', async () => {
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
