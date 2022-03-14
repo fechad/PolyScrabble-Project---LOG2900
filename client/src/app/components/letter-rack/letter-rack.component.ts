@@ -25,8 +25,8 @@ export class LetterRackComponent {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         const buttonPressed = event.key;
-        if (event.target instanceof Element) {
-            if (event.target.id === 'writingBox' || event.target.id === 'canvas') return;
+        if (event.target instanceof Element && (event.target.id === 'writingBox' || event.target.id === 'canvas')) {
+            return;
         }
 
         if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);
@@ -75,10 +75,10 @@ export class LetterRackComponent {
         }
     }
 
-    checkOccurrences(key: string): number[] {
+    checkOccurrences(key: string) {
         const identicalLetters = this.letters.map((letter, idx) => {
             if (letter.name.toLowerCase() === key.toLowerCase()) return idx;
-            else return UNDEFINED;
+            else return undefined;
         });
         return identicalLetters.filter((value) => value !== UNDEFINED);
     }
@@ -108,8 +108,7 @@ export class LetterRackComponent {
         this.exchanging = [];
     }
 
-    select(e: Event, idx: number) {
-        e.preventDefault();
+    select(idx: number) {
         if (this.exchanging.includes(idx)) {
             const letter = this.exchanging.indexOf(idx);
             this.exchanging.splice(letter, 1);

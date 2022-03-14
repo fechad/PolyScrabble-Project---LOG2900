@@ -2,7 +2,7 @@
     <div
         *ngFor="let letter of letters; let idx = index"
         (click)="manipulate(idx)"
-        (contextmenu)="select($event, idx)"
+        (contextmenu)="select(idx); $event.preventDefault();"
         class="letter-container"
         [ngClass]="{ manipulating: manipulating === idx, exchanging: exchanging.includes(idx) }"
     >
@@ -31,7 +31,7 @@
     <button
         id="exchange"
         (click)="exchange()"
-        [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true || getReserveCount()"
+        [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended || getReserveCount()"
     >
         Échanger
     </button>

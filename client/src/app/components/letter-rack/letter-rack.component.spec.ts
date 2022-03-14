@@ -204,19 +204,17 @@ describe('LetterRackComponent', () => {
     });
 
     it('should assign index of letter to exchanging if right clicked on', () => {
-        const mockClick = new MouseEvent('contextmenu');
-        component.select(mockClick, 0);
+        component.select(0);
         expect(component.exchanging).toEqual([0]);
-        component.select(mockClick, 2);
+        component.select(2);
         expect(component.exchanging).toEqual([0, 2]);
     });
 
     it('should remove index of letter of exchanging if was already set to exchange', () => {
-        const mockClick = new MouseEvent('contextmenu');
-        component.select(mockClick, 0);
+        component.select(0);
         expect(component.exchanging).toEqual([0]);
-        component.select(mockClick, 1);
-        component.select(mockClick, 0);
+        component.select(1);
+        component.select(0);
         expect(component.exchanging).toEqual([1]);
     });
 
