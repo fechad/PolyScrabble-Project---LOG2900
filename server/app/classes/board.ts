@@ -49,6 +49,24 @@ export class Board {
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
+    getPlayablePositions(rackLength: number): string[][][] {
+        const array: string[][][] = [];
+        for (let i = 0; i < BOARD_LENGTH; i++) {
+            array[i] = [];
+            for (let j = 0; j < BOARD_LENGTH; j++) {
+                array[i][j] = [];
+                if (!this.board[i][j].empty) {
+                    array[i][j][0] = '';
+                    array[i][j][1] = '';
+                } else {
+                    array[i][j][0] = this.getpositionStringHorizontal(i, j, rackLength);
+                    array[i][j][1] = this.getPositionStringVertical(i, j, rackLength);
+                }
+            }
+        }
+        return array;
+    }
+
     private placeWithScore(words: string[]): number {
         let score = 0;
 
@@ -191,25 +209,7 @@ export class Board {
         return true;
     }
 
-    getPlayablePositions(rackLength: number): string[][][] {
-        const array: string[][][] = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
-            array[i] = [];
-            for (let j = 0; j < BOARD_LENGTH; j++) {
-                array[i][j] = [];
-                if (!this.board[i][j].empty) {
-                    array[i][j][0] = '';
-                    array[i][j][1] = '';
-                } else {
-                    array[i][j][0] = this.getpositionStringHorizontal(i, j, rackLength);
-                    array[i][j][1] = this.getPositionStringVertical(i, j, rackLength);
-                }
-            }
-        }
-        return array;
-    }
-
-    getpositionStringHorizontal(i: number, j: number, rackLength: number): string {
+    private getpositionStringHorizontal(i: number, j: number, rackLength: number): string {
         let position = '';
         let collisions = 0;
         let k = 0;
@@ -231,7 +231,7 @@ export class Board {
         return position;
     }
 
-    getPositionStringVertical(i: number, j: number, rackLength: number): string {
+    private getPositionStringVertical(i: number, j: number, rackLength: number): string {
         let collisions = 0;
         let position = '';
         let k = 0;
