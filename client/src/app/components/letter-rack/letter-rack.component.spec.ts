@@ -197,7 +197,7 @@ describe('LetterRackComponent', () => {
     });
 
     it('should do nothing if no letter was selected to be manipulated', () => {
-        const updateSpy = spyOn(component, 'updateLetterList').and.callThrough();
+        const updateSpy = spyOn(component, 'swapLetters').and.callThrough();
         component.manipulating = undefined;
         component.shiftLetter('z');
         expect(updateSpy).not.toHaveBeenCalled();

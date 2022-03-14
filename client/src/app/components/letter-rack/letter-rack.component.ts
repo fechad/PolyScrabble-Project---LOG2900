@@ -75,10 +75,10 @@ export class LetterRackComponent {
         }
     }
 
-    checkOccurrences(key: string) {
+    checkOccurrences(key: string): number[] {
         const identicalLetters = this.letters.map((letter, idx) => {
             if (letter.name.toLowerCase() === key.toLowerCase()) return idx;
-            else return undefined;
+            else return UNDEFINED;
         });
         return identicalLetters.filter((value) => value !== UNDEFINED);
     }
@@ -92,10 +92,10 @@ export class LetterRackComponent {
         } else if (keypress === 'ArrowLeft' || keypress < 0) {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
-        this.updateLetterList(newIndex, this.manipulating);
+        this.swapLetters(newIndex, this.manipulating);
     }
 
-    updateLetterList(index: number, oldIndex: number) {
+    swapLetters(index: number, oldIndex: number) {
         const temp = this.letters[oldIndex];
         this.letters[oldIndex] = this.letters[index];
         this.letters[index] = temp;
