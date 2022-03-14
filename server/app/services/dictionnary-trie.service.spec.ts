@@ -15,7 +15,7 @@ describe('Dictionnary Trie', () => {
     });
     it('should create all perm', () => {
         expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
-        const b = [...'seanmdjoeldjdsopi'];
+        const b = [...'aeutop'];
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         console.log(dictionnaryTrieService.generateLeftParts(b, 'd', 5));
     });

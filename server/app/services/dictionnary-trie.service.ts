@@ -38,6 +38,11 @@ export class DictionnaryTrieService {
         return this.removeDuplicates(validWords);
     }
 
+    // generateRightParts(partialWord: string[], allowedQuantity: number, otherConnection?: string) {
+    //     // if (otherConnection) {
+    //     // }
+    // }
+
     isValidBranching(permutation: string[]) {
         let validation = true;
         let currentNode: LetterNode | undefined = this.dictionnaryTree;
