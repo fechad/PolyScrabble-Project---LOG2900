@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 import { Game } from './game';
 import { Room } from './room';
 import { PlacementOption, VirtualPlayer } from './virtual-player';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+/* eslint-disable dot-notation*/
 
 describe('VirtualPlayer', () => {
     let game: Game;
@@ -14,7 +14,7 @@ describe('VirtualPlayer', () => {
     let dictionnaryService: DictionnaryService;
     let parameters: Parameters;
 
-    before(async() => {
+    before(async () => {
         dictionnaryService = new DictionnaryService();
         await dictionnaryService.init();
     });
@@ -65,11 +65,70 @@ describe('VirtualPlayer', () => {
         }, timeout);
     });
 
+    it('should validate crosswords to list possible contacts', () => {
+        vP = new VirtualPlayer(false, game);
+        game.board.board[0][0].setLetter('a');
+        game.board.board[0][1].setLetter('s');
+        const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
+        const letterR: Letter = { id: 0, name: 'R', score: 1, quantity: 1 };
+        const letterW: Letter = { id: 0, name: 'W', score: 1, quantity: 1 };
+        const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
+        game.reserve.letterRacks[1] = [letterA, letterR, letterZ, letterZ, letterR, letterW, letterW];
+
+        const expectedValidOptions = [
+            { row: 0, col: 2, isHorizontal: true, word: 'as       ' },
+            { row: 0, col: 2, isHorizontal: false, word: 'A      ' },
+            { row: 1, col: 0, isHorizontal: true, word: 'A' },
+            { row: 1, col: 0, isHorizontal: false, word: 'a       ' },
+            { row: 1, col: 1, isHorizontal: true, word: 'A      ' },
+            { row: 1, col: 1, isHorizontal: false, word: 's       ' },
+        ];
+        const result = vP.getPlayablePositions();
+        expect(result).to.deep.equal(expectedValidOptions);
+    });
+
+    it('should validate crosswords to list possible contacts', () => {
+        vP = new VirtualPlayer(false, game);
+        game.board.board[0][0].setLetter('a');
+        game.board.board[0][1].setLetter('s');
+        const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
+        const letterR: Letter = { id: 0, name: 'R', score: 1, quantity: 1 };
+        const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
+        game.reserve.letterRacks[1] = [letterA, letterR, letterZ];
+        const placementOptions = [
+            { row: 0, col: 2, isHorizontal: true, word: 'as       ' },
+            { row: 0, col: 2, isHorizontal: false, word: '*      ' },
+            { row: 1, col: 0, isHorizontal: true, word: '**     ' },
+            { row: 1, col: 0, isHorizontal: false, word: 'a       ' },
+            { row: 1, col: 1, isHorizontal: true, word: '*      ' },
+            { row: 1, col: 1, isHorizontal: false, word: 's       ' },
+        ];
+        const exploredOptions: PlacementOption[] = [{ row: 7, col: 7, isHorizontal: true, word: 'Z' }];
+
+        const expectedExploredOptions = [
+            { row: 7, col: 7, isHorizontal: true, word: 'Z' },
+            { row: 0, col: 2, isHorizontal: false, word: 'A' },
+            { row: 1, col: 0, isHorizontal: true, word: 'A' },
+            { row: 1, col: 1, isHorizontal: true, word: 'A' },
+        ];
+        const expectedValidOptions = [
+            { row: 0, col: 2, isHorizontal: true, word: 'as       ' },
+            { row: 0, col: 2, isHorizontal: false, word: 'A      ' },
+            { row: 1, col: 0, isHorizontal: true, word: 'A' },
+            { row: 1, col: 0, isHorizontal: false, word: 'a       ' },
+            { row: 1, col: 1, isHorizontal: true, word: 'A      ' },
+            { row: 1, col: 1, isHorizontal: false, word: 's       ' },
+        ];
+        const result = vP['validateCrosswords'](placementOptions, exploredOptions);
+        expect(result).to.deep.equal(expectedValidOptions);
+        expect(exploredOptions).to.deep.equal(expectedExploredOptions);
+    });
+
     it('should give the rack as a string', () => {
         vP = new VirtualPlayer(true, game);
-        const letterA: Letter = {id: 0, name: 'A', score: 1, quantity: 1};
-        const letterR: Letter = {id: 0, name: 'R', score: 1, quantity: 1};
-        const letterZ: Letter = {id: 0, name: 'Z', score: 1, quantity: 1};
+        const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
+        const letterR: Letter = { id: 0, name: 'R', score: 1, quantity: 1 };
+        const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
 
         let testRack: Letter[] = [letterA, letterR];
         let expectedString = 'AR';
@@ -82,23 +141,67 @@ describe('VirtualPlayer', () => {
         expect(vP['rackToString']()).to.deep.equal(expectedString);
     });
 
-    it('should find replacement for the contactchar', () => {
-        game.board.board[7][6].setLetter('a');
-        game.board.board[7][7].setLetter('s');
+    it('should find new options of word for a contact', () => {
         vP = new VirtualPlayer(true, game);
 
-        let exploredOptions: PlacementOption[] = [];
-        let option = {row: 2, col: 5, isHorizontal: false, word: '     * '};
-        let letterCount = 5;
-        let availableLetters = 'RZA';
-        let result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
-        console.log(result);
+        const validOptions: PlacementOption[] = [];
+        const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        const contactString = '*as';
+        const rackLetters = 'RZAAR';
+
+        const expectedPossibleLetters = 'RA';
+        const expectedValidOptions = [
+            { row: 2, col: 5, isHorizontal: false, word: '     R ' },
+            { row: 2, col: 5, isHorizontal: false, word: '     A ' },
+        ];
+        const possibleOptions = vP['findNewOptions'](validOptions, option, rackLetters, contactString);
+        expect(validOptions).to.deep.equal(expectedValidOptions);
+        expect(possibleOptions).to.equal(expectedPossibleLetters);
     });
 
-    it('randomtest', ()=> {
+    it('should find replacement for the contact char', () => {
         game.board.board[7][6].setLetter('a');
         game.board.board[7][7].setLetter('s');
         vP = new VirtualPlayer(true, game);
-        vP.getPlayablePositions();
-    })
+
+        const exploredOptions: PlacementOption[] = [];
+        const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        const letterCount = 5;
+        const availableLetters = 'RZA';
+
+        const expectedReturn = [
+            { row: 2, col: 5, isHorizontal: false, word: '     R ' },
+            { row: 2, col: 5, isHorizontal: false, word: '     A ' },
+        ];
+        const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
+        expect(result).to.deep.equal(expectedReturn);
+    });
+
+    it('should find replacement from previous replacements', () => {
+        game.board.board[7][6].setLetter('a');
+        game.board.board[7][7].setLetter('s');
+        vP = new VirtualPlayer(true, game);
+
+        const exploredOptions: PlacementOption[] = [{ row: 7, col: 5, isHorizontal: false, word: 'RA' }];
+        const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        const letterCount = 5;
+        const availableLetters = 'RZA';
+
+        const expectedReturn = [
+            { row: 2, col: 5, isHorizontal: false, word: '     R ' },
+            { row: 2, col: 5, isHorizontal: false, word: '     A ' },
+        ];
+        const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
+        expect(result).to.deep.equal(expectedReturn);
+    });
+
+    it('should deep copy a placement option', () => {
+        const originalPlacement = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        let result = vP['deepCopyPlacementOption'](originalPlacement);
+        expect(result).to.deep.equal(originalPlacement);
+
+        result = vP['deepCopyPlacementOption'](originalPlacement, 'test');
+        originalPlacement.word = 'test';
+        expect(result).to.deep.equal(originalPlacement);
+    });
 });

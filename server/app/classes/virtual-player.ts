@@ -9,13 +9,13 @@ const CONTACT_CHAR = '*';
 // const THRESHOLD = 0.5;
 const DELAY_CHECK_TURN = 1000; // ms
 
-export type PlacementOption = {row: number, col: number, isHorizontal: boolean, word: string};
+export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export class VirtualPlayer {
     board: Board;
-    
+
     constructor(readonly isBeginner: boolean, private game: Game) {
         this.board = game.board;
     }
@@ -50,7 +50,7 @@ export class VirtualPlayer {
         }, DELAY_CHECK_TURN);
     }
 
-    getPlayablePositions() {
+    getPlayablePositions(): PlacementOption[] {
         const positions = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
         const arrayPos: PlacementOption[] = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
@@ -61,13 +61,11 @@ export class VirtualPlayer {
                     for (const char of positions[i][j][k]) {
                         if (char !== ' ') valid = true;
                     }
-                    if (valid) arrayPos.push({row: i, col: j, isHorizontal: k === 0, word: positions[i][j][k]});
+                    if (valid) arrayPos.push({ row: i, col: j, isHorizontal: k === 0, word: positions[i][j][k] });
                 }
             }
         }
-        const result = this.validateCrosswords(arrayPos);
-        console.log(result);
-        console.log(this.rackToString());
+        return this.validateCrosswords(arrayPos);
     }
 
     private validateCrosswords(array: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
@@ -78,12 +76,12 @@ export class VirtualPlayer {
             let oneContact = false;
             let availableLetters = this.rackToString();
             for (const letter of option.word) {
-                if (letter.toUpperCase() === letter) {
+                if (letter.toLowerCase() !== letter) {
                     availableLetters = availableLetters.replace(letter, '');
-                } 
+                }
                 if (letter === CONTACT_CHAR) {
                     if (oneContact) {
-                        starRemains = true; 
+                        starRemains = true;
                         break;
                     }
                     oneContact = true;
@@ -98,7 +96,12 @@ export class VirtualPlayer {
         return starRemains ? this.validateCrosswords(validWords, exploredOptions) : validWords;
     }
 
-    private contactReplacement(exploredOptions: PlacementOption[], option: PlacementOption, letterCount: number, availableLetters: string): PlacementOption[] {
+    private contactReplacement(
+        exploredOptions: PlacementOption[],
+        option: PlacementOption,
+        letterCount: number,
+        rackLetters: string,
+    ): PlacementOption[] {
         const row = option.isHorizontal ? option.row : option.row + letterCount;
         const col = option.isHorizontal ? option.col + letterCount : option.col;
         let alreadyFound = false;
@@ -106,34 +109,41 @@ export class VirtualPlayer {
         for (const explored of exploredOptions) {
             if (explored.row === row && explored.col === col && explored.isHorizontal === option.isHorizontal) {
                 for (const solution of explored.word) {
-                    validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, solution)));
+                    let letterAvailable = false;
+                    for (const available of rackLetters) {
+                        if (available === solution) letterAvailable = true;
+                    }
+                    if (letterAvailable) validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, solution)));
                 }
                 alreadyFound = true;
                 break;
             }
         }
         if (!alreadyFound) {
-            const crossWord = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
-            let possibleLetters = '';
-            let alreadyIn = false;
-            for (const rackLetter of availableLetters) {
-                for (let letter of possibleLetters) if (letter === rackLetter) alreadyIn = true;
-                if (alreadyIn) break;
-                const attemptedCrossword = crossWord.replace('*', rackLetter.toLowerCase());
-                if (this.board.dictionnary.isValidWord(attemptedCrossword)) {
-                    validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, rackLetter)));
-                    possibleLetters += rackLetter;
-                }
-            }
-            const replacement = JSON.parse(JSON.stringify(option));
-            replacement.word = possibleLetters;
-            exploredOptions.push(replacement);
+            const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
+            const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
+            exploredOptions.push(this.deepCopyPlacementOption(option, possibleLetters));
         }
         return validWords;
     }
 
+    private findNewOptions(validWords: PlacementOption[], option: PlacementOption, rackLetters: string, crossword: string) {
+        let possibleLetters = '';
+        let alreadyIn = false;
+        for (const rackLetter of rackLetters) {
+            for (const letter of possibleLetters) if (letter === rackLetter) alreadyIn = true;
+            if (alreadyIn) break;
+            const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
+            if (this.board.dictionnary.isValidWord(attemptedCrossword)) {
+                validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, rackLetter)));
+                possibleLetters += rackLetter;
+            }
+        }
+        return possibleLetters;
+    }
+
     private deepCopyPlacementOption(placement: PlacementOption, newWord?: string): PlacementOption {
-        return {row: placement.row, col: placement.col, isHorizontal: placement.isHorizontal, word: newWord ? newWord : placement.word};
+        return { row: placement.row, col: placement.col, isHorizontal: placement.isHorizontal, word: newWord ? newWord : placement.word };
     }
 
     private rackToString(): string {
