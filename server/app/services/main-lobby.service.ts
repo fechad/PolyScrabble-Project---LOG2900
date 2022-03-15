@@ -1,6 +1,7 @@
 import { Game } from '@app/classes/game';
-import { Parameters } from '@app/classes/parameters';
+import { Difficulty, Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
+import { VirtualPlayer } from '@app/classes/virtual-player';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { DictionnaryService } from './dictionnary.service';
@@ -40,15 +41,18 @@ export class MainLobbyService {
         socket.on('create-room', (playerName: string, parameters: Parameters, virtualPlayer?: string) => {
             const roomId = this.getNewRoomId();
             const room = new Room(roomId, id, playerName, parameters);
-            if (virtualPlayer) {
-                room.addPlayer('virtual', virtualPlayer, true);
-                room.start();
-                const game = new Game(room, this.dictionnaryService);
-                this.roomsService.games.push(game);
-            }
             socket.emit('join', roomId);
             console.log(`Created room ${roomId} for player ${playerName}`);
             this.roomsService.rooms.push(room);
+            if (virtualPlayer) {
+                room.addPlayer('VP', virtualPlayer, true);
+                room.start();
+                const game = new Game(room, this.dictionnaryService);
+                this.roomsService.games.push(game);
+                const isBeginner = parameters.difficulty !== Difficulty.Expert;
+                const vP = new VirtualPlayer(isBeginner, game, this.dictionnaryService);
+                vP.waitForTurn();
+            }
         });
     }
 

@@ -1,3 +1,4 @@
+import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
 import { Game } from './game';
 
@@ -16,11 +17,20 @@ export type PlacementOption = { row: number; col: number; isHorizontal: boolean;
 export class VirtualPlayer {
     board: Board;
 
-    constructor(readonly isBeginner: boolean, private game: Game) {
+    constructor(readonly isBeginner: boolean, private game: Game, private dictionnaryService: DictionnaryService) {
         this.board = game.board;
+        console.log(`Virtual player created of difficulty ${isBeginner ? 'beginner' : 'expert'} for game ${game.id}`);
+    }
+    
+    waitForTurn() {
+        setInterval(() => {
+            if (this.game.getCurrentPlayer().id === AI_ID) {
+                this.playTurn();
+            }
+        }, DELAY_CHECK_TURN);
     }
 
-    playTurn() {
+    private playTurn() {
         const random = Math.floor(Math.random() * PROBABILITY);
         if (this.isBeginner && random === 0) {
             // this.game.skipTurn(AI_ID); // to test
@@ -42,14 +52,7 @@ export class VirtualPlayer {
         this.waitForTurn();
     }
 
-    waitForTurn() {
-        setInterval(() => {
-            if (this.game.getCurrentPlayer().id === AI_ID) {
-                this.playTurn();
-            }
-        }, DELAY_CHECK_TURN);
-    }
-
+    //a mettre private quand connected
     getPlayablePositions(): PlacementOption[] {
         const positions = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
         const arrayPos: PlacementOption[] = [];
@@ -134,7 +137,7 @@ export class VirtualPlayer {
             for (const letter of possibleLetters) if (letter === rackLetter) alreadyIn = true;
             if (alreadyIn) break;
             const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
-            if (this.board.dictionnary.isValidWord(attemptedCrossword)) {
+            if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
                 validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, rackLetter)));
                 possibleLetters += rackLetter;
             }

@@ -35,38 +35,38 @@ describe('VirtualPlayer', () => {
     it('playTurn should send a message v1', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.0;
-        vP = new VirtualPlayer(true, game);
-        vP.playTurn();
+        vP = new VirtualPlayer(true, game, dictionnaryService);
+        vP['playTurn']();
     });
     it('playTurn should send a message v2', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.1;
-        vP = new VirtualPlayer(true, game);
-        vP.playTurn();
+        vP = new VirtualPlayer(true, game, dictionnaryService);
+        vP['playTurn']();
     });
     it('playTurn should send a message v3', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.1;
-        vP = new VirtualPlayer(false, game);
-        vP.playTurn();
+        vP = new VirtualPlayer(false, game, dictionnaryService);
+        vP['playTurn']();
     });
 
     it('should playturn when current turn is my turn', (done) => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.1;
-        vP = new VirtualPlayer(false, game);
-        vP.playTurn = sinon.stub();
+        vP = new VirtualPlayer(false, game, dictionnaryService);
+        vP['playTurn'] = sinon.stub();
         game.getCurrentPlayer().id = 'VP';
         vP.waitForTurn();
         const timeout = 1500;
         setTimeout(() => {
-            expect((vP.playTurn as sinon.SinonStub).args).to.deep.equal([[]]);
+            expect((vP['playTurn'] as sinon.SinonStub).args).to.deep.equal([[]]);
             done();
         }, timeout);
     });
 
     it('should validate crosswords to list possible contacts', () => {
-        vP = new VirtualPlayer(false, game);
+        vP = new VirtualPlayer(false, game, dictionnaryService);
         game.board.board[0][0].setLetter('a');
         game.board.board[0][1].setLetter('s');
         const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
@@ -88,7 +88,7 @@ describe('VirtualPlayer', () => {
     });
 
     it('should validate crosswords to list possible contacts', () => {
-        vP = new VirtualPlayer(false, game);
+        vP = new VirtualPlayer(false, game, dictionnaryService);
         game.board.board[0][0].setLetter('a');
         game.board.board[0][1].setLetter('s');
         const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
@@ -125,7 +125,7 @@ describe('VirtualPlayer', () => {
     });
 
     it('should give the rack as a string', () => {
-        vP = new VirtualPlayer(true, game);
+        vP = new VirtualPlayer(true, game, dictionnaryService);
         const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
         const letterR: Letter = { id: 0, name: 'R', score: 1, quantity: 1 };
         const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
@@ -142,7 +142,7 @@ describe('VirtualPlayer', () => {
     });
 
     it('should find new options of word for a contact', () => {
-        vP = new VirtualPlayer(true, game);
+        vP = new VirtualPlayer(true, game, dictionnaryService);
 
         const validOptions: PlacementOption[] = [];
         const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
@@ -162,7 +162,7 @@ describe('VirtualPlayer', () => {
     it('should find replacement for the contact char', () => {
         game.board.board[7][6].setLetter('a');
         game.board.board[7][7].setLetter('s');
-        vP = new VirtualPlayer(true, game);
+        vP = new VirtualPlayer(true, game, dictionnaryService);
 
         const exploredOptions: PlacementOption[] = [];
         const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
@@ -180,7 +180,7 @@ describe('VirtualPlayer', () => {
     it('should find replacement from previous replacements', () => {
         game.board.board[7][6].setLetter('a');
         game.board.board[7][7].setLetter('s');
-        vP = new VirtualPlayer(true, game);
+        vP = new VirtualPlayer(true, game, dictionnaryService);
 
         const exploredOptions: PlacementOption[] = [{ row: 7, col: 5, isHorizontal: false, word: 'RA' }];
         const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
