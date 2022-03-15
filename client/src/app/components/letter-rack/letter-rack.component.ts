@@ -34,7 +34,7 @@ export class LetterRackComponent {
             const occurrences = this.checkOccurrences(buttonPressed);
             if (occurrences.length === 0) {
                 this.manipulating = undefined;
-            } else if (!this.manipulating?.toString() || !occurrences.includes(this.manipulating)) {
+            } else if (this.manipulating === undefined || !occurrences.includes(this.manipulating)) {
                 this.manipulating = occurrences[0];
             } else {
                 const idx = occurrences.indexOf(this.manipulating);
@@ -75,12 +75,12 @@ export class LetterRackComponent {
         }
     }
 
-    checkOccurrences(key: string): number[] {
+    checkOccurrences(key: string) {
         const identicalLetters = this.letters.map((letter, idx) => {
             if (letter.name.toLowerCase() === key.toLowerCase()) return idx;
-            else return UNDEFINED;
+            else return undefined;
         });
-        return identicalLetters.filter((value) => value !== UNDEFINED);
+        return identicalLetters.filter((value) => value !== undefined);
     }
 
     shiftLetter(keypress: string | number) {
