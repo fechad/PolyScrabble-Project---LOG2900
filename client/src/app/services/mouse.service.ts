@@ -23,34 +23,26 @@ export class MouseService {
     buttonPressed = '';
     prevPos: Vec2 = { x: 0, y: 0 };
     isHorizontal = true;
-    writingAllowed = false;
-    enter = false;
     constructor(public gridService: GridService, public gameContextService: GameContextService) {}
 
     async mouseHitDetect(event: MouseEvent) {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (myTurn) {
+        if (myTurn && !this.gameContextService.state.value.ended && this.gridService.letterWritten === 0) {
             if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
             if (event.button === MouseButton.Left && this.isInBound(event)) {
-                if (this.gridService.letterWritten !== 0) this.mousePosition = this.prevPos;
-                else {
-                    this.prevPos = this.mousePosition;
-                    this.mousePosition = {
-                        x: this.calculateX(event.offsetX),
-                        y: this.calculateY(event.offsetY),
-                    };
-                }
-                if (this.mousePosition.x >= IN_BOARD_AREA && this.mousePosition.y >= IN_BOARD_AREA && this.gridService.letterWritten === 0) {
-                    this.gridService.drawGrid();
-                    this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, true);
-                    this.writingAllowed = true;
-                    this.enter = false;
-                }
-                if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y && this.gridService.letterWritten === 0) {
+                this.prevPos = this.mousePosition;
+                this.mousePosition = {
+                    x: this.calculateX(event.offsetX),
+                    y: this.calculateY(event.offsetY),
+                };
+                if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y) {
                     this.isHorizontal = !this.isHorizontal;
                     this.gridService.drawGrid();
                     this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
-                    this.enter = false;
+                } else if (this.mousePosition.x >= IN_BOARD_AREA && this.mousePosition.y >= IN_BOARD_AREA) {
+                    this.gridService.drawGrid();
+                    this.isHorizontal = true;
+                    this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
                 }
             }
         }

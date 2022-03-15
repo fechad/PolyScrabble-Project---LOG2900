@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
@@ -29,7 +29,7 @@ export enum MouseButton {
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
     @Input() sending: boolean = false;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
@@ -37,6 +37,7 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
     shift: number[] = [];
+    myTurn = false;
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -54,6 +55,9 @@ export class PlayAreaComponent implements AfterViewInit {
                 if (this.rack.length <= MAX_RACK_SIZE) this.rack.push(i.name);
             }
         });
+        this.gameContextService.isMyTurn().subscribe((bool) => {
+            this.myTurn = bool;
+        });
     }
     @HostListener('document:click', ['$event'])
     async click(event: MouseEvent) {
@@ -61,13 +65,15 @@ export class PlayAreaComponent implements AfterViewInit {
         if (this.sending && myTurn) {
             this.sendPlacedLetters();
             this.sending = false;
-        } else if (this.gridCanvas.nativeElement !== event.target && myTurn) this.removeWord();
+        } else if (this.gridCanvas.nativeElement !== event.target && myTurn) {
+            this.removeWord();
+        }
     }
 
     @HostListener('keydown', ['$event'])
     async buttonDetect(event: KeyboardEvent) {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (myTurn) {
+        if (myTurn && !this.gameContextService.state.value.ended) {
             this.buttonPressed = event.key;
             if (this.buttonPressed === 'Enter') {
                 this.sendPlacedLetters();
@@ -75,7 +81,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.removeLetterOnCanvas();
             } else if (this.buttonPressed === 'Escape') {
                 this.removeWord();
-            } else if (this.mouseDetectService.writingAllowed && this.isInBound() && this.buttonPressed.match(/[A-Za-zÀ-ú]/g)?.length === 1) {
+            } else if (this.isInBound() && this.buttonPressed.match(/[A-Za-zÀ-ú]/g)?.length === 1) {
                 try {
                     this.placeWordOnCanvas();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -209,7 +215,9 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gridCanvas.nativeElement.focus();
         this.isLoaded = true;
     }
-
+    ngAfterViewChecked() {
+        if (!this.myTurn) this.removeWord();
+    }
     get width(): number {
         return this.canvasSize.x;
     }
