@@ -110,21 +110,6 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
         this.gridService.drawGrid();
     }
 
-    removeWord() {
-        for (const elem of this.gridService.letters) {
-            this.gridService.rack.push(elem);
-            this.gameContextService.addTempRack(elem);
-        }
-        for (const elem of this.gridService.letterPosition) {
-            this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
-        }
-        this.gridService.letterPosition = [[0, 0]];
-        this.gridService.letterWritten = 0;
-        this.gridService.letters = [];
-        this.gridService.letterForServer = '';
-        this.gridService.drawGrid();
-    }
-
     sendPlacedLetters() {
         for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
         this.communicationservice.place(
