@@ -2,6 +2,8 @@ import { LetterNode } from '@app/classes/letter-node';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Service } from 'typedi';
 
+export type WordConnection = { connectedLetter?: string; allowedQuantity: number };
+
 @Service()
 export class DictionnaryTrieService {
     dictionnaryTree: LetterNode = new LetterNode('*');
@@ -15,21 +17,29 @@ export class DictionnaryTrieService {
             });
         }
     }
-    generateLeftParts(inputArr: string[], connectedLetter: string, allowedQuantity: number): string[][] {
+    generatePossibleWords(inputArr: string[], connections: WordConnection[]): string[][] {
         const validWords: string[][] = [];
 
-        const permute = (remainingLetter: string[], attemptedPermutation: string[] = []) => {
+        const permute = (remainingLetter: string[], attemptedPermutation: string[] = [], currentIndex: number = 0) => {
             const qtyPermuted = inputArr.length - remainingLetter.length;
-            if (qtyPermuted === allowedQuantity) {
-                const completeLeftPart = attemptedPermutation.concat(connectedLetter);
-                if (this.isValidBranching(completeLeftPart)) validWords.push(attemptedPermutation);
+            let connection = connections[currentIndex];
+            if (qtyPermuted === connection.allowedQuantity) {
+                attemptedPermutation =
+                    connection.connectedLetter === undefined ? attemptedPermutation : attemptedPermutation.concat(connection.connectedLetter);
+                if (this.isValidBranching(attemptedPermutation)) {
+                    validWords.push(attemptedPermutation);
+                    currentIndex++;
+                    connection = connections[currentIndex];
+                    console.log(connection);
+                    if (!connection) return;
+                }
             }
-            if (qtyPermuted <= allowedQuantity) {
+            if (qtyPermuted <= connection.allowedQuantity) {
                 for (let i = 0; i < remainingLetter.length; i++) {
                     const copy = remainingLetter.slice();
                     const nextLetter = copy.splice(i, 1);
                     const nextPermutation = attemptedPermutation.concat(nextLetter);
-                    if (this.isValidBranching(nextPermutation)) permute(copy, nextPermutation);
+                    if (this.isValidBranching(nextPermutation)) permute(copy, nextPermutation, currentIndex);
                 }
             }
         };

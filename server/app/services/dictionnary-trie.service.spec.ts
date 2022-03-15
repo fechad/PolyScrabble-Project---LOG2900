@@ -17,6 +17,11 @@ describe('Dictionnary Trie', () => {
         expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
         const b = [...'aeutop'];
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        console.log(dictionnaryTrieService.generateLeftParts(b, 'd', 5));
+        console.log(
+            dictionnaryTrieService.generatePossibleWords(b, [
+                { connectedLetter: 'a', allowedQuantity: 3 },
+                { connectedLetter: 'g', allowedQuantity: 4 },
+            ]),
+        );
     });
 });
