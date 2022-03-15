@@ -1,4 +1,4 @@
-import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
+import { AfterContentChecked, AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { ChatBoxLogicService } from '@app/services/chat-box-logic.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
@@ -8,7 +8,7 @@ import { GameContextService } from '@app/services/game-context.service';
     templateUrl: './chat-box.component.html',
     styleUrls: ['./chat-box.component.scss'],
 })
-export class ChatBoxComponent implements AfterViewChecked {
+export class ChatBoxComponent implements AfterViewChecked, AfterContentChecked {
     textValue: string = '';
     myId: string | undefined;
 

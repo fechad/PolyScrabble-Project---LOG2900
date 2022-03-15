@@ -36,9 +36,13 @@ class CommunicationServiceMock {
         return;
     }
 
-    leave() {}
+    leave() {
+        return;
+    }
 
-    createRoom() {}
+    createRoom() {
+        return;
+    }
 }
 
 describe('SoloDialogComponent', () => {
