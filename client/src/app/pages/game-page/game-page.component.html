@@ -83,7 +83,13 @@
                 >
                     <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
                 </button>
-                <button id="quit-game" matTooltip="Quitter la partie" matTooltipPosition="right" matTooltipClass="tool" (click)="quitGame()">
+                <button
+                    id="quit-game"
+                    [matTooltip]="this.gameContextService.state.value.ended ? 'Quitter la partie' : 'Abandonner la partie'"
+                    matTooltipPosition="right"
+                    matTooltipClass="tool"
+                    (click)="quitGame()"
+                >
                     <fa-icon [icon]="faSignOutAlt"></fa-icon>
                 </button>
             </div>
