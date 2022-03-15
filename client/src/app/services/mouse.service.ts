@@ -13,7 +13,6 @@ const TILE = 32;
 const NUMBER_OF_TILES = 15;
 const GRID_ORIGIN = 20;
 const CANVAS_ADJUSTMENT = 16;
-const IN_BOARD_AREA = 0;
 
 @Injectable({
     providedIn: 'root',
@@ -39,7 +38,7 @@ export class MouseService {
                     this.isHorizontal = !this.isHorizontal;
                     this.gridService.drawGrid();
                     this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
-                } else if (this.mousePosition.x >= IN_BOARD_AREA && this.mousePosition.y >= IN_BOARD_AREA) {
+                } else {
                     this.gridService.drawGrid();
                     this.isHorizontal = true;
                     this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
