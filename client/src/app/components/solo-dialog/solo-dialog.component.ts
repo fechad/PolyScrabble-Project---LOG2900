@@ -51,6 +51,7 @@ export class SoloDialogComponent implements OnInit {
                 return;
             }
         }
+        if (this.communicationService.selectedRoom) this.communicationService.leave();
         const parameters = new Parameters();
         parameters.timer = this.soloParametersForm.value.minutes * SEC_CONVERT + this.soloParametersForm.value.seconds;
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
