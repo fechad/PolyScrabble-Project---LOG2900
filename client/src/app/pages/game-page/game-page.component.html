@@ -64,6 +64,16 @@
             </div>
             <div class="action-buttons">
                 <button
+                    class="play"
+                    matTooltip="Jouer les lettres placées"
+                    matTooltipPosition="right"
+                    matTooltipClass="tool"
+                    [disabled]="gridService.letterForServer.length === 0"
+                    (click)="send()"
+                >
+                    <fa-icon [icon]="faPlay"></fa-icon>
+                </button>
+                <button
                     class="skip-turn"
                     matTooltip="Passer votre tour"
                     matTooltipPosition="right"
@@ -80,7 +90,7 @@
         </div>
         <div class="center">
             <div class="play-area-container">
-                <app-play-area class="play-area" tabindex="0"></app-play-area>
+                <app-play-area class="play-area" tabindex="0" [sending]="isSending"></app-play-area>
             </div>
             <div id="bottom-area">
                 <div class="rackArea">
