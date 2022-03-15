@@ -14,6 +14,8 @@ const LAST_INDEX = -1;
 const CANVAS_SQUARE_SIZE = 33;
 const PLAY_AREA_SIZE = 520;
 const ADJUSTMENT = 2;
+const POS_AND_SHIFT = 16;
+const BOARD_SIZE = 15;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -167,8 +169,8 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         if (
-            (this.getShift(lastLetter) + lastLetter[1] < 16 && this.mouseDetectService.isHorizontal) ||
-            (this.getShift(lastLetter) + lastLetter[0] < 16 && !this.mouseDetectService.isHorizontal)
+            (this.getShift(lastLetter) + lastLetter[1] < POS_AND_SHIFT && this.mouseDetectService.isHorizontal) ||
+            (this.getShift(lastLetter) + lastLetter[0] < POS_AND_SHIFT && !this.mouseDetectService.isHorizontal)
         )
             this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
         this.gameContextService.tempUpdateRack();
@@ -202,7 +204,7 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
             }
             return shift;
         } else {
-            while (y + 1 !== 15 && board[y + 1][x]) {
+            while (y + 1 !== BOARD_SIZE && board[y + 1][x]) {
                 y++;
                 shift++;
             }
