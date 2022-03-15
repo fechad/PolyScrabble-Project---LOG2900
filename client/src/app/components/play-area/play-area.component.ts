@@ -4,7 +4,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
-import { take } from 'rxjs/operators';
 
 // TODO : Avoir un fichier séparé pour les constantes!
 export const DEFAULT_WIDTH = 525;
@@ -62,20 +61,18 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
         });
     }
     @HostListener('document:click', ['$event'])
-    async click(event: MouseEvent) {
-        const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (this.sending && myTurn) {
+    click(event: MouseEvent) {
+        if (this.sending && this.myTurn) {
             this.sendPlacedLetters();
             this.sending = false;
-        } else if (this.gridCanvas.nativeElement !== event.target && myTurn) {
+        } else if (this.gridCanvas.nativeElement !== event.target && this.myTurn) {
             this.removeWord();
         }
     }
 
     @HostListener('keydown', ['$event'])
-    async buttonDetect(event: KeyboardEvent) {
-        const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (myTurn && !this.gameContextService.state.value.ended) {
+    buttonDetect(event: KeyboardEvent) {
+        if (this.myTurn && !this.gameContextService.state.value.ended) {
             this.buttonPressed = event.key;
             if (this.buttonPressed === 'Enter') {
                 this.sendPlacedLetters();
@@ -92,7 +89,6 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
                 }
             }
         }
-        return false;
     }
 
     removeWord() {
@@ -145,16 +141,9 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
         const word = CommandParsing.removeAccents(this.buttonPressed);
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
-        for (const i of this.gridService.rack) {
-            if (i.name === word.toUpperCase() && i.name !== '*') {
-                this.gridService.letters.push(i);
-                break;
-            }
-            if (i.name === '*' && word.toUpperCase() === word) {
-                this.gridService.letters.push(i);
-                break;
-            }
-        }
+        const item = this.gridService.rack.find((i) => i.name === word.toUpperCase());
+        if (item === undefined) this.gridService.letters.push({ name: '*', score: 0 });
+        else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
             this.gridService.firstLetter = [
