@@ -1,15 +1,21 @@
-<div class="rack-container">
-    <div (click)="manipulate($event)" (contextmenu)="menu($event)" class="letter-container" id="letter-container" *ngFor="let letter of letters">
-        <div 
+<div class="rack-container" #letterContainer>
+    <div
+        *ngFor="let letter of letters; let idx = index"
+        (click)="manipulate(idx)"
+        (contextmenu)="select(idx); $event.preventDefault();"
+        class="letter-container"
+        [ngClass]="{ manipulating: manipulating === idx, exchanging: exchanging.includes(idx) }"
+    >
+        <div
             [ngClass]="{
                 'letter-name': this.gridService.multiplier === 1,
                 'big-let': this.gridService.multiplier === 1.1,
                 'small-let': this.gridService.multiplier === 0.9
             }"
         >
-            <p class = "name">{{ letter.name }}</p>
+            <p class="name">{{ letter.name }}</p>
         </div>
-        <div 
+        <div
             [ngClass]="{
                 'letter-score': this.gridService.multiplier === 1,
                 'big-sco': this.gridService.multiplier === 1.1,
@@ -21,12 +27,13 @@
     </div>
 </div>
 
-<div id="menu" class="context-menu" 
-    style="display: none">
-        <button id="exchange" (click)="exchange()"
-        [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true || 
-        getReserveCount()">
-        Échanger</button>
-        <button id="cancel" (click)="hideMenu()">Annuler</button>
-   
+<div id="menu" class="context-menu" *ngIf="exchanging.length > 0">
+    <button
+        id="exchange"
+        (click)="exchange()"
+        [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended || getReserveCount()"
+    >
+        Échanger
+    </button>
+    <button id="cancel" (click)="exchanging = []">Annuler</button>
 </div>

@@ -10,6 +10,14 @@ const setHTML = () => {
     const rackContainer = document.createElement('div');
     rackContainer.classList.add('rack-container');
 
+    const canvas = document.createElement('div');
+    canvas.id = 'canvas';
+    rackContainer.appendChild(canvas);
+
+    const chatbox = document.createElement('div');
+    canvas.id = 'writingBox';
+    canvas.appendChild(chatbox);
+
     const element = document.createElement('div');
     element.classList.add('letter-container');
     const element2 = document.createElement('div');
@@ -66,23 +74,9 @@ const setHTML = () => {
     document.body.appendChild(page);
 };
 
-// const clearHTML = () => (document.body.innerHTML = '');
-
 describe('LetterRackComponent', () => {
     let component: LetterRackComponent;
     let fixture: ComponentFixture<LetterRackComponent>;
-    /*
-    const menu = document.createElement('div');
-    menu.classList.add('context-menu');
-    menu.id = 'menu';
-
-    const button1 = document.createElement('button');
-    button1.id = 'exchange';
-    button1.addEventListener('click', () => component.exchange());
-
-    const button2 = document.createElement('button');
-    button2.id = 'cancel';
-    button2.addEventListener('click', () => component.hideMenu()); */
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -102,15 +96,13 @@ describe('LetterRackComponent', () => {
             { name: 'c', score: 1 },
             { name: 'd', score: 1 },
             { name: 'e', score: 1 },
-            { name: 'f', score: 1 },
+            { name: 'e', score: 1 },
             { name: 'f', score: 1 },
         ];
 
         setHTML();
 
         fixture.detectChanges();
-        component.clearSelection('manipulate');
-        component.clearSelection('exchange');
     });
 
     it('should create', () => {
@@ -128,11 +120,10 @@ describe('LetterRackComponent', () => {
         expect(shiftLetterSpy).toHaveBeenCalled();
     });
 
-    it('pressing a letter in rack should call setToManipulate', () => {
-        const setToManipulateSpy = spyOn(component, 'setToManipulate').and.callThrough();
+    it('pressing a letter assign value to manipulating if letter is in rack', () => {
         const keypress = new KeyboardEvent('keydown', { key: 'b' });
         component.buttonDetect(keypress);
-        expect(setToManipulateSpy).toHaveBeenCalled();
+        expect(component.manipulating).not.toBeUndefined();
     });
 
     it('scrolling mouse should call shiftLetter', () => {
@@ -143,80 +134,88 @@ describe('LetterRackComponent', () => {
     });
 
     it('swap letter position to the right if ArrowRight pressed and letter is set to manipulate', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[0].setAttribute('id', 'manipulating');
+        const keypress = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonDetect(keypress);
         component.shiftLetter('ArrowRight');
-        expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
-        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
+        expect(component.manipulating).toEqual(1);
     });
 
     it('swap letter position to the left if ArrowLeft pressed and letter is set to manipulate', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[1].setAttribute('id', 'manipulating');
+        const keypress = new KeyboardEvent('keydown', { key: 'b' });
+        component.buttonDetect(keypress);
         component.shiftLetter('ArrowLeft');
-        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
-        expect(component.letters[1]).toEqual({ name: 'a', score: 1 });
+        expect(component.manipulating).toEqual(0);
     });
 
     it('if letter position is at the end of rack, swap letter to the first position on ArrowRight pressed', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[6].setAttribute('id', 'manipulating');
-        component.shiftLetter('ArrowRight');
-        expect(component.letters[0]).toEqual({ name: 'f', score: 1 });
-        expect(component.letters[6]).toEqual({ name: 'f', score: 1 });
+        const LAST = 6;
+        const keypress = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonDetect(keypress);
+        component.shiftLetter('ArrowLeft');
+        expect(component.manipulating).toEqual(LAST);
     });
 
     it('if letter is in first position of rack, swap letter to the last position on ArrowLeft pressed', () => {
-        const container = document.getElementsByClassName('letter-container');
-        Array.from(container)[0].setAttribute('id', 'manipulating');
-        component.shiftLetter('ArrowLeft');
-        expect(component.letters[0]).toEqual({ name: 'b', score: 1 });
-        expect(component.letters[6]).toEqual({ name: 'a', score: 1 });
-    });
-
-    it('should set letter pressed to manipulation mode', () => {
-        const container = document.getElementsByClassName('letter-container');
-        const keypress = new KeyboardEvent('keydown', { key: 'a' });
+        const keypress = new KeyboardEvent('keydown', { key: 'f' });
         component.buttonDetect(keypress);
-        expect(Array.from(container)[0].getAttribute('id')).toBe('manipulating');
+        component.shiftLetter('ArrowRight');
+        expect(component.manipulating).toEqual(0);
     });
 
-    it('exchange should call getSelectedLetters', () => {
-        const spy = spyOn(component, 'getSelectedLetters').and.callThrough();
-        component.exchange();
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should exchange a selected letter', () => {
-        const container = document.getElementsByClassName('letter-container');
+    it('exchange should call communicationService exchange', () => {
         const exchangeSpy = spyOn(component.communicationService, 'exchange').and.callThrough();
-        container[0].setAttribute('id', 'selected');
         component.exchange();
         expect(exchangeSpy).toHaveBeenCalled();
     });
 
-    it('getSelectedLetters should update the list of selectedLetters', () => {
-        const container = document.getElementsByClassName('letter-container');
-        container[0].setAttribute('id', 'selected');
-        expect(component.selectedLetters.length).toBe(0);
-        component.getSelectedLetters();
-        expect(component.selectedLetters.length).toBe(1);
-        expect(component.selectedLetters[0]).toBe('a');
+    it('should not assign index to manipulating if key is not in rack', () => {
+        const keypress = new KeyboardEvent('keydown', { key: 'p' });
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toBeUndefined();
     });
 
-    it('checkSelection should not call hideMenu if letters are selected', () => {
-        const container = document.getElementsByClassName('letter-container');
-        const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
-        container[2].setAttribute('id', 'selected');
-        component.checkSelection();
-        expect(hideMenuSpy).not.toHaveBeenCalled();
+    it('should select second occurrence of letter if keypress is the same letter two times in a row', () => {
+        const INDEX = 4;
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toEqual(INDEX);
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toEqual(INDEX + 1);
     });
 
-    it('checkSelection should call hideMenu if no letters are selected', () => {
-        component.clearSelection('exchange');
-        const hideMenuSpy = spyOn(component, 'hideMenu').and.callThrough();
-        component.checkSelection();
-        expect(hideMenuSpy).toHaveBeenCalled();
+    it('should select the letter clicked on to be manipulated and remove all selection for exchange', () => {
+        component.manipulate(0);
+        expect(component.manipulating).toEqual(0);
+        expect(component.exchanging).toEqual([]);
+    });
+
+    it('click should not set to manipulate if letter is already set for exchange', () => {
+        component.exchanging = [0];
+        component.manipulate(0);
+        expect(component.exchanging).toEqual([0]);
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('should do nothing if no letter was selected to be manipulated', () => {
+        const updateSpy = spyOn(component, 'swapLetters').and.callThrough();
+        component.manipulating = undefined;
+        component.shiftLetter('z');
+        expect(updateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should assign index of letter to exchanging if right clicked on', () => {
+        component.select(0);
+        expect(component.exchanging).toEqual([0]);
+        component.select(2);
+        expect(component.exchanging).toEqual([0, 2]);
+    });
+
+    it('should remove index of letter of exchanging if was already set to exchange', () => {
+        component.select(0);
+        expect(component.exchanging).toEqual([0]);
+        component.select(1);
+        component.select(0);
+        expect(component.exchanging).toEqual([1]);
     });
 
     it('getReserveCount should return a boolean', () => {
@@ -224,67 +223,76 @@ describe('LetterRackComponent', () => {
         expect(typeof reserveStatus).toBe('boolean');
     });
 
-    it('clearSelection should remove all letter selection ids', () => {
-        const container = document.getElementsByClassName('letter-container');
-        container[1].setAttribute('id', 'selected');
-        container[0].setAttribute('id', 'manipulating');
-        component.clearSelection('exchange');
-        component.clearSelection('manipulate');
-        let everythingIsCleared = true;
-        Array.from(container).forEach((letter) => {
-            if (letter.getAttribute('id') === 'selected' || letter.getAttribute('id') === 'manipulating') {
-                everythingIsCleared = false;
-            }
-        });
-        expect(everythingIsCleared).toBeTrue();
-    });
-
-    it('clear should clear every selection', () => {
-        const clearSelectionSPy = spyOn(component, 'clearSelection').and.callThrough();
-        const mockClick = new MouseEvent('click');
-        component.clear(mockClick);
-        expect(clearSelectionSPy).toHaveBeenCalledTimes(2);
-    });
-
     it('click should call manipulate', () => {
         const container = document.getElementsByClassName('letter-container');
-        container[0].addEventListener('click', (event) => component.manipulate(event));
+        container[0].addEventListener('click', () => component.manipulate(0));
         const manipulateSPy = spyOn(component, 'manipulate').and.callThrough();
         const mockClick = new MouseEvent('click');
         container[0].dispatchEvent(mockClick);
         expect(manipulateSPy).toHaveBeenCalled();
-        container[0].removeEventListener('click', component.manipulate);
     });
 
-    it('rightClick should call menu', () => {
+    it('right click should call exchange', () => {
         const container = document.getElementsByClassName('letter-container');
-        container[0].addEventListener('contextmenu', (event) => component.menu(event));
-        const menuSPy = spyOn(component, 'menu').and.callThrough();
+        container[0].addEventListener('contextmenu', () => component.exchange());
+        const menuSpy = spyOn(component, 'exchange').and.callThrough();
         const mockRightClick = new MouseEvent('contextmenu');
         container[0].dispatchEvent(mockRightClick);
-        expect(menuSPy).toHaveBeenCalled();
-        container[0].removeEventListener('contextmenu', component.menu);
+        expect(menuSpy).toHaveBeenCalled();
+        container[0].removeEventListener('contextmenu', component.exchange);
     });
 
-    it('click on a selected letter for manipulation should remove selection id', () => {
+    it('clear should clear every selection', () => {
+        const clearSelectionSpy = spyOn(component, 'clear').and.callThrough();
+        const mockClick = new MouseEvent('click');
+        component.clear(mockClick);
+        expect(clearSelectionSpy).toHaveBeenCalled();
+        expect(component.manipulating).toBeUndefined();
+        expect(component.exchanging).toEqual([]);
+    });
+
+    it('clear should not clear selection', () => {
         const container = document.getElementsByClassName('letter-container');
-        container[0].setAttribute('id', 'manipulating');
-        container[0].addEventListener('click', (event) => component.manipulate(event));
+        container[0].addEventListener('click', () => component.manipulate(0));
         const mockClick = new MouseEvent('click');
         container[0].dispatchEvent(mockClick);
-        component.menu(mockClick);
-        expect(container[0].getAttribute('id')).toEqual(null);
-        container[0].removeEventListener('click', component.menu);
+        expect(component.manipulating).toEqual(0);
+        container[0].dispatchEvent(mockClick);
+        expect(component.manipulating).toEqual(0);
     });
 
-    it('rightClick on a selected letter for exchange should remove selection id', () => {
-        const container = document.getElementsByClassName('letter-container');
-        container[0].setAttribute('id', 'selected');
-        container[0].addEventListener('contextmenu', (event) => component.menu(event));
-        const mockRightClick = new MouseEvent('contextmenu');
-        container[0].dispatchEvent(mockRightClick);
-        component.menu(mockRightClick);
-        expect(container[0].getAttribute('id')).toEqual(null);
-        container[0].removeEventListener('contextmenu', component.menu);
+    it('should not select any letter on keypress if focus is on canvas', () => {
+        const canvas = document.getElementById('canvas');
+        canvas?.focus();
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        canvas?.addEventListener('click', () => component.buttonDetect(keypress));
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('should not select any letter on keypress if focus is on chatbox', () => {
+        const chat = document.getElementById('writingBox');
+        chat?.focus();
+        const keypress = new KeyboardEvent('keydown', { key: 'e' });
+        chat?.addEventListener('click', () => component.buttonDetect(keypress));
+        expect(component.manipulating).toBeUndefined();
+    });
+
+    it('checkOccurrences should return all indices of present keypress', () => {
+        const FIRST_IDX = 4;
+        const SECOND_IDX = 5;
+        const result = component.checkOccurrences('e');
+        expect(result).toEqual([FIRST_IDX, SECOND_IDX]);
+    });
+
+    it('checkOccurrences should have no index if no occurrence was found', () => {
+        const result = component.checkOccurrences('z');
+        expect(result.length).toEqual(0);
+    });
+
+    it('should return first occurrence of letter if keypress of a letter in rack', () => {
+        const keypress = new KeyboardEvent('keydown', { key: 'c' });
+        const index = component.checkOccurrences(keypress.key);
+        component.buttonDetect(keypress);
+        expect(component.manipulating).toEqual(index[0]);
     });
 });
