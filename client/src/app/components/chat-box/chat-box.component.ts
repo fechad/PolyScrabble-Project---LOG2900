@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component } from '@angular/core';
 import { ChatBoxLogicService } from '@app/services/chat-box-logic.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
@@ -9,7 +9,6 @@ import { GameContextService } from '@app/services/game-context.service';
     styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent implements AfterViewChecked {
-    @ViewChild('scroll') private scroller: ElementRef;
     textValue: string = '';
     myId: string | undefined;
 
@@ -22,12 +21,7 @@ export class ChatBoxComponent implements AfterViewChecked {
     }
 
     ngAfterViewChecked() {
-        this.scrollToBottom();
         this.myId = this.communicationService.getId().value; // needed for 5s reconnexion
-    }
-
-    scrollToBottom() {
-        this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
     }
 
     async validateSyntax() {
