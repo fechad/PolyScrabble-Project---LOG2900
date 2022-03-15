@@ -75,41 +75,49 @@
     right: 65%;
     top: 89vh;
     color: white;
-
 }
 
-#menu button{
+#menu button {
     font-size: 15px;
     width: 15vh;
     font-family: Signika Negative;
     border-radius: 15px;
     margin: 2px;
-
 }
 
-#menu button:hover{
+#menu button:hover {
     cursor: pointer;
 }
 
-#menu button:hover:disabled{
+#menu button:hover:disabled {
     cursor: default;
 }
 
-#menu button#exchange{
-    background: #25BE4B;
+#menu button#exchange {
+    background: #25be4b;
 }
 
-#menu button#cancel{
+#menu button#cancel {
     background: red;
 }
 
-.letter-container#selected {
-    border-color: #25BE4B;
+.letter-container.exchanging {
+    border-color: #25be4b;
     border-width: 3px;
-
 }
 
-.letter-container#manipulating {
+.letter-container.manipulating {
     border-color: white;
     border-width: 3px;
+}
+
+.name{
+    padding: 15px 45px 10px 10px;
+    margin-left: -8px;
+    
+}
+
+.score{
+    margin-bottom: 5px;
+    margin-left: -45px;
 }

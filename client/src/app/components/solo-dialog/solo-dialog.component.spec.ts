@@ -31,9 +31,11 @@ describe('SoloDialogComponent', () => {
     let component: SoloDialogComponent;
     let fixture: ComponentFixture<SoloDialogComponent>;
     let router: jasmine.SpyObj<Router>;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['createRoom']);
         await TestBed.configureTestingModule({
             declarations: [SoloDialogComponent],
             imports: [
@@ -45,7 +47,7 @@ describe('SoloDialogComponent', () => {
                 ReactiveFormsModule,
             ],
             providers: [
-                { provide: CommunicationService, useClass: CommunicationServiceMock },
+                { provide: CommunicationService, useClass: CommunicationServiceMock, useValue: communicationServiceSpy },
                 { provide: MatDialogRef, useValue: dialogMock },
                 FormBuilder,
                 { provide: Router, useValue: router },
@@ -99,13 +101,13 @@ describe('SoloDialogComponent', () => {
         expect(component.opponentName).not.toBe('Anna');
     });
 
-    // it('on submit dialog should close', async () => {
-    //     const playerName = component.soloParametersForm.controls.playerName;
-    //     playerName.setValue('Test');
-    //     const closeDialogSpy = spyOn(component.dialogRef, 'close');
-    //     await component.onSubmit();
-    //     expect(closeDialogSpy).toHaveBeenCalled();
-    // });
+    it('on submit dialog should close', async () => {
+        const playerName = component.soloParametersForm.controls.playerName;
+        playerName.setValue('Test');
+        const closeDialogSpy = spyOn(component.dialogRef, 'close');
+        await component.onSubmit();
+        expect(closeDialogSpy).toHaveBeenCalled();
+    });
 
     it('should not close dialog when error found', async () => {
         const closeDialogSpy = spyOn(component.dialogRef, 'close');
