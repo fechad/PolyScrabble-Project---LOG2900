@@ -144,6 +144,8 @@ export class Game {
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.nextTurn(true);
+            const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
+            this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             this.sendState();
         }
     }
