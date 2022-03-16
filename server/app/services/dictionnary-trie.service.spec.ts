@@ -15,12 +15,13 @@ describe('Dictionnary Trie', () => {
     });
     it('should create all perm', () => {
         expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
-        const b = [...'aeutop'];
+        const b = [...'rouejksaowpoqmnd'];
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         console.log(
             dictionnaryTrieService.generatePossibleWords(b, [
-                { connectedLetter: 'a', allowedQuantity: 3 },
-                { connectedLetter: 'g', allowedQuantity: 4 },
+                { connectedLetter: 't', index: 3 },
+                { connectedLetter: 's', index: 5 },
+                { connectedLetter: undefined, index: 7 },
             ]),
         );
     });

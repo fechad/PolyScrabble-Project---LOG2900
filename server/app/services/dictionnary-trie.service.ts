@@ -2,7 +2,7 @@ import { LetterNode } from '@app/classes/letter-node';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Service } from 'typedi';
 
-export type WordConnection = { connectedLetter?: string; allowedQuantity: number };
+export type WordConnection = { connectedLetter?: string; index: number };
 
 @Service()
 export class DictionnaryTrieService {
@@ -17,77 +17,33 @@ export class DictionnaryTrieService {
             });
         }
     }
-    generatePossibleWords(inputArr: string[], connections: WordConnection[]): string[][] {
-        const validWords: string[][] = [];
 
-        const permute = (remainingLetter: string[], attemptedPermutation: string[] = [], currentIndex: number = 0) => {
-            const qtyPermuted = inputArr.length - remainingLetter.length;
-            let connection = connections[currentIndex];
-            if (qtyPermuted === connection.allowedQuantity) {
-                attemptedPermutation =
-                    connection.connectedLetter === undefined ? attemptedPermutation : attemptedPermutation.concat(connection.connectedLetter);
-                if (this.isValidBranching(attemptedPermutation)) {
-                    validWords.push(attemptedPermutation);
-                    currentIndex++;
-                    connection = connections[currentIndex];
-                    console.log(connection);
-                    if (!connection) return;
-                }
+    generatePossibleWords(rack: string[], connections: WordConnection[]): string[] {
+        const validWords: Set<string> = new Set();
+        const permute = (remainingLetters: string[], attemptedPermutation: string = '', currentIndex: number = 0) => {
+            if (currentIndex !== 0 && this.isValidBranching([...attemptedPermutation], true)) {
+                validWords.add(attemptedPermutation);
             }
-            if (qtyPermuted <= connection.allowedQuantity) {
-                for (let i = 0; i < remainingLetter.length; i++) {
-                    const copy = remainingLetter.slice();
+            const currentConnection = connections[currentIndex];
+            if (attemptedPermutation.length === currentConnection.index) {
+                if (currentConnection.connectedLetter === undefined) return;
+                const nextPermutation = attemptedPermutation + currentConnection.connectedLetter;
+                if (this.isValidBranching([...nextPermutation])) permute(remainingLetters, nextPermutation, currentIndex + 1);
+            } else {
+                for (let i = 0; i < remainingLetters.length; i++) {
+                    const copy = remainingLetters.slice();
                     const nextLetter = copy.splice(i, 1);
-                    const nextPermutation = attemptedPermutation.concat(nextLetter);
-                    if (this.isValidBranching(nextPermutation)) permute(copy, nextPermutation, currentIndex);
+                    const nextPermutation = attemptedPermutation + nextLetter;
+                    if (this.isValidBranching([...nextPermutation])) permute(copy, nextPermutation, currentIndex);
                 }
             }
         };
-
-        permute(inputArr);
-        return this.removeDuplicates(validWords);
+        permute(rack);
+        return [...validWords];
     }
 
-    // generateRightParts(partialWord: string[], allowedQuantity: number, otherConnection?: string) {
-    //     // if (otherConnection) {
-    //     // }
-    // }
-
-    isValidBranching(permutation: string[]) {
-        let validation = true;
-        let currentNode: LetterNode | undefined = this.dictionnaryTree;
-        permutation.forEach((letter) => {
-            if (currentNode === undefined) {
-                validation = false;
-                return;
-            }
-            currentNode = currentNode.getNext(letter);
-        });
-        return validation && currentNode !== undefined;
-    }
-
-    removeDuplicates(initialArray: string[][]) {
-        const finalArray: string[][] = [];
-        initialArray.forEach((item) => {
-            let isUniqueElement = true;
-            finalArray.forEach((word) => {
-                let isSameWord = true;
-                word.forEach((letter, index) => {
-                    if (letter !== item[index]) {
-                        isSameWord = false;
-                        return;
-                    }
-                });
-                if (isSameWord) {
-                    isUniqueElement = false;
-                    return;
-                }
-            });
-
-            if (isUniqueElement) {
-                finalArray.push(item.slice());
-            }
-        });
-        return finalArray;
+    isValidBranching(permutation: string[], isFinal: boolean = false) {
+        const finalNode = permutation.reduce((currentNode, letter) => currentNode?.getNext(letter), this.dictionnaryTree);
+        return finalNode !== undefined && (!isFinal || finalNode.final);
     }
 }
