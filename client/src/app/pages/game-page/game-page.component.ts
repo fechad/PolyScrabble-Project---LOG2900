@@ -33,9 +33,9 @@ export class GamePageComponent {
         this.isSending = true;
     }
     async quitGame() {
-        let text = [''];
-        if (this.gameContextService.state.value.ended) text = ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester'];
-        else text = ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+        const text = this.gameContextService.state.value.ended
+            ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
+            : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
         const result = await Swal.fire({
             title: text[0],
             text: text[1],

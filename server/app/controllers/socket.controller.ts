@@ -11,6 +11,7 @@ import { Service } from 'typedi';
 
 type Handlers = [string, (params: unknown[]) => void][];
 const AWOL_DELAY = 5000;
+
 @Service()
 export class SocketManager {
     private io: io.Server;
