@@ -68,7 +68,7 @@
                     matTooltip="Jouer les lettres placées"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
-                    [disabled]="gridService.letterForServer.length === 0"
+                    [disabled]="placingWords"
                     (click)="send()"
                 >
                     <fa-icon [icon]="faPlay"></fa-icon>

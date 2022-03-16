@@ -1,4 +1,4 @@
-import { Component, Injectable } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
     styleUrls: ['./game-page.component.scss'],
 })
 @Injectable()
-export class GamePageComponent {
+export class GamePageComponent implements AfterViewChecked {
     faQuestionCircle = faQuestionCircle;
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
@@ -22,12 +22,19 @@ export class GamePageComponent {
     faPlay = faPlay;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
     isSending = false;
+    placingWords = true;
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
         public gameContextService: GameContextService,
         public router: Router,
+        private detectChanges: ChangeDetectorRef,
     ) {}
+
+    ngAfterViewChecked(): void {
+        this.placingWords = this.gridService.letterForServer.length === 0;
+        this.detectChanges.detectChanges();
+    }
 
     send() {
         this.isSending = true;

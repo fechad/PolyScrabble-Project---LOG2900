@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
@@ -31,7 +31,7 @@ export enum MouseButton {
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
+export class PlayAreaComponent implements AfterViewInit {
     @Input() sending: boolean = false;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
@@ -206,9 +206,11 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
         this.gridCanvas.nativeElement.focus();
         this.isLoaded = true;
     }
-    ngAfterViewChecked() {
+
+    ngAfterViewChecked(): void {
         if (!this.myTurn) this.removeWord();
     }
+
     get width(): number {
         return this.canvasSize.x;
     }
