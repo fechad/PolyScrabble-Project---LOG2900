@@ -3,6 +3,7 @@ import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
+const CONTACT_CHAR = '*';
 const FIRST_WORD = -1;
 const VALID_CONTACT = -1;
 const BOARD_LENGTH = 15;
@@ -13,7 +14,7 @@ const BOARD_PLACEMENT_DELAY = 3000; // ms
 
 export class Board {
     board: GameTile[][];
-    private wordGetter: WordGetter;
+    wordGetter: WordGetter;
 
     constructor(private dictionnary: DictionnaryService) {
         this.board = [];
@@ -40,7 +41,7 @@ export class Board {
         if (!this.firstWordValidation(word.length, row, col, isHorizontal)) throw new Error('Placement invalide pour le premier mot');
         const contacts = this.getContacts(word.length, row, col, isHorizontal);
         if (isHorizontal === undefined) {
-            isHorizontal = (col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty);
+            isHorizontal = this.isInContact(row, col, false);
         }
         const words = this.wordGetter.getWords(word, row, col, contacts, isHorizontal as boolean);
         if (!this.dictionnary.validateWords(words)) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
@@ -48,9 +49,26 @@ export class Board {
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
+    getPlayablePositions(rackLength: number): string[][][] {
+        const playablePositions: string[][][] = [];
+        for (let i = 0; i < BOARD_LENGTH; i++) {
+            playablePositions[i] = [];
+            for (let j = 0; j < BOARD_LENGTH; j++) {
+                playablePositions[i][j] = [];
+                if (!this.board[i][j].empty) {
+                    playablePositions[i][j][0] = '';
+                    playablePositions[i][j][1] = '';
+                } else {
+                    playablePositions[i][j][0] = this.getPositionString(i, j, rackLength, true);
+                    playablePositions[i][j][1] = this.getPositionString(i, j, rackLength, false);
+                }
+            }
+        }
+        return playablePositions;
+    }
+
     private placeWithScore(words: string[]): number {
         let score = 0;
-
         words.forEach((word) => {
             let wordScore = 0;
             let wordMultiplier = 1;
@@ -94,51 +112,33 @@ export class Board {
             return [[FIRST_WORD]];
         }
         if (isHorizontal === undefined) {
-            if ((col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty)) {
-                if ((row - 1 >= 0 && !this.board[row - 1][col].empty) || (row + 1 < BOARD_LENGTH && !this.board[row - 1][col].empty)) {
-                    contacts.push([row, col, 0]);
-                }
+            if (this.isInContact(row, col, true) && this.isInContact(row, col, false)) {
+                contacts.push([row, col, 0]);
             }
-        } else if (isHorizontal) {
-            contacts = contacts.concat(this.getContactHorizontal(row, col, wordLength));
         } else {
-            contacts = contacts.concat(this.getContactVertical(row, col, wordLength));
+            contacts = contacts.concat(this.getUniqueContact(row, col, wordLength, isHorizontal));
         }
         return contacts;
     }
 
-    private getContactHorizontal(row: number, col: number, wordLength: number): number[][] {
+    private getUniqueContact(startRow: number, startCol: number, wordLength: number, isHoriontal: boolean): number[][] {
         let collisions = 0;
         let wordPos = 0;
         const contacts = [];
-        while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
-        for (let i = 0; i < wordLength + collisions || (col + i < BOARD_LENGTH && !this.board[row][col + i].empty); i++) {
-            if ((row - 1 >= 0 && !this.board[row - 1][col + i].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][col + i].empty)) {
-                if (this.board[row][col + i].empty) {
-                    contacts.push([row, col + i, wordPos]);
-                }
-            }
-            if (this.board[row][col + i].empty) wordPos++;
-            else collisions++;
-        }
-        if (collisions !== 0 && contacts.length === 0) {
-            contacts.push([VALID_CONTACT]);
-        }
-        return contacts;
-    }
+        if (isHoriontal) while (this.containsLetter(startRow, startCol - 1)) startCol--;
+        else while (this.containsLetter(startRow - 1, startCol)) startRow--;
 
-    private getContactVertical(row: number, col: number, wordLength: number): number[][] {
-        let collisions = 0;
-        let wordPos = 0;
-        const contacts = [];
-        while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
-        for (let i = 0; i < wordLength + collisions || (row + i < BOARD_LENGTH && !this.board[row + i][col].empty); i++) {
-            if ((col - 1 >= 0 && !this.board[row + i][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row + i][col + 1].empty)) {
-                if (this.board[row + i][col].empty) {
-                    contacts.push([row + i, col, wordPos]);
+        let row = startRow;
+        let col = startCol;
+        for (let offset = 0; offset < wordLength + collisions || this.containsLetter(row, col); offset++) {
+            if (isHoriontal) col = startCol + offset;
+            else row = startRow + offset;
+            if (this.isInContact(row, col, isHoriontal)) {
+                if (this.board[row][col].empty) {
+                    contacts.push([row, col, wordPos]);
                 }
             }
-            if (this.board[row + i][col].empty) wordPos++;
+            if (this.board[row][col].empty) wordPos++;
             else collisions++;
         }
         if (collisions !== 0 && contacts.length === 0) {
@@ -163,31 +163,61 @@ export class Board {
     }
 
     private isWordInBound(wordLength: number, row: number, col: number, isHorizontal?: boolean) {
-        let collisionsCol = 0;
-        let collisionsRow = 0;
+        let collisions = 0;
         if (row < 0 || col < 0) return false;
         if (isHorizontal === undefined) return row < BOARD_LENGTH && col < BOARD_LENGTH;
+        let currentRow = row;
+        let currentCol = col;
+        for (let offset = 0; offset < wordLength + collisions; offset++) {
+            if (isHorizontal) currentCol = col + offset;
+            else currentRow = row + offset;
 
-        if (isHorizontal) {
-            for (let i = 0; i < wordLength + collisionsCol; i++) {
-                if (col + i >= BOARD_LENGTH) {
-                    return false;
-                }
-                if (!this.board[row][col + i].empty) {
-                    collisionsCol++;
-                }
-            }
-        } else {
-            for (let i = 0; i < wordLength + collisionsRow; i++) {
-                if (row + i >= BOARD_LENGTH) {
-                    return false;
-                }
-                if (!this.board[row + i][col].empty) {
-                    collisionsRow++;
-                }
+            if (currentRow >= BOARD_LENGTH || currentCol >= BOARD_LENGTH) return false;
+            if (this.containsLetter(currentRow, currentCol)) {
+                collisions++;
             }
         }
         return true;
+    }
+
+    private getPositionString(startRow: number, startCol: number, rackLength: number, isHorizontal: boolean): string {
+        let position = '';
+        let collisions = 0;
+        if (isHorizontal) while (this.containsLetter(startRow, startCol - 1)) startCol--;
+        else while (this.containsLetter(startRow - 1, startCol)) startRow--;
+
+        let row = startRow;
+        let col = startCol;
+        for (let offset = 0; (isHorizontal ? startCol : startRow) + offset < BOARD_LENGTH && offset < rackLength + collisions; offset++) {
+            if (isHorizontal) col = startCol + offset;
+            else row = startRow + offset;
+
+            if (this.containsLetter(row, col)) {
+                position += this.board[row][col].getChar();
+                collisions++;
+            } else if (this.isInContact(row, col, isHorizontal)) {
+                position += CONTACT_CHAR;
+            } else {
+                position += ' ';
+            }
+        }
+        while (this.containsLetter(row, col)) {
+            position += this.board[row][col].getChar();
+            if (isHorizontal) col++;
+            else row++;
+        }
+        return position;
+    }
+
+    private containsLetter(row: number, col: number) {
+        const inBound = row >= 0 && row < BOARD_LENGTH && col >= 0 && col < BOARD_LENGTH;
+        return inBound && !this.board[row][col].empty;
+    }
+
+    private isInContact(row: number, col: number, isWordHorizontal: boolean): boolean {
+        return isWordHorizontal
+            ? (row - 1 >= 0 && !this.board[row - 1][col].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][col].empty)
+            : (col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty);
     }
 
     private initList(array: number[][], multLetter: number, multWord?: number) {

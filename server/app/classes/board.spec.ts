@@ -336,4 +336,12 @@ describe('Board', () => {
             expect(error.message).to.equal(errorMessage);
         }
     });
+
+    // TODO fix test
+    /* it('should test playable position', () => {
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+        board.getPlayablePositions(7);
+        assert(true);
+    });*/
 });

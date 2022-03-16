@@ -43,7 +43,7 @@ describe('MainLobby service tests', () => {
         parameters.gameType = GameType.Solo;
         playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
         const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
-        expectedRoom.addPlayer('virtual', 'Anna', true);
+        expectedRoom.addPlayer('VP', 'Anna', true);
         expectedRoom.start();
         expect(rooms.rooms).to.deep.equal([expectedRoom]);
         done();
