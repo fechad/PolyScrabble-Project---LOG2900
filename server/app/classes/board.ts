@@ -130,9 +130,13 @@ export class Board {
 
         let row = startRow;
         let col = startCol;
-        for (let offset = 0; offset < wordLength + collisions || (col < BOARD_LENGTH && !this.board[row][col].empty); offset++) {
-            let row = startRow + (isHoriontal ? 0 : offset);
-            let col = startCol + (isHoriontal ? offset : 0);
+        for (
+            let offset = 0;
+            offset < wordLength + collisions || (row < BOARD_LENGTH && col < BOARD_LENGTH && !this.board[row][col].empty);
+            offset++
+        ) {
+            row = startRow + (isHoriontal ? 0 : offset);
+            col = startCol + (isHoriontal ? offset : 0);
             if (this.isInContact(row, col, isHoriontal)) {
                 if (this.board[row][col].empty) {
                     contacts.push([row, col, wordPos]);
@@ -202,7 +206,6 @@ export class Board {
             if (isHorizontal) col = startCol + offset;
             else row = startRow + offset;
 
-            console.log(row, col);
             if (!this.board[row][col].empty) {
                 position += this.board[row][col].getChar();
                 collisions++;
@@ -222,8 +225,8 @@ export class Board {
 
     private isInContact(row: number, col: number, isWordHorizontal: boolean): boolean {
         return isWordHorizontal
-        ? (row - 1 >= 0 && !this.board[row - 1][col].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][col].empty)
-        : (col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty);
+            ? (row - 1 >= 0 && !this.board[row - 1][col].empty) || (row + 1 < BOARD_LENGTH && !this.board[row + 1][col].empty)
+            : (col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty);
     }
 
     private initList(array: number[][], multLetter: number, multWord?: number) {

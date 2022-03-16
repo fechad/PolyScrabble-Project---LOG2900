@@ -12,8 +12,6 @@ const DELAY_CHECK_TURN = 1000; // ms
 
 export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export class VirtualPlayer {
     board: Board;
 
@@ -37,11 +35,8 @@ export class VirtualPlayer {
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 // pour chaque orientation
-                for (let k = 0; k < 2; k++) {
-                    let valid = false;
-                    for (const char of positions[i][j][k]) {
-                        if (char !== ' ') valid = true;
-                    }
+                for (const k of [0, 1]) {
+                    const valid = [...positions[i][j][k]].some((char) => char !== ' ');
                     if (valid) arrayPos.push({ row: i, col: j, isHorizontal: k === 0, word: positions[i][j][k] });
                 }
             }
@@ -71,10 +66,10 @@ export class VirtualPlayer {
         this.waitForTurn();
     }
 
-    private validateCrosswords(array: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
+    private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
         let validWords: PlacementOption[] = [];
         let starRemains = false;
-        for (const option of array) {
+        for (const option of placementOptions) {
             let letterCount = 0;
             let oneContact = false;
             let availableLetters = this.rackToString();
@@ -107,22 +102,16 @@ export class VirtualPlayer {
     ): PlacementOption[] {
         const row = option.isHorizontal ? option.row : option.row + letterCount;
         const col = option.isHorizontal ? option.col + letterCount : option.col;
-        let alreadyFound = false;
         const validWords: PlacementOption[] = [];
-        for (const explored of exploredOptions) {
-            if (explored.row === row && explored.col === col && explored.isHorizontal === option.isHorizontal) {
-                for (const solution of explored.word) {
-                    let letterAvailable = false;
-                    for (const available of rackLetters) {
-                        if (available === solution) letterAvailable = true;
-                    }
-                    if (letterAvailable) validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, solution)));
-                }
-                alreadyFound = true;
-                break;
+        const alreadyFound = exploredOptions.find(
+            (explored) => explored.row === row && explored.col === col && explored.isHorizontal === option.isHorizontal,
+        );
+        if (alreadyFound) {
+            for (const solution of alreadyFound.word) {
+                const letterAvailable = [...rackLetters].some((letter) => letter === solution);
+                if (letterAvailable) validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, solution)));
             }
-        }
-        if (!alreadyFound) {
+        } else {
             const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
             const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
             exploredOptions.push(this.deepCopyPlacementOption(option, possibleLetters));
@@ -132,10 +121,8 @@ export class VirtualPlayer {
 
     private findNewOptions(validWords: PlacementOption[], option: PlacementOption, rackLetters: string, crossword: string) {
         let possibleLetters = '';
-        let alreadyIn = false;
         for (const rackLetter of rackLetters) {
-            for (const letter of possibleLetters) if (letter === rackLetter) alreadyIn = true;
-            if (alreadyIn) break;
+            if([...possibleLetters].some((letter) => letter === rackLetter)) break;
             const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
             if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
                 validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, rackLetter)));
@@ -150,10 +137,6 @@ export class VirtualPlayer {
     }
 
     private rackToString(): string {
-        let string = '';
-        for (const letter of this.game.reserve.letterRacks[AI_GAME_INDEX]) {
-            string += letter.name;
-        }
-        return string;
+        return this.game.reserve.letterRacks[AI_GAME_INDEX].map(letter => letter.name).join('')
     }
 }
