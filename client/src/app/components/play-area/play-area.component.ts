@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
@@ -32,7 +32,6 @@ export enum MouseButton {
     styleUrls: ['./play-area.component.scss'],
 })
 export class PlayAreaComponent implements AfterViewInit {
-    @Input() sending: boolean = false;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
@@ -40,6 +39,7 @@ export class PlayAreaComponent implements AfterViewInit {
     rack: string[] = [];
     shift: number[] = [];
     myTurn = false;
+    sending: boolean;
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -59,6 +59,9 @@ export class PlayAreaComponent implements AfterViewInit {
         });
         this.gameContextService.isMyTurn().subscribe((bool) => {
             this.myTurn = bool;
+        });
+        this.gameContextService.btnPlayClicked.subscribe((bool) => {
+            this.sending = bool;
         });
     }
     @HostListener('document:click', ['$event'])

@@ -21,8 +21,8 @@ export class GamePageComponent implements AfterViewChecked {
     faAngleDoubleRight = faAngleDoubleRight;
     faPlay = faPlay;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
-    isSending = false;
     placingWords = true;
+    public dataToSend: boolean;
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
@@ -37,7 +37,7 @@ export class GamePageComponent implements AfterViewChecked {
     }
 
     send() {
-        this.isSending = true;
+        this.gameContextService.send();
     }
 
     async quitGame() {

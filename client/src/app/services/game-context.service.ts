@@ -23,6 +23,7 @@ export class GameContextService {
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
     readonly state: BehaviorSubject<GameState>;
+    readonly btnPlayClicked: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     skipTurnEnabled: boolean = true;
     tempRack: Letter[];
     myId: PlayerId;
@@ -54,6 +55,9 @@ export class GameContextService {
 
     isEnded(): Observable<boolean> {
         return this.state.pipe(map((state) => state.state === State.Ended || state.state === State.Aborted));
+    }
+    send() {
+        this.btnPlayClicked.next(true);
     }
 
     isMyTurn(): Observable<boolean> {
