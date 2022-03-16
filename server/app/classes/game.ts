@@ -152,6 +152,15 @@ export class Game {
         }
     }
 
+    hint(playerId: PlayerId) {
+        if (this.checkTurn(playerId)) {
+            const options = ['BOB', 'BOBBY', 'BOBETTE']; // TODO
+            const warning = options.length === 0 ? 'Aucun placement possible' : options.length < 3 ? 'Moins de 3 placements possible' : '';
+            const hintMessage = 'Indice: vous pouvez placer\n' + options.map((opt) => ` - ${opt}`).join('\n') + warning;
+            this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
+        }
+    }
+
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
@@ -172,17 +181,17 @@ export class Game {
         this.sendState();
     }
 
-    getWinner(): [string | undefined, string] {
+    getWinner(): string | undefined {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return [this.players[MAIN_PLAYER].id, this.players[MAIN_PLAYER].name];
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return [this.players[OTHER_PLAYER].id, this.players[OTHER_PLAYER].name];
-        return [undefined, this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
+        return undefined;
     }
 
     endGame() {
         const winnerInfo = this.getWinner();
         this.room.end(false);
-        this.winner = winnerInfo[0];
+        this.winner = winnerInfo;
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),
