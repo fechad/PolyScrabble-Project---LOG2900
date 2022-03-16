@@ -21,13 +21,32 @@ export class VirtualPlayer {
         this.board = game.board;
         console.log(`Virtual player created of difficulty ${isBeginner ? 'beginner' : 'expert'} for game ${game.id}`);
     }
-    
+
     waitForTurn() {
         setInterval(() => {
             if (this.game.getCurrentPlayer().id === AI_ID) {
                 this.playTurn();
             }
         }, DELAY_CHECK_TURN);
+    }
+
+    // a mettre private quand connected
+    getPlayablePositions(): PlacementOption[] {
+        const positions = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
+        const arrayPos: PlacementOption[] = [];
+        for (let i = 0; i < BOARD_LENGTH; i++) {
+            for (let j = 0; j < BOARD_LENGTH; j++) {
+                // pour chaque orientation
+                for (let k = 0; k < 2; k++) {
+                    let valid = false;
+                    for (const char of positions[i][j][k]) {
+                        if (char !== ' ') valid = true;
+                    }
+                    if (valid) arrayPos.push({ row: i, col: j, isHorizontal: k === 0, word: positions[i][j][k] });
+                }
+            }
+        }
+        return this.validateCrosswords(arrayPos);
     }
 
     private playTurn() {
@@ -50,25 +69,6 @@ export class VirtualPlayer {
         // temporaire en attendant implementation placer lettre AI
         this.game.skipTurn(AI_ID);
         this.waitForTurn();
-    }
-
-    //a mettre private quand connected
-    getPlayablePositions(): PlacementOption[] {
-        const positions = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
-        const arrayPos: PlacementOption[] = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
-            for (let j = 0; j < BOARD_LENGTH; j++) {
-                // pour chaque orientation
-                for (let k = 0; k < 2; k++) {
-                    let valid = false;
-                    for (const char of positions[i][j][k]) {
-                        if (char !== ' ') valid = true;
-                    }
-                    if (valid) arrayPos.push({ row: i, col: j, isHorizontal: k === 0, word: positions[i][j][k] });
-                }
-            }
-        }
-        return this.validateCrosswords(arrayPos);
     }
 
     private validateCrosswords(array: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
