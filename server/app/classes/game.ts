@@ -144,8 +144,6 @@ export class Game {
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             this.nextTurn(true);
-            const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
-            this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             this.sendState();
         }
     }
@@ -161,16 +159,17 @@ export class Game {
         this.sendState();
     }
 
-    getWinner(): PlayerId | undefined {
+    getWinner(): string[] {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
-        return undefined;
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return [this.players[MAIN_PLAYER].id, this.players[MAIN_PLAYER].name];
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return [this.players[OTHER_PLAYER].id, this.players[OTHER_PLAYER].name];
+        return ['tie', this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
     }
 
-    private endGame() {
+    endGame() {
+        const winnerInfo = this.getWinner();
         this.room.end(false);
-        this.winner = this.getWinner();
+        this.winner = winnerInfo[0] === 'tie' ? undefined : winnerInfo[0];
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),
@@ -187,6 +186,9 @@ export class Game {
 
     private nextTurn(userRequest: boolean) {
         this.isPlayer0Turn = !this.isPlayer0Turn;
+
+        const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
+        this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
 
         if (userRequest) this.skipCounter += 1;
         else this.skipCounter = 0;
