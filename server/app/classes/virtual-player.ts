@@ -122,7 +122,7 @@ export class VirtualPlayer {
     private findNewOptions(validWords: PlacementOption[], option: PlacementOption, rackLetters: string, crossword: string) {
         let possibleLetters = '';
         for (const rackLetter of rackLetters) {
-            if([...possibleLetters].some((letter) => letter === rackLetter)) break;
+            if ([...possibleLetters].some((letter) => letter === rackLetter)) break;
             const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
             if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
                 validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, rackLetter)));
@@ -137,6 +137,6 @@ export class VirtualPlayer {
     }
 
     private rackToString(): string {
-        return this.game.reserve.letterRacks[AI_GAME_INDEX].map(letter => letter.name).join('')
+        return this.game.reserve.letterRacks[AI_GAME_INDEX].map((letter) => letter.name).join('');
     }
 }
