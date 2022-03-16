@@ -175,6 +175,7 @@ export class Game {
         else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].name;
         return this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name;
     }
+    
     endGame() {
         this.room.end(false);
         this.winner = this.getWinner();
