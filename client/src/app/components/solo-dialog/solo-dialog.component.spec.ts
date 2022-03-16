@@ -7,7 +7,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Room } from '@app/classes/room';
+import { Parameters } from '@app/classes/parameters';
+import { Room, State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
@@ -21,8 +22,25 @@ const dialogMock = {
 
 class CommunicationServiceMock {
     rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
+    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
+        id: 0,
+        name: 'Room',
+        parameters: new Parameters(),
+        mainPlayer: { name: 'Player 1', id: '0', connected: true },
+        otherPlayer: undefined,
+        state: State.Setup,
+    } as Room);
+    dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
 
     async joinRoom() {
+        return;
+    }
+
+    leave() {
+        return;
+    }
+
+    createRoom() {
         return;
     }
 }
@@ -31,11 +49,11 @@ describe('SoloDialogComponent', () => {
     let component: SoloDialogComponent;
     let fixture: ComponentFixture<SoloDialogComponent>;
     let router: jasmine.SpyObj<Router>;
-    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+    let communicationServiceSpy: CommunicationServiceMock;
 
     beforeEach(async () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['createRoom']);
+        communicationServiceSpy = new CommunicationServiceMock();
         await TestBed.configureTestingModule({
             declarations: [SoloDialogComponent],
             imports: [
@@ -102,6 +120,11 @@ describe('SoloDialogComponent', () => {
     });
 
     it('on submit dialog should close', async () => {
+        communicationServiceSpy.selectedRoom.subscribe(async (room) => {
+            if (room === undefined) router.navigate(['/']);
+            else if (room.state === State.Started) router.navigate(['/game']);
+            fixture.detectChanges();
+        });
         const playerName = component.soloParametersForm.controls.playerName;
         playerName.setValue('Test');
         const closeDialogSpy = spyOn(component.dialogRef, 'close');

@@ -64,6 +64,16 @@
             </div>
             <div class="action-buttons">
                 <button
+                    class="play"
+                    matTooltip="Jouer les lettres placées"
+                    matTooltipPosition="right"
+                    matTooltipClass="tool"
+                    [disabled]="gridService.letterForServer.length === 0"
+                    (click)="send()"
+                >
+                    <fa-icon [icon]="faPlay"></fa-icon>
+                </button>
+                <button
                     class="skip-turn"
                     matTooltip="Passer votre tour"
                     matTooltipPosition="right"
@@ -73,14 +83,20 @@
                 >
                     <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
                 </button>
-                <button id="quit-game" matTooltip="Quitter la partie" matTooltipPosition="right" matTooltipClass="tool" (click)="quitGame()">
+                <button
+                    id="quit-game"
+                    [matTooltip]="this.gameContextService.state.value.ended ? 'Quitter la partie' : 'Abandonner la partie'"
+                    matTooltipPosition="right"
+                    matTooltipClass="tool"
+                    (click)="quitGame()"
+                >
                     <fa-icon [icon]="faSignOutAlt"></fa-icon>
                 </button>
             </div>
         </div>
         <div class="center">
             <div class="play-area-container">
-                <app-play-area class="play-area" tabindex="0"></app-play-area>
+                <app-play-area class="play-area" tabindex="0" [sending]="isSending"></app-play-area>
             </div>
             <div id="bottom-area">
                 <div class="rackArea">

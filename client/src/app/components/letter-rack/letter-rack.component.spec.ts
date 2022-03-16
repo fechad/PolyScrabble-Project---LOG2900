@@ -15,7 +15,7 @@ const setHTML = () => {
     rackContainer.appendChild(canvas);
 
     const chatbox = document.createElement('div');
-    canvas.id = 'writingBox';
+    chatbox.id = 'writingBox';
     canvas.appendChild(chatbox);
 
     const element = document.createElement('div');
@@ -294,5 +294,14 @@ describe('LetterRackComponent', () => {
         const index = component.checkOccurrences(keypress.key);
         component.buttonDetect(keypress);
         expect(component.manipulating).toEqual(index[0]);
+    });
+
+    it('should not detect letter pressed if clicked in chat box textarea', () => {
+        const checkOccurrencesSpy = spyOn(component, 'checkOccurrences').and.callThrough();
+        const chatBox = document.getElementById('writingBox');
+        const keypress = new KeyboardEvent('keydown', { key: 'c' });
+        chatBox?.addEventListener('keydown', () => component.buttonDetect(keypress));
+        chatBox?.dispatchEvent(keypress);
+        expect(checkOccurrencesSpy).not.toHaveBeenCalled();
     });
 });

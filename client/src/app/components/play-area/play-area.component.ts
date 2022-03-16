@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { CommandParsing } from '@app/classes/command-parsing';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
@@ -12,6 +13,8 @@ const LAST_INDEX = -1;
 const CANVAS_SQUARE_SIZE = 33;
 const PLAY_AREA_SIZE = 520;
 const ADJUSTMENT = 2;
+const POS_AND_SHIFT = 16;
+const BOARD_SIZE = 15;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -27,14 +30,15 @@ export enum MouseButton {
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
+    @Input() sending: boolean = false;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
     mousePosition = this.mouseDetectService.mousePosition;
     rack: string[] = [];
-    firstLetter = [0, 0];
     shift: number[] = [];
+    myTurn = false;
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
@@ -52,31 +56,62 @@ export class PlayAreaComponent implements AfterViewInit {
                 if (this.rack.length <= MAX_RACK_SIZE) this.rack.push(i.name);
             }
         });
+        this.gameContextService.isMyTurn().subscribe((bool) => {
+            this.myTurn = bool;
+        });
+    }
+    @HostListener('document:click', ['$event'])
+    click(event: MouseEvent) {
+        if (this.sending && this.myTurn) {
+            this.sendPlacedLetters();
+            this.sending = false;
+        } else if (this.gridCanvas.nativeElement !== event.target && this.myTurn) {
+            this.removeWord();
+        }
     }
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-        if (this.buttonPressed === 'Enter') {
-            this.sendPlacedLetters();
-        } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
-            this.removeLetterOnCanvas();
-        } else if (this.mouseDetectService.writingAllowed && this.isInBound()) {
-            try {
-                this.placeWordOnCanvas();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } catch (e: any) {
-                this.communicationservice.sendLocalMessage(e.message);
+        if (this.myTurn && !this.gameContextService.state.value.ended) {
+            this.buttonPressed = event.key;
+            if (this.buttonPressed === 'Enter') {
+                this.sendPlacedLetters();
+            } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
+                this.removeLetterOnCanvas();
+            } else if (this.buttonPressed === 'Escape') {
+                this.removeWord();
+            } else if (this.isInBound() && this.buttonPressed.match(/[A-Za-zÀ-ú]/g)?.length === 1) {
+                try {
+                    this.placeWordOnCanvas();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (e: any) {
+                    this.communicationservice.sendLocalMessage(e.message);
+                }
             }
         }
+    }
+
+    removeWord() {
+        for (const elem of this.gridService.letters) {
+            this.gridService.rack.push(elem);
+            this.gameContextService.addTempRack(elem);
+        }
+        for (const elem of this.gridService.letterPosition) {
+            this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
+        }
+        this.gridService.letterPosition = [[0, 0]];
+        this.gridService.letterWritten = 0;
+        this.gridService.letters = [];
+        this.gridService.letterForServer = '';
+        this.gridService.drawGrid();
     }
 
     sendPlacedLetters() {
         for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
         this.communicationservice.place(
             this.gridService.letterForServer,
-            this.firstLetter[1],
-            this.firstLetter[0],
+            this.gridService.firstLetter[1],
+            this.gridService.firstLetter[0],
             this.mouseDetectService.isHorizontal,
         );
         this.gridService.letterPosition = [[0, 0]];
@@ -95,7 +130,7 @@ export class PlayAreaComponent implements AfterViewInit {
             this.gridService.rack.push(letter);
             this.gameContextService.addTempRack(letter);
         }
-        if (letterRemoved[0] !== undefined && letterRemoved[0] !== undefined)
+        if (letterRemoved[1] !== undefined && letterRemoved[0] !== undefined)
             this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
@@ -103,29 +138,30 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     placeWordOnCanvas() {
-        this.gameContextService.attemptTempRackUpdate(this.buttonPressed);
+        const word = CommandParsing.removeAccents(this.buttonPressed);
+        this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
-        for (const i of this.gridService.rack) {
-            if (i.name === this.buttonPressed.toUpperCase()) {
-                this.gridService.letters.push(i);
-                this.gridService.letterForServer += this.buttonPressed;
-                break;
-            }
-        }
-        this.gridService.drawGrid();
+        const item = this.gridService.rack.find((i) => i.name === word.toUpperCase());
+        if (item === undefined) this.gridService.letters.push({ name: '*', score: 0 });
+        else this.gridService.letters.push(item);
+        this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
-            this.firstLetter = [
+            this.gridService.firstLetter = [
                 Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
                 Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             ];
         this.gridService.tempUpdateBoard(
-            this.buttonPressed,
+            word,
             Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
             this.mouseDetectService.isHorizontal,
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
-        this.drawShiftedArrow(lastLetter, 2);
+        if (
+            (this.getShift(lastLetter) + lastLetter[1] < POS_AND_SHIFT && this.mouseDetectService.isHorizontal) ||
+            (this.getShift(lastLetter) + lastLetter[0] < POS_AND_SHIFT && !this.mouseDetectService.isHorizontal)
+        )
+            this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
         this.gameContextService.tempUpdateRack();
     }
 
@@ -148,28 +184,31 @@ export class PlayAreaComponent implements AfterViewInit {
     getShift(pos: number[]): number {
         const board = this.gameContextService.state.value.board;
         let shift = 2;
+        let y = pos[0];
+        let x = pos[1];
         if (this.mouseDetectService.isHorizontal) {
-            while (board[pos[0]][pos[1] + 1] !== null) {
-                pos[1]++;
+            while (board[y][x + 1]) {
+                x++;
                 shift++;
             }
             return shift;
         } else {
-            while (board[pos[0] + 1][pos[1]] !== null) {
-                pos[0]++;
+            while (y + 1 !== BOARD_SIZE && board[y + 1][x]) {
+                y++;
                 shift++;
             }
             return shift;
         }
     }
-
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gridService.drawGrid();
         this.gridCanvas.nativeElement.focus();
         this.isLoaded = true;
     }
-
+    ngAfterViewChecked() {
+        if (!this.myTurn) this.removeWord();
+    }
     get width(): number {
         return this.canvasSize.x;
     }
