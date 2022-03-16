@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { DictionnaryTrieService } from './dictionnary-trie.service';
@@ -13,16 +14,14 @@ describe('Dictionnary Trie', () => {
     it('should create tree', () => {
         expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
     });
-    it('should create all perm', () => {
+    it('should generate words that respect formatting', () => {
         expect(dictionnaryTrieService.dictionnaryTree.letter).to.equal('*');
-        const b = [...'rouejksaowpoqmnd'];
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        console.log(
-            dictionnaryTrieService.generatePossibleWords(b, [
-                { connectedLetter: 't', index: 3 },
-                { connectedLetter: 's', index: 5 },
-                { connectedLetter: undefined, index: 7 },
-            ]),
-        );
+        const b = [...'baeeudn'];
+        const words = dictionnaryTrieService.generatePossibleWords(b, [
+            { connectedLetter: 's', index: 2 },
+            { connectedLetter: undefined, index: 4 },
+        ]);
+        expect(words.every((word) => word[2] === 's')).to.equal(true);
+        expect(words.every((word) => word.length <= 4 && word.length >= 3)).to.equal(true);
     });
 });
