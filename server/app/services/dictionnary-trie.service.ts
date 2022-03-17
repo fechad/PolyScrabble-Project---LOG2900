@@ -2,7 +2,7 @@ import { LetterNode } from '@app/classes/letter-node';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Service } from 'typedi';
 
-export type WordConnection = { connectedLetter?: string; index: number };
+export type WordConnection = { connectedLetter?: string; index: number; isOnBoard: boolean };
 
 @Service()
 export class DictionnaryTrieService {
