@@ -123,7 +123,7 @@ export class VirtualPlayer {
     private findNewOptions(validWords: PlacementOption[], option: PlacementOption, rackLetters: string, crossword: string) {
         let possibleLetters = '';
         for (const rackLetter of rackLetters) {
-            if ([...possibleLetters].some((letter) => letter === rackLetter)) break;
+            if ([...possibleLetters].includes(rackLetter)) continue;
             const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
             if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
                 validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, rackLetter)));
