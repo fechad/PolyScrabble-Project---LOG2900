@@ -32,7 +32,7 @@ describe('Timer service', () => {
             reserveCount: 88,
             board: [],
             turn: 'P1',
-            ended: false,
+            state: State.Started,
         };
         gameState = new BehaviorSubject(state);
         TestBed.configureTestingModule({

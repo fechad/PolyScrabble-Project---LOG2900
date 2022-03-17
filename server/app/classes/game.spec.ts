@@ -175,7 +175,7 @@ describe('Game', () => {
 
     it('Skipping 6 turns in a row should call endGame', () => {
         game['skipCounter'] = 5;
-        const endGame = sinon.spy(game, 'endGame');
+        const endGame = sinon.spy(game, 'endGame' as never);
         game['nextTurn'](true);
         assert(endGame.called);
     });
@@ -204,12 +204,14 @@ describe('Game', () => {
 
         game.scores[0] = 20;
         game.scores[1] = 10;
-        const result1 = game.getWinner();
+        // eslint-disable-next-line dot-notation
+        const result1 = game['getWinner']();
         assert(result1 === mainPlayer.id);
 
         game.scores[0] = 10;
         game.scores[1] = 20;
-        const result2 = game.getWinner();
+        // eslint-disable-next-line dot-notation
+        const result2 = game['getWinner']();
         assert(result2 === otherPlayer.id);
     });
 
@@ -217,7 +219,8 @@ describe('Game', () => {
         game.reserve['letterRacks'][0] = [...game.reserve['letterRacks'][1]];
         game.scores[0] = 20;
         game.scores[1] = 20;
-        const result1 = game.getWinner();
+        // eslint-disable-next-line dot-notation
+        const result1 = game['getWinner']();
         expect(result1).to.equal(undefined);
     });
 
@@ -225,7 +228,7 @@ describe('Game', () => {
         const row = 7;
         const col = 6;
         const isHorizontal = true;
-        const endGame = sinon.stub(game, 'endGame');
+        const endGame = sinon.stub(game, 'endGame' as never);
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
         game['isPlayer0Turn'] = true;

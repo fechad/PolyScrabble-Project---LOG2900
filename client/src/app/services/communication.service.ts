@@ -6,7 +6,7 @@ import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject } from 'rxjs';
@@ -239,7 +239,7 @@ export class CommunicationService {
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
                 let text = [''];
-                if (this.gameContextService.state.value.ended)
+                if (this.gameContextService.state.value.state !== State.Started)
                     text = [
                         'La salle est devenue bien silencieuse...',
                         'Votre adversaire a quitté la partie, voulez-vous retourner au menu principal?',
