@@ -31,7 +31,7 @@ export class Board {
     }
 
     async placeWord(word: string, row: number, col: number, isHorizontal?: boolean): Promise<number> {
-        if (isHorizontal === undefined) isHorizontal = this.isInContact(row, col, false);
+        isHorizontal ||= this.isInContact(row, col, false);
         const triedPlacement = new PlacementOption(row, col, isHorizontal, word);
 
         if (!this.isWordInBound(triedPlacement)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
@@ -68,7 +68,6 @@ export class Board {
     }
 
     private getScore(words: PlacementOption[], placeWord: boolean): number {
-        console.log(words);
         let score = 0;
         words.forEach((word) => {
             let wordScore = 0;

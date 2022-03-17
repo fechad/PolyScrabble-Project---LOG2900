@@ -60,192 +60,182 @@ describe('Board', () => {
     it('should validate if word is inside the board', () => {
         let placement = new PlacementOption(2, 11, true, 'test');
         let result = board['isWordInBound'](placement);
-        assert(result);
+        expect(result).to.equal(true);
 
         placement = new PlacementOption(11, 8, false, 'test');
         result = board['isWordInBound'](placement);
-        assert(result);
+        expect(result).to.equal(true);
     });
 
     it('should not let the word get out of the board', () => {
         let placement = new PlacementOption(2, 12, true, 'test');
         let result = board['isWordInBound'](placement);
-        assert(!result);
+        expect(result).to.equal(false);
 
         placement = new PlacementOption(13, 9, false, 'test');
         result = board['isWordInBound'](placement);
-        assert(!result);
+        expect(result).to.equal(false);
 
         placement = new PlacementOption(3, -4, true, 'test');
         result = board['isWordInBound'](placement);
-        assert(!result);
+        expect(result).to.equal(false);
 
         placement = new PlacementOption(3, 11, true, 'test');
         result = board['isWordInBound'](placement);
-        assert(result);
+        expect(result).to.equal(true);
         board.board[3][12].setLetter('a');
         result = board['isWordInBound'](placement);
-        assert(!result);
+        expect(result).to.equal(false);
 
         placement = new PlacementOption(10, 9, false, 'test');
         result = board['isWordInBound'](placement);
-        assert(result);
+        expect(result).to.equal(true);
         board.board[11][9].setLetter('a');
         board.board[13][9].setLetter('t');
         result = board['isWordInBound'](placement);
-        assert(!result);
-    });
-    /*
-    it('should let a placement on the star for first word', (done) => {
-        let row = 7;
-        let col = 5;
-        let isHoriontal = true;
-        let result = board['firstWordValidation'](word.length, row, col, isHoriontal);
-        assert(result);
-
-        row = 4;
-        col = 7;
-        isHoriontal = false;
-        result = board['firstWordValidation'](word.length, row, col, false);
-        assert(result);
-
-        row = 7;
-        col = 7;
-        isHoriontal = true;
-        result = board['firstWordValidation'](word.length, row, col, isHoriontal);
-        assert(result);
-        done();
+        expect(result).to.equal(false);
     });
 
-    it('should let not first word not touch the star', (done) => {
-        const row = 12;
-        const col = 4;
-        const isHoriontal = true;
-        board.board[7][7].setLetter('a');
-        const result = board['firstWordValidation'](word.length, row, col, isHoriontal);
-        assert(result);
-        done();
+    it('should let a placement on the star for first word', () => {
+        let placement = new PlacementOption(7, 5, true, 'test');
+        let result = board['firstWordValidation'](placement);
+        expect(result).to.equal(true);
+
+        placement = new PlacementOption(4, 7, false, 'test');
+        result = board['firstWordValidation'](placement);
+        expect(result).to.equal(true);
+
+        placement = new PlacementOption(7, 7, true, 'test');
+        result = board['firstWordValidation'](placement);
+        expect(result).to.equal(true);
     });
 
-    it('should not let a placement not on the star for first word', (done) => {
-        let row = 8;
-        let col = 5;
-        let isHoriontal = true;
-        let result = board['firstWordValidation'](word.length, row, col, isHoriontal);
-        assert(!result);
+    it('should not let a placement not on the star for first word', () => {
+        let placement = new PlacementOption(8, 5, true, 'test');
+        let result = board['firstWordValidation'](placement);
+        expect(result).to.equal(false);
 
-        row = 3;
-        col = 7;
-        isHoriontal = false;
-        result = board['firstWordValidation'](word.length, row, col, isHoriontal);
-        assert(!result);
+        placement = new PlacementOption(3, 7, false, 'test');
+        result = board['firstWordValidation'](placement);
+        expect(result).to.equal(false);
 
-        row = 7;
-        col = 8;
-        isHoriontal = true;
-        result = board['firstWordValidation'](word.length, row, col, isHoriontal);
-        assert(!result);
-        done();
+        placement = new PlacementOption(7, 8, true, 'test');
+        result = board['firstWordValidation'](placement);
+        expect(result).to.equal(false);
     });
 
-    it('should get all the points of contact of the word', (done) => {
+    it('should get all the points of contact of the word', () => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
 
-        let row = 8;
-        let col = 5;
-        let isHoriontal = true;
-        let contacts = board['getContacts'](word.length, row, col, isHoriontal);
+        let placement = new PlacementOption(8, 5, true, 'test');
+        let contacts = board['getContacts'](placement);
         assert(contacts.length === 2);
-        assert(contacts[0][0] === 8);
-        assert(contacts[0][1] === 6);
-        assert(contacts[0][2] === 1);
+        expect(contacts[0][0]).to.equal(8);
+        expect(contacts[0][1]).to.equal(6);
+        expect(contacts[0][2]).to.equal(1);
 
-        assert(contacts[1][0] === 8);
-        assert(contacts[1][1] === 7);
-        assert(contacts[1][2] === 2);
+        expect(contacts[1][0]).to.equal(8);
+        expect(contacts[1][1]).to.equal(7);
+        expect(contacts[1][2]).to.equal(2);
 
         board.board[8][6].setLetter('i');
 
-        row = 8;
-        col = 5;
-        isHoriontal = true;
-        contacts = board['getContacts'](word.length, row, col, isHoriontal);
+        contacts = board['getContacts'](placement);
         assert(contacts.length === 1);
 
-        assert(contacts[0][0] === 8);
-        assert(contacts[0][1] === 7);
-        assert(contacts[0][2] === 1);
+        expect(contacts[0][0]).to.equal(8);
+        expect(contacts[0][1]).to.equal(7);
+        expect(contacts[0][2]).to.equal(1);
 
-        row = 4;
-        col = 6;
-        isHoriontal = false;
-        contacts = board['getContacts'](word.length, row, col, isHoriontal);
+        placement = new PlacementOption(4, 6, false, 'test');
+        try {
+            contacts = board['getContacts'](placement);
+            expect(false, 'placement devrait etre invalide');
+        } catch (e) {
+            expect(true);
+        }
+
+        placement = new PlacementOption(4, 5, false, 'test');
+        contacts = board['getContacts'](placement);
         assert(contacts.length === 1);
-        assert(contacts[0][0] === INVALID);
+        expect(contacts[0][0]).to.equal(7);
+        expect(contacts[0][1]).to.equal(5);
+        expect(contacts[0][2]).to.equal(3);
 
-        row = 4;
-        col = 5;
-        isHoriontal = false;
-        contacts = board['getContacts'](word.length, row, col, isHoriontal);
-        assert(contacts.length === 1);
-        assert(contacts[0][0] === 7);
-        assert(contacts[0][1] === 5);
-        assert(contacts[0][2] === 3);
-
-        row = 1;
-        col = 1;
-        isHoriontal = false;
-        contacts = board['getContacts'](word.length, row, col, isHoriontal);
-        assert(contacts.length === 0);
-        done();
+        placement = new PlacementOption(1, 1, false, 'test');
+        try {
+            contacts = board['getContacts'](placement);
+            expect(false, 'placement devrait etre invalide');
+        } catch (e) {
+            expect(true);
+        }
     });
 
-    it('should change newly placed word', (done) => {
+    it('should change newly placed word', () => {
         board.board[7][6].setLetter('a');
         board.board[7][7].setLetter('s');
         board.board[9][6].setLetter('v');
         board.board[10][6].setLetter('u');
 
-        let wordAndPos = ['h', '7', '6', 'as'];
-        board['changeNewlyPlaced'](wordAndPos);
+        let placement = new PlacementOption(7, 6, true, 'as');
+        board['changeNewlyPlaced'](placement, true);
 
-        assert(!board.board[7][6].newlyPlaced);
-        assert(!board.board[7][7].newlyPlaced);
-        assert(board.board[9][6].newlyPlaced);
-        assert(board.board[10][6].newlyPlaced);
+        expect(board.board[7][6].newlyPlaced).to.equal(false);
+        expect(board.board[7][7].newlyPlaced).to.equal(false);
+        expect(board.board[9][6].newlyPlaced).to.equal(true);
+        expect(board.board[10][6].newlyPlaced).to.equal(true);
 
-        wordAndPos = ['v', '9', '6', 'vu'];
-        board['changeNewlyPlaced'](wordAndPos);
+        placement = new PlacementOption(9, 6, false, 'vu');
+        board['changeNewlyPlaced'](placement, true);
 
-        assert(!board.board[7][6].newlyPlaced);
-        assert(!board.board[7][7].newlyPlaced);
-        assert(!board.board[9][6].newlyPlaced);
-        assert(!board.board[10][6].newlyPlaced);
-        done();
+        expect(board.board[7][6].newlyPlaced).to.equal(false);
+        expect(board.board[7][7].newlyPlaced).to.equal(false);
+        expect(board.board[9][6].newlyPlaced).to.equal(false);
+        expect(board.board[10][6].newlyPlaced).to.equal(false);
     });
 
-    it('should place the letters on the board and get the score', (done) => {
-        let wordAndPos = ['h;7;6;as', 'v;9;6;vu'];
+    it('should delete the letters', () => {
+        board.board[7][6].setLetter('a');
+        board.board[7][7].setLetter('s');
+        board.board[9][6].setLetter('v');
+        board.board[10][6].setLetter('u');
+
+        let placement = new PlacementOption(7, 6, true, 'as');
+        board['changeNewlyPlaced'](placement, false);
+
+        expect(board.board[7][6].empty).to.equal(true);
+        expect(board.board[7][7].empty).to.equal(true);
+        expect(board.board[9][6].newlyPlaced).to.equal(true);
+        expect(board.board[10][6].newlyPlaced).to.equal(true);
+
+        placement = new PlacementOption(9, 6, false, 'vu');
+        board['changeNewlyPlaced'](placement, false);
+
+        expect(board.board[7][6].empty).to.equal(true);
+        expect(board.board[7][7].empty).to.equal(true);
+        expect(board.board[9][6].empty).to.equal(true);
+        expect(board.board[10][6].empty).to.equal(true);
+    });
+
+    it('should place the letters on the board and get the score', () => {
+        let placements = [new PlacementOption(7, 6, true, 'as'), new PlacementOption(9, 6, false, 'vu')];
         let expectedScore = 7;
-        let score = board['placeWithScore'](wordAndPos);
+        let score = board['getScore'](placements, false);
         expect(score).to.equal(expectedScore);
 
-        wordAndPos = ['v;4;5;test', 'h;7;5;tas'];
+        score = board['getScore'](placements, true);
+        expect(score).to.equal(expectedScore);
+
+        placements = [new PlacementOption(4, 5, false, 'test'), new PlacementOption(7, 5, true, 'tas')];
         expectedScore = 9;
-        score = board['placeWithScore'](wordAndPos);
+        score = board['getScore'](placements, true);
         expect(score).to.equal(expectedScore);
 
-        wordAndPos = ['h;4;3;metro', 'v;4;5;test'];
+        placements = [new PlacementOption(4, 3, true, 'metro'), new PlacementOption(4, 5, false, 'test')];
         expectedScore = 16;
-        score = board['placeWithScore'](wordAndPos);
+        score = board['getScore'](placements, true);
         expect(score).to.equal(expectedScore);
-
-        wordAndPos = ['v;7;7;speciale', 'h;7;5;tas'];
-        expectedScore = 42;
-        score = board['placeWithScore'](wordAndPos);
-        expect(score).to.equal(expectedScore);
-        done();
     });
 
     it('should place a word on the board', async () => {
@@ -269,6 +259,7 @@ describe('Board', () => {
     });
 
     it('should not place a word  if there is something invalid', async () => {
+        const word = 'test';
         let row = 5;
         let col = 13;
         let isHoriontal = true;
@@ -297,7 +288,7 @@ describe('Board', () => {
         row = 2;
         col = 1;
         isHoriontal = true;
-        errorMessage = 'Placement invalide vous devez toucher un autre mot';
+        errorMessage = 'Placement invalide aucun point de contact';
         try {
             await board.placeWord(word, row, col, isHoriontal);
             assert(false);
@@ -315,7 +306,7 @@ describe('Board', () => {
         } catch (error) {
             expect(error.message).to.equal(errorMessage);
         }
-    });*/
+    });
 
     // TODO fix test
     /* it('should test playable position', () => {
