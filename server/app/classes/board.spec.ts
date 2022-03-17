@@ -1,3 +1,4 @@
+import { PlacementOption } from '@app/placementOption';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { assert } from 'console';
@@ -11,7 +12,6 @@ const BOARD_LENGTH = 15;
 
 describe('Board', () => {
     let board: Board;
-    //let word: string;
     let dictionnary: DictionnaryService;
 
     before(async () => {
@@ -21,10 +21,9 @@ describe('Board', () => {
 
     beforeEach(() => {
         board = new Board(dictionnary);
-        //word = 'test';
     });
 
-    it('should create 225 tiles', (done) => {
+    it('should create 225 tiles', () => {
         const expectedCount = BOARD_LENGTH * BOARD_LENGTH;
         assert(board.board !== undefined);
         let count = 0;
@@ -34,10 +33,9 @@ describe('Board', () => {
             });
         });
         expect(count).equal(expectedCount);
-        done();
     });
 
-    it('should have all type of multipliers', (done) => {
+    it('should have all type of multipliers', () => {
         let testRef = [0, 0, 1, 3];
         assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
         assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
@@ -57,65 +55,48 @@ describe('Board', () => {
         testRef = [2, 4, 1, 1];
         assert(board.board[testRef[0]][testRef[1]].multiplier === testRef[2]);
         assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
-        done();
     });
-/*
-    it('should validate if word is inside the board', (done) => {
-        let row = 2;
-        let col = 11;
-        let isHoriontal = true;
-        let result = board['isWordInBound'](word.length, row, col, isHoriontal);
+
+    it('should validate if word is inside the board', () => {
+        let placement = new PlacementOption(2, 11, true, 'test');
+        let result = board['isWordInBound'](placement);
         assert(result);
 
-        row = 11;
-        col = 8;
-        isHoriontal = false;
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        placement = new PlacementOption(11, 8, false, 'test');
+        result = board['isWordInBound'](placement);
         assert(result);
-        done();
     });
 
 
-    it('should not let the word get out of the board', (done) => {
-        let row = 2;
-        let col = 12;
-        let isHoriontal = true;
-        let result = board['isWordInBound'](word.length, row, col, isHoriontal);
+    it('should not let the word get out of the board', () => {
+        let placement = new PlacementOption(2, 12, true, 'test');
+        let result = board['isWordInBound'](placement);
         assert(!result);
 
-        row = 13;
-        col = 9;
-        isHoriontal = false;
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        placement = new PlacementOption(13, 9, false, 'test');
+        result = board['isWordInBound'](placement);
         assert(!result);
 
-        row = 3;
-        col = -4;
-        isHoriontal = true;
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        placement = new PlacementOption(3, -4, true, 'test');
+        result = board['isWordInBound'](placement);
         assert(!result);
 
-        row = 3;
-        col = 11;
-        isHoriontal = true;
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        placement = new PlacementOption(3, 11, true, 'test');
+        result = board['isWordInBound'](placement);
         assert(result);
         board.board[3][12].setLetter('a');
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        result = board['isWordInBound'](placement);
         assert(!result);
 
-        row = 10;
-        col = 9;
-        isHoriontal = false;
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        placement = new PlacementOption(10, 9, false, 'test');
+        result = board['isWordInBound'](placement);
         assert(result);
         board.board[11][9].setLetter('a');
         board.board[13][9].setLetter('t');
-        result = board['isWordInBound'](word.length, row, col, isHoriontal);
+        result = board['isWordInBound'](placement);
         assert(!result);
-        done();
     });
-
+/*
     it('should let a placement on the star for first word', (done) => {
         let row = 7;
         let col = 5;
