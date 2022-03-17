@@ -3,6 +3,7 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { SocketManager } from './controllers/socket.controller';
+import { DictionnaryTrieService } from './services/dictionnary-trie.service';
 import { DictionnaryService } from './services/dictionnary.service';
 import { LoginsService } from './services/logins.service';
 import { RoomsService } from './services/rooms.service';
@@ -20,6 +21,7 @@ export class Server {
         private readonly roomsService: RoomsService,
         private readonly logins: LoginsService,
         private dictionnnaryService: DictionnaryService,
+        private trie: DictionnaryTrieService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -37,7 +39,7 @@ export class Server {
 
         this.server = http.createServer(this.application.app);
 
-        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService);
+        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService, this.trie);
         this.socketManager.init();
 
         this.server.listen(Server.appPort);

@@ -1,5 +1,5 @@
 import { GameTile } from '@app/classes/game-tile';
-import { PlacementOption } from '@app/placementOption';
+import { PlacementOption } from '@app/placement-option';
 import { assert, expect } from 'chai';
 import { WordGetter } from './word-getter';
 

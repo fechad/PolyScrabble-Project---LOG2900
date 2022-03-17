@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { Letter } from '@app/letter';
-import { PlacementOption } from '@app/placementOption';
+import { PlacementOption } from '@app/placement-option';
+import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
@@ -14,10 +16,12 @@ describe('VirtualPlayer', () => {
     let vP: VirtualPlayer;
     let dictionnaryService: DictionnaryService;
     let parameters: Parameters;
+    let trie: DictionnaryTrieService;
 
     before(async () => {
         dictionnaryService = new DictionnaryService();
         await dictionnaryService.init();
+        trie = new DictionnaryTrieService(dictionnaryService);
     });
 
     beforeEach(() => {
@@ -31,26 +35,22 @@ describe('VirtualPlayer', () => {
         room.addPlayer('2', 'otherDummy', false);
         room.addPlayer('VP', 'heo', true);
         game = new Game(room, dictionnaryService);
-        vP = new VirtualPlayer(true, game, dictionnaryService);
+        vP = new VirtualPlayer(true, game, dictionnaryService, trie);
     });
     it('playTurn should send a message v1', () => {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.0;
         vP['playTurn']();
     });
     it('playTurn should send a message v2', () => {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.1;
         vP['playTurn']();
     });
     it('playTurn should send a message v3', () => {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.1;
         vP['playTurn']();
     });
 
     it('should playturn when current turn is my turn', (done) => {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         Math.random = () => 0.1;
         vP['playTurn'] = sinon.stub();
         game.getCurrentPlayer().id = 'VP';
@@ -98,13 +98,13 @@ describe('VirtualPlayer', () => {
             new PlacementOption(1, 1, true, '*      '),
             new PlacementOption(1, 1, false, 's       '),
         ];
-        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 7, true, 'Z' )];
+        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 7, true, 'Z')];
 
         const expectedExploredOptions = [
             new PlacementOption(7, 7, true, 'Z'),
             new PlacementOption(0, 2, false, 'A'),
             new PlacementOption(1, 0, true, 'A'),
-            new PlacementOption(1, 1, true, 'A' ),
+            new PlacementOption(1, 1, true, 'A'),
         ];
         const expectedValidOptions = [
             new PlacementOption(0, 2, true, 'as       '),
@@ -172,15 +172,12 @@ describe('VirtualPlayer', () => {
         game.board.board[7][6].setLetter('a');
         game.board.board[7][7].setLetter('s');
 
-        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 5, false, 'RA' )];
+        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 5, false, 'RA')];
         const option = new PlacementOption(2, 5, false, '     * ');
         const letterCount = 5;
         const availableLetters = 'RZA';
 
-        const expectedReturn = [
-            new PlacementOption(2, 5, false, '     R '),
-            new PlacementOption(2, 5, false, '     A '),
-        ];
+        const expectedReturn = [new PlacementOption(2, 5, false, '     R '), new PlacementOption(2, 5, false, '     A ')];
         const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
         expect(result).to.deep.equal(expectedReturn);
     });

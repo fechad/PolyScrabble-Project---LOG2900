@@ -4,6 +4,7 @@ import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { VirtualPlayer } from '@app/classes/virtual-player';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
+import { DictionnaryTrieService } from './dictionnary-trie.service';
 import { DictionnaryService } from './dictionnary.service';
 import { RoomsService } from './rooms.service';
 
@@ -13,7 +14,7 @@ export const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
 export class MainLobbyService {
     private nextRoomId = 0;
 
-    constructor(private roomsService: RoomsService, private dictionnaryService: DictionnaryService) {}
+    constructor(private roomsService: RoomsService, private dictionnaryService: DictionnaryService, private trie: DictionnaryTrieService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
         const alreadyJoinedRoom = this.roomsService.rooms
@@ -50,7 +51,7 @@ export class MainLobbyService {
                 const game = new Game(room, this.dictionnaryService);
                 this.roomsService.games.push(game);
                 const isBeginner = parameters.difficulty !== Difficulty.Expert;
-                const vP = new VirtualPlayer(isBeginner, game, this.dictionnaryService);
+                const vP = new VirtualPlayer(isBeginner, game, this.dictionnaryService, this.trie);
                 vP.waitForTurn();
             }
         });

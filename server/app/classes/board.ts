@@ -1,4 +1,4 @@
-import { PlacementOption } from '@app/placementOption';
+import { PlacementOption } from '@app/placement-option';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
@@ -33,7 +33,7 @@ export class Board {
     async placeWord(word: string, row: number, col: number, isHorizontal?: boolean): Promise<number> {
         if (isHorizontal === undefined) isHorizontal = this.isInContact(row, col, false);
         const triedPlacement = new PlacementOption(row, col, isHorizontal, word);
-        
+
         if (!this.isWordInBound(triedPlacement)) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
         await new Promise((resolve) => {
             setTimeout(() => {
@@ -118,7 +118,7 @@ export class Board {
             if (placement.isHorizontal) col = placement.col + offset;
             else row = placement.row + offset;
 
-            if (this.isInContact(row, col, placement.isHorizontal) && (this.board[row][col].empty)) {
+            if (this.isInContact(row, col, placement.isHorizontal) && this.board[row][col].empty) {
                 contacts.push([row, col, wordPos]);
             }
             if (this.board[row][col].empty) wordPos++;
@@ -137,7 +137,12 @@ export class Board {
             const length = placement.word.length - 1;
             if (placement.isHorizontal && placement.row === HALF_LENGTH && placement.col <= HALF_LENGTH && placement.col + length >= HALF_LENGTH) {
                 return true;
-            } else if (!placement.isHorizontal && placement.col === HALF_LENGTH && placement.row <= HALF_LENGTH && placement.row + length >= HALF_LENGTH) {
+            } else if (
+                !placement.isHorizontal &&
+                placement.col === HALF_LENGTH &&
+                placement.row <= HALF_LENGTH &&
+                placement.row + length >= HALF_LENGTH
+            ) {
                 return true;
             }
         }

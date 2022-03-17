@@ -1,4 +1,4 @@
-import { PlacementOption } from '@app/placementOption';
+import { PlacementOption } from '@app/placement-option';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { assert } from 'console';
@@ -67,7 +67,6 @@ describe('Board', () => {
         assert(result);
     });
 
-
     it('should not let the word get out of the board', () => {
         let placement = new PlacementOption(2, 12, true, 'test');
         let result = board['isWordInBound'](placement);
@@ -96,7 +95,7 @@ describe('Board', () => {
         result = board['isWordInBound'](placement);
         assert(!result);
     });
-/*
+    /*
     it('should let a placement on the star for first word', (done) => {
         let row = 7;
         let col = 5;

@@ -1,4 +1,5 @@
-import { PlacementOption } from '@app/placementOption';
+import { PlacementOption } from '@app/placement-option';
+import { DictionnaryTrieService, WordConnection } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
 import { Game } from './game';
@@ -11,12 +12,17 @@ const CONTACT_CHAR = '*';
 // const THRESHOLD = 0.5;
 const DELAY_CHECK_TURN = 1000; // ms
 
-//export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
+// export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
 
 export class VirtualPlayer {
     board: Board;
 
-    constructor(readonly isBeginner: boolean, private game: Game, private dictionnaryService: DictionnaryService) {
+    constructor(
+        readonly isBeginner: boolean,
+        private game: Game,
+        private dictionnaryService: DictionnaryService,
+        private trie: DictionnaryTrieService,
+    ) {
         this.board = game.board;
         console.log(`Virtual player created of difficulty ${isBeginner ? 'beginner' : 'expert'} for game ${game.id}`);
     }
@@ -61,10 +67,41 @@ export class VirtualPlayer {
             this.game.message({ emitter: AI_ID, text: 'I want to exchange letters' });
         } else {
             this.game.message({ emitter: AI_ID, text: 'I want to place some letters' });
+            this.chooseword();
         }
         // temporaire en attendant implementation placer lettre AI
         this.game.skipTurn(AI_ID);
         this.waitForTurn();
+    }
+
+    private chooseword() {
+        const concretePositions: PlacementOption[] = [];
+        for (const position of this.getPlayablePositions()) {
+            const connectedWords = this.getWordConnections(position);
+            let freeLetters = this.rackToString();
+            [...position.word].forEach((letter) => {
+                if (letter.toUpperCase() === letter) freeLetters = freeLetters.replace(letter.toLowerCase(), '');
+            });
+            this.trie.generatePossibleWords([...freeLetters], connectedWords).forEach((word) => {
+                const newPosition = position.deepCopy(word);
+                newPosition.score = 5;
+                concretePositions.push(newPosition);
+            });
+        }
+        const chosen = concretePositions.reduce((acc, position) => {
+            if (position.score < acc.score) return position;
+            else return acc;
+        });
+        this.game.placeLetters(AI_ID, chosen.word, chosen.row, chosen.col, chosen.isHorizontal);
+    }
+
+    private getWordConnections(position: PlacementOption) {
+        const connections: WordConnection[] = [];
+        [...position.word].forEach((letter, index) => {
+            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index });
+        });
+        connections.push({ connectedLetter: undefined, index: position.word.length - 1 });
+        return connections;
     }
 
     private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
