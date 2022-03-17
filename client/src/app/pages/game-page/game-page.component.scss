@@ -37,16 +37,13 @@
     column-gap: 20vh;
 }
 
-#settings,
-#quit-area {
-    height: 5vh;
-}
-
 #settings {
+    height: 5vh;
     padding: 0;
 }
 
 #quit-area {
+    height: 10vh;
     margin-bottom: 0;
 }
 
@@ -54,7 +51,8 @@
     height: 30vh;
     width: 20vw;
     background-color: rgb(247, 247, 60);
-    margin-bottom: 15vh;
+    margin-bottom: 10vh;
+    border-radius: 15px;
 }
 
 .play-area-container {
@@ -76,8 +74,13 @@
 }
 .game-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 90vh;
+}
+#upper-game-container,
+#lower-game-container {
+    display: flex;
+    flex-direction: row;
 }
 /*
 .icon {

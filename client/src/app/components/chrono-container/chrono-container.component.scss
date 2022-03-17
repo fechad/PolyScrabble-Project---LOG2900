@@ -13,16 +13,16 @@ section {
 
 #outer {
     border: #18222d solid;
-    width: 150px;
-    height: 100px;
-    background-color: aliceblue;
+    width: 10vw;
+    height: 15vh;
+    background-color: rgb(52, 52, 53);
 }
 
 #inner,
 #clock {
     display: flex;
-    width: 130px;
-    height: 80px;
+    width: 8vw;
+    height: 10vh;
 }
 #inner {
     border: #18222d solid;
@@ -45,6 +45,17 @@ section {
 #start,
 #stop {
     border: #18222d solid;
-    width: 20px;
-    height: 10px;
+    width: 2vw;
+    height: 2vh;
+    background-color: rgb(52, 52, 53);
+}
+
+.back-chrono,
+.ng-start-inserted {
+    display: flex;
+    justify-content: center;
+    font: 400 30px / 20px 'Signika Negative', sans-serif;
+}
+section {
+    align-items: center;
 }

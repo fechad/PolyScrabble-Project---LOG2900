@@ -6,7 +6,7 @@
     <div id="outer">
         <div id="inner">
             <div id="clock">
-                <div class="backChrono" *ngIf="!(this.gameContextService.state | async)?.ended">
+                <div class="back-chrono" *ngIf="!(this.gameContextService.state | async)?.ended">
                     <countdown
                         #countdown
                         [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"

@@ -10,6 +10,16 @@
     </div>
     <div id="chrono">
         <app-chrono-container></app-chrono-container>
+        <button
+            class="skip-turn"
+            matTooltip="Passer votre tour"
+            matTooltipPosition="right"
+            matTooltipClass="tool"
+            [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true"
+            (click)="this.communicationService.switchTurn(false)"
+        >
+            <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
+        </button>
     </div>
     <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn() | async) }">
         <div class="p-infos">

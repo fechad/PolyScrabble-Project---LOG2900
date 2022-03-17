@@ -6,8 +6,12 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
+<<<<<<< HEAD
 import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
+=======
+import { faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+>>>>>>> 2ddca99... started html restucturing, basic skeletton done
 import Swal from 'sweetalert2';
 
 @Component({
@@ -19,7 +23,6 @@ export class GamePageComponent implements AfterViewChecked {
     faQuestionCircle = faQuestionCircle;
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
-    faAngleDoubleRight = faAngleDoubleRight;
     faPlay = faPlay;
     resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
     placingWords = true;

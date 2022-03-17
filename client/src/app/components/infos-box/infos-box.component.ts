@@ -3,6 +3,7 @@ import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
+import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
 import { CountdownComponent } from 'ngx-countdown';
 import { Subscription } from 'rxjs';
 
@@ -13,6 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class InfosBoxComponent implements AfterViewInit, OnDestroy {
     @ViewChild('countdown', { static: false }) cd: CountdownComponent;
+    faAngleDoubleRight = faAngleDoubleRight;
     myRackIsVisible = false;
     opponentRackIsVisible = false;
     summary: string | undefined = undefined;
