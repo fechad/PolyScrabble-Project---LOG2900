@@ -126,6 +126,10 @@ export class Game {
         }
     }
 
+    matchRack(rack: Letter[]) {
+        this.reserve.matchRack(rack, this.isPlayer0Turn);
+    }
+
     getCurrentPlayer(): Player {
         const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
         return this.players[playerIndex];

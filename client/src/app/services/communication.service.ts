@@ -131,10 +131,12 @@ export class CommunicationService {
     }
 
     switchTurn(timerRequest: boolean) {
+        this.showMyRack();
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
+        this.showMyRack();
         this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
@@ -142,6 +144,7 @@ export class CommunicationService {
     }
 
     exchange(letters: string) {
+        this.showMyRack();
         this.gameSocket?.emit('change-letters', letters);
     }
 
@@ -152,6 +155,10 @@ export class CommunicationService {
 
     getReserve() {
         this.gameSocket?.emit('reserve-content');
+    }
+
+    showMyRack() {
+        this.gameSocket?.emit('current-rack', this.gameContextService.rack.value);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
