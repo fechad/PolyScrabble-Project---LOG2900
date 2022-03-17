@@ -12,13 +12,13 @@ describe('Letter Node', () => {
     });
     it('should add node if there is none', () => {
         expect(letterNode.nextNodes.length).to.equal(0);
-        letterNode.getNext('b');
+        letterNode.addNext('b');
         expect(letterNode.nextNodes.length).to.equal(1);
     });
 
     it('should not add a second one if letter is already in nextNodes', () => {
         expect(letterNode.nextNodes.length).to.equal(1);
-        letterNode.getNext('b');
+        letterNode.addNext('b');
         expect(letterNode.nextNodes.length).to.equal(1);
     });
 });
