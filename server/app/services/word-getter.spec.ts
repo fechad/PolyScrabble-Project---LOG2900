@@ -102,6 +102,16 @@ describe('Word getter', () => {
         assert(words[0] === expectedWord);
         assert(words[1] === expectedWord1);
         assert(words[2] === expectedWord2);
+
+        word = 't';
+        expectedWord = 'h;7;5;tia';
+        row = 7;
+        col = 5;
+        isHorizontal = true;
+        contacts = [[-1]];
+        words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        assert(words.length === 1);
+        assert(words[0] === expectedWord);
         done();
     });
 });

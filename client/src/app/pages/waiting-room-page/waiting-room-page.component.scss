@@ -1,9 +1,8 @@
 @import '../../styles/colors.scss';
-body
-{
-  margin:0;
-  padding:0;
-  background:#262626;
+body {
+    margin: 0;
+    padding: 0;
+    background: #262626;
 }
 
 .material-icons {
@@ -12,6 +11,7 @@ body
     top: 1em;
     right: 1em;
     position: fixed;
+    z-index: 2;
 }
 
 .material-icons:hover {
@@ -92,7 +92,7 @@ span:before {
 .options {
     display: flex;
     align-items: center;
-    margin-top: 2em;
+    margin-top: 8em;
 }
 
 .convert,
@@ -148,28 +148,28 @@ span:before {
     margin-bottom: 1em;
 }
 
-.button{
-  font-family: Signika Negative;
-  margin-left: -45vw;
-  margin-top: 40vh;
-  font-size: 20px;
-  text-align: center;
-  padding: 10px;
-  transition: all 0.1s ease-in-out;
-  background-color: $primary;
-  color: $bkg;
-  border: 0;
-  border-radius: 0.25em;
+.button {
+    font-family: Signika Negative;
+    margin-left: -45vw;
+    margin-top: 40vh;
+    font-size: 20px;
+    text-align: center;
+    padding: 10px;
+    transition: all 0.1s ease-in-out;
+    background-color: $primary;
+    color: $bkg;
+    border: 0;
+    border-radius: 0.25em;
 }
 
 .convert:hover:not(:active):not(:disabled) {
-  cursor: pointer;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
-  transform: scale(1.01);
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
+    transform: scale(1.01);
 }
 
 .convert {
-    margin-right: 70vw;
     width: 250px;
     font-size: 20px;
+    margin-top: 4vw;
 }

@@ -7,6 +7,28 @@ const BOARD_LENGTH = 15;
 export class WordGetter {
     constructor(public board: GameTile[][]) {}
 
+    getStringPositionVirtualPlayer(row: number, col: number, isHoriontal: boolean) {
+        const initialRow = row;
+        const initialCol = col;
+        let contactWord = '';
+        if (isHoriontal) {
+            while (col > 0 && !this.board[row][col - 1].empty) col--;
+            while (col < BOARD_LENGTH && (!this.board[row][col].empty || col === initialCol)) {
+                if (col === initialCol) contactWord += '*';
+                else contactWord += this.board[row][col].getChar();
+                col++;
+            }
+        } else {
+            while (row > 0 && !this.board[row - 1][col].empty) row--;
+            while (row < BOARD_LENGTH && (!this.board[row][col].empty || row === initialRow)) {
+                if (row === initialRow) contactWord += '*';
+                else contactWord += this.board[row][col].getChar();
+                row++;
+            }
+        }
+        return contactWord;
+    }
+
     getWords(word: string, row: number, col: number, contacts: number[][], isHorizontal: boolean): string[] {
         if (contacts.length === 0) throw new Error('Placement invalide vous devez toucher un autre mot');
         const words: string[] = [];
@@ -47,10 +69,7 @@ export class WordGetter {
         let letterCount = 0;
         let letters = '';
         while (col < BOARD_LENGTH && row < BOARD_LENGTH) {
-            if (
-                letterCount < testedWord.length ||
-                (isHorizontal ? col + 1 < BOARD_LENGTH && !this.board[row][col + 1].empty : row + 1 < BOARD_LENGTH && !this.board[row + 1][col].empty)
-            ) {
+            if (letterCount < testedWord.length || !this.board[row][col].empty) {
                 if (this.board[row][col].empty) {
                     letters += testedWord.charAt(letterCount);
                     letterCount++;

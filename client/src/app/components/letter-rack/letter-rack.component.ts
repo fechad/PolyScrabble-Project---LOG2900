@@ -1,60 +1,44 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
 const MAX_LETTERS = 7;
-const LETTER_CONTAINER = document.getElementsByClassName('letter-container');
-const LIMIT = 6;
 const UNDEFINED = -1;
+
 @Component({
     selector: 'app-letter-rack',
     templateUrl: './letter-rack.component.html',
     styleUrls: ['./letter-rack.component.scss'],
 })
-export class LetterRackComponent implements OnInit {
-    letters: Letter[];
+export class LetterRackComponent {
+    letters: Letter[] = [];
+    manipulating: number | undefined;
+    exchanging: number[] = [];
     timeOut: number;
-    selectedLetters: string = '';
-    buttonPressed: string | undefined;
-    prevKey: string | undefined;
     previousSelection = UNDEFINED;
+
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService, public gridService: GridService) {
-        this.gameContextService.state.subscribe(() => {
-            return;
-        });
+        this.gameContextService.rack.subscribe((newRack) => (this.letters = newRack));
     }
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-
-        if (!(document.getElementById('writingBox') === document.activeElement)) {
-            if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
-                this.shiftLetter(this.buttonPressed);
+        const buttonPressed = event.key;
+        if (event.target instanceof Element && (event.target.id === 'writingBox' || event.target.id === 'canvas')) {
+            return;
+        }
+        if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);
+        else {
+            const occurrences = this.checkOccurrences(buttonPressed);
+            if (occurrences.length === 0) {
+                this.manipulating = undefined;
+            } else if (this.manipulating === undefined || !occurrences.includes(this.manipulating)) {
+                this.manipulating = occurrences[0];
             } else {
-                this.clearSelection('manipulate');
-                this.clearSelection('exchange');
-                let index = 0;
-                const occurrences = this.checkOccurrences(this.buttonPressed);
-
-                if (this.prevKey !== this.buttonPressed) this.previousSelection = UNDEFINED;
-
-                for (const letter of this.letters) {
-                    if (letter.name.toLowerCase() === this.buttonPressed.toLowerCase() && this.previousSelection < index) {
-                        this.previousSelection = index;
-                        this.setToManipulate(this.buttonPressed?.toLowerCase(), index);
-
-                        if (this.previousSelection === occurrences[occurrences.length - 1]) {
-                            this.previousSelection = UNDEFINED;
-                        }
-
-                        break;
-                    }
-                    index++;
-                }
-
-                this.prevKey = this.buttonPressed;
+                const idx = occurrences.indexOf(this.manipulating);
+                const newIdx = (idx + 1) % occurrences.length;
+                this.manipulating = occurrences[newIdx];
             }
         }
     }
@@ -85,141 +69,55 @@ export class LetterRackComponent implements OnInit {
         const name = selection?.getAttribute('class') as string;
 
         if (!parentPossibilities.includes(name)) {
-            this.clearSelection('exchange');
-            this.clearSelection('manipulate');
+            this.manipulating = undefined;
+            this.exchanging = [];
         }
     }
 
-    ngOnInit(): void {
-        this.gameContextService.rack.subscribe((newRack) => {
-            this.letters = newRack;
+    checkOccurrences(key: string) {
+        const identicalLetters = this.letters.map((letter, idx) => {
+            if (letter.name.toLowerCase() === key.toLowerCase()) return idx;
+            else return undefined;
         });
-    }
-
-    checkOccurrences(key: string): number[] {
-        const indices = [];
-        let index = 0;
-        for (const letter of this.letters) {
-            if (letter.name.toLowerCase() === key.toLowerCase()) {
-                indices.push(index);
-            }
-            index++;
-        }
-        return indices;
+        return identicalLetters.filter((value) => value !== undefined);
     }
 
     shiftLetter(keypress: string | number) {
-        let index = 0;
+        if (this.manipulating === undefined) return;
+        let newIndex = UNDEFINED;
 
-        const tempRack = this.letters.map((x) => x);
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
-            if (letters.getAttribute('id') === 'manipulating') {
-                if ((keypress === 'ArrowRight' || keypress > 0) && index !== LIMIT) {
-                    tempRack[index + 1] = this.letters[index];
-                    tempRack[index] = this.letters[index + 1];
-                    this.letters = tempRack;
-                } else if ((keypress === 'ArrowRight' || keypress > 0) && index === LIMIT) {
-                    this.letters.pop();
-                    this.letters.unshift(tempRack[index]);
-                } else if ((keypress === 'ArrowLeft' || keypress < 0) && index !== 0) {
-                    tempRack[index - 1] = this.letters[index];
-                    tempRack[index] = this.letters[index - 1];
-                    this.letters = tempRack;
-                } else {
-                    this.letters.shift();
-                    this.letters.push(tempRack[index]);
-                }
-            }
-            index++;
-        });
-    }
-
-    setToManipulate(letter: string, idx: number) {
-        let selection = false;
-        let index = 0;
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
-            if (letters.firstChild?.firstChild?.textContent?.toLowerCase() === letter && idx === index && !selection) {
-                letters.setAttribute('id', 'manipulating');
-                selection = true;
-            }
-            index++;
-        });
-    }
-
-    manipulate(event: Event): void {
-        const tile = event.target as HTMLElement;
-        if (
-            !(
-                tile.parentElement?.parentElement?.getAttribute('id') === 'selected' ||
-                tile.parentElement?.getAttribute('id') === 'selected' ||
-                tile.getAttribute('id') === 'selected'
-            )
-        ) {
-            this.clearSelection('manipulate');
-            this.clearSelection('exchange');
-            tile.parentElement?.parentElement?.setAttribute('id', 'manipulating');
-            this.checkSelection();
+        if (keypress === 'ArrowRight' || keypress > 0) {
+            newIndex = (this.manipulating + 1) % this.letters.length;
+        } else if (keypress === 'ArrowLeft' || keypress < 0) {
+            newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
+        this.swapLetters(newIndex, this.manipulating);
     }
 
-    hideMenu() {
-        const menu = document.getElementById('menu') as HTMLElement;
-        menu.style.display = 'none';
+    swapLetters(index: number, oldIndex: number) {
+        const temp = this.letters[oldIndex];
+        this.letters[oldIndex] = this.letters[index];
+        this.letters[index] = temp;
+        this.manipulating = index;
     }
 
-    menu(event: Event): void {
-        event.preventDefault();
-        const menu = document.getElementById('menu') as HTMLElement;
-        const letter = event.target as HTMLElement;
-
-        if (
-            letter.parentElement?.parentElement?.getAttribute('id') === 'selected' ||
-            letter.parentElement?.getAttribute('id') === 'selected' ||
-            letter.getAttribute('id') === 'selected'
-        ) {
-            letter.parentElement?.parentElement?.removeAttribute('id');
-            letter.parentElement?.removeAttribute('id');
-            letter.removeAttribute('id');
-        } else {
-            menu.style.display = 'block';
-            letter.parentElement?.parentElement?.setAttribute('id', 'selected');
-            this.clearSelection('manipulate');
-        }
-        this.checkSelection();
+    manipulate(idx: number): void {
+        if (this.exchanging.includes(idx)) return;
+        this.manipulating = idx;
+        this.exchanging = [];
     }
 
-    clearSelection(command: string) {
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
-            if (command === 'exchange' && letters.id === 'selected') {
-                letters.removeAttribute('id');
-            } else if (command === 'manipulate' && letters.id === 'manipulating') {
-                letters.removeAttribute('id');
-            }
-        });
-        if (command === 'exchange') this.hideMenu();
-    }
-
-    checkSelection() {
-        let itemSelected = false;
-
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
-            if (letters.id === 'selected') itemSelected = true;
-        });
-
-        if (!itemSelected) this.hideMenu();
+    select(idx: number) {
+        if (this.exchanging.includes(idx)) {
+            const letter = this.exchanging.indexOf(idx);
+            this.exchanging.splice(letter, 1);
+        } else this.exchanging.push(idx);
+        this.manipulating = undefined;
     }
 
     exchange() {
-        this.getSelectedLetters();
-        this.communicationService.exchange(this.selectedLetters);
-        this.selectedLetters = '';
-    }
-
-    getSelectedLetters() {
-        Array.from(LETTER_CONTAINER).forEach((letters) => {
-            const letterList = letters as HTMLElement;
-            if (letters.id === 'selected') this.selectedLetters += letterList.innerText[0].toLowerCase();
-        });
+        const selectedLetters = this.exchanging.map((letter) => this.letters[letter].name.toLowerCase()).join('');
+        this.communicationService.exchange(selectedLetters);
     }
 
     getReserveCount(): boolean {

@@ -18,7 +18,6 @@ export class DictionnaryService {
         return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
     }
 
-    // TODO: valider au moins 2 lettres
     isValidWord(playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;

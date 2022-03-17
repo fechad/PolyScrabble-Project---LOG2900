@@ -5,7 +5,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faAngleDoubleRight, faFont, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -19,7 +19,9 @@ export class GamePageComponent {
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
     faAngleDoubleRight = faAngleDoubleRight;
+    faPlay = faPlay;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
+    isSending = false;
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
@@ -27,10 +29,13 @@ export class GamePageComponent {
         public router: Router,
     ) {}
 
+    send() {
+        this.isSending = true;
+    }
     async quitGame() {
-        let text = [''];
-        if (this.gameContextService.state.value.ended) text = ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester'];
-        else text = ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+        const text = this.gameContextService.state.value.ended
+            ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
+            : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
         const result = await Swal.fire({
             title: text[0],
             text: text[1],
