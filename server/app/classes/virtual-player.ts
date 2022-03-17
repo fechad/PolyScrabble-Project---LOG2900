@@ -77,14 +77,15 @@ export class VirtualPlayer {
     private chooseword() {
         const concretePositions: PlacementOption[] = [];
         for (const position of this.getPlayablePositions()) {
-            const connectedWords = this.getWordConnections(position);
+            const connectedLetters = this.getWordConnections(position);
             let freeLetters = this.rackToString();
             [...position.word].forEach((letter) => {
                 if (letter.toUpperCase() === letter) freeLetters = freeLetters.replace(letter.toLowerCase(), '');
             });
-            this.trie.generatePossibleWords([...freeLetters], connectedWords).forEach((word) => {
+            this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
                 const newPosition = position.deepCopy(word);
                 newPosition.score = 5;
+                newPosition.buildCommand(connectedLetters);
                 concretePositions.push(newPosition);
             });
         }
@@ -98,9 +99,9 @@ export class VirtualPlayer {
     private getWordConnections(position: PlacementOption) {
         const connections: WordConnection[] = [];
         [...position.word].forEach((letter, index) => {
-            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index });
+            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index, isOnBoard: letter.toUpperCase() === letter });
         });
-        connections.push({ connectedLetter: undefined, index: position.word.length - 1 });
+        connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
         return connections;
     }
 
