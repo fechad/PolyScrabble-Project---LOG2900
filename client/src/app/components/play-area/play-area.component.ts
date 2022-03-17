@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
@@ -31,7 +31,7 @@ export enum MouseButton {
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
