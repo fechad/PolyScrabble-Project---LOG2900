@@ -26,12 +26,14 @@ export class GameTile {
         }
     }
 
+    deleteLetter() {
+        this.empty = true;
+        this.newlyPlaced = true;
+    }
+
     getPoints(): number {
-        if (this.letter === undefined) return INVALID;
-        if (this.newlyPlaced) {
-            return this.letter.score * this.multiplier;
-        }
-        return this.letter.score;
+        if (this.letter === undefined || this.empty) return INVALID;
+        return this.letter.score * (this.newlyPlaced ? this.multiplier : 1);
     }
 
     getChar(): string {

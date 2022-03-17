@@ -1,3 +1,4 @@
+import { PlacementOption } from '@app/placementOption';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
 import { Game } from './game';
@@ -10,7 +11,7 @@ const CONTACT_CHAR = '*';
 // const THRESHOLD = 0.5;
 const DELAY_CHECK_TURN = 1000; // ms
 
-export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
+//export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
 
 export class VirtualPlayer {
     board: Board;
@@ -37,7 +38,7 @@ export class VirtualPlayer {
                 // pour chaque orientation
                 for (const k of [0, 1]) {
                     const valid = [...positions[i][j][k]].some((char) => char !== ' ');
-                    if (valid) arrayPos.push({ row: i, col: j, isHorizontal: k === 0, word: positions[i][j][k] });
+                    if (valid) arrayPos.push(new PlacementOption(i, j, k === 0, positions[i][j][k]));
                 }
             }
         }
@@ -85,7 +86,7 @@ export class VirtualPlayer {
                     oneContact = true;
                     const replacementOptions = this.contactReplacement(exploredOptions, option, letterCount, availableLetters);
                     validWords = validWords.concat(replacementOptions);
-                    if (replacementOptions.length === 0) validWords.push(this.deepCopyPlacementOption(option, option.word.slice(0, letterCount)));
+                    if (replacementOptions.length === 0) validWords.push(option.deepCopy(option.word.slice(0, letterCount)));
                 }
                 letterCount++;
             }
@@ -109,12 +110,12 @@ export class VirtualPlayer {
         if (alreadyFound) {
             for (const solution of alreadyFound.word) {
                 const letterAvailable = [...rackLetters].some((letter) => letter === solution);
-                if (letterAvailable) validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, solution)));
+                if (letterAvailable) validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, solution)));
             }
         } else {
             const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
             const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
-            exploredOptions.push(this.deepCopyPlacementOption(option, possibleLetters));
+            exploredOptions.push(option.deepCopy(possibleLetters));
         }
         return validWords;
     }
@@ -125,15 +126,11 @@ export class VirtualPlayer {
             if ([...possibleLetters].some((letter) => letter === rackLetter)) break;
             const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
             if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
-                validWords.push(this.deepCopyPlacementOption(option, option.word.replace(CONTACT_CHAR, rackLetter)));
+                validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, rackLetter)));
                 possibleLetters += rackLetter;
             }
         }
         return possibleLetters;
-    }
-
-    private deepCopyPlacementOption(placement: PlacementOption, newWord?: string): PlacementOption {
-        return { row: placement.row, col: placement.col, isHorizontal: placement.isHorizontal, word: newWord ? newWord : placement.word };
     }
 
     private rackToString(): string {

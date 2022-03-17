@@ -1,7 +1,9 @@
 import { GameTile } from '@app/classes/game-tile';
+import { PlacementOption } from '@app/placementOption';
 
-const INVALID = -1;
-const FIRST_WORD = -1;
+const ROW_CONTACT = 0;
+const COL_CONTACT = 1;
+const LETTER_PLACE_CONTACT = 2;
 const BOARD_LENGTH = 15;
 
 export class WordGetter {
@@ -29,81 +31,63 @@ export class WordGetter {
         return contactWord;
     }
 
-    getWords(word: string, row: number, col: number, contacts: number[][], isHorizontal: boolean): string[] {
-        if (contacts.length === 0) throw new Error('Placement invalide vous devez toucher un autre mot');
-        const words: string[] = [];
+    getWords(placement: PlacementOption, contacts: number[][]): PlacementOption[] {
+        const words: PlacementOption[] = [];
 
-        // get attempted word
-        words.push(this.getWord(row, col, word, isHorizontal));
+        words.push(this.getLettersAttemptedWord(placement));
 
-        // get words by contact
-        if (contacts[0][0] !== FIRST_WORD) {
-            for (const contact of contacts) {
-                words.push(this.getWord(contact[0], contact[1], word, !isHorizontal, contact[2]));
-            }
-        }
+        contacts.forEach((contact) => {
+            if (contact.length === 0) return;
+            const contactPlacement = new PlacementOption(contact[ROW_CONTACT], contact[COL_CONTACT], !placement.isHorizontal, placement.word);
+            words.push(this.getLettersContactWord(contactPlacement, contact[LETTER_PLACE_CONTACT]));
+        });
         return words;
     }
 
-    private getWord(row: number, col: number, attemptedWord: string, isHorizontal: boolean, letterPlace?: number): string {
-        const startRow = row;
-        const startCol = col;
-        let word = isHorizontal ? 'h' : 'v';
-
-        if (isHorizontal) {
-            while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
-        } else {
-            while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
-        }
-        word += ';' + row.toString() + ';' + col.toString() + ';';
-
-        if (letterPlace !== undefined) {
-            word += this.getLettersOtherWord(row, startRow, col, startCol, attemptedWord, isHorizontal, letterPlace);
-        } else {
-            word += this.getLettersAttemptedWord(row, col, attemptedWord, isHorizontal);
-        }
-        return word;
-    }
-
-    private getLettersAttemptedWord(row: number, col: number, testedWord: string, isHorizontal: boolean): string {
+    private getLettersAttemptedWord(placement: PlacementOption): PlacementOption {
         let letterCount = 0;
         let letters = '';
-        while (col < BOARD_LENGTH && row < BOARD_LENGTH) {
-            if (letterCount < testedWord.length || !this.board[row][col].empty) {
-                if (this.board[row][col].empty) {
-                    letters += testedWord.charAt(letterCount);
-                    letterCount++;
-                } else {
-                    letters += this.board[row][col].getChar();
-                }
+        let row = placement.row;
+        let col = placement.col;
+        if (placement.isHorizontal) while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
+        else while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
+
+        while (this.containsLetter(row, col) || letterCount < placement.word.length) {
+            if (this.board[row][col].empty) {
+                letters += placement.word.charAt(letterCount);
+                letterCount++;
             } else {
-                break;
+                letters += this.board[row][col].getChar();
             }
-            if (isHorizontal) col++;
+            if (placement.isHorizontal) col++;
             else row++;
         }
-        return letters;
+        return placement.deepCopy(letters);
     }
 
-    private getLettersOtherWord(
-        row: number,
-        refRow: number,
-        col: number,
-        refCol: number,
-        testedWord: string,
-        isHorizontal: boolean,
-        letterPlace: number,
-    ): string {
+    private getLettersContactWord(contact: PlacementOption, letterPlace: number): PlacementOption {
         let letters = '';
-        while (col < BOARD_LENGTH && row < BOARD_LENGTH && (!this.board[row][col].empty || (col <= refCol && row <= refRow))) {
-            if (!this.board[row][col].empty) {
+        let row = contact.row;
+        let col = contact.col;
+        if (contact.isHorizontal) while (col - 1 >= 0 && !this.board[row][col - 1].empty) col--;
+        else while (row - 1 >= 0 && !this.board[row - 1][col].empty) row--;
+        const minRow = row;
+        const minCol = col;
+
+        while (this.containsLetter(row, col) || (row === contact.row && col === contact.col)) {
+            if (this.containsLetter(row, col)) {
                 letters += this.board[row][col].getChar();
-            } else if (row === refRow && col === refCol && letterPlace !== INVALID) {
-                letters += testedWord.charAt(letterPlace);
+            } else if (row === contact.row && col === contact.col) {
+                letters += contact.word.charAt(letterPlace);
             }
-            if (isHorizontal) col++;
+            if (contact.isHorizontal) col++;
             else row++;
         }
-        return letters;
+        return new PlacementOption(minRow, minCol, contact.isHorizontal, letters);
+    }
+
+    private containsLetter(row: number, col: number) {
+        const inBound = row >= 0 && row < BOARD_LENGTH && col >= 0 && col < BOARD_LENGTH;
+        return inBound && !this.board[row][col].empty;
     }
 }

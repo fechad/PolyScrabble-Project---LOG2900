@@ -1,11 +1,12 @@
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { Letter } from '@app/letter';
+import { PlacementOption } from '@app/placementOption';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { Game } from './game';
 import { Room } from './room';
-import { PlacementOption, VirtualPlayer } from './virtual-player';
+import { VirtualPlayer } from './virtual-player';
 /* eslint-disable dot-notation*/
 
 describe('VirtualPlayer', () => {
@@ -90,28 +91,28 @@ describe('VirtualPlayer', () => {
         const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
         game.reserve.letterRacks[1] = [letterA, letterR, letterZ];
         const placementOptions = [
-            { row: 0, col: 2, isHorizontal: true, word: 'as       ' },
-            { row: 0, col: 2, isHorizontal: false, word: '*      ' },
-            { row: 1, col: 0, isHorizontal: true, word: '**     ' },
-            { row: 1, col: 0, isHorizontal: false, word: 'a       ' },
-            { row: 1, col: 1, isHorizontal: true, word: '*      ' },
-            { row: 1, col: 1, isHorizontal: false, word: 's       ' },
+            new PlacementOption(0, 2, true, 'as       '),
+            new PlacementOption(0, 2, false, '*      '),
+            new PlacementOption(1, 0, true, '**     '),
+            new PlacementOption(1, 0, false, 'a       '),
+            new PlacementOption(1, 1, true, '*      '),
+            new PlacementOption(1, 1, false, 's       '),
         ];
-        const exploredOptions: PlacementOption[] = [{ row: 7, col: 7, isHorizontal: true, word: 'Z' }];
+        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 7, true, 'Z' )];
 
         const expectedExploredOptions = [
-            { row: 7, col: 7, isHorizontal: true, word: 'Z' },
-            { row: 0, col: 2, isHorizontal: false, word: 'A' },
-            { row: 1, col: 0, isHorizontal: true, word: 'A' },
-            { row: 1, col: 1, isHorizontal: true, word: 'A' },
+            new PlacementOption(7, 7, true, 'Z'),
+            new PlacementOption(0, 2, false, 'A'),
+            new PlacementOption(1, 0, true, 'A'),
+            new PlacementOption(1, 1, true, 'A' ),
         ];
         const expectedValidOptions = [
-            { row: 0, col: 2, isHorizontal: true, word: 'as       ' },
-            { row: 0, col: 2, isHorizontal: false, word: 'A      ' },
-            { row: 1, col: 0, isHorizontal: true, word: 'A' },
-            { row: 1, col: 0, isHorizontal: false, word: 'a       ' },
-            { row: 1, col: 1, isHorizontal: true, word: 'A      ' },
-            { row: 1, col: 1, isHorizontal: false, word: 's       ' },
+            new PlacementOption(0, 2, true, 'as       '),
+            new PlacementOption(0, 2, false, 'A      '),
+            new PlacementOption(1, 0, true, 'A'),
+            new PlacementOption(1, 0, false, 'a       '),
+            new PlacementOption(1, 1, true, 'A      '),
+            new PlacementOption(1, 1, false, 's       '),
         ];
         const result = vP['validateCrosswords'](placementOptions, exploredOptions);
         expect(result).to.deep.equal(expectedValidOptions);
@@ -136,7 +137,7 @@ describe('VirtualPlayer', () => {
 
     it('should find new options of word for a contact', () => {
         const validOptions: PlacementOption[] = [];
-        const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        const option = new PlacementOption(2, 5, false, '     * ');
         const contactString = '*as';
         const rackLetters = 'RZAAR';
 
@@ -155,7 +156,7 @@ describe('VirtualPlayer', () => {
         game.board.board[7][7].setLetter('s');
 
         const exploredOptions: PlacementOption[] = [];
-        const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        const option = new PlacementOption(2, 5, false, '     * ');
         const letterCount = 5;
         const availableLetters = 'RZA';
 
@@ -171,26 +172,16 @@ describe('VirtualPlayer', () => {
         game.board.board[7][6].setLetter('a');
         game.board.board[7][7].setLetter('s');
 
-        const exploredOptions: PlacementOption[] = [{ row: 7, col: 5, isHorizontal: false, word: 'RA' }];
-        const option = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
+        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 5, false, 'RA' )];
+        const option = new PlacementOption(2, 5, false, '     * ');
         const letterCount = 5;
         const availableLetters = 'RZA';
 
         const expectedReturn = [
-            { row: 2, col: 5, isHorizontal: false, word: '     R ' },
-            { row: 2, col: 5, isHorizontal: false, word: '     A ' },
+            new PlacementOption(2, 5, false, '     R '),
+            new PlacementOption(2, 5, false, '     A '),
         ];
         const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
         expect(result).to.deep.equal(expectedReturn);
-    });
-
-    it('should deep copy a placement option', () => {
-        const originalPlacement = { row: 2, col: 5, isHorizontal: false, word: '     * ' };
-        let result = vP['deepCopyPlacementOption'](originalPlacement);
-        expect(result).to.deep.equal(originalPlacement);
-
-        result = vP['deepCopyPlacementOption'](originalPlacement, 'test');
-        originalPlacement.word = 'test';
-        expect(result).to.deep.equal(originalPlacement);
     });
 });

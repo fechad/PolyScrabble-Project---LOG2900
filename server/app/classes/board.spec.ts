@@ -8,11 +8,10 @@ import { Board } from './board';
 /* eslint-disable max-lines */
 
 const BOARD_LENGTH = 15;
-const INVALID = -1;
 
 describe('Board', () => {
     let board: Board;
-    let word: string;
+    //let word: string;
     let dictionnary: DictionnaryService;
 
     before(async () => {
@@ -22,7 +21,7 @@ describe('Board', () => {
 
     beforeEach(() => {
         board = new Board(dictionnary);
-        word = 'test';
+        //word = 'test';
     });
 
     it('should create 225 tiles', (done) => {
@@ -60,7 +59,7 @@ describe('Board', () => {
         assert(board.board[testRef[0]][testRef[1]].wordMultiplier === testRef[3]);
         done();
     });
-
+/*
     it('should validate if word is inside the board', (done) => {
         let row = 2;
         let col = 11;
@@ -75,6 +74,7 @@ describe('Board', () => {
         assert(result);
         done();
     });
+
 
     it('should not let the word get out of the board', (done) => {
         let row = 2;
@@ -335,7 +335,7 @@ describe('Board', () => {
         } catch (error) {
             expect(error.message).to.equal(errorMessage);
         }
-    });
+    });*/
 
     // TODO fix test
     /* it('should test playable position', () => {
