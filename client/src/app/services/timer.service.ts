@@ -19,7 +19,7 @@ export class TimerService {
         this.communicationService.selectedRoom.subscribe((room) => {
             if (!room || room.state !== State.Started) return;
             if (this.prevSubscription) this.prevSubscription.unsubscribe();
-            let prevTurn: PlayerId;
+            let prevTurn: PlayerId | undefined;
             this.gameContextService.state.subscribe((state) => {
                 if (state.turn === prevTurn) return;
                 prevTurn = state.turn;

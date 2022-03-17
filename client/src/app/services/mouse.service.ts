@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import { MouseButton } from '@app/components/play-area/play-area.component';
 import { take } from 'rxjs/operators';
@@ -25,7 +24,7 @@ export class MouseService {
 
     async mouseHitDetect(event: MouseEvent) {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (!myTurn || this.gameContextService.state.value.state !== State.Started) return;
+        if (!myTurn) return;
         if (this.gridService.letterWritten !== 0) return;
         if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
         if (event.button !== MouseButton.Left || !this.isInBound(event)) return;

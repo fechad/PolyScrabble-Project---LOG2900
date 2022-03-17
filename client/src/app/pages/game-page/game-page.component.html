@@ -78,14 +78,14 @@
                     matTooltip="Passer votre tour"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
-                    [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true"
+                    [disabled]="(gameContextService.isMyTurn() | async) === false"
                     (click)="skipMyTurn()"
                 >
                     <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
                 </button>
                 <button
                     id="quit-game"
-                    [matTooltip]="this.gameContextService.state.value.ended ? 'Quitter la partie' : 'Abandonner la partie'"
+                    [matTooltip]="(this.gameContextService.isEnded() | async) ? 'Quitter la partie' : 'Abandonner la partie'"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
                     (click)="quitGame()"

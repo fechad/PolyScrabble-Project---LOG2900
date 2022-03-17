@@ -11,7 +11,7 @@ export class GameState {
     players: PlayerInfo[];
     reserveCount: number;
     board: Tile[][];
-    turn: PlayerId;
+    turn?: PlayerId;
     state: State;
     winner?: PlayerId;
 }

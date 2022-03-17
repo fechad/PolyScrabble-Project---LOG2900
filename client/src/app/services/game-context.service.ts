@@ -52,6 +52,10 @@ export class GameContextService {
         this.state = new BehaviorSubject(state);
     }
 
+    isEnded(): Observable<boolean> {
+        return this.state.pipe(map((state) => state.state === State.Ended || state.state === State.Aborted));
+    }
+
     isMyTurn(): Observable<boolean> {
         return this.state.pipe(map((state) => state.turn === this.myId));
     }

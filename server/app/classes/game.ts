@@ -30,7 +30,7 @@ type GameState = {
     players: PlayerInfo[];
     reserveCount: number;
     board: Tile[][];
-    turn: PlayerId;
+    turn?: PlayerId;
     state: State;
     winner?: PlayerId;
 };
@@ -68,7 +68,7 @@ export class Game {
             ],
             reserveCount: this.reserve.getCount(),
             board: this.formatSendableBoard(),
-            turn: this.getCurrentPlayer().id,
+            turn: this.room.getState() === State.Started ? this.getCurrentPlayer().id : undefined,
             state: this.room.getState(),
             winner: this.winner,
         };
