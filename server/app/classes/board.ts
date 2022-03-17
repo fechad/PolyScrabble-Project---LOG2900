@@ -44,7 +44,8 @@ export class Board {
         const contacts = this.getContacts(triedPlacement);
 
         const words = this.wordGetter.getWords(triedPlacement, contacts);
-        if (!words.every((word) => this.dictionnary.isValidWord(word.word))) throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
+        if (!words.every((wordOption) => this.dictionnary.isValidWord(wordOption.word)))
+            throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.getScore(words, true);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
