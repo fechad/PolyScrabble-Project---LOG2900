@@ -1,7 +1,60 @@
 .container {
+    display: flex;
+    flex-direction: row;
     height: 100%;
     display: flex;
     background-color: darken(desaturate(#e1ac01, 70%), 35%);
+}
+
+.infosArea {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 20%;
+    padding: 0 5px 0 5px;
+    margin-right: 5px;
+    background-color: #e1ac01;
+}
+
+#settings,
+#objectives,
+#quit-area {
+    display: flex;
+    border: black solid;
+}
+#lower-infosArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 80vh;
+}
+
+#bottom-infosArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    column-gap: 20vh;
+}
+
+#settings,
+#quit-area {
+    height: 5vh;
+}
+
+#settings {
+    padding: 0;
+}
+
+#quit-area {
+    margin-bottom: 0;
+}
+
+#objectives {
+    height: 30vh;
+    width: 20vw;
+    background-color: rgb(247, 247, 60);
+    margin-bottom: 15vh;
 }
 
 .play-area-container {
@@ -26,6 +79,7 @@
     flex-direction: row;
     height: 90vh;
 }
+/*
 .icon {
     border-radius: 20px;
     margin-bottom: 2vw;
@@ -146,3 +200,4 @@
     color: #000 !important;
     opacity: 0.95;
 }
+*/

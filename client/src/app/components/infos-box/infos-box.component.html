@@ -8,16 +8,8 @@
             <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} lettres restantes dans le chevalet</p>
         </div>
     </div>
-    <div [ngClass]="{ 'game-infos': true, 'endgame-infos': (this.gameContextService.isEnded() | async) }">
-        <p>{{ (communicationService.selectedRoom | async)?.parameters?.log2990 ? 'Mode LOG2990' : 'Mode Classique' }}</p>
-        <div class="backChrono" *ngIf="!summary">
-            <countdown
-                #countdown
-                [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
-            ></countdown>
-        </div>
-        <p *ngIf="summary">{{ summary }}</p>
-        <p>{{ (this.gameContextService.state | async)?.reserveCount }} lettres disponibles dans la réserve</p>
+    <div id="chrono">
+        <app-chrono-container></app-chrono-container>
     </div>
     <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn() | async) }">
         <div class="p-infos">

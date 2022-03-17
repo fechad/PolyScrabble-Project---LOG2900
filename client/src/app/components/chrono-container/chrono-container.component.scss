@@ -1,0 +1,50 @@
+section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#outer,
+#inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#outer {
+    border: #18222d solid;
+    width: 150px;
+    height: 100px;
+    background-color: aliceblue;
+}
+
+#inner,
+#clock {
+    display: flex;
+    width: 130px;
+    height: 80px;
+}
+#inner {
+    border: #18222d solid;
+    background-color: aliceblue;
+}
+#clock {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#btn {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: bottom;
+    width: 150px;
+    height: 10px;
+    padding-bottom: 1px;
+}
+#start,
+#stop {
+    border: #18222d solid;
+    width: 20px;
+    height: 10px;
+}
