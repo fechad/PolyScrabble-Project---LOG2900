@@ -60,6 +60,12 @@ export class Game {
         return this.room.id;
     }
 
+    clearTimeout() {
+        if (this.timeout === undefined) return;
+        clearTimeout(this.timeout);
+        this.timeout = undefined;
+    }
+
     sendState() {
         const state: GameState = {
             players: [
@@ -98,6 +104,7 @@ export class Game {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             const player = this.getCurrentPlayer();
+            this.clearTimeout();
             try {
                 const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
@@ -143,6 +150,8 @@ export class Game {
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
+            const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
+            this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             this.nextTurn(true);
             this.sendState();
         }
@@ -187,9 +196,6 @@ export class Game {
     private nextTurn(userRequest: boolean) {
         this.isPlayer0Turn = !this.isPlayer0Turn;
 
-        const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
-        this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
-
         if (userRequest) this.skipCounter += 1;
         else this.skipCounter = 0;
 
@@ -197,6 +203,7 @@ export class Game {
 
         if (this.timeout) clearTimeout(this.timeout);
         if (this.room.getState() === State.Started) {
+            console.log('entered');
             this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
         } else {
             this.timeout = undefined;
