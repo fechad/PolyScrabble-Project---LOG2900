@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import { MouseButton } from '@app/components/play-area/play-area.component';
 import { take } from 'rxjs/operators';
@@ -19,45 +20,39 @@ const CANVAS_ADJUSTMENT = 16;
 })
 export class MouseService {
     mousePosition: Vec2 = { x: 0, y: 0 };
-    buttonPressed = '';
-    prevPos: Vec2 = { x: 0, y: 0 };
     isHorizontal = true;
     constructor(public gridService: GridService, public gameContextService: GameContextService) {}
 
     async mouseHitDetect(event: MouseEvent) {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (myTurn && !this.gameContextService.state.value.ended && this.gridService.letterWritten === 0) {
-            if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
-            if (event.button === MouseButton.Left && this.isInBound(event)) {
-                this.prevPos = this.mousePosition;
-                this.mousePosition = {
-                    x: this.calculateX(event.offsetX),
-                    y: this.calculateY(event.offsetY),
-                };
-                if (this.prevPos.x === this.mousePosition.x && this.prevPos.y === this.mousePosition.y) {
-                    this.isHorizontal = !this.isHorizontal;
-                    this.gridService.drawGrid();
-                    this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
-                } else {
-                    this.gridService.drawGrid();
-                    this.isHorizontal = true;
-                    this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
-                }
-            }
+        if (!myTurn || this.gameContextService.state.value.state !== State.Started) return;
+        if (this.gridService.letterWritten !== 0) return;
+        if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
+        if (event.button !== MouseButton.Left || !this.isInBound(event)) return;
+
+        const prevPos = this.mousePosition;
+        this.mousePosition = {
+            x: this.calculateX(event.offsetX),
+            y: this.calculateY(event.offsetY),
+        };
+        if (prevPos.x === this.mousePosition.x && prevPos.y === this.mousePosition.y) {
+            this.isHorizontal = !this.isHorizontal;
+        } else {
+            this.isHorizontal = true;
         }
+        this.gridService.drawGrid();
+        this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
     }
 
     isInBound(event: MouseEvent): boolean {
         const size = document.getElementById('canvas')?.clientWidth;
         const GRID_BORDERS = [GRID_ORIGIN, size];
-        if (
+        return (
             event.offsetX >= GRID_BORDERS[0]?.valueOf()! &&
             event.offsetX <= GRID_BORDERS[1]?.valueOf()! &&
             event.offsetY >= GRID_BORDERS[0]?.valueOf()! &&
             event.offsetY <= GRID_BORDERS[1]?.valueOf()!
-        )
-            return true;
-        return false;
+        );
     }
     calculateX(xPosition: number): number {
         const size = document.getElementById('canvas')?.clientWidth;

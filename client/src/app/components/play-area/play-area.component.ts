@@ -1,5 +1,6 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
+import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
@@ -72,21 +73,20 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        if (this.myTurn && !this.gameContextService.state.value.ended) {
-            this.buttonPressed = event.key;
-            if (this.buttonPressed === 'Enter') {
-                this.sendPlacedLetters();
-            } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
-                this.removeLetterOnCanvas();
-            } else if (this.buttonPressed === 'Escape') {
-                this.removeWord();
-            } else if (this.isInBound() && this.buttonPressed.match(/[A-Za-zÀ-ú]/g)?.length === 1) {
-                try {
-                    this.placeWordOnCanvas();
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                } catch (e: any) {
-                    this.communicationservice.sendLocalMessage(e.message);
-                }
+        if (!this.myTurn || this.gameContextService.state.value.state !== State.Started) return;
+        this.buttonPressed = event.key;
+        if (this.buttonPressed === 'Enter') {
+            this.sendPlacedLetters();
+        } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
+            this.removeLetterOnCanvas();
+        } else if (this.buttonPressed === 'Escape') {
+            this.removeWord();
+        } else if (this.isInBound() && this.buttonPressed.match(/[A-Za-zÀ-ú]/g)?.length === 1) {
+            try {
+                this.placeWordOnCanvas();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (e: any) {
+                this.communicationservice.sendLocalMessage(e.message);
             }
         }
     }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
+import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
@@ -71,7 +72,7 @@ export class ChatBoxLogicService {
 
     private async dispatchCommand(commandLength: number) {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
-        if (this.gameContextService.state.value.ended) throw new Error(' La partie est terminée !');
+        if (this.gameContextService.state.value.state !== State.Started) throw new Error(' La partie est terminée !');
         else if (this.commandStructure[COMMAND_INDEX] === '!réserve' && commandLength === RESERVE_COMMAND_LENGTH) this.getReserve();
         else if (this.commandStructure[COMMAND_INDEX] === '!aide' && commandLength === HELP_COMMAND_LENGTH) this.sendHelp();
         else if (!myTurn) throw new Error("Ce n'est pas votre tour");

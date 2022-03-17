@@ -32,10 +32,12 @@ export class GamePageComponent {
     send() {
         this.isSending = true;
     }
+
     async quitGame() {
-        const text = this.gameContextService.state.value.ended
-            ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
-            : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+        const text =
+            this.gameContextService.state.value.state !== State.Started
+                ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
+                : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
         const result = await Swal.fire({
             title: text[0],
             text: text[1],
@@ -45,11 +47,16 @@ export class GamePageComponent {
             cancelButtonText: text[3],
         });
         if (!result.value) return;
-        if (this.gameContextService.state.value.ended) {
-            if (this.communicationService.selectedRoom.value?.state === State.Ended) await this.communicationService.saveScore();
+        if (this.gameContextService.state.value.state === State.Started) {
+            this.communicationService.confirmForfeit();
+        } else if (
+            this.gameContextService.state.value.state === State.Aborted &&
+            this.gameContextService.state.value.winner !== this.gameContextService.myId
+        ) {
             this.communicationService.leave();
         } else {
-            this.communicationService.confirmForfeit();
+            await this.communicationService.saveScore();
+            this.communicationService.leave();
         }
     }
     skipMyTurn() {

@@ -246,7 +246,7 @@ describe('CommunicationService', () => {
         reserveCount: 88,
         board: [[]],
         turn: ID,
-        ended: false,
+        state: State.Started,
     };
     const joinGame = () => {
         createRoom();
