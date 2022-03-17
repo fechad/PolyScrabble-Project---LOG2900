@@ -203,7 +203,6 @@ export class Game {
 
         if (this.timeout) clearTimeout(this.timeout);
         if (this.room.getState() === State.Started) {
-            console.log('entered');
             this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
         } else {
             this.timeout = undefined;

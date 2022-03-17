@@ -131,7 +131,6 @@ export class CommunicationService {
     }
 
     switchTurn(timerRequest: boolean) {
-        console.log('eee');
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
