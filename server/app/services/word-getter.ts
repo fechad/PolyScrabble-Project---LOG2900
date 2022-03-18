@@ -34,14 +34,15 @@ export class WordGetter {
 
     getWords(placement: PlacementOption, contacts: number[][]): PlacementOption[] {
         const words: PlacementOption[] = [];
-
         words.push(this.getLettersAttemptedWord(placement));
-
-        contacts.forEach((contact) => {
-            if (contact.length === 0) return;
-            const contactPlacement = new PlacementOption(contact[ROW_CONTACT], contact[COL_CONTACT], !placement.isHorizontal, placement.word);
-            words.push(this.getLettersContactWord(contactPlacement, contact[LETTER_PLACE_CONTACT]));
-        });
+        words.push(
+            ...contacts
+                .filter((contact) => contact.length !== 0)
+                .map((contact) => {
+                    const contactPlacement = new PlacementOption(contact[ROW_CONTACT], contact[COL_CONTACT], !placement.isHorizontal, placement.word);
+                    return this.getLettersContactWord(contactPlacement, contact[LETTER_PLACE_CONTACT]);
+                }),
+        );
         return words;
     }
 

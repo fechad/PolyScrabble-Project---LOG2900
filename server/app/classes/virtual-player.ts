@@ -9,10 +9,7 @@ const AI_GAME_INDEX = 1;
 const PROBABILITY = 10;
 const BOARD_LENGTH = 15;
 const CONTACT_CHAR = '#';
-// const THRESHOLD = 0.5;
 const DELAY_CHECK_TURN = 1000; // ms
-
-// export type PlacementOption = { row: number; col: number; isHorizontal: boolean; word: string };
 
 export class VirtualPlayer {
     board: Board;
@@ -94,8 +91,7 @@ export class VirtualPlayer {
             });
         }
         const chosen = concretePositions.reduce((acc, position) => {
-            if (position.score < acc.score) return position;
-            else return acc;
+            return position.score < acc.score ? position : acc;
         });
         await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
     }
