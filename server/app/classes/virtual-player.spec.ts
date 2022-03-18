@@ -183,8 +183,9 @@ describe('VirtualPlayer', () => {
     });
 
     it('randomtest', () => {
-        game.board.board[7][6].setLetter('a');
-        game.board.board[7][7].setLetter('s');
-        vP['chooseword']();
+        game.board.board[5][7].setLetter('f');
+        game.board.board[6][7].setLetter('a');
+        game.board.board[7][7].setLetter('n');
+        vP['chooseword'](); 
     });
 });

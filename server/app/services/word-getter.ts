@@ -3,6 +3,7 @@ import { PlacementOption } from '@app/classes/placement-option';
 
 const ROW_CONTACT = 0;
 const COL_CONTACT = 1;
+const CONTACT_CHAR = '#'
 const LETTER_PLACE_CONTACT = 2;
 const BOARD_LENGTH = 15;
 
@@ -16,14 +17,14 @@ export class WordGetter {
         if (isHoriontal) {
             while (col > 0 && !this.board[row][col - 1].empty) col--;
             while (col < BOARD_LENGTH && (!this.board[row][col].empty || col === initialCol)) {
-                if (col === initialCol) contactWord += '*';
+                if (col === initialCol) contactWord += CONTACT_CHAR;
                 else contactWord += this.board[row][col].getChar();
                 col++;
             }
         } else {
             while (row > 0 && !this.board[row - 1][col].empty) row--;
             while (row < BOARD_LENGTH && (!this.board[row][col].empty || row === initialRow)) {
-                if (row === initialRow) contactWord += '*';
+                if (row === initialRow) contactWord += CONTACT_CHAR;
                 else contactWord += this.board[row][col].getChar();
                 row++;
             }

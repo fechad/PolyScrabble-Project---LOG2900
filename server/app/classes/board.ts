@@ -4,7 +4,7 @@ import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
 import * as Multipliers from './multipliers';
 
-const CONTACT_CHAR = '*';
+const CONTACT_CHAR = '#';
 const BOARD_LENGTH = 15;
 const HALF_LENGTH = 7;
 const WORD_LENGTH_BONUS = 7;

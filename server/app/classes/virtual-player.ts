@@ -8,7 +8,7 @@ const AI_ID = 'VP';
 const AI_GAME_INDEX = 1;
 const PROBABILITY = 10;
 const BOARD_LENGTH = 15;
-const CONTACT_CHAR = '*';
+const CONTACT_CHAR = '#';
 // const THRESHOLD = 0.5;
 const DELAY_CHECK_TURN = 1000; // ms
 
@@ -28,9 +28,14 @@ export class VirtualPlayer {
     }
 
     waitForTurn() {
-        setInterval(() => {
+        let alreadyPlaying = false;
+        setInterval(async () => {
             if (this.game.getCurrentPlayer().id === AI_ID) {
-                this.playTurn();
+                if (!alreadyPlaying){
+                    alreadyPlaying = true;
+                    await this.playTurn();
+                    alreadyPlaying = false;
+                }
             }
         }, DELAY_CHECK_TURN);
     }
@@ -51,11 +56,12 @@ export class VirtualPlayer {
         return this.validateCrosswords(arrayPos);
     }
 
-    private playTurn() {
+    private async playTurn() {
         const random = Math.floor(Math.random() * PROBABILITY);
         if (this.isBeginner && random === 0) {
             // this.game.skipTurn(AI_ID); // to test
             this.game.message({ emitter: AI_ID, text: 'I want to skip my turn' });
+            this.game.skipTurn(AI_ID);
         } else if (this.isBeginner && random === 1) {
             /* let list = '';
             this.myRack.map((letter) => {
@@ -65,16 +71,14 @@ export class VirtualPlayer {
             });
             this.game.changeLetters(list, AI_ID);*/
             this.game.message({ emitter: AI_ID, text: 'I want to exchange letters' });
+            this.game.skipTurn(AI_ID);
         } else {
             this.game.message({ emitter: AI_ID, text: 'I want to place some letters' });
-            this.chooseword();
+            await this.chooseword();
         }
-        // temporaire en attendant implementation placer lettre AI
-        this.game.skipTurn(AI_ID);
-        this.waitForTurn();
     }
 
-    private chooseword() {
+    private async chooseword() {
         const concretePositions: PlacementOption[] = [];
         for (const position of this.getPlayablePositions()) {
             const connectedLetters = this.getWordConnections(position);
@@ -93,7 +97,8 @@ export class VirtualPlayer {
             if (position.score < acc.score) return position;
             else return acc;
         });
-        this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
+        console.log(concretePositions.length);
+        await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
     }
 
     private getWordConnections(position: PlacementOption) {
@@ -107,6 +112,7 @@ export class VirtualPlayer {
 
     private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
         let validWords: PlacementOption[] = [];
+        let replacementOptions: PlacementOption[] = [];
         let starRemains = false;
         for (const option of placementOptions) {
             let letterCount = 0;
@@ -122,15 +128,16 @@ export class VirtualPlayer {
                         break;
                     }
                     oneContact = true;
-                    const replacementOptions = this.contactReplacement(exploredOptions, option, letterCount, availableLetters);
+                    replacementOptions = this.contactReplacement(exploredOptions, option, letterCount, availableLetters);
                     validWords = validWords.concat(replacementOptions);
-                    if (replacementOptions.length === 0) validWords.push(option.deepCopy(option.word.slice(0, letterCount)));
+                    if (replacementOptions.length === 0 && letterCount !== 0) validWords.push(option.deepCopy(option.word.slice(0, letterCount)));
                 }
                 letterCount++;
             }
             if (!oneContact) validWords.push(option);
         }
-        return starRemains ? this.validateCrosswords(validWords, exploredOptions) : validWords;
+        if (starRemains) validWords = this.validateCrosswords(validWords, exploredOptions)
+        return validWords;
     }
 
     private contactReplacement(
@@ -153,7 +160,7 @@ export class VirtualPlayer {
         } else {
             const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
             const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
-            exploredOptions.push(option.deepCopy(possibleLetters));
+            exploredOptions.push(new PlacementOption(row, col, option.isHorizontal, possibleLetters));
         }
         return validWords;
     }
@@ -162,7 +169,7 @@ export class VirtualPlayer {
         let possibleLetters = '';
         for (const rackLetter of rackLetters) {
             if ([...possibleLetters].includes(rackLetter)) continue;
-            const attemptedCrossword = crossword.replace('*', rackLetter.toLowerCase());
+            const attemptedCrossword = crossword.replace(CONTACT_CHAR, rackLetter.toLowerCase());
             if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
                 validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, rackLetter)));
                 possibleLetters += rackLetter;
