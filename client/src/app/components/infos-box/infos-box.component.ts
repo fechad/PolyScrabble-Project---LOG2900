@@ -20,6 +20,7 @@ export class InfosBoxComponent implements AfterViewInit {
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.gameContextService.state.subscribe((state) => {
+            console.log('subs');
             const [myIdx, otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
             if (state.players[myIdx].rackCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
@@ -27,8 +28,10 @@ export class InfosBoxComponent implements AfterViewInit {
             if (state.state === State.Aborted) {
                 this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
             } else if (state.state !== State.Ended) {
+                console.log('state not ended');
                 this.summary = undefined;
             } else if (state.winner === undefined) {
+                console.log('WINNER NO');
                 this.summary = `👑 Félicitations ${state.players[0].info.name} et ${state.players[1].info.name}! 👑`;
             } else {
                 const winnerName = state.players.find((player) => player.info.id === state.winner)?.info.name;
