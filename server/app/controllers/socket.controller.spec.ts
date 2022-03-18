@@ -31,7 +31,7 @@ describe('SocketManager service tests', () => {
         server = Container.get(Server);
         Container.get(RoomsService).rooms.splice(0);
         Container.get(RoomsService).games.splice(0);
-        server.init();
+        await server.init();
         // eslint-disable-next-line dot-notation
         service = server['socketManager'];
         // eslint-disable-next-line dot-notation

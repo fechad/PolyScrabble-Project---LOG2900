@@ -1,16 +1,15 @@
 import { GameTile } from '@app/classes/game-tile';
-import { assert } from 'chai';
+import { PlacementOption } from '@app/classes/placement-option';
+import { assert, expect } from 'chai';
 import { WordGetter } from './word-getter';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 
 const BOARD_LENGTH = 15;
-const INVALID = -1;
 
 describe('Word getter', () => {
     let board: GameTile[][];
     let wordGetter: WordGetter;
-    let word: string;
 
     beforeEach(() => {
         board = [];
@@ -22,96 +21,80 @@ describe('Word getter', () => {
             board.push(row);
         }
         wordGetter = new WordGetter(board);
-        word = 'test';
     });
 
-    it('should get the attempted word', (done) => {
-        let expectedWord = 'h;4;5;test';
-        let row = 4;
-        let col = 5;
-        let isHorizontal = true;
-        let contacts = [[INVALID]];
-        let words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+    it('should get the attempted word', () => {
+        let testPlacement = new PlacementOption(4, 5, true, 'test');
+        let contacts: number[][] = [[]];
+        let words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 1);
-        assert(words[0] === expectedWord);
+        expect(words[0]).to.deep.equal(testPlacement);
 
-        row = 4;
-        col = 7;
-        isHorizontal = false;
-        expectedWord = 'v;4;7;test';
-        contacts = [[INVALID]];
-        words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        testPlacement = new PlacementOption(2, 9, false, 'test');
+        contacts = [[]];
+        words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 1);
-        assert(words[0] === expectedWord);
+        expect(words[0]).to.deep.equal(testPlacement);
 
         wordGetter.board[7][7].setLetter('a');
-        expectedWord = 'h;7;5;teast';
-        row = 7;
-        col = 5;
-        isHorizontal = true;
-        contacts = [[INVALID]];
-        words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        testPlacement = new PlacementOption(7, 5, true, 'test');
+        let expectedResult = testPlacement.deepCopy('teast');
+        contacts = [[]];
+        words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 1);
-        assert(words[0] === expectedWord);
+        expect(words[0]).to.deep.equal(expectedResult);
 
-        expectedWord = 'v;4;7;tesat';
-        row = 4;
-        col = 7;
-        isHorizontal = false;
-        contacts = [[INVALID]];
-        words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        testPlacement = new PlacementOption(4, 7, false, 'test');
+        expectedResult = testPlacement.deepCopy('tesat');
+        contacts = [[]];
+        words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 1);
-        assert(words[0] === expectedWord);
-        done();
+        expect(words[0]).to.deep.equal(expectedResult);
     });
 
-    it('should get the words by contact', (done) => {
+    it('should get the words by contact', () => {
         wordGetter.board[7][6].setLetter('i');
+        wordGetter.board[7][6].newlyPlaced = false;
         wordGetter.board[7][7].setLetter('a');
+        wordGetter.board[7][7].newlyPlaced = false;
         wordGetter.board[9][6].setLetter('s');
+        wordGetter.board[9][6].newlyPlaced = false;
         wordGetter.board[9][7].setLetter('t');
+        wordGetter.board[9][7].newlyPlaced = false;
 
-        let expectedWord = 'h;8;5;test';
-        let expectedWord1 = 'v;7;6;ies';
-        let expectedWord2 = 'v;7;7;ast';
-        let row = 8;
-        let col = 5;
-        let isHorizontal = true;
+        let testPlacement = new PlacementOption(8, 5, true, 'test');
+        let expectedWord = testPlacement.deepCopy();
+        let expectedWord1 = new PlacementOption(7, 6, false, 'ies');
+        let expectedWord2 = new PlacementOption(7, 7, false, 'ast');
         let contacts = [
             [8, 6, 1],
             [8, 7, 2],
         ];
-        let words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        let words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 3);
-        assert(words[0] === expectedWord);
-        assert(words[1] === expectedWord1);
-        assert(words[2] === expectedWord2);
+        expect(words[0]).to.deep.equal(expectedWord);
+        expect(words[1]).to.deep.equal(expectedWord1);
+        expect(words[2]).to.deep.equal(expectedWord2);
 
-        expectedWord = 'v;6;5;test';
-        expectedWord1 = 'h;7;5;eia';
-        expectedWord2 = 'h;9;5;tst';
-        row = 6;
-        col = 5;
-        isHorizontal = false;
+        testPlacement = new PlacementOption(6, 5, false, 'test');
+        expectedWord = testPlacement.deepCopy();
+        expectedWord1 = new PlacementOption(7, 5, true, 'eia');
+        expectedWord2 = new PlacementOption(9, 5, true, 'tst');
         contacts = [
             [7, 5, 1],
             [9, 5, 3],
         ];
-        words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 3);
-        assert(words[0] === expectedWord);
-        assert(words[1] === expectedWord1);
-        assert(words[2] === expectedWord2);
+        expect(words[0]).to.deep.equal(expectedWord);
+        expect(words[1]).to.deep.equal(expectedWord1);
+        expect(words[2]).to.deep.equal(expectedWord2);
 
-        word = 't';
-        expectedWord = 'h;7;5;tia';
-        row = 7;
-        col = 5;
-        isHorizontal = true;
-        contacts = [[-1]];
-        words = wordGetter.getWords(word, row, col, contacts, isHorizontal);
+        testPlacement = new PlacementOption(7, 5, true, 't');
+        expectedWord = testPlacement.deepCopy('tia');
+        contacts = [[]];
+        words = wordGetter.getWords(testPlacement, contacts);
         assert(words.length === 1);
-        assert(words[0] === expectedWord);
-        done();
+        expect(words[0]).to.deep.equal(expectedWord);
     });
 });

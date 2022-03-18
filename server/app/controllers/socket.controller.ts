@@ -1,5 +1,6 @@
 import { Game } from '@app/classes/game';
 import { PlayerId, Room, State } from '@app/classes/room';
+import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { LoginsService } from '@app/services/logins.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
@@ -22,6 +23,7 @@ export class SocketManager {
         public roomsService: RoomsService,
         private logins: LoginsService,
         private dictionnaryService: DictionnaryService,
+        private trie: DictionnaryTrieService,
     ) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -34,7 +36,7 @@ export class SocketManager {
     }
 
     private initLobby(): void {
-        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService);
+        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService, this.trie);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
             this.token = token;
