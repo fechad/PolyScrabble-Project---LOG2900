@@ -51,13 +51,8 @@ export class ChatBoxLogicService {
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {}
 
     async validateSyntax(textValue: string) {
-        if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '') {
-            this.communicationService.sendLocalMessage('Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *');
-            return;
-        }
-        if (textValue.trim() === '') {
-            return;
-        }
+        if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '') return this.communicationService.sendLocalMessage('Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *');
+        if (textValue.trim() === '') return;
         this.commandStructure = textValue.split(' ');
         if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
             try {

@@ -13,7 +13,7 @@ type SendableBoard = Tile[][];
 
 export const MAIN_PLAYER = 0;
 export const OTHER_PLAYER = 1;
-// const PLAYER_0_TURN_PROBABILITY = 0.5;
+const PLAYER_0_TURN_PROBABILITY = 0.5;
 const BOARD_LENGTH = 15;
 const MAX_SKIP_IN_A_ROW = 6;
 const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
@@ -54,7 +54,7 @@ export class Game {
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board(dictionnaryService);
         this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
-        this.isPlayer0Turn = true; // Math.random() >= PLAYER_0_TURN_PROBABILITY;
+        this.isPlayer0Turn = room.parameters.difficulty ? true : Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
     }
 

@@ -116,7 +116,7 @@ export class Board {
         if (placement.isHorizontal) while (this.containsLetter(row, col - 1)) col--;
         else while (this.containsLetter(row - 1, col)) row--;
 
-        for (let offset = 0; offset < placement.word.length + collisions || this.containsLetter(row, col); offset++) {
+        for (let offset = 0; offset <= placement.word.length + collisions || this.containsLetter(row, col); offset++) {
             if (placement.isHorizontal) col = placement.col + offset;
             else row = placement.row + offset;
 
