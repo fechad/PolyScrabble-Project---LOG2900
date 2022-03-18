@@ -17,11 +17,32 @@
 }
 
 #settings,
-#objectives,
 #quit-area {
     display: flex;
-    border: black solid;
+    padding-top: 2vh;
 }
+
+#objectives {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border: black solid;
+    border-width: thin;
+}
+
+#objectives #objectives-header {
+    width: 8vw;
+    height: 4vh;
+    border-radius: 15px 0 15px 0;
+    border: black solid;
+    border-width: thin;
+    background-color: burlywood;
+}
+
+#objectives #objectives-header h1 {
+    padding-left: 0.5vw;
+}
+
 #lower-infosArea {
     display: flex;
     flex-direction: column;
@@ -34,7 +55,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    column-gap: 20vh;
+    padding-top: 10vh;
 }
 
 #settings {
@@ -51,7 +72,6 @@
     height: 30vh;
     width: 20vw;
     background-color: rgb(247, 247, 60);
-    margin-bottom: 10vh;
     border-radius: 15px;
 }
 
@@ -112,8 +132,33 @@
     margin: 2vh;
 }
 
+.icon {
+    background-color: transparent;
+}
+
+.icon,
+.sizing {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    margin-left: 1vh;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sizing {
+    color: white;
+}
+
 .play {
     background-color: #e1ac01;
+}
+
+#quit-game {
+    background-color: #e15201;
+}
+
+#quit-game,
+.play {
     height: 6vh;
     width: 8vh;
     font-size: 2em;
@@ -124,34 +169,35 @@
     transition: transform 0.3s ease-in-out;
     margin-left: 3vw;
 }
-.icon {
-    background-color: transparent;
+
+.sizing:hover,
+.icon:hover,
+#quit-game:hover,
+.play {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.play:disabled {
+    cursor: default;
+    opacity: 0.5;
+    transform: scale(1);
+}
+
+#quit-game,
+.play {
+    margin: 1vw 0vw 1vw 2vw;
+}
+
+::ng-deep .tooltip {
+    font-size: 20px;
+    max-width: unset !important;
+    background-color: #fff;
+    color: #000 !important;
+    opacity: 0.95;
 }
 
 /*
-
-
-.icon,
-.sizing {
-    border: none;
-    outline: none;
-    background-color: transparent;
-    margin-left: 2vh;
-    transition: transform 0.3s ease-in-out;
-    color: #e1ac01;
-}
-
-#left-container {
-    margin-top: 1vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-bottom: 4vh;
-    padding-left: 5vw;
-    padding-top: 25px;
-    width: 25vw;
-}
-
 .goals,
 .game-goals {
     display: flex;
@@ -172,55 +218,4 @@
     color: #e1ac01;
 }
 
-#quit-game,
-.skip-turn,
-
-
-.skip-turn,
-#quit-game,
-.play {
-    margin: 1vw 0vw 1vw 2vw;
-}
-.action-buttons {
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: column;
-}
-.sizing:hover,
-.icon:hover,
-#quit-game:hover,
-.skip-turn:hover,
-.play {
-    cursor: pointer;
-
-    transform: scale(1.1);
-}
-
-.rackArea {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    align-items: center;
-    background-color: darken(desaturate(#e1ac01, 70%), 35%);
-}
-
-.skip-turn:disabled,
-.play:disabled {
-    cursor: default;
-    opacity: 0.5;
-    transform: scale(1);
-}
-
-#bottom-area {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-::ng-deep .tooltip {
-    font-size: 20px;
-    max-width: unset !important;
-    background-color: #fff;
-    color: #000 !important;
-    opacity: 0.95;
-}
 */

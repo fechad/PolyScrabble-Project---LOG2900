@@ -1,8 +1,9 @@
-.opponent,
+/*.opponent,
 .player {
     border-width: thin;
     border-style: solid;
 }
+*/
 .infos {
     display: inline-flex;
     flex-direction: column;
@@ -12,15 +13,24 @@
     box-sizing: border-box;
     align-items: center;
 }
+
+.opponent,
+.player {
+    width: 20vw;
+}
+
+.game-infos {
+    width: 15vw;
+}
+
 .game-infos,
 .opponent,
 .player {
     background-color: #e1ac01;
-    width: 10vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
     font-size: 20px;
 }
 
@@ -34,14 +44,54 @@
     font-size: 20px;
 }
 
+.profile {
+    background-color: gray;
+    border: gray solid;
+    border-radius: 100%;
+    height: 4vw;
+    width: 4vw;
+    padding-left: 0.5vw;
+    margin: 0.05vw;
+}
+
 .opponent,
 .player {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 .tour {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4vh;
+    width: 8vw;
+    border-radius: 10px;
     background-color: #54bd9d;
+    margin-top: 1vh;
+}
+
+.skip-turn {
+    height: 6vh;
+    width: 8vh;
+    font-size: 2em;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+    border-color: #000000;
+    transition: transform 0.3s ease-in-out;
+    margin-top: 6vh;
+    background-color: #e69419;
+}
+.skip-turn:hover {
+    cursor: pointer;
+
+    transform: scale(1.1);
+}
+.skip-turn:disabled {
+    cursor: default;
+    opacity: 0.5;
+    transform: scale(1);
 }
 
 p {
@@ -56,14 +106,6 @@ p {
 }
 .p-infos p {
     margin-left: 1vh;
-}
-.backChrono {
-    display: flex;
-    background-color: #f9f6f8;
-    width: 10%;
-    height: 30%;
-    justify-content: center;
-    align-items: center;
 }
 
 .winner-left,
@@ -81,5 +123,6 @@ p {
 
 #chrono {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    width: 15vw;
 }
