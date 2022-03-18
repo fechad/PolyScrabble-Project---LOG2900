@@ -56,6 +56,7 @@
 }
 
 .play-area-container {
+    margin-top: 2vh;
     flex: 1 1 auto;
 }
 
@@ -75,21 +76,60 @@
 .game-container {
     display: flex;
     flex-direction: column;
-    height: 90vh;
+    height: 100%;
+    width: 80%;
 }
 #upper-game-container,
 #lower-game-container {
     display: flex;
     flex-direction: row;
 }
-/*
-.icon {
-    border-radius: 20px;
-    margin-bottom: 2vw;
-    margin-left: 2vh;
-    width: 3vh;
-    height: 3vh;
+
+#upper-game-container {
+    justify-content: space-between;
 }
+
+#lower-game-container div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 10vw;
+}
+
+#left-side {
+    width: 10vw;
+}
+
+#middle-side {
+    width: 40vw;
+}
+
+.size-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 2vh;
+}
+
+.play {
+    background-color: #e1ac01;
+    height: 6vh;
+    width: 8vh;
+    font-size: 2em;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+    border-color: #000000;
+    transition: transform 0.3s ease-in-out;
+    margin-left: 3vw;
+}
+.icon {
+    background-color: transparent;
+}
+
+/*
+
 
 .icon,
 .sizing {
@@ -111,12 +151,7 @@
     padding-top: 25px;
     width: 25vw;
 }
-.size-container {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    margin: 2vh;
-}
+
 .goals,
 .game-goals {
     display: flex;
@@ -139,17 +174,7 @@
 
 #quit-game,
 .skip-turn,
-.play {
-    background-color: #e1ac01;
-    height: 6vh;
-    width: 8vh;
-    font-size: 2em;
-    border-radius: 15px;
-    border-width: thin;
-    border-style: solid;
-    border-color: #000000;
-    transition: transform 0.3s ease-in-out;
-}
+
 
 .skip-turn,
 #quit-game,
@@ -159,11 +184,6 @@
 .action-buttons {
     display: flex;
     justify-content: flex-end;
-    flex-direction: column;
-}
-.params-buttons {
-    display: flex;
-    justify-content: flex-start;
     flex-direction: column;
 }
 .sizing:hover,

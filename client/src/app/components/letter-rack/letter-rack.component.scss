@@ -72,8 +72,8 @@
 
 #menu {
     position: fixed;
-    right: 65%;
-    top: 89vh;
+    right: 60%;
+    top: 86vh;
     color: white;
 }
 
@@ -94,10 +94,14 @@
 }
 
 #menu button#exchange {
+    width: 5vw;
+    height: 5vh;
     background: #25be4b;
 }
 
 #menu button#cancel {
+    width: 5vw;
+    height: 5vh;
     background: red;
 }
 
@@ -111,13 +115,12 @@
     border-width: 3px;
 }
 
-.name{
+.name {
     padding: 15px 45px 10px 10px;
     margin-left: -8px;
-    
 }
 
-.score{
+.score {
     margin-bottom: 5px;
     margin-left: -45px;
 }
