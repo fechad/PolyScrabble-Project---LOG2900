@@ -1,4 +1,4 @@
-import { PlacementOption } from '@app/placement-option';
+import { PlacementOption } from '@app/classes/placement-option';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { assert } from 'console';

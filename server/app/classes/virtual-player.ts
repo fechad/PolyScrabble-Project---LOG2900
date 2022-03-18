@@ -1,4 +1,4 @@
-import { PlacementOption } from '@app/placement-option';
+import { PlacementOption } from '@app/classes/placement-option';
 import { DictionnaryTrieService, WordConnection } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
