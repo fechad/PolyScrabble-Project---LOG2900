@@ -18,7 +18,7 @@ class GameContextServiceMock {
 }
 
 describe('InfosBoxComponent', () => {
-    //let component: InfosBoxComponent;
+    // let component: InfosBoxComponent;
     let fixture: ComponentFixture<InfosBoxComponent>;
     let communicationServiceSpy: CommunicationServiceMock;
     let countdown: CountdownComponent;
@@ -42,7 +42,7 @@ describe('InfosBoxComponent', () => {
     beforeEach(() => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['getId']);
         fixture = TestBed.createComponent(InfosBoxComponent);
-        //component = fixture.componentInstance;
+        // component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
