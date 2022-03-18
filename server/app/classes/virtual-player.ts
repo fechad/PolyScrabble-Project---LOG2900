@@ -99,7 +99,7 @@ export class VirtualPlayer {
     private getWordConnections(position: PlacementOption) {
         const connections: WordConnection[] = [];
         [...position.word].forEach((letter, index) => {
-            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index, isOnBoard: letter.toUpperCase() === letter });
+            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index, isOnBoard: letter.toLowerCase() === letter });
         });
         connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
         return connections;
