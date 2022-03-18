@@ -183,7 +183,6 @@ export class Game {
         const winnerInfo = this.getWinner();
         this.room.end(false);
         this.winner = winnerInfo[0];
-        this.summary = '👑 Félicitations ' + winnerInfo[1] + '! 👑';
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),

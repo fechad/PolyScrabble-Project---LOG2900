@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent } from 'ngx-countdown';
-=======
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
->>>>>>> a36934e... fixed timer for good
 
 const NORMAL_RACK_LENGTH = 7;
 
@@ -20,9 +16,9 @@ export class InfosBoxComponent implements AfterViewInit {
     myRackIsVisible = false;
     opponentRackIsVisible = false;
     summary: string | undefined = undefined;
-    previousTurn = '';
+    previousTurn: string | undefined = '';
 
-    constructor(private gameContextService: GameContextService, public communicationService: CommunicationService) {
+    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.gameContextService.state.subscribe((state) => {
             const [myIdx, otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
@@ -33,10 +29,10 @@ export class InfosBoxComponent implements AfterViewInit {
             } else if (state.state !== State.Ended) {
                 this.summary = undefined;
             } else if (state.winner === undefined) {
-                this.summary = `👑 Félicitation ${state.players[0].info.name} et ${state.players[1].info.name}! 👑`;
+                this.summary = `👑 Félicitations ${state.players[0].info.name} et ${state.players[1].info.name}! 👑`;
             } else {
                 const winnerName = state.players.find((player) => player.info.id === state.winner)?.info.name;
-                this.summary = `👑 Félicitation ${winnerName}! 👑`;
+                this.summary = `👑 Félicitations ${winnerName}! 👑`;
             }
         });
     }

@@ -17,7 +17,7 @@ class GameContextServiceMock {
     }
 }
 
-fdescribe('InfosBoxComponent', () => {
+describe('InfosBoxComponent', () => {
     //let component: InfosBoxComponent;
     let fixture: ComponentFixture<InfosBoxComponent>;
     let communicationServiceSpy: CommunicationServiceMock;
