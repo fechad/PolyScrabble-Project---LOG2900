@@ -30,10 +30,9 @@ type GameState = {
     players: PlayerInfo[];
     reserveCount: number;
     board: Tile[][];
-    turn: PlayerId;
-    ended: boolean;
+    turn?: PlayerId;
+    state: State;
     winner?: PlayerId;
-    summary?: string;
 };
 
 export class Game {
@@ -46,7 +45,6 @@ export class Game {
     private isPlayer0Turn: boolean;
     private skipCounter;
     private winner: PlayerId | undefined = undefined;
-    private summary: string | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
 
     constructor(private room: Room, dictionnaryService: DictionnaryService) {
@@ -62,6 +60,12 @@ export class Game {
         return this.room.id;
     }
 
+    clearTimeout() {
+        if (this.timeout === undefined) return;
+        clearTimeout(this.timeout);
+        this.timeout = undefined;
+    }
+
     sendState() {
         const state: GameState = {
             players: [
@@ -70,10 +74,9 @@ export class Game {
             ],
             reserveCount: this.reserve.getCount(),
             board: this.formatSendableBoard(),
-            turn: this.getCurrentPlayer().id,
-            ended: this.room.getState() === State.Ended || this.room.getState() === State.Aborted,
+            turn: this.room.getState() === State.Started ? this.getCurrentPlayer().id : undefined,
+            state: this.room.getState(),
             winner: this.winner,
-            summary: this.summary,
         };
         this.eventEmitter.emit('state', state);
         this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
@@ -101,6 +104,7 @@ export class Game {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             const player = this.getCurrentPlayer();
+            this.clearTimeout();
             try {
                 const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
@@ -120,6 +124,10 @@ export class Game {
             }
             this.sendState();
         }
+    }
+
+    matchRack(rack: Letter[]) {
+        this.reserve.matchRack(rack, this.isPlayer0Turn);
     }
 
     getCurrentPlayer(): Player {
@@ -146,6 +154,8 @@ export class Game {
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
+            const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
+            this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             this.nextTurn(true);
             this.sendState();
         }
@@ -159,27 +169,20 @@ export class Game {
         if (this.room.getState() !== State.Started) return;
         this.room.end(true);
         this.winner = idLoser === this.players[MAIN_PLAYER].id ? this.players[OTHER_PLAYER].id : this.players[MAIN_PLAYER].id;
-        this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
         this.sendState();
     }
 
-    getWinner(): PlayerId | undefined {
+    getWinner(): [string | undefined, string] {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
-        return undefined;
-    }
-    getWinnerName(): string {
-        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].name;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].name;
-        return this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name;
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return [this.players[MAIN_PLAYER].id, this.players[MAIN_PLAYER].name];
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return [this.players[OTHER_PLAYER].id, this.players[OTHER_PLAYER].name];
+        return [undefined, this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
     }
 
     endGame() {
+        const winnerInfo = this.getWinner();
         this.room.end(false);
-        this.winner = this.getWinner();
-        this.summary = '👑 Félicitation ' + this.getWinnerName() + '! 👑';
+        this.winner = winnerInfo[0];
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),

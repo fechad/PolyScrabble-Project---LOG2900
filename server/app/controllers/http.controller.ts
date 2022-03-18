@@ -72,7 +72,7 @@ export class HttpController {
                 return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
             }
             if (info.info.virtual) return res.sendStatus(StatusCodes.FORBIDDEN);
-            if (room.getState() === State.Aborted && game.getWinner() !== player.id) return res.sendStatus(StatusCodes.FORBIDDEN);
+            if (room.getState() === State.Aborted && game.getWinner()[0] !== player.id) return res.sendStatus(StatusCodes.FORBIDDEN);
             await this.highScoreService.addScore({ name: info.info.name, score: info.score, log2990: room.parameters.log2990 });
             return res.sendStatus(StatusCodes.ACCEPTED);
         });

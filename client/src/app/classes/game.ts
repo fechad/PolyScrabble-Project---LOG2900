@@ -1,5 +1,5 @@
 import { Tile } from '@app/services/game-context.service';
-import { Player, PlayerId } from './room';
+import { Player, PlayerId, State } from './room';
 
 export type PlayerInfo = {
     info: Player;
@@ -7,12 +7,11 @@ export type PlayerInfo = {
     rackCount: number;
 };
 
-export type GameState = {
+export class GameState {
     players: PlayerInfo[];
     reserveCount: number;
     board: Tile[][];
-    turn: PlayerId;
-    ended: boolean;
+    turn?: PlayerId;
+    state: State;
     winner?: PlayerId;
-    summary?: string;
-};
+}

@@ -3,7 +3,7 @@ import { CommandParsing } from '@app/classes/command-parsing';
 import { GameState, PlayerInfo } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
-import { PlayerId } from '@app/classes/room';
+import { PlayerId, State } from '@app/classes/room';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -47,9 +47,13 @@ export class GameContextService {
             reserveCount: DEFAULT_RESERVE,
             board,
             turn,
-            ended: false,
+            state: State.Started,
         };
         this.state = new BehaviorSubject(state);
+    }
+
+    isEnded(): Observable<boolean> {
+        return this.state.pipe(map((state) => state.state === State.Ended || state.state === State.Aborted));
     }
 
     isMyTurn(): Observable<boolean> {

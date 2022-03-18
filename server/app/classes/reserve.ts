@@ -51,6 +51,11 @@ export class Reserve {
         this.letterRacks[playerIndex] = this.letterRacks[playerIndex].concat(this.drawLetters(lettersToChange.length));
     }
 
+    matchRack(rack: Letter[], isMainPlayer: boolean) {
+        const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
+        this.letterRacks[playerIndex] = rack;
+    }
+
     getCount() {
         return this.reserve.length;
     }

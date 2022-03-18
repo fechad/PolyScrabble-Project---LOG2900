@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-md-10">
                         <label>Votre nom: </label>
-                        <input #nameInput type="text" formControlName="playerName" class="form-control"/>
+                        <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" />
                     </div>
 
                     <div class="requirement" *ngIf="gameParametersForm.controls['playerName'].errors && gameParametersForm.value.playerName !== ''">
