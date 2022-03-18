@@ -26,7 +26,6 @@ export class MouseService {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
         if (!myTurn) return;
         if (this.gridService.letterWritten !== 0) return;
-        if (this.gridService.letterWritten < 0) this.gridService.letterWritten = 0;
         if (event.button !== MouseButton.Left || !this.isInBound(event)) return;
 
         const prevPos = this.mousePosition;
