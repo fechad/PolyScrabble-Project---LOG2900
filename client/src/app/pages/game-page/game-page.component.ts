@@ -6,6 +6,7 @@ import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -21,7 +22,7 @@ export class GamePageComponent implements AfterViewChecked {
     faPlay = faPlay;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
     placingWords = true;
-    dataToSend: boolean;
+    readonly sent: Subject<void> = new Subject<void>();
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
@@ -36,7 +37,7 @@ export class GamePageComponent implements AfterViewChecked {
     }
 
     send() {
-        this.gameContextService.send();
+        this.sent.next();
     }
 
     async quitGame() {
