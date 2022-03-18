@@ -22,7 +22,7 @@ export class InfosBoxComponent implements AfterViewInit {
     summary: string | undefined = undefined;
     previousTurn = '';
 
-    constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
+    constructor(private gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.gameContextService.state.subscribe((state) => {
             const [myIdx, otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];

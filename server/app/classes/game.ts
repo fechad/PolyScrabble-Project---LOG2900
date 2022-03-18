@@ -172,17 +172,18 @@ export class Game {
         this.sendState();
     }
 
-    getWinner(): string[] {
+    getWinner(): [string | undefined, string] {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
         if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return [this.players[MAIN_PLAYER].id, this.players[MAIN_PLAYER].name];
         else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return [this.players[OTHER_PLAYER].id, this.players[OTHER_PLAYER].name];
-        return ['tie', this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
+        return [undefined, this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
     }
 
     endGame() {
         const winnerInfo = this.getWinner();
         this.room.end(false);
-        this.winner = winnerInfo[0] === 'tie' ? undefined : winnerInfo[0];
+        this.winner = winnerInfo[0];
+        this.summary = '👑 Félicitations ' + winnerInfo[1] + '! 👑';
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),

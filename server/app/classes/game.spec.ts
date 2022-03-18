@@ -204,17 +204,6 @@ describe('Game', () => {
 
         game.scores[0] = 20;
         game.scores[1] = 10;
-<<<<<<< HEAD
-        // eslint-disable-next-line dot-notation
-        const result1 = game['getWinner']();
-        assert(result1 === mainPlayer.id);
-
-        game.scores[0] = 10;
-        game.scores[1] = 20;
-        // eslint-disable-next-line dot-notation
-        const result2 = game['getWinner']();
-        assert(result2 === otherPlayer.id);
-=======
         const result1 = game.getWinner();
         assert(result1[0] === mainPlayer.id);
 
@@ -222,21 +211,14 @@ describe('Game', () => {
         game.scores[1] = 20;
         const result2 = game.getWinner();
         assert(result2[0] === otherPlayer.id);
->>>>>>> 2721b38... fixed double calculation of end-game score penalities
     });
 
     it('getWinner should return tie if its a tie', () => {
         game.reserve['letterRacks'][0] = [...game.reserve['letterRacks'][1]];
         game.scores[0] = 20;
         game.scores[1] = 20;
-<<<<<<< HEAD
-        // eslint-disable-next-line dot-notation
-        const result1 = game['getWinner']();
-        expect(result1).to.equal(undefined);
-=======
         const result1 = game.getWinner();
-        expect(result1[0]).to.equal('tie');
->>>>>>> 2721b38... fixed double calculation of end-game score penalities
+        expect(result1[0]).to.equal(undefined);
     });
 
     it('empty reserve and empty rack should trigger endGame', async () => {
