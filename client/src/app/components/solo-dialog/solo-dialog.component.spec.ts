@@ -20,7 +20,7 @@ const dialogMock = {
     },
 };
 
-class CommunicationServiceMock {
+export class CommunicationServiceMock {
     rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
         id: 0,
@@ -30,6 +30,7 @@ class CommunicationServiceMock {
         otherPlayer: undefined,
         state: State.Setup,
     } as Room);
+
     dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
 
     async joinRoom() {
@@ -39,7 +40,9 @@ class CommunicationServiceMock {
     leave() {
         return;
     }
-
+    getId(): number {
+        return 1;
+    }
     createRoom() {
         return;
     }
