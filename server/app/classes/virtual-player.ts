@@ -28,9 +28,14 @@ export class VirtualPlayer {
     }
 
     waitForTurn() {
-        setInterval(() => {
+        let alreadyPlaying = false;
+        setInterval(async () => {
             if (this.game.getCurrentPlayer().id === AI_ID) {
-                this.playTurn();
+                if (!alreadyPlaying){
+                    alreadyPlaying = true;
+                    await this.playTurn();
+                    alreadyPlaying = false;
+                }
             }
         }, DELAY_CHECK_TURN);
     }
@@ -51,7 +56,7 @@ export class VirtualPlayer {
         return this.validateCrosswords(arrayPos);
     }
 
-    private playTurn() {
+    private async playTurn() {
         const random = Math.floor(Math.random() * PROBABILITY);
         if (this.isBeginner && random === 0) {
             // this.game.skipTurn(AI_ID); // to test
@@ -69,13 +74,11 @@ export class VirtualPlayer {
             this.game.skipTurn(AI_ID);
         } else {
             this.game.message({ emitter: AI_ID, text: 'I want to place some letters' });
-            this.chooseword();
+            await this.chooseword();
         }
-        // temporaire en attendant implementation placer lettre AI
-        this.waitForTurn();
     }
 
-    private chooseword() {
+    private async chooseword() {
         const concretePositions: PlacementOption[] = [];
         for (const position of this.getPlayablePositions()) {
             const connectedLetters = this.getWordConnections(position);
@@ -94,7 +97,8 @@ export class VirtualPlayer {
             if (position.score < acc.score) return position;
             else return acc;
         });
-        this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
+        console.log(concretePositions.length);
+        await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
     }
 
     private getWordConnections(position: PlacementOption) {
