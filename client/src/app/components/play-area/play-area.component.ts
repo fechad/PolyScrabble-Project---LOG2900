@@ -41,7 +41,6 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     rack: string[] = [];
     shift: number[] = [];
     myTurn = false;
-    sending: boolean = false;
     private isLoaded = false;
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
