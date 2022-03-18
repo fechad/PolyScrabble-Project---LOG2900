@@ -60,6 +60,12 @@ export class Game {
         return this.room.id;
     }
 
+    clearTimeout() {
+        if (this.timeout === undefined) return;
+        clearTimeout(this.timeout);
+        this.timeout = undefined;
+    }
+
     sendState() {
         const state: GameState = {
             players: [
@@ -98,6 +104,7 @@ export class Game {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
             const player = this.getCurrentPlayer();
+            this.clearTimeout();
             try {
                 const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
@@ -117,6 +124,10 @@ export class Game {
             }
             this.sendState();
         }
+    }
+
+    matchRack(rack: Letter[]) {
+        this.reserve.matchRack(rack, this.isPlayer0Turn);
     }
 
     getCurrentPlayer(): Player {
@@ -143,6 +154,8 @@ export class Game {
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
+            const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
+            this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             this.nextTurn(true);
             this.sendState();
         }
@@ -159,16 +172,17 @@ export class Game {
         this.sendState();
     }
 
-    getWinner(): PlayerId | undefined {
+    getWinner(): [string | undefined, string] {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
-        return undefined;
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return [this.players[MAIN_PLAYER].id, this.players[MAIN_PLAYER].name];
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return [this.players[OTHER_PLAYER].id, this.players[OTHER_PLAYER].name];
+        return [undefined, this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
     }
 
-    private endGame() {
+    endGame() {
+        const winnerInfo = this.getWinner();
         this.room.end(false);
-        this.winner = this.getWinner();
+        this.winner = winnerInfo[0];
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),

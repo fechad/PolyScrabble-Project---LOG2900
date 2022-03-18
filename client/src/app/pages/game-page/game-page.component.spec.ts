@@ -25,7 +25,7 @@ const dialogMock = {
     },
 };
 
-export class CommunicationServiceMock {
+class CommunicationServiceMock {
     isWinner = false;
     getId(): number {
         return 1;

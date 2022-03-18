@@ -1,10 +1,11 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
+import { Subject } from 'rxjs';
 
 // TODO : Avoir un fichier séparé pour les constantes!
 export const DEFAULT_WIDTH = 525;
@@ -31,8 +32,8 @@ export enum MouseButton {
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
-    @Input() sending: boolean = false;
+export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+    @Input() sent: Subject<void>;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
     // eslint-disable-next-line no-invalid-this
@@ -61,12 +62,10 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
             this.myTurn = bool;
         });
     }
+
     @HostListener('document:click', ['$event'])
     click(event: MouseEvent) {
-        if (this.sending && this.myTurn) {
-            this.sendPlacedLetters();
-            this.sending = false;
-        } else if (this.gridCanvas.nativeElement !== event.target && this.myTurn) {
+        if (this.gridCanvas.nativeElement !== event.target && this.myTurn) {
             this.removeWord();
         }
     }
@@ -89,6 +88,12 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
                 this.communicationservice.sendLocalMessage(e.message);
             }
         }
+    }
+
+    ngOnInit() {
+        this.sent.subscribe(() => {
+            if (this.myTurn) this.sendPlacedLetters();
+        });
     }
 
     removeWord() {
@@ -206,14 +211,20 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
         this.gridCanvas.nativeElement.focus();
         this.isLoaded = true;
     }
-    ngAfterViewChecked() {
+
+    ngAfterViewChecked(): void {
         if (!this.myTurn) this.removeWord();
     }
+
     get width(): number {
         return this.canvasSize.x;
     }
 
     get height(): number {
         return this.canvasSize.y;
+    }
+
+    ngOnDestroy() {
+        this.sent.unsubscribe();
     }
 }

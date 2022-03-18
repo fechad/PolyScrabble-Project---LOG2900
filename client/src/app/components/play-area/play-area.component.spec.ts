@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { Subject } from 'rxjs';
 
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
@@ -17,18 +18,13 @@ describe('PlayAreaComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(PlayAreaComponent);
         component = fixture.componentInstance;
+        component.sent = new Subject<void>();
+        component.sent.subscribe();
         fixture.detectChanges();
+        component.ngOnInit();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-    // it('buttonDetect should modify the buttonPressed variable', () => {
-    //     const expectedKey = 'a';
-    //     const buttonEvent = {
-    //         key: expectedKey,
-    //     } as KeyboardEvent;
-    //     component.buttonDetect(buttonEvent);
-    //     expect(component.buttonPressed).toEqual(expectedKey);
-    // });
 });

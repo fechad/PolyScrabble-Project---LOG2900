@@ -10,14 +10,16 @@
     </div>
     <div [ngClass]="{ 'game-infos': true, 'endgame-infos': (this.gameContextService.isEnded() | async) }">
         <p>{{ (communicationService.selectedRoom | async)?.parameters?.log2990 ? 'Mode LOG2990' : 'Mode Classique' }}</p>
-        <div class="backChrono" *ngIf="!summary">{{ timerService.timer | async }}</div>
+        <div class="backChrono" *ngIf="!summary">
+            <countdown
+                #countdown
+                [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
+            ></countdown>
+        </div>
         <p *ngIf="summary">{{ summary }}</p>
         <p>{{ (this.gameContextService.state | async)?.reserveCount }} lettres disponibles dans la réserve</p>
     </div>
-    <div
-        class="player"
-        [ngClass]="{ player: true, tour: (gameContextService.isMyTurn() | async) }"
-    >
+    <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn() | async) }">
         <div class="p-infos">
             <p>{{ (this.gameContextService.getMe() | async)?.info?.name }} : {{ (this.gameContextService.getMe() | async)?.score }} points</p>
             <p *ngIf="myRackIsVisible">{{ (this.gameContextService.getMe() | async)?.rackCount }} lettres restantes dans le chevalet</p>

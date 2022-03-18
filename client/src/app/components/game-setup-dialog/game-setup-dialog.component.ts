@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Parameters } from '@app/classes/parameters';
@@ -11,8 +11,7 @@ const SEC_CONVERT = 60;
     templateUrl: './game-setup-dialog.component.html',
     styleUrls: ['../../styles/dialogs.scss'],
 })
-export class GameSetupDialogComponent implements OnInit, AfterViewChecked {
-    @ViewChild('nameInput', { static: false }) input: ElementRef;
+export class GameSetupDialogComponent implements OnInit {
     gameParametersForm: FormGroup;
     constructor(
         private formBuilder: FormBuilder,
@@ -32,10 +31,6 @@ export class GameSetupDialogComponent implements OnInit, AfterViewChecked {
             seconds: new FormControl(0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
-    }
-
-    ngAfterViewChecked() {
-        this.input.nativeElement.focus();
     }
 
     async onSubmit() {

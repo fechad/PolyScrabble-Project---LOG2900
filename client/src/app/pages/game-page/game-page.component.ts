@@ -1,4 +1,4 @@
-import { Component, Injectable } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
@@ -6,6 +6,7 @@ import { GameContextService } from '@app/services/game-context.service';
 import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,24 +14,30 @@ import Swal from 'sweetalert2';
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-@Injectable()
-export class GamePageComponent {
+export class GamePageComponent implements AfterViewChecked {
     faQuestionCircle = faQuestionCircle;
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
     faAngleDoubleRight = faAngleDoubleRight;
     faPlay = faPlay;
     resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
-    isSending = false;
+    placingWords = true;
+    readonly sent: Subject<void> = new Subject<void>();
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
         public gameContextService: GameContextService,
         public router: Router,
+        private detectChanges: ChangeDetectorRef,
     ) {}
 
+    ngAfterViewChecked(): void {
+        this.placingWords = this.gridService.letterForServer.length === 0;
+        this.detectChanges.detectChanges();
+    }
+
     send() {
-        this.isSending = true;
+        this.sent.next();
     }
 
     async quitGame() {
