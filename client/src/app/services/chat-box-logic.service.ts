@@ -53,19 +53,23 @@ export class ChatBoxLogicService {
     async validateSyntax(textValue: string) {
         if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '') {
             this.communicationService.sendLocalMessage('Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *');
-        } else if (textValue.trim() !== '') {
-            this.commandStructure = textValue.split(' ');
-            if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
-                try {
-                    await this.dispatchCommand(this.commandStructure.length);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                } catch (e: any) {
+            return;
+        }
+        if (textValue.trim() === '') {
+            return;
+        }
+        this.commandStructure = textValue.split(' ');
+        if (this.commandStructure[COMMAND_INDEX][COMMAND_INDEX] === '!') {
+            try {
+                await this.dispatchCommand(this.commandStructure.length);
+            } catch (e: unknown) {
+                if (e instanceof Error) {
                     const message = e.message;
                     this.communicationService.sendLocalMessage(message);
                 }
-            } else {
-                this.communicationService.sendMessage(textValue);
             }
+        } else {
+            this.communicationService.sendMessage(textValue);
         }
     }
 
