@@ -44,8 +44,8 @@ export class PlayAreaComponent implements AfterViewInit, AfterViewChecked {
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     constructor(
-        private readonly gridService: GridService,
-        private gameContextService: GameContextService,
+        public gridService: GridService,
+        public gameContextService: GameContextService,
         public mouseDetectService: MouseService,
         public communicationservice: CommunicationService,
     ) {
