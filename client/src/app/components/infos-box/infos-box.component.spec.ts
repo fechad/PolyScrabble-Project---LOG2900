@@ -12,7 +12,6 @@ import { InfosBoxComponent } from './infos-box.component';
 
 class GameContextServiceMock {
     state: BehaviorSubject<GameState> = new BehaviorSubject({
-        /* Dummy state */
         players: [
             { id: '0', name: 'P1', connected: true, virtual: false },
             { id: '1', name: 'P2', connected: true, virtual: false },
@@ -107,6 +106,28 @@ describe('InfosBoxComponent', () => {
     it('should congratulate the winner if game ended and winner is defined', () => {
         gameContextService.state.next({ ...gameContextService.state.value, state: State.Ended });
         gameContextService.state.next({ ...gameContextService.state.value, winner: '1' });
-        expect(component.summary).toBeDefined();
+        expect(component.summary).toEqual('👑 Félicitations P2! 👑');
+    });
+
+    it('should not put my number of letters visible if rack has 7 letters', () => {
+        gameContextService.state.value.players[0].rackCount = 7;
+        expect(component.myRackIsVisible).toBeFalsy();
+    });
+
+    it('should not put opponent number of letters visible if rack has 7 letters', () => {
+        gameContextService.state.value.players[1].rackCount = 7;
+        expect(component.opponentRackIsVisible).toBeFalsy();
+    });
+
+    it('should put number of letters visible if rack has less than 7 letters', () => {
+        gameContextService.state.next({
+            ...gameContextService.state.value,
+            players: [
+                { id: '0', name: 'P1', connected: true, virtual: false },
+                { id: '1', name: 'P2', connected: true, virtual: false },
+            ].map((info) => ({ info, score: 0, rackCount: 5 })),
+        });
+        expect(component.myRackIsVisible).toBeTruthy();
+        expect(component.opponentRackIsVisible).toBeTruthy();
     });
 });
