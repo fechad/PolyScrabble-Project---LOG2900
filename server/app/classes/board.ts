@@ -93,7 +93,8 @@ export class Board {
     private changeNewlyPlaced(attemptedWord: PlacementOption, placeWord: boolean) {
         let row = attemptedWord.row;
         let col = attemptedWord.col;
-        for (let offset = 0; offset < attemptedWord.word.length; offset++) {
+        let offset = 0;
+        while (offset < attemptedWord.word.length) {
             if (!placeWord && this.board[row][col].newlyPlaced) {
                 this.board[row][col].deleteLetter();
             } else {
@@ -101,6 +102,7 @@ export class Board {
             }
             if (attemptedWord.isHorizontal) col++;
             else row++;
+            offset++;
         }
     }
 

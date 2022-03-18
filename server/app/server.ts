@@ -21,7 +21,6 @@ export class Server {
         private readonly roomsService: RoomsService,
         private readonly logins: LoginsService,
         private dictionnnaryService: DictionnaryService,
-        private trie: DictionnaryTrieService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -34,12 +33,14 @@ export class Server {
             return false;
         }
     }
-    init(): void {
+    async init(): Promise<void> {
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
 
-        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService, this.trie);
+        await this.dictionnnaryService.init();
+        const trie = new DictionnaryTrieService(this.dictionnnaryService);
+        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService, trie);
         this.socketManager.init();
 
         this.server.listen(Server.appPort);

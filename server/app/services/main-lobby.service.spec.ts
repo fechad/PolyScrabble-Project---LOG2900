@@ -13,7 +13,7 @@ describe('MainLobby service tests', () => {
     let rooms: RoomsService;
     let playersSocket: EventEmitter[];
     let dictionnaryService: DictionnaryService;
-    let dictionnaryTrie : DictionnaryTrieService;
+    let dictionnaryTrie: DictionnaryTrieService;
 
     beforeEach(async () => {
         rooms = new RoomsService();

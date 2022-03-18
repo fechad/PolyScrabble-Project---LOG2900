@@ -72,12 +72,12 @@ describe('VirtualPlayer', () => {
         game.reserve.letterRacks[1] = [letterA, letterR, letterZ, letterZ, letterR, letterW, letterW];
 
         const expectedValidOptions = [
-            { row: 0, col: 2, isHorizontal: true, word: 'as       ', score: 0 },
-            { row: 0, col: 2, isHorizontal: false, word: 'A      ', score: 0 },
-            { row: 1, col: 0, isHorizontal: true, word: 'A', score: 0 },
-            { row: 1, col: 0, isHorizontal: false, word: 'a       ', score: 0 },
-            { row: 1, col: 1, isHorizontal: true, word: 'A      ', score: 0 },
-            { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0 },
+            { row: 0, col: 2, isHorizontal: true, word: 'as       ', score: 0, command: '' },
+            { row: 0, col: 2, isHorizontal: false, word: 'A      ', score: 0, command: '' },
+            { row: 1, col: 0, isHorizontal: true, word: 'A', score: 0, command: '' },
+            { row: 1, col: 0, isHorizontal: false, word: 'a       ', score: 0, command: '' },
+            { row: 1, col: 1, isHorizontal: true, word: 'A      ', score: 0, command: '' },
+            { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0, command: '' },
         ];
         const result = vP.getPlayablePositions();
         expect(result).to.deep.equal(expectedValidOptions);
@@ -143,8 +143,8 @@ describe('VirtualPlayer', () => {
 
         const expectedPossibleLetters = 'RA';
         const expectedValidOptions = [
-            { row: 2, col: 5, isHorizontal: false, word: '     R ', score: 0 },
-            { row: 2, col: 5, isHorizontal: false, word: '     A ', score: 0 },
+            { row: 2, col: 5, isHorizontal: false, word: '     R ', score: 0, command: '' },
+            { row: 2, col: 5, isHorizontal: false, word: '     A ', score: 0, command: '' },
         ];
         const possibleOptions = vP['findNewOptions'](validOptions, option, rackLetters, contactString);
         expect(validOptions).to.deep.equal(expectedValidOptions);
@@ -161,8 +161,8 @@ describe('VirtualPlayer', () => {
         const availableLetters = 'RZA';
 
         const expectedReturn = [
-            { row: 2, col: 5, isHorizontal: false, word: '     R ', score: 0 },
-            { row: 2, col: 5, isHorizontal: false, word: '     A ', score: 0 },
+            { row: 2, col: 5, isHorizontal: false, word: '     R ', score: 0, command: '' },
+            { row: 2, col: 5, isHorizontal: false, word: '     A ', score: 0, command: '' },
         ];
         const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
         expect(result).to.deep.equal(expectedReturn);
@@ -182,10 +182,9 @@ describe('VirtualPlayer', () => {
         expect(result).to.deep.equal(expectedReturn);
     });
 
-
-    it('randomtest', ()=> {
+    it('randomtest', () => {
         game.board.board[7][6].setLetter('a');
         game.board.board[7][7].setLetter('s');
         vP['chooseword']();
-    })
+    });
 });

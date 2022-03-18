@@ -27,7 +27,7 @@ describe('Dictionnary Trie', () => {
         const rack = [...'baeeudn'];
         const words = dictionnaryTrieService.generatePossibleWords(rack, [
             { connectedLetter: 's', index: 2, isOnBoard: true },
-            { connectedLetter: undefined, index: 4, isOnBoard:true },
+            { connectedLetter: undefined, index: 4, isOnBoard: true },
         ]);
         expect(words.every((word) => word[2] === 's')).to.equal(true);
         expect(words.every((word) => word.length <= 4 && word.length >= 3)).to.equal(true);

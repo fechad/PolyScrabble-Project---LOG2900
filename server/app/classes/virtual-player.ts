@@ -89,13 +89,12 @@ export class VirtualPlayer {
                 concretePositions.push(newPosition);
             });
         }
-        console.table(concretePositions);
-        /*const chosen = concretePositions.reduce((acc, position) => {
+        const chosen = concretePositions.reduce((acc, position) => {
             if (position.score < acc.score) return position;
             else return acc;
         });
+        console.table(chosen);
         this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
-    */
     }
 
     private getWordConnections(position: PlacementOption) {
