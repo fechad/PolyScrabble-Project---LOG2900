@@ -1,4 +1,4 @@
-import { WordConnection } from './services/dictionnary-trie.service';
+import { WordConnection } from '@app/services/dictionnary-trie.service';
 
 export class PlacementOption {
     score: number = 0;

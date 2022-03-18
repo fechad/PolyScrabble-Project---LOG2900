@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
+import { PlacementOption } from '@app/classes/placement-option';
 import { Letter } from '@app/letter';
-import { PlacementOption } from '@app/placement-option';
 import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';

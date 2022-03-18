@@ -1,5 +1,5 @@
 import { GameTile } from '@app/classes/game-tile';
-import { PlacementOption } from '@app/placement-option';
+import { PlacementOption } from '@app/classes/placement-option';
 
 const ROW_CONTACT = 0;
 const COL_CONTACT = 1;

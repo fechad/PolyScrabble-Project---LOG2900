@@ -1,4 +1,4 @@
-import { PlacementOption } from '@app/placement-option';
+import { PlacementOption } from '@app/classes/placement-option';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
