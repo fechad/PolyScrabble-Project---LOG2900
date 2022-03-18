@@ -25,7 +25,7 @@ export class LetterRackComponent {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         const buttonPressed = event.key;
-        if (event.target instanceof Element && (event.target.id === 'writingBox' || event.target.id === 'canvas')) {
+        if (event.target instanceof Element && (event.target.id === 'writingBox' || event.target.classList.contains('play-area'))) {
             return;
         }
         if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);

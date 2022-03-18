@@ -31,7 +31,7 @@ export class VirtualPlayer {
         let alreadyPlaying = false;
         setInterval(async () => {
             if (this.game.getCurrentPlayer().id === AI_ID) {
-                if (!alreadyPlaying){
+                if (!alreadyPlaying) {
                     alreadyPlaying = true;
                     await this.playTurn();
                     alreadyPlaying = false;
@@ -97,7 +97,6 @@ export class VirtualPlayer {
             if (position.score < acc.score) return position;
             else return acc;
         });
-        console.log(concretePositions.length);
         await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
     }
 
@@ -136,7 +135,7 @@ export class VirtualPlayer {
             }
             if (!oneContact) validWords.push(option);
         }
-        if (starRemains) validWords = this.validateCrosswords(validWords, exploredOptions)
+        if (starRemains) validWords = this.validateCrosswords(validWords, exploredOptions);
         return validWords;
     }
 

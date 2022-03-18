@@ -6,7 +6,7 @@ import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room, RoomId } from '@app/classes/room';
+import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject } from 'rxjs';
@@ -131,10 +131,12 @@ export class CommunicationService {
     }
 
     switchTurn(timerRequest: boolean) {
+        this.showMyRack();
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
+        this.showMyRack();
         this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
@@ -142,6 +144,7 @@ export class CommunicationService {
     }
 
     exchange(letters: string) {
+        this.showMyRack();
         this.gameSocket?.emit('change-letters', letters);
     }
 
@@ -152,6 +155,10 @@ export class CommunicationService {
 
     getReserve() {
         this.gameSocket?.emit('reserve-content');
+    }
+
+    showMyRack() {
+        this.gameSocket?.emit('current-rack', this.gameContextService.rack.value);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -239,7 +246,7 @@ export class CommunicationService {
         this.gameSocket.on('forfeit', (idLoser) => {
             if (idLoser !== this.myId.value) {
                 let text = [''];
-                if (this.gameContextService.state.value.ended)
+                if (this.gameContextService.state.value.state !== State.Started)
                     text = [
                         'La salle est devenue bien silencieuse...',
                         'Votre adversaire a quitté la partie, voulez-vous retourner au menu principal?',

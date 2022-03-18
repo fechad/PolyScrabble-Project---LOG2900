@@ -13,26 +13,38 @@
                     &#13;!placer [ligne][colonne][(h|v)] [lettres] : ajouter des lettres sur la grille en fonction de la ligne et de la colonne, et du sens désiré.
                     exemple: !placer 9gh ment
                     
-                    !échanger [lettre] : échanger les lettres choisies par des nouvelles lettres.
+                    !échanger [lettre] : échanger les lettres choisies par des nouvelles lettres durant votre tour.
                     exemple: !échanger abc
                     
                     !passer : passer votre tour
 
-                    !réserve : afficher la quantité restante de chaque lettre dans la réserve
+                    !réserve : afficher la quantité restante de chaque lettre dans la réserve (commande disponible en tout temps)
 
-                    !indice : obtenir 3 choix de mots à placer
+                    !indice : obtenir 3 choix de mots à placer (commande disponible en tout temps)
                     
+                    !aide: obtenir une explication des commandes du jeu. (commande disponible en tout temps)
 
-                    -- Manipulations du chevalet et du plateau: --
+                    -- Manipulations du chevalet: --
+                    1. Sélectionnez une tuile de votre chevalet soit à l'aide d'un clic gauche dessus ou en tappant sur votre clavier la lettre de celle-ci.
+                    2. Utilisez les flèches de votre clavier ou la roulette de votre souris pour déplacer la tuile sélectionnée.
+                    
+                    Pour échanger un ou plusieurs tuiles, faites un clic droit sur celles-ci, puis appuyez sur le boutton 'échanger' qui apparait.
+                    
+                    -- Manipulations du plateau: --
+                    1. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement en tapant les touches correspondantes du clavier,
+                    2. Cliquez une seconde fois pour placer verticalement
+                    
+                    -- Utilisation des lettres blanches --
 
-                    cliquer sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris
-                    ou 
-                    taper sur la touche de votre clavier correspondant à la lettre pour la sélectionner
-                    
-                    faites un clic droit sur les tuiles pour sélectionner des lettres à échanger
-                    
-                    cliquer sur une case du plateau pour placer des lettres de votre chevalet horizontalement en tapant les touches correspondantes du clavier,
-                    cliquer une seconde fois pour placer verticalement"
+                    Les lettres blanches sont représentées par des * dans les tuiles du chevalet.
+                    Pour faire un placement avec une lettre blanche: 
+                                Mettez une lettre en majuscule dans la commande de placement pour représenter la lettre blanche.
+                                    ex: !placer h7h dormiR
+
+                    Pour faire un échange d'une lettre blanche:
+                                Mettez directement le symbole * dans la commande d'échange ou faites un clic droit sur la tuile du chevalet.
+                                    ex: !échanger ab*
+                    "
                     matTooltipPosition="right"
                     matTooltipClass="tooltip"
                 >
@@ -68,7 +80,7 @@
                     matTooltip="Jouer les lettres placées"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
-                    [disabled]="gridService.letterForServer.length === 0"
+                    [disabled]="placingWords"
                     (click)="send()"
                 >
                     <fa-icon [icon]="faPlay"></fa-icon>
@@ -78,14 +90,14 @@
                     matTooltip="Passer votre tour"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
-                    [disabled]="(gameContextService.isMyTurn() | async) === false || gameContextService.state.value.ended === true"
+                    [disabled]="(gameContextService.isMyTurn() | async) === false"
                     (click)="skipMyTurn()"
                 >
                     <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
                 </button>
                 <button
                     id="quit-game"
-                    [matTooltip]="this.gameContextService.state.value.ended ? 'Quitter la partie' : 'Abandonner la partie'"
+                    [matTooltip]="(this.gameContextService.isEnded() | async) ? 'Quitter la partie' : 'Abandonner la partie'"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
                     (click)="quitGame()"
@@ -96,7 +108,7 @@
         </div>
         <div class="center">
             <div class="play-area-container">
-                <app-play-area class="play-area" tabindex="0" [sending]="isSending"></app-play-area>
+                <app-play-area class="play-area" tabindex="0" [sent]="sent"></app-play-area>
             </div>
             <div id="bottom-area">
                 <div class="rackArea">

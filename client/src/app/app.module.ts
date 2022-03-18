@@ -31,6 +31,12 @@ import { CommunicationService } from './services/communication.service';
  * Please do not move this module in the module folder.
  * Otherwise Angular Cli will not know in which module to put new component
  */
+/**
+ * Main module that is used in main.ts.
+ * All automatically generated components will appear in this module.
+ * Please do not move this module in the module folder.
+ * Otherwise Angular Cli will not know in which module to put new component
+ */
 @NgModule({
     declarations: [
         AppComponent,

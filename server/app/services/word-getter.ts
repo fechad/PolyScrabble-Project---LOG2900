@@ -3,7 +3,7 @@ import { PlacementOption } from '@app/classes/placement-option';
 
 const ROW_CONTACT = 0;
 const COL_CONTACT = 1;
-const CONTACT_CHAR = '#'
+const CONTACT_CHAR = '#';
 const LETTER_PLACE_CONTACT = 2;
 const BOARD_LENGTH = 15;
 
