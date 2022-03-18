@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +9,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { GameState } from '@app/classes/game';
+import { State } from '@app/classes/room';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -16,6 +19,7 @@ import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BehaviorSubject, of } from 'rxjs';
 import Swal from 'sweetalert2';
 import { GamePageComponent } from './game-page.component';
 
@@ -44,8 +48,10 @@ class CommunicationServiceMock {
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    let communicationService: CommunicationServiceMock;
 
     beforeEach(async () => {
+        communicationService = new CommunicationServiceMock();
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent],
             imports: [
@@ -60,7 +66,7 @@ describe('GamePageComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
-                { provide: CommunicationService, useClass: CommunicationServiceMock },
+                { provide: CommunicationService, useValue: communicationService },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
@@ -118,4 +124,32 @@ describe('GamePageComponent', () => {
         tick();
         expect(increaseFontSpy).toHaveBeenCalled();
     }));
+
+    it('send should call send in service', () => {
+        const sendSpy = spyOn(component.gameContextService, 'send').and.callThrough();
+        component.send();
+        expect(sendSpy).toHaveBeenCalled();
+    });
+
+    it('should confirmForfeit if confirmed alert', () => {
+        const forfeitSpy = spyOn(communicationService, 'confirmForfeit').and.callThrough();
+        const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
+            state: new BehaviorSubject({
+                players: [
+                    { id: '0', name: 'P1', connected: true, virtual: false },
+                    { id: '1', name: 'P2', connected: true, virtual: false },
+                ].map((info) => ({ info, score: 0, rackCount: 7 })),
+                reserveCount: 88,
+                board: [],
+                turn: undefined,
+                state: State.Started,
+            } as GameState),
+            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+            btnPlayClicked: new BehaviorSubject(false),
+        });
+        gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
+        component.quitGame();
+        Swal.clickConfirm();
+        expect(forfeitSpy).toHaveBeenCalled();
+    });
 });
