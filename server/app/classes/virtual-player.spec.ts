@@ -181,4 +181,11 @@ describe('VirtualPlayer', () => {
         const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
         expect(result).to.deep.equal(expectedReturn);
     });
+
+
+    it('randomtest', ()=> {
+        game.board.board[7][6].setLetter('a');
+        game.board.board[7][7].setLetter('s');
+        vP['chooseword']();
+    })
 });

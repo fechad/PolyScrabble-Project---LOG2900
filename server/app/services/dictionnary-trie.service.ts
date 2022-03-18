@@ -33,7 +33,7 @@ export class DictionnaryTrieService {
                 for (let i = 0; i < remainingLetters.length; i++) {
                     const copy = remainingLetters.slice();
                     const nextLetter = copy.splice(i, 1);
-                    const nextPermutation = attemptedPermutation + nextLetter;
+                    const nextPermutation = attemptedPermutation + nextLetter[0].toLowerCase();
                     if (this.isValidBranching([...nextPermutation])) permute(copy, nextPermutation, currentIndex);
                 }
             }
