@@ -176,17 +176,16 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, (pos[0] + shift) * CANVAS_SQUARE_SIZE, false);
     }
     isInBound() {
-        if (
+        return (
             (this.mouseDetectService.isHorizontal &&
                 this.mouseDetectService.mousePosition.x + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE) ||
             (!this.mouseDetectService.isHorizontal &&
                 this.mouseDetectService.mousePosition.y + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE)
-        )
-            return true;
-        return false;
+        );
     }
 
     getShift(pos: number[]): number {
+        // essayer de refactor ca
         const board = this.gameContextService.state.value.board;
         let shift = 2;
         let y = pos[0];

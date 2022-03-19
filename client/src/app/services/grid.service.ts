@@ -49,7 +49,7 @@ export class GridService {
     rack: Letter[] = [];
     letterForServer = '';
     letterWritten = 0;
-    letterPosition = [[0, 0]];
+    letterPosition: number[][] = [];
     firstLetter = [0, 0];
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 

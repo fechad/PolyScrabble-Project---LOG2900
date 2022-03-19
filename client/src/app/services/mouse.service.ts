@@ -20,7 +20,7 @@ const CANVAS_ADJUSTMENT = 16;
 export class MouseService {
     mousePosition: Vec2 = { x: 0, y: 0 };
     isHorizontal = true;
-    constructor(public gridService: GridService, public gameContextService: GameContextService) {}
+    constructor(private gridService: GridService, public gameContextService: GameContextService) {}
 
     async mouseHitDetect(event: MouseEvent) {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
