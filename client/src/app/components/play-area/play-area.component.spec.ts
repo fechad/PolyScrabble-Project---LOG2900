@@ -1,15 +1,50 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { GameState } from '@app/classes/game';
+import { Letter } from '@app/classes/letter';
+import { State } from '@app/classes/room';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService, Tile } from '@app/services/game-context.service';
+import { GridService } from '@app/services/grid.service';
+import { MouseService } from '@app/services/mouse.service';
+import { BehaviorSubject, of } from 'rxjs';
 
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
+    let commService: jasmine.SpyObj<CommunicationService>;
+    let gameService: jasmine.SpyObj<GameContextService>;
+    let gridService: jasmine.SpyObj<GridService>;
+    let mouseService: jasmine.SpyObj<MouseService>;
+    beforeEach(() => {
+        commService = jasmine.createSpyObj('CommunicationService', ['place']);
+        gameService = jasmine.createSpyObj('GameContextService', ['tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn'], {
+            state: new BehaviorSubject({ state: State.Started, board: [[]] as Tile[][] } as unknown as GameState),
+            rack: new BehaviorSubject([]),
+        });
+        gameService.isMyTurn.and.callFake(() => of(true));
+        gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
+            rack: [] as Letter[],
+            letterPosition: [[0, 0]] as number[][],
+            firstLetter: [0, 0] as number[],
+            letters: [] as Letter[],
+            letterForServer: '',
+        });
+        mouseService = jasmine.createSpyObj('MouseService', ['MouseHitDetect'], { mousePosition: { x: 20, y: 510 }, isHorizontal: true });
+    });
+
     beforeEach(async () => {
-        await TestBed.configureTestingModule({
+        TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             imports: [RouterTestingModule, HttpClientTestingModule],
+            providers: [
+                { provide: CommunicationService, useValue: commService },
+                { provide: GameContextService, useValue: gameService },
+                { provide: GridService, useValue: gridService },
+                { provide: MouseService, useValue: mouseService },
+            ],
         }).compileComponents();
     });
 
@@ -17,7 +52,6 @@ describe('PlayAreaComponent', () => {
         fixture = TestBed.createComponent(PlayAreaComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        component.gameContextService.state.next({ ...component.gameContextService.state.value, turn: component.gameContextService.myId });
     });
 
     it('should create', () => {
@@ -43,13 +77,12 @@ describe('PlayAreaComponent', () => {
     });
 
     it('press enter should try to place letter in the board server side', () => {
-        const keyDetectSpy = spyOn(component.communicationservice, 'place');
         const expectedKey = 'Enter';
         const buttonEvent = {
             key: expectedKey,
         } as KeyboardEvent;
         component.buttonDetect(buttonEvent);
-        expect(keyDetectSpy).toHaveBeenCalled();
+        expect(commService.place).toHaveBeenCalled();
     });
 
     it('removing a letter should draw a new arrow', () => {
@@ -72,18 +105,12 @@ describe('PlayAreaComponent', () => {
     });
 
     it('typing an allowed letter should remove it from the rack', () => {
-        const keyDetectSpy = spyOn(component.gameContextService, 'tempUpdateRack');
         component.placeWordOnCanvas();
-        expect(keyDetectSpy).toHaveBeenCalled();
+        expect(gameService.tempUpdateRack).toHaveBeenCalled();
     });
     it('isInbound should return true if the letter fit inside the board', () => {
-        component.mouseDetectService.isHorizontal = true;
-        component.mouseDetectService.mousePosition = { x: 100, y: 520 };
-        component.gridService.letters = [{ name: 'a', score: 1 }];
-        let result = component.isInBound();
+        gridService.letters.push({ name: 'a', score: 1 });
+        const result = component.isInBound();
         expect(result).toEqual(true);
-        component.mouseDetectService.isHorizontal = false;
-        result = component.isInBound();
-        expect(result).toEqual(false);
     });
 });
