@@ -5,8 +5,7 @@ import { take } from 'rxjs/operators';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 /* eslint-disable  @typescript-eslint/no-non-null-assertion */
-// TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-
+// TODO : Have file for constants
 const DEFAULT_SIZE = 500;
 const offset = 1;
 const TILE = 32;

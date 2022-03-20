@@ -24,7 +24,6 @@ export class MainLobbyService {
             socket.emit('join', alreadyJoinedRoom.id);
         }
 
-        // message initial
         socket.on('join-room', (roomId: RoomId, playerName: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);
             if (room === undefined) {

@@ -8,7 +8,11 @@ const AI_ID = 'VP';
 const AI_GAME_INDEX = 1;
 const PROBABILITY = 10;
 const BOARD_LENGTH = 15;
+<<<<<<< HEAD
 const CONTACT_CHAR = '#';
+=======
+const CONTACT_CHAR = '*';
+>>>>>>> 0937c0c... fixing QA comments
 const DELAY_CHECK_TURN = 1000; // ms
 
 export class VirtualPlayer {
@@ -37,13 +41,11 @@ export class VirtualPlayer {
         }, DELAY_CHECK_TURN);
     }
 
-    // a mettre private quand connected
     getPlayablePositions(): PlacementOption[] {
         const positions = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
         const arrayPos: PlacementOption[] = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
-                // pour chaque orientation
                 for (const k of [0, 1]) {
                     const valid = [...positions[i][j][k]].some((char) => char !== ' ');
                     if (valid) arrayPos.push(new PlacementOption(i, j, k === 0, positions[i][j][k]));
@@ -56,17 +58,9 @@ export class VirtualPlayer {
     private async playTurn() {
         const random = Math.floor(Math.random() * PROBABILITY);
         if (this.isBeginner && random === 0) {
-            // this.game.skipTurn(AI_ID); // to test
             this.game.message({ emitter: AI_ID, text: 'I want to skip my turn' });
             this.game.skipTurn(AI_ID);
         } else if (this.isBeginner && random === 1) {
-            /* let list = '';
-            this.myRack.map((letter) => {
-                if (Math.random() >= THRESHOLD) {
-                    list += letter.name.toLowerCase();
-                }
-            });
-            this.game.changeLetters(list, AI_ID);*/
             this.game.message({ emitter: AI_ID, text: 'I want to exchange letters' });
             this.game.skipTurn(AI_ID);
         } else {
@@ -90,6 +84,7 @@ export class VirtualPlayer {
                 concretePositions.push(newPosition);
             });
         }
+<<<<<<< HEAD
         const chosen = concretePositions.reduce((acc, position) => {
             return position.score < acc.score ? position : acc;
         });
@@ -103,6 +98,10 @@ export class VirtualPlayer {
         });
         connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
         return connections;
+=======
+        this.game.skipTurn(AI_ID);
+        this.waitForTurn();
+>>>>>>> 0937c0c... fixing QA comments
     }
 
     private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {

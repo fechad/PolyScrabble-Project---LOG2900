@@ -1,6 +1,7 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
+import { Vec2 } from '@app/classes/vec2';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
@@ -36,8 +37,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     @Input() sent: Subject<void>;
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     buttonPressed = '';
-    // eslint-disable-next-line no-invalid-this
-    mousePosition = this.mouseDetectService.mousePosition;
+    mousePosition: Vec2;
     rack: string[] = [];
     shift: number[] = [];
     myTurn = false;
@@ -50,6 +50,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         public mouseDetectService: MouseService,
         public communicationservice: CommunicationService,
     ) {
+        this.mousePosition = this.mouseDetectService.mousePosition;
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });

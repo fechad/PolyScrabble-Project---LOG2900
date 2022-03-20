@@ -21,7 +21,6 @@ export class Parameters {
     log2990: boolean = false;
 
     validateParameters(): Error | undefined {
-        // TODO: check if dictionnary ID is in the list
         const MIN_DIVISION = 30;
         const MAX_TIME = 600;
 

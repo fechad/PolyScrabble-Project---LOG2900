@@ -2,7 +2,7 @@ import { HostListener, Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
 import { GameContextService, Tile } from './game-context.service';
-// TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
+// TODO : Have file for constants
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
 const PLAY_AREA_SIZE = 520;
