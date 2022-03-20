@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Button } from '@app/classes/button';
 import { HighScoresComponent } from '@app/components/high-scores/high-scores.component';
 
 @Component({
@@ -8,22 +9,22 @@ import { HighScoresComponent } from '@app/components/high-scores/high-scores.com
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
-    boutonMainPage = [
+    buttonsMainPage: Button[] = [
         {
             route: '/classic',
             toolTip: 'Une partie de Scrabble avec les règles standards.',
-            texte: 'Mode Classique',
+            text: 'Mode Classique',
             disabled: false,
-            openPopUp: false,
+            promptsDialog: false,
         },
         {
             route: '/2990',
             toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
-            texte: 'Mode LOG2990',
+            text: 'Mode LOG2990',
             disabled: true,
-            openPopUp: false,
+            promptsDialog: false,
         },
-        { route: undefined, toolTip: 'Voyez qui règne', texte: 'Meilleurs scores', disabled: false, openPopUp: true },
+        { route: undefined, toolTip: 'Voyez qui règne', text: 'Meilleurs scores', disabled: false, promptsDialog: true },
     ];
     constructor(private readonly matDialog: MatDialog) {}
 
