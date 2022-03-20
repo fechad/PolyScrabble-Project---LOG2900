@@ -146,7 +146,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         const word = CommandParsing.removeAccents(this.buttonPressed);
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
-        const item = this.gridService.rack.find((i) => i.name === word.toUpperCase());
+        const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
         if (item === undefined) this.gridService.letters.push({ name: '*', score: 0 });
         else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
@@ -185,24 +185,17 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     }
 
     getShift(pos: number[]): number {
-        // essayer de refactor ca
         const board = this.gameContextService.state.value.board;
         let shift = 2;
-        let y = pos[0];
-        let x = pos[1];
-        if (this.mouseDetectService.isHorizontal) {
-            while (board[y][x + 1]) {
-                x++;
-                shift++;
-            }
-            return shift;
-        } else {
-            while (y + 1 !== BOARD_SIZE && board[y + 1][x]) {
-                y++;
-                shift++;
-            }
-            return shift;
+        const horizontal = this.mouseDetectService.isHorizontal;
+        let y = horizontal ? pos[0] : pos[0] + 1;
+        let x = horizontal ? pos[1] + 1 : pos[1];
+        while (y !== BOARD_SIZE && board[y][x]) {
+            if (horizontal) x++;
+            else y++;
+            shift++;
         }
+        return shift;
     }
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
