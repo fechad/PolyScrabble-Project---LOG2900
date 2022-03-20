@@ -6,9 +6,10 @@ type Token = number;
 const TIMEOUT_DELETION = 5000; // ms
 const MAX_TOKEN_VALUE = 10000000; // 1 μs per request
 
+type Users = { [id: string]: { token: Token; loggedIn: boolean; cancelDeletion?: NodeJS.Timer } };
 @Service()
 export class LoginsService {
-    private users: { [id: string]: { token: Token; loggedIn: boolean; cancelDeletion?: NodeJS.Timer } } = {};
+    private users: Users = {};
 
     login(id: PlayerId | undefined, socketId: PlayerId): [PlayerId, Token] {
         if (!id || !this.users[id] || this.users[id].loggedIn) {
