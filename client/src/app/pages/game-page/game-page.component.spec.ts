@@ -106,24 +106,24 @@ describe('GamePageComponent', () => {
         expect(turnSpy).toHaveBeenCalled();
     });
 
-    it('click on reducing font size of board should call reduceFont()', fakeAsync(() => {
-        const reduceFontSpy = spyOn(component, 'reduceFont').and.callThrough();
+    it('click on reducing font size of board should call changeSize()', fakeAsync(() => {
+        const reduceFontSpy = spyOn(component, 'changeSize').and.callThrough();
         const button = fixture.debugElement.query(By.css('#reduce'));
         button.nativeElement.click();
         tick();
         expect(reduceFontSpy).toHaveBeenCalled();
     }));
 
-    it('click on reset font size of board should call resetFont()', fakeAsync(() => {
-        const resetFontSpy = spyOn(component, 'resetFont').and.callThrough();
+    it('click on reset font size of board should call changeSize()', fakeAsync(() => {
+        const resetFontSpy = spyOn(component, 'changeSize').and.callThrough();
         const button = fixture.debugElement.query(By.css('#reset'));
         button.nativeElement.click();
         tick();
         expect(resetFontSpy).toHaveBeenCalled();
     }));
 
-    it('click on increasing font size of board should call increaseFont()', fakeAsync(() => {
-        const increaseFontSpy = spyOn(component, 'increaseFont').and.callThrough();
+    it('click on increasing font size of board should call changeSize()', fakeAsync(() => {
+        const increaseFontSpy = spyOn(component, 'changeSize').and.callThrough();
         const button = fixture.debugElement.query(By.css('#increase'));
         button.nativeElement.click();
         tick();

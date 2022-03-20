@@ -71,7 +71,7 @@ export class CommunicationService {
     }
 
     isMainPlayer(): boolean {
-        return this.selectedRoom?.value?.mainPlayer.id === this.myId.value;
+        return this.selectedRoom.value !== undefined && this.selectedRoom.value.mainPlayer.id === this.myId.value;
     }
 
     kick() {

@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { TestBed } from '@angular/core/testing';
 import { Vec2 } from '@app/classes/vec2';
-import { MouseButton } from '@app/components/play-area/play-area.component';
+import { MouseButton } from '@app/constants';
 import { from } from 'rxjs';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 import { MouseService } from './mouse.service';
 
-fdescribe('MouseDetect', () => {
+describe('MouseDetect', () => {
     let service: MouseService;
     let mouseEvent: MouseEvent;
     let gameContextService: jasmine.SpyObj<GameContextService>;
