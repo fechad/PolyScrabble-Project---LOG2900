@@ -131,9 +131,9 @@ describe('GamePageComponent', () => {
     }));
 
     it('send should call send in service', () => {
-        const sendSpy = spyOn(component.gameContextService, 'send').and.callThrough();
+        const nextSpy = spyOn(component.sent, 'next').and.callThrough();
         component.send();
-        expect(sendSpy).toHaveBeenCalled();
+        expect(nextSpy).toHaveBeenCalled();
     });
 
     it('should confirmForfeit if confirmed alert', fakeAsync(() => {
