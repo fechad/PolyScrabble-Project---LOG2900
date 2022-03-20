@@ -53,6 +53,7 @@ export class GamePageComponent implements AfterViewChecked {
             confirmButtonText: text[2],
             cancelButtonText: text[3],
         });
+
         if (!result.value) return;
         if (this.gameContextService.state.value.state === State.Started) {
             this.communicationService.confirmForfeit();
