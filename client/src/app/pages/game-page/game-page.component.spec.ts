@@ -34,7 +34,7 @@ class CommunicationServiceMock {
     getId(): number {
         return 1;
     }
-    async confirmForfeit() {
+    confirmForfeit() {
         return;
     }
     leave() {
@@ -136,7 +136,7 @@ describe('GamePageComponent', () => {
         expect(nextSpy).toHaveBeenCalled();
     });
 
-    it('should confirmForfeit if confirmed alert', fakeAsync(() => {
+    it('should confirmForfeit if confirmed alert and state is started', fakeAsync(() => {
         const forfeitSpy = spyOn(component.communicationService, 'confirmForfeit').and.callThrough();
 
         const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
