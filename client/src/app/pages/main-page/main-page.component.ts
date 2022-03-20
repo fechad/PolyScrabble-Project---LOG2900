@@ -12,7 +12,7 @@ export class MainPageComponent {
     buttonsMainPage: Button[] = [
         {
             route: '/classic',
-            toolTip: 'Une partie de Scrabble avec les règles standards.',
+            toolTip: 'Une partie de Scrabble avec les règles standards',
             text: 'Mode Classique',
             disabled: false,
             promptsDialog: false,

@@ -24,7 +24,7 @@ describe('MouseDetect', () => {
             ],
         });
         service = TestBed.inject(MouseService);
-        service.gridService.letterWritten = 0;
+        service['gridService'].letterWritten = 0;
     });
 
     /* eslint-disable @typescript-eslint/no-magic-numbers -- Add reason */
