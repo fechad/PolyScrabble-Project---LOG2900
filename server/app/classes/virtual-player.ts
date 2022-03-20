@@ -84,7 +84,6 @@ export class VirtualPlayer {
                 concretePositions.push(newPosition);
             });
         }
-<<<<<<< HEAD
         const chosen = concretePositions.reduce((acc, position) => {
             return position.score < acc.score ? position : acc;
         });
@@ -98,10 +97,6 @@ export class VirtualPlayer {
         });
         connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
         return connections;
-=======
-        this.game.skipTurn(AI_ID);
-        this.waitForTurn();
->>>>>>> 0937c0c... fixing QA comments
     }
 
     private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
