@@ -8,11 +8,7 @@ const AI_ID = 'VP';
 const AI_GAME_INDEX = 1;
 const PROBABILITY = 10;
 const BOARD_LENGTH = 15;
-<<<<<<< HEAD
 const CONTACT_CHAR = '#';
-=======
-const CONTACT_CHAR = '*';
->>>>>>> 0937c0c... fixing QA comments
 const DELAY_CHECK_TURN = 1000; // ms
 
 export class VirtualPlayer {
