@@ -70,22 +70,11 @@ export class GamePageComponent implements AfterViewChecked {
     skipMyTurn() {
         this.communicationService.switchTurn(false);
     }
-    resetFont() {
-        this.gridService.multiplier = 1;
+
+    changeSize(multiplier: number) {
+        this.gridService.multiplier = multiplier;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
-        this.gridService.drawGrid();
-    }
-    reduceFont() {
-        this.gridService.multiplier = 0.9;
-        this.gridService.gridContext.beginPath();
-        this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
-        this.gridService.drawGrid();
-    }
-    increaseFont() {
-        this.gridService.multiplier = 1.1;
-        this.gridService.gridContext.beginPath();
-        this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
     }
 }
