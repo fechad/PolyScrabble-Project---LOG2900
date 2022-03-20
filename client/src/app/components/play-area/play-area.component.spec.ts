@@ -21,12 +21,19 @@ describe('PlayAreaComponent', () => {
     beforeEach(() => {
         commService = jasmine.createSpyObj('CommunicationService', ['place', 'sendLocalMessage']);
         gameService = jasmine.createSpyObj('GameContextService', ['tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'], {
-            state: new BehaviorSubject({ state: State.Started, board: [[]] as Tile[][] } as unknown as GameState),
+            state: new BehaviorSubject({
+                state: State.Started,
+                board: [
+                    [null, { name: 'A', score: 1 }, null],
+                    [null, null, null],
+                    [null, null, null],
+                ] as Tile[][],
+            } as unknown as GameState),
             rack: new BehaviorSubject([]),
         });
         gameService.isMyTurn.and.callFake(() => of(true));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
-            rack: [{ name: 'A', score: 1 }] as Letter[],
+            rack: [] as Letter[],
             letterPosition: [[0, 0]] as number[][],
             firstLetter: [0, 0] as number[],
             letters: [] as Letter[],
