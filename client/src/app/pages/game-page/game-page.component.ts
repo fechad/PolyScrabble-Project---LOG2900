@@ -41,7 +41,6 @@ export class GamePageComponent implements AfterViewChecked {
     }
 
     async quitGame() {
-        console.log('TEST');
         const text =
             this.gameContextService.state.value.state !== State.Started
                 ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
@@ -57,7 +56,6 @@ export class GamePageComponent implements AfterViewChecked {
 
         if (!result.value) return;
         if (this.gameContextService.state.value.state === State.Started) {
-            console.log('FORFEITED');
             this.communicationService.confirmForfeit();
         } else if (
             this.gameContextService.state.value.state === State.Aborted &&

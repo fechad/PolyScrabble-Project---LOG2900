@@ -34,7 +34,7 @@ class CommunicationServiceMock {
     getId(): number {
         return 1;
     }
-    confirmForfeit() {
+    async confirmForfeit() {
         return;
     }
     leave() {
@@ -42,6 +42,10 @@ class CommunicationServiceMock {
     }
     switchTurn(timerRequest: boolean) {
         return timerRequest;
+    }
+
+    saveScore() {
+        return;
     }
 }
 
@@ -52,6 +56,7 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         communicationService = new CommunicationServiceMock();
+
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent],
             imports: [
@@ -131,8 +136,9 @@ describe('GamePageComponent', () => {
         expect(sendSpy).toHaveBeenCalled();
     });
 
-    it('should confirmForfeit if confirmed alert', () => {
-        const forfeitSpy = spyOn(communicationService, 'confirmForfeit').and.callThrough();
+    it('should confirmForfeit if confirmed alert', fakeAsync(() => {
+        const forfeitSpy = spyOn(component.communicationService, 'confirmForfeit').and.callThrough();
+
         const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
             state: new BehaviorSubject({
                 players: [
@@ -145,11 +151,65 @@ describe('GamePageComponent', () => {
                 state: State.Started,
             } as GameState),
             rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
-            btnPlayClicked: new BehaviorSubject(false),
         });
         gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
+        component.gameContextService = gameContextServiceSpy;
         component.quitGame();
         Swal.clickConfirm();
+        tick();
         expect(forfeitSpy).toHaveBeenCalled();
-    });
+        flush();
+    }));
+
+    it('should leave if state is aborted', fakeAsync(() => {
+        const leaveSpy = spyOn(component.communicationService, 'leave').and.callThrough();
+
+        const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
+            myId: '23509',
+            state: new BehaviorSubject({
+                players: [
+                    { id: '0', name: 'P1', connected: true, virtual: false },
+                    { id: '1', name: 'P2', connected: true, virtual: false },
+                ].map((info) => ({ info, score: 0, rackCount: 7 })),
+                reserveCount: 88,
+                board: [],
+                turn: undefined,
+                state: State.Aborted,
+                winner: '1',
+            } as GameState),
+            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+        });
+        gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
+        component.gameContextService = gameContextServiceSpy;
+        component.quitGame();
+        Swal.clickConfirm();
+        tick();
+        expect(leaveSpy).toHaveBeenCalled();
+        flush();
+    }));
+
+    it('should saveScore if state is aborted', fakeAsync(() => {
+        const scoreSpy = spyOn(component.communicationService, 'saveScore').and.callThrough();
+
+        const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
+            state: new BehaviorSubject({
+                players: [
+                    { id: '0', name: 'P1', connected: true, virtual: false },
+                    { id: '1', name: 'P2', connected: true, virtual: false },
+                ].map((info) => ({ info, score: 0, rackCount: 7 })),
+                reserveCount: 88,
+                board: [],
+                turn: undefined,
+                state: State.Ended,
+            } as GameState),
+            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+        });
+        gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
+        component.gameContextService = gameContextServiceSpy;
+        component.quitGame();
+        Swal.clickConfirm();
+        tick();
+        expect(scoreSpy).toHaveBeenCalled();
+        flush();
+    }));
 });
