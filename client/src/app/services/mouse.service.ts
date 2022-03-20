@@ -1,18 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-import { MouseButton } from '@app/components/play-area/play-area.component';
+import { CANVAS_ADJUSTMENT, DEFAULT_SIZE, GRID_ORIGIN, MouseButton, NUMBER_OF_TILES, OFFSET, TILE } from '@app/constants';
 import { take } from 'rxjs/operators';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 /* eslint-disable  @typescript-eslint/no-non-null-assertion */
-// TODO : Have file for constants
-const DEFAULT_SIZE = 500;
-const offset = 1;
-const TILE = 32;
-const NUMBER_OF_TILES = 15;
-const GRID_ORIGIN = 20;
-const CANVAS_ADJUSTMENT = 16;
-
 @Injectable({
     providedIn: 'root',
 })
@@ -57,14 +49,14 @@ export class MouseService {
         const converted = (xPosition * DEFAULT_SIZE) / size?.valueOf()!;
         let x = Math.floor((converted - GRID_ORIGIN) / TILE);
         if (x < 0) x = 0;
-        return (sqrSize + offset) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+        return (sqrSize + OFFSET) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
     calculateY(yPosition: number): number {
         const size = document.getElementById('canvas')?.clientWidth;
-        const sqrSize = DEFAULT_SIZE / NUMBER_OF_TILES - offset;
+        const sqrSize = DEFAULT_SIZE / NUMBER_OF_TILES - OFFSET;
         const converted = (yPosition * DEFAULT_SIZE) / size?.valueOf()!;
         let y = Math.floor((converted - GRID_ORIGIN) / TILE);
         if (y < 0) y = 0;
-        return (sqrSize + offset) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+        return (sqrSize + OFFSET) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
     }
 }

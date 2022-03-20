@@ -2,31 +2,22 @@ import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, I
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
+import {
+    ADJUSTMENT,
+    BOARD_SIZE,
+    CANVAS_SQUARE_SIZE,
+    DEFAULT_HEIGHT,
+    DEFAULT_WIDTH,
+    LAST_INDEX,
+    MAX_RACK_SIZE,
+    PLAY_AREA_SIZE,
+    POS_AND_SHIFT
+} from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Subject } from 'rxjs';
-
-// TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 525;
-export const DEFAULT_HEIGHT = 525;
-const MAX_RACK_SIZE = 7;
-const LAST_INDEX = -1;
-const CANVAS_SQUARE_SIZE = 33;
-const PLAY_AREA_SIZE = 520;
-const ADJUSTMENT = 2;
-const POS_AND_SHIFT = 16;
-const BOARD_SIZE = 15;
-
-// TODO : Déplacer ça dans un fichier séparé accessible par tous
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
 
 @Component({
     selector: 'app-play-area',

@@ -1,41 +1,35 @@
 import { HostListener, Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
+import {
+    AJUST_BONUS,
+    AJUST_BONUS_LETTER,
+    AJUST_BONUS_WORD,
+    AJUST_LETTER,
+    AJUST_STAR_X,
+    AJUST_STAR_Y,
+    AJUST_STEP,
+    AJUST_TILE_X,
+    AJUST_TILE_Y,
+    AJUST_Y,
+    AMOUNT_OF_NUMBER,
+    BOARD_LENGTH,
+    BOUNDS,
+    CENTER_TILE,
+    Colors,
+    DEFAULT_INNER_HEIGHT,
+    DEFAULT_INNER_WIDTH,
+    EXCEPTION_X,
+    EXCEPTION_Y,
+    FOURTH_SQUARE,
+    GRID_ORIGIN,
+    INITIAL_SIZE,
+    PLAY_AREA_SIZE,
+    SQUARE_SIZE,
+    TILE_SIZE,
+    TWO_CHAR_NUMBER
+} from '@app/constants';
 import { GameContextService, Tile } from './game-context.service';
-// TODO : Have file for constants
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
-const PLAY_AREA_SIZE = 520;
-const CENTER_TILE = 7;
-const AJUST_Y = 16;
-const AJUST_TILE_Y = 10;
-const AJUST_TILE_X = 5;
-const AJUST_STAR_X = 4;
-const AJUST_STAR_Y = 10;
-const AJUST_BONUS = 10;
-const AJUST_BONUS_WORD = 5;
-const AJUST_BONUS_LETTER = 1;
-const AJUST_LETTER = 4;
-const TWO_CHAR_NUMBER = 10;
-const AJUST_STEP = 0.5;
-const EXCEPTION_X = 11;
-const EXCEPTION_Y = 0;
-const AMOUNT_OF_NUMBER = 15;
-const DEFAULT_SIZE = 9;
-const TILE_SIZE = 30;
-const BOARD_LENGTH = 15;
-const FOURTH_SQUARE = 4;
-const offset = BOARD_LENGTH / BOARD_LENGTH;
-const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
-const gridOrigin = 20;
-
-enum Colors {
-    Mustard = '#E1AC01',
-    Yellow = '#FFE454',
-    Green = '#54bd9d',
-    Blue = '#65CCD2',
-    Grey = '#838383',
-}
 
 @Injectable({
     providedIn: 'root',
@@ -51,7 +45,7 @@ export class GridService {
     letterWritten = 0;
     letterPosition: number[][] = [];
     firstLetter = [0, 0];
-    private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize: Vec2 = { x: DEFAULT_INNER_WIDTH, y: DEFAULT_INNER_HEIGHT };
 
     constructor(private gameContext: GameContextService) {
         this.gameContext.rack.subscribe((rack) => {
@@ -66,7 +60,7 @@ export class GridService {
 
     drawGrid() {
         this.gridContext.clearRect(0, 0, PLAY_AREA_SIZE, PLAY_AREA_SIZE);
-        this.gridContext.lineWidth = offset;
+        this.gridContext.lineWidth = BOUNDS;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
@@ -76,10 +70,10 @@ export class GridService {
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 this.gridContext.beginPath();
-                this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
+                this.gridContext.rect((SQUARE_SIZE + BOUNDS) * i + GRID_ORIGIN, (SQUARE_SIZE + BOUNDS) * j + GRID_ORIGIN, SQUARE_SIZE, SQUARE_SIZE);
                 this.gridContext.fill();
-                this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUST_Y);
-                this.drawTiles(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUST_Y);
+                this.bonusConditions(i, j, (SQUARE_SIZE + BOUNDS) * i + GRID_ORIGIN, (SQUARE_SIZE + BOUNDS) * j + GRID_ORIGIN + AJUST_Y);
+                this.drawTiles(i, j, (SQUARE_SIZE + BOUNDS) * i + GRID_ORIGIN, (SQUARE_SIZE + BOUNDS) * j + GRID_ORIGIN + AJUST_Y);
                 this.drawWhiteSquare(i, j);
                 this.gridContext.fillStyle = '#575757';
             }
@@ -103,12 +97,12 @@ export class GridService {
         this.gridContext.beginPath();
         if (isHorizontal) {
             this.gridContext.moveTo(x, y);
-            this.gridContext.lineTo(x - squareSize / FOURTH_SQUARE, y + squareSize / FOURTH_SQUARE);
-            this.gridContext.lineTo(x - squareSize / FOURTH_SQUARE, y - squareSize / FOURTH_SQUARE);
+            this.gridContext.lineTo(x - SQUARE_SIZE / FOURTH_SQUARE, y + SQUARE_SIZE / FOURTH_SQUARE);
+            this.gridContext.lineTo(x - SQUARE_SIZE / FOURTH_SQUARE, y - SQUARE_SIZE / FOURTH_SQUARE);
             this.gridContext.fill();
         } else {
-            this.gridContext.moveTo(x - squareSize / FOURTH_SQUARE, y + squareSize / FOURTH_SQUARE);
-            this.gridContext.lineTo(x - squareSize / 2, y);
+            this.gridContext.moveTo(x - SQUARE_SIZE / FOURTH_SQUARE, y + SQUARE_SIZE / FOURTH_SQUARE);
+            this.gridContext.lineTo(x - SQUARE_SIZE / 2, y);
             this.gridContext.lineTo(x, y);
             this.gridContext.fill();
         }
@@ -203,7 +197,7 @@ export class GridService {
     drawBonus(canvasX: number, canvasY: number, color: string, word: string) {
         this.gridContext.fillStyle = color;
         this.gridContext.fill();
-        this.drawMessage(word, canvasX, canvasY, DEFAULT_SIZE);
+        this.drawMessage(word, canvasX, canvasY, INITIAL_SIZE);
     }
 
     drawMessage(word: string, posX: number, posY: number, size: number) {
