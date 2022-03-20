@@ -9,7 +9,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService, Tile } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
@@ -29,11 +29,11 @@ describe('PlayAreaComponent', () => {
                     [null, null, null],
                 ] as Tile[][],
             } as unknown as GameState),
-            rack: new BehaviorSubject([]),
+            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
         });
         gameService.isMyTurn.and.callFake(() => of(true));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
-            rack: [] as Letter[],
+            rack: [{ name: 'A', score: 1 }] as Letter[],
             letterPosition: [[0, 0]] as number[][],
             firstLetter: [0, 0] as number[],
             letters: [] as Letter[],
