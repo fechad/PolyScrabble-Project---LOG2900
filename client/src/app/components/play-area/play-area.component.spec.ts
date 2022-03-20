@@ -19,14 +19,14 @@ describe('PlayAreaComponent', () => {
     let gridService: jasmine.SpyObj<GridService>;
     let mouseService: jasmine.SpyObj<MouseService>;
     beforeEach(() => {
-        commService = jasmine.createSpyObj('CommunicationService', ['place']);
-        gameService = jasmine.createSpyObj('GameContextService', ['tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn'], {
+        commService = jasmine.createSpyObj('CommunicationService', ['place', 'sendLocalMessage']);
+        gameService = jasmine.createSpyObj('GameContextService', ['tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'], {
             state: new BehaviorSubject({ state: State.Started, board: [[]] as Tile[][] } as unknown as GameState),
             rack: new BehaviorSubject([]),
         });
         gameService.isMyTurn.and.callFake(() => of(true));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
-            rack: [] as Letter[],
+            rack: [{ name: 'A', score: 1 }] as Letter[],
             letterPosition: [[0, 0]] as number[][],
             firstLetter: [0, 0] as number[],
             letters: [] as Letter[],
@@ -86,9 +86,25 @@ describe('PlayAreaComponent', () => {
     });
 
     it('removing a letter should draw a new arrow', () => {
+        gridService.letters.push({ name: 'a', score: 1 });
         const keyDetectSpy = spyOn(component, 'drawShiftedArrow');
-        component.removeLetterOnCanvas();
+        const expectedKey = 'Backspace';
+        const buttonEvent = {
+            key: expectedKey,
+        } as KeyboardEvent;
+        component.buttonDetect(buttonEvent);
         expect(keyDetectSpy).toHaveBeenCalled();
+    });
+
+    it('pressing escape should remove all the letters', () => {
+        gridService.letters.push({ name: 'a', score: 1 });
+        gridService.letters.push({ name: 'a', score: 1 });
+        const expectedKey = 'Escape';
+        const buttonEvent = {
+            key: expectedKey,
+        } as KeyboardEvent;
+        component.buttonDetect(buttonEvent);
+        expect(gridService.drawGrid).toHaveBeenCalled();
     });
 
     it('typing an allowed letter should place the letter', () => {
