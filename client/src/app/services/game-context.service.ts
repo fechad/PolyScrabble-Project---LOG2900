@@ -7,7 +7,7 @@ import { PlayerId, State } from '@app/classes/room';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-const NOT_FOUND = -1;
+const UNDEFINED = -1;
 const BOARD_LENGTH = 15;
 const NORMAL_RACK_LENGTH = 7;
 const DEFAULT_RESERVE = 88;
@@ -105,7 +105,7 @@ export class GameContextService {
             const index = tempRack.findIndex((foundLetter) => {
                 return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && CommandParsing.isUpperCaseLetter(letter));
             });
-            if (index === NOT_FOUND) throw new Error('Ces lettres ne sont pas dans le chevalet');
+            if (index === UNDEFINED) throw new Error('Ces lettres ne sont pas dans le chevalet');
             tempRack[index] = tempRack[tempRack.length - 1];
             tempRack.pop();
         }

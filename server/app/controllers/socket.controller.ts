@@ -12,6 +12,7 @@ import { Service } from 'typedi';
 
 type Handlers = [string, (params: unknown[]) => void][];
 const AWOL_DELAY = 5000;
+const UNDEFINED = -1;
 
 @Service()
 export class SocketManager {
@@ -71,8 +72,7 @@ export class SocketManager {
         rooms.use((socket, next) => {
             const roomId = Number.parseInt(socket.nsp.name.substring('/rooms/'.length), 10);
             const idx = this.roomsService.rooms.findIndex((room) => room.id === roomId);
-            const NOT_FOUND = -1;
-            if (idx === NOT_FOUND) {
+            if (idx === UNDEFINED) {
                 next(Error('Invalid room number'));
                 return;
             }
@@ -132,8 +132,7 @@ export class SocketManager {
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
             const idx = this.roomsService.games.findIndex((game) => game.id === gameId);
-            const NOT_FOUND = -1;
-            if (idx === NOT_FOUND) {
+            if (idx === UNDEFINED) {
                 next(Error('Invalid game number'));
                 return;
             }
