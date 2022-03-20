@@ -18,7 +18,7 @@ export class ChronoContainerComponent implements AfterViewInit {
             if (state.turn !== this.previousTurn) {
                 this.cd.restart();
                 this.cd.begin();
-                this.previousTurn = state.turn;
+                this.previousTurn = state.turn?.valueOf()!;
             }
         });
     }
