@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -59,6 +60,7 @@ describe('SoloDialogComponent', () => {
         communicationServiceSpy = new CommunicationServiceMock();
         await TestBed.configureTestingModule({
             declarations: [SoloDialogComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
             imports: [
                 HttpClientTestingModule,
                 MatCardModule,
