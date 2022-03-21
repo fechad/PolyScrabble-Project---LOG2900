@@ -42,8 +42,8 @@ export class VirtualPlayer {
         const arrayPos: PlacementOption[] = [];
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
+                // for each orientation
                 for (const k of [0, 1]) {
-                    // for each orientation
                     const valid = [...positions[i][j][k]].some((char) => char !== ' ');
                     if (valid) arrayPos.push(new PlacementOption(i, j, k === 0, positions[i][j][k]));
                 }
@@ -58,7 +58,13 @@ export class VirtualPlayer {
             this.game.message({ emitter: AI_ID, text: 'I want to skip my turn' });
             this.game.skipTurn(AI_ID);
         } else if (this.isBeginner && random === 1) {
-            // TODO let list = '';
+            /* TODO let list = '';
+            this.myRack.map((letter) => {
+                if (Math.random() >= THRESHOLD) {
+                    list += letter.name.toLowerCase();
+                }
+            });
+            this.game.changeLetters(list, AI_ID);*/
 
             this.game.message({ emitter: AI_ID, text: 'I want to exchange letters' });
             this.game.skipTurn(AI_ID);
