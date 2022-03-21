@@ -69,7 +69,7 @@ export class LetterRackComponent {
         if (!parentPossibilities.includes(name)) {
             this.manipulating = undefined;
             this.exchanging = [];
-            this.communicationService.showMyRack();
+            // this.communicationService.showMyRack();
         }
     }
 
@@ -120,6 +120,6 @@ export class LetterRackComponent {
     }
 
     getReserveCount(): boolean {
-        return this.gameContextService.state.value.reserveCount < NORMAL_RACK_LENGTH ? true : false;
+        return this.gameContextService.state.value.reserveCount < NORMAL_RACK_LENGTH;
     }
 }
