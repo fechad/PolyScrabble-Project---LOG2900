@@ -166,7 +166,9 @@ export class Game {
             const options = virtual.chooseWord(this.reserve.letterRacks[player].map((letter) => letter.name).join('')).slice(0, 3);
             const warning = options.length === 0 ? 'Aucun placement possible' : options.length < 3 ? 'Moins de 3 placements possible' : '';
             const hintMessage =
-                'Indice:\n' + options.map((opt) => ` - ${Game.createCommand(opt.command, opt.row, opt.col, opt.isHorizontal)}`).join('\n') + warning;
+                'Indice:\n' +
+                options.map((opt, i) => ` ${i + 1}. ${Game.createCommand(opt.command, opt.row, opt.col, opt.isHorizontal)}`).join('\n') +
+                warning;
             this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
         }
     }

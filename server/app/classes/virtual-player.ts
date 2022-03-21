@@ -80,8 +80,9 @@ export class VirtualPlayer {
             this.game.skipTurn(AI_ID);
         } else {
             this.game.message({ emitter: AI_ID, text: 'I want to place some letters' });
-            const chosenWord = this.chooseWord(this.rackToString())[0];
-            await this.game.placeLetters(AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
+            const chosenWord = this.chooseWord(this.rackToString()).at(0);
+            if (chosenWord === undefined) this.game.skipTurn(AI_ID);
+            else await this.game.placeLetters(AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
     }
 
