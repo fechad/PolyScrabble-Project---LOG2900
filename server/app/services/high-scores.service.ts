@@ -35,7 +35,7 @@ export class HighScoresService {
 
     async getScores(log2990: boolean): Promise<Score[]> {
         if (this.db === null) return DEFAULT_USERS;
-        const leaderboard = (await this.db
+        let leaderboard = (await this.db
             .aggregate([
                 { $match: { log2990 } },
                 { $group: { _id: '$score', score: { $max: '$score' }, names: { $addToSet: '$name' } } },
@@ -46,6 +46,14 @@ export class HighScoresService {
             .toArray()) as Score[];
         leaderboard.push(...DEFAULT_USERS);
         leaderboard.sort((s1, s2) => s2.score - s1.score);
+        leaderboard = leaderboard.reduce((arr, score) => {
+            if (arr.length > 0 && arr[arr.length - 1].score === score.score) {
+                arr[arr.length - 1].names.push(...score.names);
+            } else {
+                arr.push(score);
+            }
+            return arr;
+        }, [] as Score[]);
         leaderboard.splice(MAX_RESULTS);
         return leaderboard;
     }
