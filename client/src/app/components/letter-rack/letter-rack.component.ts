@@ -69,7 +69,7 @@ export class LetterRackComponent {
         if (!parentPossibilities.includes(name)) {
             this.manipulating = undefined;
             this.exchanging = [];
-            // this.communicationService.showMyRack();
+            this.communicationService.showMyRack();
         }
     }
 
