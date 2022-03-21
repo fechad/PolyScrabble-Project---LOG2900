@@ -130,12 +130,10 @@ export class CommunicationService {
     }
 
     switchTurn(timerRequest: boolean) {
-        // this.showMyRack();
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
-        // this.showMyRack();
         this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
@@ -143,7 +141,6 @@ export class CommunicationService {
     }
 
     exchange(letters: string) {
-        // this.showMyRack();
         this.gameSocket?.emit('change-letters', letters);
     }
 
