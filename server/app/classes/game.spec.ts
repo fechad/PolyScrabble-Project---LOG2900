@@ -186,14 +186,14 @@ describe('Game', () => {
         expect(game['skipCounter']).to.equal(0);
     });
 
-    it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
-        const calculateFinalScores = sinon.spy(EndGameCalculator, 'calculateFinalScores');
-        const createGameSummaryMessage = sinon.spy(EndGameCalculator, 'createGameSummaryMessage');
-        game.endGame();
-        assert(calculateFinalScores.called, 'Did not call final scores');
-        assert(createGameSummaryMessage.called, 'Did not call game summary');
-        expect(game['winner']).to.not.equal(undefined);
-    });
+    // it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
+    //     const calculateFinalScores = sinon.spy(EndGameCalculator, 'calculateFinalScores');
+    //     const createGameSummaryMessage = sinon.spy(EndGameCalculator, 'createGameSummaryMessage');
+    //     game.endGame();
+    //     assert(calculateFinalScores.called, 'Did not call final scores');
+    //     assert(createGameSummaryMessage.called, 'Did not call game summary');
+    //     expect(game['winner']).to.not.equal(undefined);
+    // });
 
     it('getWinner should return the winners id', () => {
         const mainPlayer = game.players[MAIN_PLAYER];

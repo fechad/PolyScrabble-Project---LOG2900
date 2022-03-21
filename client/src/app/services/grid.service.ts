@@ -27,6 +27,7 @@ import {
     PLAY_AREA_SIZE,
     SQUARE_SIZE,
     TILE_SIZE,
+    // eslint-disable-next-line prettier/prettier -- no comma needed
     TWO_CHAR_NUMBER
 } from '@app/constants';
 import { GameContextService, Tile } from './game-context.service';

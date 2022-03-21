@@ -11,6 +11,7 @@ import {
     LAST_INDEX,
     MAX_RACK_SIZE,
     PLAY_AREA_SIZE,
+    // eslint-disable-next-line prettier/prettier -- no comma needed
     POS_AND_SHIFT
 } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';

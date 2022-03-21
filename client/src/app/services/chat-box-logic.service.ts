@@ -17,6 +17,7 @@ import {
     POSITION_BLOCK_MAX_LENGTH,
     POSITION_BLOCK_MIN_LENGTH,
     RESERVE_COMMAND_LENGTH,
+    // eslint-disable-next-line prettier/prettier -- no comma needed
     WORD_TO_PLACE_INDEX
 } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
