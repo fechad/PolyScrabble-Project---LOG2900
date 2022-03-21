@@ -38,8 +38,10 @@ export class SyntaxValidator {
     }
 
     static validatePositionSyntax(position: string[], oneLetter: boolean): boolean {
+        const hasOrientation = position[2].match(/[hv]/g) !== null;
+
         if (position[0].match(/[a-o]/g) !== null) {
-            if ((position[2] === undefined && oneLetter) || position[2].match(/[hv]/g) !== null) {
+            if ((position[2] === undefined && oneLetter) || hasOrientation) {
                 if (position[1].length === 1) {
                     if (position[1].match(/[1-9]/g) !== null) {
                         return true;

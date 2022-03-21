@@ -33,12 +33,12 @@ export class Reserve {
         const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
 
         for (const unwantedLetter of lettersToChange) {
+            const isCapital = unwantedLetter.match(/[A-Z]/g);
+            const hasAsterisk = this.letterRacks[playerIndex][i].name.match(/[*]/g);
             const listLength = this.letterRacks[playerIndex].length - 1;
+
             for (let i = 0; i <= listLength; i++) {
-                if (
-                    unwantedLetter === this.letterRacks[playerIndex][i].name.toLowerCase() ||
-                    (unwantedLetter.match(/[A-Z]/g) && this.letterRacks[playerIndex][i].name.match(/[*]/g))
-                ) {
+                if (unwantedLetter === this.letterRacks[playerIndex][i].name.toLowerCase() || (isCapital && hasAsterisk)) {
                     if (putBack) {
                         this.reserve.push(this.letterRacks[playerIndex][i]);
                     }
