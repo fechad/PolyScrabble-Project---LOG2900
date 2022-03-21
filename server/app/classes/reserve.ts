@@ -34,10 +34,11 @@ export class Reserve {
 
         for (const unwantedLetter of lettersToChange) {
             const isCapital = unwantedLetter.match(/[A-Z]/g);
-            const hasAsterisk = this.letterRacks[playerIndex][i].name.match(/[*]/g);
             const listLength = this.letterRacks[playerIndex].length - 1;
 
             for (let i = 0; i <= listLength; i++) {
+                const hasAsterisk = this.letterRacks[playerIndex][i].name.match(/[*]/g);
+
                 if (unwantedLetter === this.letterRacks[playerIndex][i].name.toLowerCase() || (isCapital && hasAsterisk)) {
                     if (putBack) {
                         this.reserve.push(this.letterRacks[playerIndex][i]);
