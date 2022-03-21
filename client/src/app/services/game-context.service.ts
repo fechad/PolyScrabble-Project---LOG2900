@@ -4,13 +4,9 @@ import { GameState, PlayerInfo } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { PlayerId, State } from '@app/classes/room';
+import { BOARD_LENGTH, DEFAULT_RESERVE, NORMAL_RACK_LENGTH, UNDEFINED } from '@app/constants';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-const UNDEFINED = -1;
-const BOARD_LENGTH = 15;
-const NORMAL_RACK_LENGTH = 7;
-const DEFAULT_RESERVE = 88;
 
 export type Tile = Letter | null;
 export type Board = Tile[][];

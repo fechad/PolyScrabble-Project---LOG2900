@@ -1,26 +1,28 @@
 import { Injectable } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
+import {
+    COMMAND_INDEX,
+    DECIMAL_BASE,
+    EXCHANGE_COMMAND_LENGTH,
+    HELP_COMMAND_LENGTH,
+    HORIZONTAL_POSITION_2ND_DIGIT_INDEX,
+    LETTERS_TO_EXCHANGE_INDEX,
+    MAX_TYPED_WORD_LENGTH,
+    MIN_TYPED_WORD_LENGTH,
+    PASS_COMMAND_LENGTH,
+    PLACE_COMMAND_LENGTH,
+    POSITION_BLOCK_AVG_LENGTH,
+    POSITION_BLOCK_INDEX,
+    POSITION_BLOCK_MAX_LENGTH,
+    POSITION_BLOCK_MIN_LENGTH,
+    RESERVE_COMMAND_LENGTH,
+    WORD_TO_PLACE_INDEX
+} from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
 
-const COMMAND_INDEX = 0;
-const LETTERS_TO_EXCHANGE_INDEX = 1;
-const POSITION_BLOCK_INDEX = 1;
-const MIN_TYPED_WORD_LENGTH = 1;
-const HELP_COMMAND_LENGTH = 1;
-const PASS_COMMAND_LENGTH = 1;
-const RESERVE_COMMAND_LENGTH = 1;
-const POSITION_BLOCK_MIN_LENGTH = 2;
-const WORD_TO_PLACE_INDEX = 2;
-const EXCHANGE_COMMAND_LENGTH = 2;
-const HORIZONTAL_POSITION_2ND_DIGIT_INDEX = 2;
-const PLACE_COMMAND_LENGTH = 3;
-const POSITION_BLOCK_AVG_LENGTH = 3;
-const POSITION_BLOCK_MAX_LENGTH = 4;
-const MAX_TYPED_WORD_LENGTH = 7;
-const DECIMAL_BASE = 10;
 @Injectable({
     providedIn: 'root',
 })

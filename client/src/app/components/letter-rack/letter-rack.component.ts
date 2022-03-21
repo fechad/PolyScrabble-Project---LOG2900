@@ -1,11 +1,9 @@
 import { Component, HostListener } from '@angular/core';
 import { Letter } from '@app/classes/letter';
+import { NORMAL_RACK_LENGTH, UNDEFINED } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
-
-const MAX_LETTERS = 7;
-const UNDEFINED = -1;
 
 @Component({
     selector: 'app-letter-rack',
@@ -71,6 +69,7 @@ export class LetterRackComponent {
         if (!parentPossibilities.includes(name)) {
             this.manipulating = undefined;
             this.exchanging = [];
+            this.communicationService.showMyRack();
         }
     }
 
@@ -121,6 +120,6 @@ export class LetterRackComponent {
     }
 
     getReserveCount(): boolean {
-        return this.gameContextService.state.value.reserveCount < MAX_LETTERS ? true : false;
+        return this.gameContextService.state.value.reserveCount < NORMAL_RACK_LENGTH ? true : false;
     }
 }

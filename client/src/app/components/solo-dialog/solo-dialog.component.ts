@@ -2,9 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { difficulties, Difficulty, GameType, Parameters } from '@app/classes/parameters';
+import { SEC_CONVERT } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
-
-const SEC_CONVERT = 60;
 @Component({
     selector: 'app-solo-dialog',
     templateUrl: './solo-dialog.component.html',

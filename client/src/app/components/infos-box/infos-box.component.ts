@@ -1,10 +1,9 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { State } from '@app/classes/room';
+import { NORMAL_RACK_LENGTH } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent } from 'ngx-countdown';
-
-const NORMAL_RACK_LENGTH = 7;
 
 @Component({
     selector: 'app-infos-box',

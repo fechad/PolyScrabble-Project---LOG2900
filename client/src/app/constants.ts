@@ -39,6 +39,33 @@ export const FOURTH_SQUARE = 4;
 export const BOUNDS = BOARD_LENGTH / BOARD_LENGTH;
 export const SQUARE_SIZE = DEFAULT_INNER_WIDTH / BOARD_LENGTH - BOUNDS;
 
+export const DEFAULT_RESERVE = 88;
+
+export const SEC_CONVERT = 60;
+
+export const NORMAL_RACK_LENGTH = 7;
+
+export const UNDEFINED = -1;
+
+export const IDS_KEY = 'ids';
+
+export const COMMAND_INDEX = 0;
+export const LETTERS_TO_EXCHANGE_INDEX = 1;
+export const POSITION_BLOCK_INDEX = 1;
+export const MIN_TYPED_WORD_LENGTH = 1;
+export const HELP_COMMAND_LENGTH = 1;
+export const PASS_COMMAND_LENGTH = 1;
+export const RESERVE_COMMAND_LENGTH = 1;
+export const POSITION_BLOCK_MIN_LENGTH = 2;
+export const WORD_TO_PLACE_INDEX = 2;
+export const EXCHANGE_COMMAND_LENGTH = 2;
+export const HORIZONTAL_POSITION_2ND_DIGIT_INDEX = 2;
+export const PLACE_COMMAND_LENGTH = 3;
+export const POSITION_BLOCK_AVG_LENGTH = 3;
+export const POSITION_BLOCK_MAX_LENGTH = 4;
+export const MAX_TYPED_WORD_LENGTH = 7;
+export const DECIMAL_BASE = 10;
+
 export enum MouseButton {
     Left = 0,
     Middle = 1,
