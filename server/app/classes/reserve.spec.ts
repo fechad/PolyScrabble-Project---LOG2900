@@ -1,6 +1,6 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { assert, expect } from 'chai';
-import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 import { Reserve } from './reserve';
 
 describe('Reserve', () => {

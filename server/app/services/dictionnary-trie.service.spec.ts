@@ -19,6 +19,13 @@ describe('Dictionnary Trie', () => {
         expect(dictionnaryTrieService.isValidBranching([...'marteau'])).to.equal(true);
         expect(dictionnaryTrieService.isValidBranching([...'cxb'])).to.equal(false);
     });
+
+    it('should have all dictionnary words', () => {
+        for (const word of dictionnary.dictionnaries[0].words) {
+            expect(dictionnaryTrieService.isValidBranching([...word], true)).to.equal(true);
+        }
+    });
+
     it('should validation correct words only', () => {
         expect(dictionnaryTrieService.isValidBranching([...'mart'], true)).to.equal(false);
         expect(dictionnaryTrieService.isValidBranching([...'marteau'], true)).to.equal(true);
@@ -31,13 +38,5 @@ describe('Dictionnary Trie', () => {
         ]);
         expect(words.every((word) => word[2] === 's')).to.equal(true);
         expect(words.every((word) => word.length <= 4 && word.length >= 3)).to.equal(true);
-    });
-    it('should generate words from rack', () => {
-        const rack = [...'salutd'];
-        const words = dictionnaryTrieService.generatePossibleWords(rack, [
-            { connectedLetter: '', index: 0, isOnBoard: true },
-            { connectedLetter: undefined, index: 4, isOnBoard: true },
-        ]);
-        console.log(words);
     });
 });

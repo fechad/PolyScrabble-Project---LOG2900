@@ -1,10 +1,11 @@
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
+import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/constants';
 import { assert, expect } from 'chai';
 import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
 import { RoomsService } from './rooms.service';
-import { ROOMS_LIST_UPDATE_TIMEOUT, WaitingRoomService } from './waiting-room.service';
+import { WaitingRoomService } from './waiting-room.service';
 
 const RESPONSE_DELAY = 100; // ms
 
