@@ -6,12 +6,6 @@ import { from } from 'rxjs';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 import { MouseService } from './mouse.service';
-<<<<<<< HEAD
-=======
-import { MouseButton } from '@app/constants';
-import { BehaviorSubject, from } from 'rxjs';
-import { GameContextService, Tile } from './game-context.service';
->>>>>>> bfce4287941ac7f03391d6173b1fa012bae29771
 
 const fakeIsInBound = (event: MouseEvent) => {
     const size = 500;
