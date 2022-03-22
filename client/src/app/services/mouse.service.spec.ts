@@ -82,25 +82,18 @@ describe('MouseDetect', () => {
         expect(gridService.drawGrid).not.toHaveBeenCalled();
     });
 
-    it('calculateX should return a number', async () => {
+    it('calculateAxis should return a number', async () => {
         mouseEvent = {
             offsetX: 20,
             offsetY: 20,
             button: MouseButton.Right,
         } as MouseEvent;
-        const result = service.calculateX(mouseEvent.offsetX);
-        expect(typeof result).toEqual(typeof 20);
+        const resultX = service.calculateAxis(mouseEvent.offsetX);
+        const resultY = service.calculateAxis(mouseEvent.offsetY);
+        expect(typeof resultX).toEqual(typeof 20);
+        expect(typeof resultY).toEqual(typeof 20);
     });
 
-    it('calculateY should return a number', async () => {
-        mouseEvent = {
-            offsetX: 20,
-            offsetY: 20,
-            button: MouseButton.Right,
-        } as MouseEvent;
-        const result = service.calculateY(mouseEvent.offsetY);
-        expect(typeof result).toEqual(typeof 20);
-    });
 
     it('isInBound should return false if positionX is under 20', async () => {
         spyOn(service, 'isInBound').and.callFake(fakeIsInBound);
