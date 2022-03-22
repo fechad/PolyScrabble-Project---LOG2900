@@ -37,7 +37,7 @@ describe('PlayAreaComponent', () => {
             letterPosition: [[0, 0]] as number[][],
             firstLetter: [0, 0] as number[],
             letters: [] as Letter[],
-            letterForServer: '',
+            letterForServer: 'a',
         });
         mouseService = jasmine.createSpyObj('MouseService', ['MouseHitDetect'], { mousePosition: { x: 20, y: 510 }, isHorizontal: true });
     });

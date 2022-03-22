@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { GameState } from '@app/classes/game';
+import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import { MouseButton } from '@app/constants';
-import { from } from 'rxjs';
-import { GameContextService } from './game-context.service';
+import { BehaviorSubject, from } from 'rxjs';
+import { GameContextService, Tile } from './game-context.service';
 import { GridService } from './grid.service';
 import { MouseService } from './mouse.service';
 
@@ -23,7 +25,12 @@ describe('MouseDetect', () => {
     let gridService: jasmine.SpyObj<GridService>;
 
     beforeEach(() => {
-        gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn']);
+        gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn'], {
+            state: new BehaviorSubject({
+                state: State.Started,
+                board: [] as Tile[][],
+            } as unknown as GameState),
+        });
         gameContextService.isMyTurn.and.callFake(() => from([true]));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'drawArrow']);
         TestBed.configureTestingModule({
@@ -138,6 +145,8 @@ describe('MouseDetect', () => {
 
     it('should call drawGrid on valid horizontal click', fakeAsync(() => {
         spyOn(service, 'isInBound').and.callFake(fakeIsInBound);
+        for (let i = 0; i < 15; i++)
+            gameContextService.state.value.board.push([null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]);
         mouseEvent = {
             offsetX: Math.floor(Math.random() * (500 - 20) + 20),
             offsetY: Math.floor(Math.random() * (500 - 20) + 20),
