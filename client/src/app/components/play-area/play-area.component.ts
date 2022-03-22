@@ -95,6 +95,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
             this.gridService.firstLetter[0],
             this.mouseDetectService.isHorizontal,
         );
+        this.gridService.tempUpdateBoard(this.gridService.letterForServer, this.gridService.firstLetter[1], this.gridService.firstLetter[0], this.mouseDetectService.isHorizontal);
         this.gridService.letterPosition = [];
         this.gridService.letterWritten = 0;
         this.gridService.letters = [];

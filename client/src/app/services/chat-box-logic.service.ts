@@ -4,6 +4,7 @@ import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { GameContextService, MessageType } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
+import { GridService } from './grid.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +16,7 @@ export class ChatBoxLogicService {
     horizontalPosition: string;
     placementOrientation: string | undefined;
 
-    constructor(public gameContextService: GameContextService) {}
+    constructor(public gameContextService: GameContextService, private gridService: GridService) {}
 
     async validateSyntax(textValue: string) {
         if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '')
@@ -77,6 +78,7 @@ export class ChatBoxLogicService {
         const horizontalIndex = parseInt(this.horizontalPosition, cst.DECIMAL_BASE) - 1;
         const isHorizontal = CommandParsing.isHorizontalOrientation(this.placementOrientation);
         this.gameContextService.place(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
+        this.gridService.tempUpdateBoard(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal)
     }
 
     private exchange() {

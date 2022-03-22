@@ -33,7 +33,7 @@ export class GameContextService {
     private msgCount: number = 0;
     private socket: Socket | undefined = undefined;
 
-    constructor(/* public injector: Injector*/) {
+    constructor() {
         const board = [];
         for (let i = 0; i < cst.BOARD_LENGTH; i++) {
             const row = [];
@@ -155,8 +155,6 @@ export class GameContextService {
 
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
         this.tempUpdateRack();
-        /* const gridService = this.injector.get<GridService>(GridService);
-        gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);*/
         this.allowSwitch(false);
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
