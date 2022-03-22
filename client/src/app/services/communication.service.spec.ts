@@ -165,8 +165,10 @@ describe('CommunicationService', () => {
     it('should not join room when there is an error', async () => {
         (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
         const promise = service.joinRoom('aldabob', GAME_NO);
+        const spy = spyOn(service, 'handleError' as never);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', new Error('big bad error'));
         await expectAsync(promise).toBeRejected();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should create room', async () => {
@@ -189,8 +191,10 @@ describe('CommunicationService', () => {
 
     it('should not create room when there is an error', async () => {
         const promise = service.createRoom('aldabob', new Parameters());
+        const spy = spyOn(service, 'handleError' as never);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', new Error('big bad error'));
         await expectAsync(promise).toBeRejected();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should start/stop listening to broadcasts', async () => {
@@ -234,7 +238,7 @@ describe('CommunicationService', () => {
 
     it('should handle errors on room socket', async () => {
         joinGame();
-        const spy = spyOn(service, 'handleError' as never).and.callThrough();
+        const spy = spyOn(service, 'handleError' as never);
         (service['roomSocket'] as unknown as SocketMock).events.emit('error', 'BIG BAD ERROR');
         expect(spy).toHaveBeenCalled();
     });
@@ -249,6 +253,7 @@ describe('CommunicationService', () => {
 
     it('should receive state', () => {
         joinGame();
+        expect(gameContext.state.value).toBe(DEFAULT_STATE);
     });
 
     it('should receive message', async () => {

@@ -28,13 +28,14 @@ describe('ModesPageComponent', () => {
     let router: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
+        router = jasmine.createSpyObj(Router, ['createUrlTree', 'navigateByUrl']);
         await TestBed.configureTestingModule({
             declarations: [ModesPageComponent],
             imports: [AppMaterialModule, RouterTestingModule.withRoutes(routes), AppRoutingModule, HttpClientModule],
             providers: [
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
-                { provide: Router, useValue: { router } },
+                { provide: Router, useValue: router },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(ModesPageComponent);

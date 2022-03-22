@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Vec2 } from '@app/classes/vec2';
-import { MouseButton } from '@app/constants';
+import { BOARD_LENGTH, MouseButton } from '@app/constants';
 import { from } from 'rxjs';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
@@ -23,9 +23,19 @@ describe('MouseDetect', () => {
     let gridService: jasmine.SpyObj<GridService>;
 
     beforeEach(() => {
-        gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn']);
+        gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn'], { state: { value: {
+            board: Array.from({ length: BOARD_LENGTH }, () => Array.from({ length: BOARD_LENGTH }, () => null)),
+        } } });
         gameContextService.isMyTurn.and.callFake(() => from([true]));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'drawArrow']);
+
+        const rackContainer = document.createElement('div');
+        rackContainer.classList.add('rack-container');
+        document.body.appendChild(rackContainer);
+        const canvas = document.createElement('div');
+        canvas.id = 'canvas';
+        rackContainer.appendChild(canvas);
+        
         TestBed.configureTestingModule({
             providers: [
                 { provide: GameContextService, useValue: gameContextService },
