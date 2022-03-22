@@ -56,7 +56,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
                 this.sendPlacedLetters();
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
-                this.communicationservice.sendLocalMessage(e.message);
+                this.gameContextService.addMessage(e.message, MessageType.Local);
             }
         } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
             this.removeLetterOnCanvas();
