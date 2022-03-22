@@ -5,7 +5,7 @@
     >
         <div class="p-infos">
             <p>{{ (this.gameContextService.getOther() | async)?.info?.name }} : {{ (this.gameContextService.getOther() | async)?.score }} points</p>
-            <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} restantes dans le chevalet</p>
+            <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} lettres restantes dans le chevalet</p>
         </div>
     </div>
     <div [ngClass]="{ 'game-infos': true, 'endgame-infos': (this.gameContextService.isEnded() | async) }">

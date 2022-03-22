@@ -1,9 +1,10 @@
 import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
+import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
-import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
+import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
@@ -20,7 +21,7 @@ export class GamePageComponent implements AfterViewChecked {
     faSignOutAlt = faSignOutAlt;
     faAngleDoubleRight = faAngleDoubleRight;
     faPlay = faPlay;
-    resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
+    resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
     placingWords = true;
     readonly sent: Subject<void> = new Subject<void>();
     constructor(
@@ -70,22 +71,11 @@ export class GamePageComponent implements AfterViewChecked {
     skipMyTurn() {
         this.communicationService.switchTurn(false);
     }
-    resetFont() {
-        this.gridService.multiplier = 1;
+
+    changeSize(multiplier: number) {
+        this.gridService.multiplier = multiplier;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
-        this.gridService.drawGrid();
-    }
-    reduceFont() {
-        this.gridService.multiplier = 0.9;
-        this.gridService.gridContext.beginPath();
-        this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
-        this.gridService.drawGrid();
-    }
-    increaseFont() {
-        this.gridService.multiplier = 1.1;
-        this.gridService.gridContext.beginPath();
-        this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
     }
 }

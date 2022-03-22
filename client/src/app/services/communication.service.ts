@@ -8,6 +8,7 @@ import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
+import { IDS_KEY } from '@app/constants';
 import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -18,8 +19,6 @@ import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 
 type Token = number;
-
-const IDS_KEY = 'ids';
 
 @Injectable({
     providedIn: 'root',
@@ -83,7 +82,7 @@ export class CommunicationService {
     }
 
     kickLeave() {
-        if (this.selectedRoom.value !== undefined && this.isMainPlayer()) {
+        if (this.isMainPlayer()) {
             this.gameSocket?.emit('kick');
             this.leaveGame();
         } else {
@@ -131,12 +130,10 @@ export class CommunicationService {
     }
 
     switchTurn(timerRequest: boolean) {
-        this.showMyRack();
         this.gameSocket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
-        this.showMyRack();
         this.gameContextService.tempUpdateRack();
         this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
         this.gameContextService.allowSwitch(false);
@@ -144,7 +141,6 @@ export class CommunicationService {
     }
 
     exchange(letters: string) {
-        this.showMyRack();
         this.gameSocket?.emit('change-letters', letters);
     }
 

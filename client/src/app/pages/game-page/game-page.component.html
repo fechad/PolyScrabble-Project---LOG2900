@@ -52,13 +52,13 @@
                 </button>
                 <div class="size-container">
                     <button class="sizing" matTooltip="Taille minimale" matTooltipClass="tool">
-                        <fa-icon id="reduce" [icon]="faFont" size="1x" (click)="reduceFont()"></fa-icon>
+                        <fa-icon id="reduce" [icon]="faFont" size="1x" (click)="changeSize(0.9)"></fa-icon>
                     </button>
                     <button class="sizing" matTooltip="Taille par défaut" matTooltipClass="tool">
-                        <fa-icon id="reset" [icon]="faFont" size="2x" (click)="resetFont()"></fa-icon>
+                        <fa-icon id="reset" [icon]="faFont" size="2x" (click)="changeSize(1)"></fa-icon>
                     </button>
                     <button class="sizing" matTooltip="Taille maximale" matTooltipClass="tool">
-                        <fa-icon id="increase" [icon]="faFont" size="3x" (click)="increaseFont()"></fa-icon>
+                        <fa-icon id="increase" [icon]="faFont" size="3x" (click)="changeSize(1.1)"></fa-icon>
                     </button>
                 </div>
             </div>

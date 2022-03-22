@@ -126,11 +126,15 @@ export class Game {
                 this.eventEmitter.emit('game-error', player.id, e.message);
             }
             this.nextTurn(false);
-            if (this.reserve.getCount() === 0 && (this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER))) {
+            if (this.reserve.getCount() === 0 && this.emptiedRack()) {
                 this.endGame();
             }
             this.sendState();
         }
+    }
+
+    emptiedRack(): boolean {
+        return this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER);
     }
 
     matchRack(rack: Letter[]) {
