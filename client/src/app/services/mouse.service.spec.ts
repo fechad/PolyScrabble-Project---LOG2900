@@ -88,8 +88,8 @@ describe('MouseDetect', () => {
             offsetY: 20,
             button: MouseButton.Right,
         } as MouseEvent;
-        const resultX = service.calculateAxis(mouseEvent.offsetX);
-        const resultY = service.calculateAxis(mouseEvent.offsetY);
+        const resultX = service.calculateAxis(mouseEvent.offsetX, true);
+        const resultY = service.calculateAxis(mouseEvent.offsetY, false);
         expect(typeof resultX).toEqual(typeof 20);
         expect(typeof resultY).toEqual(typeof 20);
     });

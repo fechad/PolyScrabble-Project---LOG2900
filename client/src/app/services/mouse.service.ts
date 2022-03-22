@@ -22,9 +22,10 @@ export class MouseService {
 
         const prevPos = this.mousePosition;
         this.mousePosition = {
-            x: this.calculateAxis(event.offsetX),
-            y: this.calculateAxis(event.offsetY),
+            x: this.calculateAxis(event.offsetX, true),
+            y: this.calculateAxis(event.offsetY, false),
         };
+
         const y = Math.ceil(this.mousePosition.y / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
         const x = Math.ceil(this.mousePosition.x / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
 
@@ -48,9 +49,10 @@ export class MouseService {
             event.offsetY <= GRID_BORDERS[1]?.valueOf()!
         );
     }
-    calculateAxis(position: number): number {
+    calculateAxis(position: number, isHorizontal: boolean): number {
         const size = document.getElementById('canvas')?.clientWidth;
-        const sqrSize = cst.DEFAULT_SIZE / cst.NUMBER_OF_TILES;
+        let sqrSize = cst.DEFAULT_SIZE / cst.NUMBER_OF_TILES;
+        if (!isHorizontal) sqrSize -= cst.OFFSET;
         const converted = (position * cst.DEFAULT_SIZE) / size?.valueOf()!;
         let axis = Math.floor((converted - cst.GRID_ORIGIN) / cst.TILE);
         if (axis < 0) axis = 0;
