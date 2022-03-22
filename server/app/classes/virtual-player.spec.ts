@@ -182,4 +182,27 @@ describe('VirtualPlayer', () => {
         const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
         expect(result).to.deep.equal(expectedReturn);
     });
+
+    it('should choose a word on 1st turn', () => {
+        const result = vP.chooseWord('abcdlo');
+        expect(result).to.not.equal(undefined);
+        for (const placement of result) {
+            expect(placement.row).to.equal(7);
+            expect(placement.col).to.equal(7);
+        }
+    });
+
+    it('should choose a word connected to words on board', () => {
+        game.board.board[7][6].setLetter('a');
+        game.board.board[7][7].setLetter('s');
+        const rack = 'abcdlo';
+        const result = vP.chooseWord(rack);
+        expect(result).to.not.equal(undefined);
+        const possibleLetters = rack + 'as';
+        for (const placement of result) {
+            for (const letter of placement.word) {
+                expect(possibleLetters.includes(letter));
+            }
+        }
+    });
 });

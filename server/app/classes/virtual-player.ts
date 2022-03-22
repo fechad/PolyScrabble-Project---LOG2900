@@ -64,7 +64,6 @@ export class VirtualPlayer {
         } else {
             this.game.message({ emitter: cst.AI_ID, text: 'I want to place some letters' });
             const chosenWord = this.chooseWord(this.rackToString()).at(0);
-            console.log(chosenWord);
             if (chosenWord === undefined) this.game.skipTurn(cst.AI_ID);
             else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
@@ -82,7 +81,6 @@ export class VirtualPlayer {
                 newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
                 newPosition.buildCommand(emptyPlacement);
                 concretePositions.push(newPosition);
-                console.log(newPosition);
             });
         } else {
             for (const position of this.getPlayablePositions(freeLetters.length)) {
@@ -97,7 +95,6 @@ export class VirtualPlayer {
                     newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
                     newPosition.buildCommand(connectedLetters);
                     concretePositions.push(newPosition);
-                    console.log(newPosition);
                 });
             }
         }
