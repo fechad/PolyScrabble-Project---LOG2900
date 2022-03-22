@@ -5,7 +5,6 @@ import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { State } from '@app/classes/room';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService, Tile } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
@@ -14,23 +13,25 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
-    let commService: jasmine.SpyObj<CommunicationService>;
     let gameService: jasmine.SpyObj<GameContextService>;
     let gridService: jasmine.SpyObj<GridService>;
     let mouseService: jasmine.SpyObj<MouseService>;
     beforeEach(() => {
-        commService = jasmine.createSpyObj('CommunicationService', ['place', 'sendLocalMessage']);
-        gameService = jasmine.createSpyObj('GameContextService', ['tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'], {
-            state: new BehaviorSubject({
-                state: State.Started,
-                board: [
-                    [null, { name: 'A', score: 1 }, null],
-                    [null, null, null],
-                    [null, null, null],
-                ] as Tile[][],
-            } as unknown as GameState),
-            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
-        });
+        gameService = jasmine.createSpyObj(
+            'GameContextService',
+            ['place', 'addMessage', 'tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'],
+            {
+                state: new BehaviorSubject({
+                    state: State.Started,
+                    board: [
+                        [null, { name: 'A', score: 1 }, null],
+                        [null, null, null],
+                        [null, null, null],
+                    ] as Tile[][],
+                } as unknown as GameState),
+                rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+            },
+        );
         gameService.isMyTurn.and.callFake(() => of(true));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
             rack: [{ name: 'A', score: 1 }] as Letter[],
@@ -47,7 +48,6 @@ describe('PlayAreaComponent', () => {
             declarations: [PlayAreaComponent],
             imports: [RouterTestingModule, HttpClientTestingModule],
             providers: [
-                { provide: CommunicationService, useValue: commService },
                 { provide: GameContextService, useValue: gameService },
                 { provide: GridService, useValue: gridService },
                 { provide: MouseService, useValue: mouseService },
@@ -91,7 +91,7 @@ describe('PlayAreaComponent', () => {
             key: expectedKey,
         } as KeyboardEvent;
         component.buttonDetect(buttonEvent);
-        expect(commService.place).toHaveBeenCalled();
+        expect(gameService.place).toHaveBeenCalled();
     });
 
     it('removing a letter should draw a new arrow', () => {

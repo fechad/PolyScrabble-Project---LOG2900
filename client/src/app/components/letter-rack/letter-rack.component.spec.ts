@@ -163,7 +163,7 @@ describe('LetterRackComponent', () => {
     });
 
     it('exchange should call communicationService exchange', () => {
-        const exchangeSpy = spyOn(component.communicationService, 'exchange').and.callThrough();
+        const exchangeSpy = spyOn(component.gameContextService, 'exchange').and.callThrough();
         component.exchange();
         expect(exchangeSpy).toHaveBeenCalled();
     });

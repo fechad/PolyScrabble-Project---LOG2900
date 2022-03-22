@@ -103,7 +103,7 @@ describe('GamePageComponent', () => {
     });
 
     it('should switch turn if skipTurn() is called', () => {
-        const turnSpy = spyOn(component.communicationService, 'switchTurn').and.callThrough();
+        const turnSpy = spyOn(component.gameContextService, 'switchTurn').and.callThrough();
         component.skipMyTurn();
         expect(turnSpy).toHaveBeenCalled();
     });

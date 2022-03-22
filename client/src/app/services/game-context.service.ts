@@ -5,11 +5,19 @@ import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { PlayerId, State } from '@app/classes/room';
 import * as cst from '@app/constants';
+import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Socket } from 'socket.io-client';
 
 export type Tile = Letter | null;
 export type Board = Tile[][];
+
+export enum MessageType {
+    Normal,
+    Command,
+    Local,
+}
 
 @Injectable({
     providedIn: 'root',
@@ -23,8 +31,9 @@ export class GameContextService {
     tempRack: Letter[];
     myId: PlayerId;
     private msgCount: number = 0;
+    private socket: Socket | undefined = undefined;
 
-    constructor() {
+    constructor(/* public injector: Injector*/) {
         const board = [];
         for (let i = 0; i < cst.BOARD_LENGTH; i++) {
             const row = [];
@@ -46,6 +55,30 @@ export class GameContextService {
             state: State.Started,
         };
         this.state = new BehaviorSubject(state);
+    }
+
+    init(socket: Socket) {
+        this.socket = socket;
+        socket.on('state', (state: GameState) => this.state.next(state));
+        socket.on('message', (message: Message, msgCount: number) => {
+            this.receiveMessages(message, msgCount, message.emitter === this.myId);
+        });
+        socket.on('game-error', (error: string) => this.addMessage(error, MessageType.Local));
+        socket.on('valid-exchange', (response: string) => this.addMessage(response, MessageType.Command));
+        socket.on('rack', (rack: Letter[]) => {
+            this.rack.next(rack);
+            this.allowSwitch(true);
+        });
+        socket.on('reserve-content', (sortedReserve: ReserveLetter[]) => {
+            const message = sortedReserve.map((letter) => `${letter.name} : ${letter.qtyInReserve}`).join('\n');
+            this.addMessage(message, MessageType.Command);
+        });
+    }
+
+    close() {
+        this.socket?.close();
+        this.socket = undefined;
+        this.clearMessages();
     }
 
     isEnded(): Observable<boolean> {
@@ -81,13 +114,18 @@ export class GameContextService {
         this.tempMessages.next([]);
     }
 
-    addMessage(message: string, local: boolean, command: boolean) {
-        if (local) {
-            this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);
-        } else if (command) {
-            this.messages.next([...this.messages.value, { text: message, emitter: 'command' }]);
-        } else {
-            this.tempMessages.next([...this.tempMessages.value, message]);
+    addMessage(message: string, type: MessageType = MessageType.Normal) {
+        switch (type) {
+            case MessageType.Local:
+                this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);
+                break;
+            case MessageType.Command:
+                this.messages.next([...this.messages.value, { text: message, emitter: 'command' }]);
+                break;
+            default:
+                this.socket?.emit('message', message);
+                this.tempMessages.next([...this.tempMessages.value, message]);
+                break;
         }
     }
 
@@ -109,5 +147,37 @@ export class GameContextService {
     }
     addTempRack(letter: Letter) {
         this.tempRack.push(letter);
+    }
+
+    switchTurn(timerRequest: boolean) {
+        this.socket?.emit('switch-turn', timerRequest);
+    }
+
+    place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
+        this.tempUpdateRack();
+        /* const gridService = this.injector.get<GridService>(GridService);
+        gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);*/
+        this.allowSwitch(false);
+        this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
+    }
+
+    exchange(letters: string) {
+        this.socket?.emit('change-letters', letters);
+    }
+
+    hint() {
+        this.socket?.emit('hint');
+    }
+
+    getReserve() {
+        this.socket?.emit('reserve-content');
+    }
+
+    showMyRack() {
+        this.socket?.emit('current-rack', this.rack.value);
+    }
+
+    confirmForfeit() {
+        this.socket?.emit('confirm-forfeit');
     }
 }

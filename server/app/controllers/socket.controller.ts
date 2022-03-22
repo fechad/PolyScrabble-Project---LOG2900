@@ -43,6 +43,7 @@ export class SocketManager {
             this.token = token;
             socket.emit('id', id, token);
             mainLobby.connect(socket, id);
+
             socket.on('disconnect', (reason) => {
                 console.log(`Raison de deconnexion : ${reason}`);
                 this.logins.logout(id);

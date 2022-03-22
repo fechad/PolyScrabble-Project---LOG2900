@@ -3,8 +3,7 @@ import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import * as cst from '@app/constants';
-import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
+import { GameContextService, MessageType } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Subject } from 'rxjs';
@@ -25,12 +24,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     private isLoaded = false;
     private canvasSize = { x: cst.DEFAULT_WIDTH, y: cst.DEFAULT_HEIGHT };
 
-    constructor(
-        public gridService: GridService,
-        public gameContextService: GameContextService,
-        public mouseDetectService: MouseService,
-        public communicationservice: CommunicationService,
-    ) {
+    constructor(public gridService: GridService, public gameContextService: GameContextService, public mouseDetectService: MouseService) {
         this.mousePosition = this.mouseDetectService.mousePosition;
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
@@ -67,7 +61,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
                 this.placeWordOnCanvas();
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
-                this.communicationservice.sendLocalMessage(e.message);
+                this.gameContextService.addMessage(e.message, MessageType.Local);
             }
         }
     }
@@ -95,7 +89,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     sendPlacedLetters() {
         for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
-        this.communicationservice.place(
+        this.gameContextService.place(
             this.gridService.letterForServer,
             this.gridService.firstLetter[1],
             this.gridService.firstLetter[0],
