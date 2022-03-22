@@ -54,7 +54,6 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
             if (this.gridService.letterForServer.length === 0)
                 this.gameContextService.addMessage("Vous n'avez placé aucun mot sur le plateau", MessageType.Local);
             else {
-                this.isEmptyWord();
                 this.sendPlacedLetters();
             }
         } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
