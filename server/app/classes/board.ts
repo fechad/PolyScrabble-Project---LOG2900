@@ -55,7 +55,7 @@ export class Board {
         for (let i = 0; i < BOARD_LENGTH; i++) {
             for (let j = 0; j < BOARD_LENGTH; j++) {
                 if (!this.board[i][j].empty) continue;
-                // pour chaque orientation
+                // for each direction
                 for (const isHorizontal of [true, false]) {
                     const word = this.getPositionString(new PlacementOption(i, j, isHorizontal, ''), rackLength);
                     if ([...word].some((char) => char !== ' ')) arrayPos.push(new PlacementOption(i, j, isHorizontal, word));

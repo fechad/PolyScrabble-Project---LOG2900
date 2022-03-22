@@ -45,7 +45,6 @@ export class VirtualPlayer {
         }, DELAY_CHECK_TURN);
     }
 
-    // a mettre private quand connected
     getPlayablePositions(length: number): PlacementOption[] {
         const arrayPos = this.board.getPlayablePositions(length);
         return this.validateCrosswords(arrayPos);
