@@ -51,7 +51,13 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         if (!this.myTurn || this.gameContextService.state.value.state !== State.Started) return;
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
-            this.sendPlacedLetters();
+            try {
+                this.isEmptyWord();
+                this.sendPlacedLetters();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (e: any) {
+                this.communicationservice.sendLocalMessage(e.message);
+            }
         } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
             this.removeLetterOnCanvas();
         } else if (this.buttonPressed === 'Escape') {
@@ -70,6 +76,10 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.sent.subscribe(() => {
             if (this.myTurn) this.sendPlacedLetters();
         });
+    }
+
+    isEmptyWord() {
+        if (this.gridService.letterForServer.length === 0) throw new Error("Vous n'avez entré aucun mot");
     }
 
     removeWord() {

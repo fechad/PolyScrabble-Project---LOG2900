@@ -23,9 +23,13 @@ describe('MouseDetect', () => {
     let gridService: jasmine.SpyObj<GridService>;
 
     beforeEach(() => {
-        gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn'], { state: { value: {
-            board: Array.from({ length: BOARD_LENGTH }, () => Array.from({ length: BOARD_LENGTH }, () => null)),
-        } } });
+        gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn'], {
+            state: {
+                value: {
+                    board: Array.from({ length: BOARD_LENGTH }, () => Array.from({ length: BOARD_LENGTH }, () => null)),
+                },
+            },
+        });
         gameContextService.isMyTurn.and.callFake(() => from([true]));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'drawArrow']);
 
@@ -35,7 +39,7 @@ describe('MouseDetect', () => {
         const canvas = document.createElement('div');
         canvas.id = 'canvas';
         rackContainer.appendChild(canvas);
-        
+
         TestBed.configureTestingModule({
             providers: [
                 { provide: GameContextService, useValue: gameContextService },
