@@ -20,7 +20,7 @@ export class WordGetter {
 
     getStringPositionVirtualPlayer(placement: PlacementOption) {
         let contactWord = '';
-        let pos = this.findStart(placement);
+        const pos = this.findStart(placement);
         if (placement.isHorizontal) {
             while (pos.col < BOARD_LENGTH && (!this.board[pos.row][pos.col].empty || pos.col === placement.col)) {
                 if (pos.col === placement.col) contactWord += CONTACT_CHAR;
