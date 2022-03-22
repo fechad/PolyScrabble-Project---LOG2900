@@ -133,13 +133,13 @@ export class GridService {
             } as Letter;
             temporaryBoard[verticalIndex][horizontalIndex] = letter;
         } else {
-            let letterPosition = 0;
+            let pos = 0;
             for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
-                if (letterPosition > lettersToAdd.length - 1) break;
+                if (pos > lettersToAdd.length - 1) break;
                 const tile = isHorizontalPlacement ? temporaryBoard[verticalIndex][i] : temporaryBoard[i][horizontalIndex];
                 if (tile !== null) continue;
                 const letter: Tile = {
-                    name: lettersToAdd[letterPosition].toUpperCase(),
+                    name: lettersToAdd[pos].toUpperCase(),
                     score: 0,
                 } as Letter;
                 if (isHorizontalPlacement) {
@@ -149,7 +149,7 @@ export class GridService {
                     temporaryBoard[i][horizontalIndex] = letter;
                     this.letterPosition.push([i, horizontalIndex]);
                 }
-                letterPosition++;
+                pos++;
             }
         }
         const newState = this.gameContext.state.value;
