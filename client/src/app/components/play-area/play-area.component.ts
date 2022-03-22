@@ -119,16 +119,15 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     }
 
     removeLetterOnCanvas() {
-        const letter = this.gridService.letters.pop();
+        let letter = this.gridService.letters.pop();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        letter = { name: letter?.name.valueOf()!, score: letter?.score.valueOf()! };
         const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         this.gridService.letterPosition.pop();
         this.gridService.letterForServer = this.gridService.letterForServer.slice(0, cst.LAST_INDEX);
-        if (letter !== undefined) {
-            this.gridService.rack.push(letter);
-            this.gameContextService.addTempRack(letter);
-        }
-        if (letterRemoved[1] !== undefined && letterRemoved[0] !== undefined)
-            this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
+        this.gridService.rack.push(letter);
+        this.gameContextService.addTempRack(letter);
+        this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
         this.gridService.letterWritten -= 1;
@@ -136,10 +135,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     placeWordOnCanvas() {
         const word = CommandParsing.removeAccents(this.buttonPressed);
+        const star = { name: '*', score: 0 };
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
-        if (item === undefined) this.gridService.letters.push({ name: '*', score: 0 });
+        if (item === undefined) this.gridService.letters.push(star);
         else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
