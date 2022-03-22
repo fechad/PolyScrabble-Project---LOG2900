@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { difficulties, Difficulty, GameType, Parameters } from '@app/classes/parameters';
-import { SEC_CONVERT } from '@app/constants';
+import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 @Component({
     selector: 'app-solo-dialog',
@@ -52,7 +52,7 @@ export class SoloDialogComponent implements OnInit {
         }
         if (this.communicationService.selectedRoom.value !== undefined) this.communicationService.leave();
         const parameters = new Parameters();
-        parameters.timer = this.soloParametersForm.value.minutes * SEC_CONVERT + this.soloParametersForm.value.seconds;
+        parameters.timer = this.soloParametersForm.value.minutes * cst.SEC_CONVERT + this.soloParametersForm.value.seconds;
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
         parameters.difficulty = Difficulty.Beginner;
         parameters.gameType = GameType.Solo;

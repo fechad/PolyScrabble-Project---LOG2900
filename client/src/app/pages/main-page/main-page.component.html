@@ -25,16 +25,16 @@
         <img class="logo" src="assets/logo.svg" alt="Scrabble" />
         <button
             mat-raised-button
-            *ngFor="let champ of buttonsMainPage"
+            *ngFor="let field of buttonsMainPage"
             class="button"
-            [disabled]="champ.disabled"
-            matTooltip="{{ champ.toolTip }}"
+            [disabled]="field.disabled"
+            matTooltip="{{ field.toolTip }}"
             matTooltipPosition="right"
             matTooltipClass="tool"
-            routerLink="{{ champ.route }}"
-            (click)="champ.promptsDialog && openPopUp()"
+            routerLink="{{ field.route }}"
+            (click)="field.promptsDialog && openPopUp()"
         >
-            {{ champ.text }}
+            {{ field.text }}
         </button>
     </div>
 </div>

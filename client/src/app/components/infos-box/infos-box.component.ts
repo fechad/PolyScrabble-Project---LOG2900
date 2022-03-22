@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { State } from '@app/classes/room';
-import { NORMAL_RACK_LENGTH } from '@app/constants';
+import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent } from 'ngx-countdown';
@@ -21,8 +21,8 @@ export class InfosBoxComponent implements AfterViewInit {
         this.gameContextService.state.subscribe((state) => {
             const [myIdx, otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
-            if (state.players[myIdx].rackCount < NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
-            if (state.players[otherIdx].rackCount < NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
+            if (state.players[myIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
+            if (state.players[otherIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
             if (state.state === State.Aborted) {
                 this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
             } else if (state.state !== State.Ended) {

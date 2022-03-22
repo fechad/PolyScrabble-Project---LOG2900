@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-import { CANVAS_ADJUSTMENT, DEFAULT_SIZE, GRID_ORIGIN, MouseButton, NUMBER_OF_TILES, OFFSET, TILE } from '@app/constants';
+import * as cst from '@app/constants';
 import { take } from 'rxjs/operators';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
@@ -17,7 +17,7 @@ export class MouseService {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
         if (!myTurn) return;
         if (this.gridService.letterWritten !== 0) return;
-        if (event.button !== MouseButton.Left || !this.isInBound(event)) return;
+        if (event.button !== cst.MouseButton.Left || !this.isInBound(event)) return;
 
         const prevPos = this.mousePosition;
         this.mousePosition = {
@@ -35,7 +35,7 @@ export class MouseService {
 
     isInBound(event: MouseEvent): boolean {
         const size = document.getElementById('canvas')?.clientWidth;
-        const GRID_BORDERS = [GRID_ORIGIN, size];
+        const GRID_BORDERS = [cst.GRID_ORIGIN, size];
         return (
             event.offsetX >= GRID_BORDERS[0]?.valueOf()! &&
             event.offsetX <= GRID_BORDERS[1]?.valueOf()! &&
@@ -45,18 +45,18 @@ export class MouseService {
     }
     calculateX(xPosition: number): number {
         const size = document.getElementById('canvas')?.clientWidth;
-        const sqrSize = DEFAULT_SIZE / NUMBER_OF_TILES;
-        const converted = (xPosition * DEFAULT_SIZE) / size?.valueOf()!;
-        let x = Math.floor((converted - GRID_ORIGIN) / TILE);
+        const sqrSize = cst.DEFAULT_SIZE / cst.NUMBER_OF_TILES;
+        const converted = (xPosition * cst.DEFAULT_SIZE) / size?.valueOf()!;
+        let x = Math.floor((converted - cst.GRID_ORIGIN) / cst.TILE);
         if (x < 0) x = 0;
-        return (sqrSize + OFFSET) * x + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+        return (sqrSize + cst.OFFSET) * x + cst.GRID_ORIGIN + cst.CANVAS_ADJUSTMENT;
     }
     calculateY(yPosition: number): number {
         const size = document.getElementById('canvas')?.clientWidth;
-        const sqrSize = DEFAULT_SIZE / NUMBER_OF_TILES - OFFSET;
-        const converted = (yPosition * DEFAULT_SIZE) / size?.valueOf()!;
-        let y = Math.floor((converted - GRID_ORIGIN) / TILE);
+        const sqrSize = cst.DEFAULT_SIZE / cst.NUMBER_OF_TILES - cst.OFFSET;
+        const converted = (yPosition * cst.DEFAULT_SIZE) / size?.valueOf()!;
+        let y = Math.floor((converted - cst.GRID_ORIGIN) / cst.TILE);
         if (y < 0) y = 0;
-        return (sqrSize + OFFSET) * y + GRID_ORIGIN + CANVAS_ADJUSTMENT;
+        return (sqrSize + cst.OFFSET) * y + cst.GRID_ORIGIN + cst.CANVAS_ADJUSTMENT;
     }
 }
