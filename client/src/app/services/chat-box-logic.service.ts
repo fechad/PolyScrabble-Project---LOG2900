@@ -6,45 +6,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
 
-const COMMAND_INDEX = 0;
-const LETTERS_TO_EXCHANGE_INDEX = 1;
-const POSITION_BLOCK_INDEX = 1;
-const MIN_TYPED_WORD_LENGTH = 1;
-
-const HELP_COMMAND_LENGTH = 1;
-const PASS_COMMAND_LENGTH = 1;
-const RESERVE_COMMAND_LENGTH = 1;
-const HINT_COMMAND_LENGTH = 1;
-const POSITION_BLOCK_MIN_LENGTH = 2;
-const WORD_TO_PLACE_INDEX = 2;
-const EXCHANGE_COMMAND_LENGTH = 2;
-
-const HORIZONTAL_POSITION_2ND_DIGIT_INDEX = 2;
-const PLACE_COMMAND_LENGTH = 3;
-const POSITION_BLOCK_AVG_LENGTH = 3;
-const POSITION_BLOCK_MAX_LENGTH = 4;
-const MAX_TYPED_WORD_LENGTH = 7;
-const DECIMAL_BASE = 10;
-
-const HELP_MESSAGE: string =
-    '-- Voici ce que vous pouvez faire: --\n' +
-    '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
-    'ex: !placer g10v abc placera les lettres\n' +
-    'abc verticalement à partir de la position g10\n' +
-    '\n!passer permet de passer votre tour\n' +
-    '\n!échanger permet changer vos lettres\n' +
-    'ex: !échanger abc\n' +
-    '\n!réserve : afficher la quantité restante de chaque lettre dans la réserve\n' +
-    '\n!indice : obtenir 3 choix de mots à placer\n' +
-    '\n!aide : obtenir une explication des commandes disponibles\n' +
-    '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
-    '\ncliquer sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
-    '\nou taper sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
-    '\nfaites un clic droit sur les tuiles pour sélectionner des lettres à échanger\n' +
-    '\ncliquer sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
-    'en tapant les touches correspondantes du clavier,\n' +
-    'cliquer une seconde fois pour placer verticalement\n';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -82,10 +43,10 @@ export class ChatBoxLogicService {
         else if (this.commandStructure[cst.COMMAND_INDEX] === '!réserve' && commandLength === cst.RESERVE_COMMAND_LENGTH) this.getReserve();
         else if (this.commandStructure[cst.COMMAND_INDEX] === '!aide' && commandLength === cst.HELP_COMMAND_LENGTH) this.sendHelp();
         else if (!myTurn) throw new Error("Ce n'est pas votre tour");
-        else if (this.commandStructure[COMMAND_INDEX] === '!indice' && commandLength === HINT_COMMAND_LENGTH) this.hint();
-        else if (this.commandStructure[COMMAND_INDEX] === '!placer' && commandLength === PLACE_COMMAND_LENGTH) {
-            this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[WORD_TO_PLACE_INDEX]);
-            this.assignPositionSpec(this.commandStructure[POSITION_BLOCK_INDEX]);
+        else if (this.commandStructure[cst.COMMAND_INDEX] === '!indice' && commandLength === cst.HINT_COMMAND_LENGTH) this.hint();
+        else if (this.commandStructure[cst.COMMAND_INDEX] === '!placer' && commandLength === cst.PLACE_COMMAND_LENGTH) {
+            this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[cst.WORD_TO_PLACE_INDEX]);
+            this.assignPositionSpec(this.commandStructure[cst.POSITION_BLOCK_INDEX]);
             this.place();
         } else if (this.commandStructure[cst.COMMAND_INDEX] === '!échanger' && commandLength === cst.EXCHANGE_COMMAND_LENGTH) {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
@@ -95,7 +56,7 @@ export class ChatBoxLogicService {
     }
 
     private sendHelp() {
-        this.communicationService.sendCommandMessage(HELP_MESSAGE);
+        this.communicationService.sendCommandMessage(cst.HELP_MESSAGE);
     }
 
     private place() {
@@ -117,13 +78,13 @@ export class ChatBoxLogicService {
     }
 
     private exchange() {
-        const isInBound = this.parsedLetters.length >= MIN_TYPED_WORD_LENGTH && this.parsedLetters.length <= MAX_TYPED_WORD_LENGTH;
-        if (!CommandParsing.areValidCharactersToExchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]))
+        const isInBound = this.parsedLetters.length >= cst.MIN_TYPED_WORD_LENGTH && this.parsedLetters.length <= cst.MAX_TYPED_WORD_LENGTH;
+        if (!CommandParsing.areValidCharactersToExchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]))
             throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         if (!isInBound) throw new Error("Impossible d'échanger cette quantité de lettres");
 
         this.gameContextService.attemptTempRackUpdate(this.parsedLetters);
-        this.communicationService.exchange(this.commandStructure[LETTERS_TO_EXCHANGE_INDEX]);
+        this.communicationService.exchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
     }
 
     private pass() {

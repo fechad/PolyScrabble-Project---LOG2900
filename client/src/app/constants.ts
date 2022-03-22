@@ -65,6 +65,26 @@ export const POSITION_BLOCK_AVG_LENGTH = 3;
 export const POSITION_BLOCK_MAX_LENGTH = 4;
 export const MAX_TYPED_WORD_LENGTH = 7;
 export const DECIMAL_BASE = 10;
+export const HINT_COMMAND_LENGTH = 1;
+
+export const HELP_MESSAGE: string =
+    '-- Voici ce que vous pouvez faire: --\n' +
+    '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
+    'ex: !placer g10v abc placera les lettres\n' +
+    'abc verticalement à partir de la position g10\n' +
+    '\n!passer permet de passer votre tour\n' +
+    '\n!échanger permet changer vos lettres\n' +
+    'ex: !échanger abc\n' +
+    '\n!réserve : afficher la quantité restante de chaque lettre dans la réserve\n' +
+    '\n!indice : obtenir 3 choix de mots à placer\n' +
+    '\n!aide : obtenir une explication des commandes disponibles\n' +
+    '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
+    '\ncliquer sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
+    '\nou taper sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
+    '\nfaites un clic droit sur les tuiles pour sélectionner des lettres à échanger\n' +
+    '\ncliquer sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
+    'en tapant les touches correspondantes du clavier,\n' +
+    'cliquer une seconde fois pour placer verticalement\n';
 
 export enum MouseButton {
     Left = 0,

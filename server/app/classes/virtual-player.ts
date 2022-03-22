@@ -46,7 +46,7 @@ export class VirtualPlayer {
         }, DELAY_CHECK_TURN);
     }
 
-    // a mettre private quand connected
+    // TODO private when connected
     getPlayablePositions(length: number): PlacementOption[] {
         const positions = this.board.getPlayablePositions(length);
         const arrayPos: PlacementOption[] = [];
