@@ -2,18 +2,7 @@ import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, I
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
-import {
-    ADJUSTMENT,
-    BOARD_SIZE,
-    CANVAS_SQUARE_SIZE,
-    DEFAULT_HEIGHT,
-    DEFAULT_WIDTH,
-    LAST_INDEX,
-    MAX_RACK_SIZE,
-    PLAY_AREA_SIZE,
-    // eslint-disable-next-line prettier/prettier -- no comma needed
-    POS_AND_SHIFT
-} from '@app/constants';
+import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
@@ -34,7 +23,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     shift: number[] = [];
     myTurn = false;
     private isLoaded = false;
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize = { x: cst.DEFAULT_WIDTH, y: cst.DEFAULT_HEIGHT };
 
     constructor(
         public gridService: GridService,
@@ -48,7 +37,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         });
         this.gameContextService.rack.subscribe((rack) => {
             for (const i of rack) {
-                if (this.rack.length <= MAX_RACK_SIZE) this.rack.push(i.name);
+                if (this.rack.length <= cst.MAX_RACK_SIZE) this.rack.push(i.name);
             }
         });
         this.gameContextService.isMyTurn().subscribe((bool) => {
@@ -123,7 +112,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         const letter = this.gridService.letters.pop();
         const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         this.gridService.letterPosition.pop();
-        this.gridService.letterForServer = this.gridService.letterForServer.slice(0, LAST_INDEX);
+        this.gridService.letterForServer = this.gridService.letterForServer.slice(0, cst.LAST_INDEX);
         if (letter !== undefined) {
             this.gridService.rack.push(letter);
             this.gameContextService.addTempRack(letter);
@@ -145,19 +134,19 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
             this.gridService.firstLetter = [
-                Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
-                Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+                Math.ceil(this.mouseDetectService.mousePosition.x / cst.CANVAS_SQUARE_SIZE) - cst.ADJUSTMENT,
+                Math.ceil(this.mouseDetectService.mousePosition.y / cst.CANVAS_SQUARE_SIZE) - cst.ADJUSTMENT,
             ];
         this.gridService.tempUpdateBoard(
             word,
-            Math.ceil(this.mouseDetectService.mousePosition.y / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
-            Math.ceil(this.mouseDetectService.mousePosition.x / CANVAS_SQUARE_SIZE) - ADJUSTMENT,
+            Math.ceil(this.mouseDetectService.mousePosition.y / cst.CANVAS_SQUARE_SIZE) - cst.ADJUSTMENT,
+            Math.ceil(this.mouseDetectService.mousePosition.x / cst.CANVAS_SQUARE_SIZE) - cst.ADJUSTMENT,
             this.mouseDetectService.isHorizontal,
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         if (
-            (this.getShift(lastLetter) + lastLetter[1] < POS_AND_SHIFT && this.mouseDetectService.isHorizontal) ||
-            (this.getShift(lastLetter) + lastLetter[0] < POS_AND_SHIFT && !this.mouseDetectService.isHorizontal)
+            (this.getShift(lastLetter) + lastLetter[1] < cst.POS_AND_SHIFT && this.mouseDetectService.isHorizontal) ||
+            (this.getShift(lastLetter) + lastLetter[0] < cst.POS_AND_SHIFT && !this.mouseDetectService.isHorizontal)
         )
             this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
         this.gameContextService.tempUpdateRack();
@@ -165,15 +154,15 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     drawShiftedArrow(pos: number[], shift: number) {
         if (this.mouseDetectService.isHorizontal)
-            this.gridService.drawArrow((pos[1] + shift) * CANVAS_SQUARE_SIZE, this.mouseDetectService.mousePosition.y, true);
-        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, (pos[0] + shift) * CANVAS_SQUARE_SIZE, false);
+            this.gridService.drawArrow((pos[1] + shift) * cst.CANVAS_SQUARE_SIZE, this.mouseDetectService.mousePosition.y, true);
+        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, (pos[0] + shift) * cst.CANVAS_SQUARE_SIZE, false);
     }
     isInBound() {
         return (
             (this.mouseDetectService.isHorizontal &&
-                this.mouseDetectService.mousePosition.x + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE) ||
+                this.mouseDetectService.mousePosition.x + this.gridService.letters.length * cst.CANVAS_SQUARE_SIZE <= cst.PLAY_AREA_SIZE) ||
             (!this.mouseDetectService.isHorizontal &&
-                this.mouseDetectService.mousePosition.y + this.gridService.letters.length * CANVAS_SQUARE_SIZE <= PLAY_AREA_SIZE)
+                this.mouseDetectService.mousePosition.y + this.gridService.letters.length * cst.CANVAS_SQUARE_SIZE <= cst.PLAY_AREA_SIZE)
         );
     }
 
@@ -183,7 +172,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         const horizontal = this.mouseDetectService.isHorizontal;
         let y = horizontal ? pos[0] : pos[0] + 1;
         let x = horizontal ? pos[1] + 1 : pos[1];
-        while (y !== BOARD_SIZE && board[y][x]) {
+        while (y !== cst.BOARD_SIZE && board[y][x]) {
             if (horizontal) x++;
             else y++;
             shift++;

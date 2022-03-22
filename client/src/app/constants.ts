@@ -45,7 +45,7 @@ export const SEC_CONVERT = 60;
 
 export const NORMAL_RACK_LENGTH = 7;
 
-export const UNDEFINED = -1;
+export const MISSING = -1;
 
 export const IDS_KEY = 'ids';
 
