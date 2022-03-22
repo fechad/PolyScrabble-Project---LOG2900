@@ -72,7 +72,6 @@ export class VirtualPlayer {
             const chosenWord = this.chooseWord(this.rackToString())[0];
             if (chosenWord === undefined) this.game.skipTurn(AI_ID);
             else {
-                // console.log(chosenWord);
                 await this.game.placeLetters(AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
             }
         }

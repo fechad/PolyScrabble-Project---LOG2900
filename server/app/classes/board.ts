@@ -41,9 +41,7 @@ export class Board {
             }, BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(triedPlacement)) throw new Error('Placement invalide pour le premier mot');
-        console.log(triedPlacement);
         const contacts = this.getContacts(triedPlacement);
-        console.log(contacts);
 
         const words = this.wordGetter.getWords(triedPlacement, contacts);
         if (!words.every((wordOption) => this.dictionnary.isValidWord(wordOption.word)))
@@ -143,12 +141,10 @@ export class Board {
     private getPositionString(placement: PlacementOption, rackLength: number): string {
         let position = '';
         let collisions = 0;
-        let startRow = placement.row;
-        let startCol = placement.col;
-        if (placement.isHorizontal) while (this.containsLetter(startRow, startCol - 1)) startCol--;
-        else while (this.containsLetter(startRow - 1, startCol)) startRow--;
+        if (placement.isHorizontal) while (this.containsLetter(placement.row, placement.col - 1)) placement.col--;
+        else while (this.containsLetter(placement.row - 1, placement.col)) placement.row--;
 
-        for (let offset = 0; offset < rackLength + collisions; offset++) {
+        for (let offset = 0; ; offset++) {
             const pos = WordGetter.wordWithOffset(placement, offset);
             if (pos.row >= BOARD_LENGTH || pos.col >= BOARD_LENGTH) break;
             if (offset - collisions >= rackLength && !this.containsLetter(pos.row, pos.col)) break;
