@@ -69,7 +69,6 @@ export class LetterRackComponent {
         if (!parentPossibilities.includes(name)) {
             this.manipulating = undefined;
             this.exchanging = [];
-            this.communicationService.showMyRack();
         }
     }
 
@@ -91,6 +90,7 @@ export class LetterRackComponent {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
         this.swapLetters(newIndex, this.manipulating);
+        this.communicationService.showMyRack();
     }
 
     swapLetters(index: number, oldIndex: number) {

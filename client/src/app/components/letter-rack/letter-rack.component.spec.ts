@@ -304,4 +304,19 @@ describe('LetterRackComponent', () => {
         chatBox?.dispatchEvent(keypress);
         expect(checkOccurrencesSpy).not.toHaveBeenCalled();
     });
+
+    it('should return manipulated rack in new order', () => {
+        const keypress = new KeyboardEvent('keydown', { key: 'c' });
+        component.buttonDetect(keypress);
+        component.shiftLetter('ArrowLeft');
+        expect(component.letters).toEqual([
+            { name: 'a', score: 1 },
+            { name: 'c', score: 1 },
+            { name: 'b', score: 1 },
+            { name: 'd', score: 1 },
+            { name: 'e', score: 1 },
+            { name: 'e', score: 1 },
+            { name: 'f', score: 1 },
+        ]);
+    });
 });

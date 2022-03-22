@@ -57,7 +57,7 @@ export class SyntaxValidator {
         let returnWord = '';
         for (const originalLetter of word) {
             const letter = specialLetters[originalLetter.toLowerCase()];
-            if (letter !== undefined) {
+            if (letter) {
                 returnWord += originalLetter === originalLetter.toLocaleUpperCase() ? letter.toUpperCase() : letter;
             } else {
                 returnWord += originalLetter;

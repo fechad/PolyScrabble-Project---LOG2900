@@ -26,12 +26,12 @@ export class MainLobbyService {
 
         socket.on('join-room', (roomId: RoomId, playerName: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);
-            if (room === undefined) {
+            if (!room) {
                 socket.emit('error', 'Room is no longer available');
                 return;
             }
             const error = room.addPlayer(id, playerName, false);
-            if (error !== undefined) {
+            if (error) {
                 socket.emit('error', error.message);
                 return;
             }
