@@ -19,6 +19,13 @@ describe('Dictionnary Trie', () => {
         expect(dictionnaryTrieService.isValidBranching([...'marteau'])).to.equal(true);
         expect(dictionnaryTrieService.isValidBranching([...'cxb'])).to.equal(false);
     });
+
+    it('should have all dictionnary words', () => {
+        for (const word of dictionnary.dictionnaries[0].words) {
+            expect(dictionnaryTrieService.isValidBranching([...word], true)).to.equal(true);
+        }
+    });
+
     it('should validation correct words only', () => {
         expect(dictionnaryTrieService.isValidBranching([...'mart'], true)).to.equal(false);
         expect(dictionnaryTrieService.isValidBranching([...'marteau'], true)).to.equal(true);

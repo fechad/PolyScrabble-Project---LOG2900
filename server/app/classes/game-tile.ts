@@ -1,7 +1,6 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import * as cst from '@app/constants';
 import { Letter } from '@app/letter';
-
-const INVALID = -1;
 
 export class GameTile {
     empty: boolean;
@@ -32,7 +31,7 @@ export class GameTile {
     }
 
     getPoints(): number {
-        if (this.letter === undefined || this.empty) return INVALID;
+        if (this.letter === undefined || this.empty) return cst.UNDEFINED;
         return this.letter.score * (this.newlyPlaced ? this.multiplier : 1);
     }
 

@@ -1,8 +1,8 @@
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, State } from '@app/classes/room';
+import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/constants';
 import { Message } from '@app/message';
 import { RoomsService } from '@app/services/rooms.service';
-import { ROOMS_LIST_UPDATE_TIMEOUT } from '@app/services/waiting-room.service';
 import { Server } from 'app/server';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';

@@ -1,7 +1,7 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { Letter } from '@app/letter';
 import { ReserveLetter } from '@app/reserve-letter';
-import { MAIN_PLAYER, OTHER_PLAYER } from './game';
 
 export class Reserve {
     letterRacks: Letter[][] = [];

@@ -1,11 +1,12 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { EndGameCalculator } from './end-game-calculator';
-import { Game, MAIN_PLAYER, OTHER_PLAYER } from './game';
+import { Game } from './game';
 import { Parameters } from './parameters';
 import { Player, Room } from './room';
 

@@ -183,10 +183,26 @@ describe('VirtualPlayer', () => {
         expect(result).to.deep.equal(expectedReturn);
     });
 
-    it('randomtest', () => {
-        game.board.board[5][7].setLetter('f');
-        game.board.board[6][7].setLetter('a');
-        game.board.board[7][7].setLetter('n');
-        vP['chooseWord'](game.reserve.letterRacks[0].map((letter) => letter.name).join(''));
+    it('should choose a word on 1st turn', () => {
+        const result = vP.chooseWord('abcdlo');
+        expect(result).to.not.equal(undefined);
+        for (const placement of result) {
+            expect(placement.row).to.equal(7);
+            expect(placement.col).to.equal(7);
+        }
+    });
+
+    it('should choose a word connected to words on board', () => {
+        game.board.board[7][6].setLetter('a');
+        game.board.board[7][7].setLetter('s');
+        const rack = 'abcdlo';
+        const result = vP.chooseWord(rack);
+        expect(result).to.not.equal(undefined);
+        const possibleLetters = rack + 'as';
+        for (const placement of result) {
+            for (const letter of placement.word) {
+                expect(possibleLetters.includes(letter));
+            }
+        }
     });
 });

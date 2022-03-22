@@ -1,11 +1,10 @@
 import { GameTile } from '@app/classes/game-tile';
 import { PlacementOption } from '@app/classes/placement-option';
+import * as cst from '@app/constants';
 import { assert, expect } from 'chai';
 import { WordGetter } from './word-getter';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-
-const BOARD_LENGTH = 15;
 
 describe('Word getter', () => {
     let board: GameTile[][];
@@ -13,9 +12,9 @@ describe('Word getter', () => {
 
     beforeEach(() => {
         board = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
+        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
             const row: GameTile[] = [];
-            for (let j = 0; j < BOARD_LENGTH; j++) {
+            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
                 row.push(new GameTile(1));
             }
             board.push(row);

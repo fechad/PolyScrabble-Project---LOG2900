@@ -8,8 +8,6 @@ import { DictionnaryTrieService } from './dictionnary-trie.service';
 import { DictionnaryService } from './dictionnary.service';
 import { RoomsService } from './rooms.service';
 
-export const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
-
 @Service()
 export class MainLobbyService {
     private nextRoomId = 0;

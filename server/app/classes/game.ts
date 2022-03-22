@@ -1,4 +1,5 @@
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
+import * as cst from '@app/constants';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
@@ -13,15 +14,6 @@ import { VirtualPlayer } from './virtual-player';
 export type GameId = number;
 type Tile = Letter | undefined;
 type SendableBoard = Tile[][];
-
-export const MAIN_PLAYER = 0;
-export const OTHER_PLAYER = 1;
-const PLAYER_0_TURN_PROBABILITY = 0.5;
-const BOARD_LENGTH = 15;
-const MAX_SKIP_IN_A_ROW = 6;
-const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
-const SEC_TO_MS = 1000;
-const ASCII_LOWERCASE_A = 97;
 
 type PlayerInfo = {
     info: Player;
@@ -54,14 +46,14 @@ export class Game {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board(dictionnaryService);
-        this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
-        this.isPlayer0Turn = room.parameters.difficulty ? true : Math.random() >= PLAYER_0_TURN_PROBABILITY;
+        this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * cst.SEC_TO_MS);
+        this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
     }
 
     private static createCommand(word: string, row: number, col: number, isHorizontal?: boolean): string {
         const columnOnBoard = col + 1;
-        const rowOnBoard = String.fromCharCode(row + ASCII_LOWERCASE_A);
+        const rowOnBoard = String.fromCharCode(row + cst.ASCII_LOWERCASE_A);
         const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
         const position = rowOnBoard + columnOnBoard + orientation;
         return `!placer ${position} ${word}`;
@@ -80,8 +72,8 @@ export class Game {
     sendState() {
         const state: GameState = {
             players: [
-                this.getPlayerInfo(this.players[MAIN_PLAYER].id) as PlayerInfo,
-                this.getPlayerInfo(this.players[OTHER_PLAYER].id) as PlayerInfo,
+                this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id) as PlayerInfo,
+                this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id) as PlayerInfo,
             ],
             reserveCount: this.reserve.getCount(),
             board: this.formatSendableBoard(),
@@ -90,16 +82,16 @@ export class Game {
             winner: this.winner,
         };
         this.eventEmitter.emit('state', state);
-        this.eventEmitter.emit('rack', this.players[MAIN_PLAYER].id, this.reserve.letterRacks[MAIN_PLAYER]);
-        this.eventEmitter.emit('rack', this.players[OTHER_PLAYER].id, this.reserve.letterRacks[OTHER_PLAYER]);
+        this.eventEmitter.emit('rack', this.players[cst.MAIN_PLAYER].id, this.reserve.letterRacks[cst.MAIN_PLAYER]);
+        this.eventEmitter.emit('rack', this.players[cst.OTHER_PLAYER].id, this.reserve.letterRacks[cst.OTHER_PLAYER]);
     }
 
     getPlayerInfo(id: PlayerId): PlayerInfo | undefined {
         let idx;
-        if (id === this.players[MAIN_PLAYER].id) {
-            idx = MAIN_PLAYER;
-        } else if (id === this.players[OTHER_PLAYER].id) {
-            idx = OTHER_PLAYER;
+        if (id === this.players[cst.MAIN_PLAYER].id) {
+            idx = cst.MAIN_PLAYER;
+        } else if (id === this.players[cst.OTHER_PLAYER].id) {
+            idx = cst.OTHER_PLAYER;
         } else {
             return undefined;
         }
@@ -113,7 +105,7 @@ export class Game {
 
     async placeLetters(playerId: PlayerId, letters: string, row: number, col: number, isHorizontal?: boolean) {
         if (this.checkTurn(playerId)) {
-            const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
+            const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const player = this.getCurrentPlayer();
             this.clearTimeout();
             try {
@@ -134,7 +126,7 @@ export class Game {
     }
 
     emptiedRack(): boolean {
-        return this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER);
+        return this.reserve.isPlayerRackEmpty(cst.MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(cst.OTHER_PLAYER);
     }
 
     matchRack(rack: Letter[]) {
@@ -142,13 +134,13 @@ export class Game {
     }
 
     getCurrentPlayer(): Player {
-        const playerIndex = this.isPlayer0Turn ? MAIN_PLAYER : OTHER_PLAYER;
+        const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
         return this.players[playerIndex];
     }
 
     changeLetters(letters: string, playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            if (this.reserve.getCount() >= MINIMUM_EXCHANGE_RESERVE_COUNT) {
+            if (this.reserve.getCount() >= cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
                 let validMessage = 'Vous avez échangé les lettres:  ' + letters;
                 this.eventEmitter.emit('valid-exchange', playerId, validMessage);
@@ -166,9 +158,10 @@ export class Game {
     hint(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             const virtual = new VirtualPlayer(false, this, Container.get(DictionnaryService), Container.get(DictionnaryTrieService));
-            const player = playerId === this.players[MAIN_PLAYER].id ? MAIN_PLAYER : OTHER_PLAYER;
+            const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const options = virtual.chooseWord(this.reserve.letterRacks[player].map((letter) => letter.name).join('')).slice(0, 3);
-            const warning = options.length === 0 ? 'Aucun placement possible' : options.length < 3 ? 'Moins de 3 placements possible' : '';
+            const warning =
+                options.length === 0 ? 'Aucun placement possible' : options.length < cst.HINT_NUMBER_OPTIONS ? 'Moins de 3 placements possible' : '';
             const hintMessage =
                 'Indice:\n' +
                 options.map((opt, i) => ` ${i + 1}. ${Game.createCommand(opt.command, opt.row, opt.col, opt.isHorizontal)}`).join('\n') +
@@ -193,14 +186,14 @@ export class Game {
     forfeit(idLoser: PlayerId) {
         if (this.room.getState() !== State.Started) return;
         this.room.end(true);
-        this.winner = idLoser === this.players[MAIN_PLAYER].id ? this.players[OTHER_PLAYER].id : this.players[MAIN_PLAYER].id;
+        this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
         this.sendState();
     }
 
     getWinner(): string | undefined {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
+        if (finalScores[cst.MAIN_PLAYER] > finalScores[cst.OTHER_PLAYER]) return this.players[cst.MAIN_PLAYER].id;
+        else if (finalScores[cst.MAIN_PLAYER] < finalScores[cst.OTHER_PLAYER]) return this.players[cst.OTHER_PLAYER].id;
         return undefined;
     }
 
@@ -228,18 +221,18 @@ export class Game {
         if (userRequest) this.skipCounter += 1;
         else this.skipCounter = 0;
 
-        if (this.skipCounter === MAX_SKIP_IN_A_ROW) this.endGame();
+        if (this.skipCounter === cst.MAX_SKIP_IN_A_ROW) this.endGame();
 
         if (this.timeout) clearTimeout(this.timeout);
         if (this.room.getState() === State.Started) {
-            this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
+            this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * cst.SEC_TO_MS);
         } else {
             this.timeout = undefined;
         }
     }
 
     private getPlayerId(isActivePlayer: boolean) {
-        return isActivePlayer === this.isPlayer0Turn ? this.players[MAIN_PLAYER].id : this.players[OTHER_PLAYER].id;
+        return isActivePlayer === this.isPlayer0Turn ? this.players[cst.MAIN_PLAYER].id : this.players[cst.OTHER_PLAYER].id;
     }
 
     private checkTurn(playerId: PlayerId) {
@@ -252,9 +245,9 @@ export class Game {
 
     private formatSendableBoard(): SendableBoard {
         const board: SendableBoard = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
+        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
             const row = [];
-            for (let j = 0; j < BOARD_LENGTH; j++) {
+            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
                 const gameTile = this.board.board[i][j];
                 row.push(gameTile.empty ? undefined : gameTile.letter);
             }
