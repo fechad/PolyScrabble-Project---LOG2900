@@ -38,7 +38,7 @@ export class Reserve {
             const i = rack.findIndex(
                 (letter) => unwantedLetter === letter.name.toLowerCase() || (unwantedLetter.match(/[A-Z]/g) && letter.name.match(/[*]/g)),
             );
-            if (i !== cst.UNDEFINED) continue;
+            if (i === cst.UNDEFINED) continue;
             if (putBack) this.reserve.push(rack[i]);
             rack[i] = rack[rack.length - 1];
             rack.pop();
