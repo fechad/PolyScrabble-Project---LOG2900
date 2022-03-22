@@ -71,7 +71,7 @@ export class SocketManager {
         rooms.use((socket, next) => {
             const roomId = Number.parseInt(socket.nsp.name.substring('/rooms/'.length), 10);
             const idx = this.roomsService.rooms.findIndex((room) => room.id === roomId);
-            if (idx === cst.NOT_FOUND) {
+            if (idx === cst.UNDEFINED) {
                 next(Error('Invalid room number'));
                 return;
             }
@@ -131,7 +131,7 @@ export class SocketManager {
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
             const idx = this.roomsService.games.findIndex((game) => game.id === gameId);
-            if (idx === cst.NOT_FOUND) {
+            if (idx === cst.UNDEFINED) {
                 next(Error('Invalid game number'));
                 return;
             }

@@ -48,8 +48,6 @@ export class VirtualPlayer {
     async playTurn() {
         const random = Math.floor(Math.random() * cst.PROBABILITY);
         if (this.isBeginner && random === 0) {
-            // this.game.skipTurn(AI_ID); // to test
-            this.game.message({ emitter: cst.AI_ID, text: 'I want to skip my turn' });
             this.game.skipTurn(cst.AI_ID);
         } else if (this.isBeginner && random === 1) {
             /* TODO let list = '';
@@ -59,10 +57,8 @@ export class VirtualPlayer {
                 }
             });
             this.game.changeLetters(list, AI_ID);*/
-            this.game.message({ emitter: cst.AI_ID, text: 'I want to exchange letters' });
             this.game.skipTurn(cst.AI_ID);
         } else {
-            this.game.message({ emitter: cst.AI_ID, text: 'I want to place some letters' });
             const chosenWord = this.chooseWord(this.rackToString()).at(0);
             if (chosenWord === undefined) this.game.skipTurn(cst.AI_ID);
             else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);

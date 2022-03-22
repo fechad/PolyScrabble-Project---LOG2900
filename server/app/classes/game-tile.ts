@@ -31,7 +31,7 @@ export class GameTile {
     }
 
     getPoints(): number {
-        if (this.letter === undefined || this.empty) return cst.NOT_FOUND;
+        if (this.letter === undefined || this.empty) return cst.UNDEFINED;
         return this.letter.score * (this.newlyPlaced ? this.multiplier : 1);
     }
 
