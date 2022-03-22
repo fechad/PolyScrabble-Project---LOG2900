@@ -1,19 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { GameState } from '@app/classes/game';
-import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
-<<<<<<< HEAD
 import { BOARD_LENGTH, MouseButton } from '@app/constants';
 import { from } from 'rxjs';
 import { GameContextService } from './game-context.service';
+import { GridService } from './grid.service';
+import { MouseService } from './mouse.service';
+<<<<<<< HEAD
 =======
 import { MouseButton } from '@app/constants';
 import { BehaviorSubject, from } from 'rxjs';
 import { GameContextService, Tile } from './game-context.service';
 >>>>>>> bfce4287941ac7f03391d6173b1fa012bae29771
-import { GridService } from './grid.service';
-import { MouseService } from './mouse.service';
 
 const fakeIsInBound = (event: MouseEvent) => {
     const size = 500;
@@ -32,18 +30,11 @@ describe('MouseDetect', () => {
 
     beforeEach(() => {
         gameContextService = jasmine.createSpyObj('GameContextService', ['isMyTurn'], {
-<<<<<<< HEAD
             state: {
                 value: {
                     board: Array.from({ length: BOARD_LENGTH }, () => Array.from({ length: BOARD_LENGTH }, () => null)),
                 },
             },
-=======
-            state: new BehaviorSubject({
-                state: State.Started,
-                board: [] as Tile[][],
-            } as unknown as GameState),
->>>>>>> bfce4287941ac7f03391d6173b1fa012bae29771
         });
         gameContextService.isMyTurn.and.callFake(() => from([true]));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'drawArrow']);
