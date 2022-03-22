@@ -152,8 +152,6 @@ describe('MouseDetect', () => {
 
     it('should call drawGrid on valid horizontal click', fakeAsync(() => {
         spyOn(service, 'isInBound').and.callFake(fakeIsInBound);
-        for (let i = 0; i < 15; i++)
-            gameContextService.state.value.board.push([null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]);
         mouseEvent = {
             offsetX: Math.floor(Math.random() * (500 - 20) + 20),
             offsetY: Math.floor(Math.random() * (500 - 20) + 20),

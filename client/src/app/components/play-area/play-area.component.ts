@@ -51,12 +51,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         if (!this.myTurn || this.gameContextService.state.value.state !== State.Started) return;
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
-            try {
+            if (this.gridService.letterForServer.length === 0)
+                this.gameContextService.addMessage("Vous n'avez placé aucun mot sur le plateau", MessageType.Local);
+            else {
                 this.isEmptyWord();
                 this.sendPlacedLetters();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } catch (e: any) {
-                this.gameContextService.addMessage(e.message, MessageType.Local);
             }
         } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
             this.removeLetterOnCanvas();
@@ -76,10 +75,6 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.sent.subscribe(() => {
             if (this.myTurn) this.sendPlacedLetters();
         });
-    }
-
-    isEmptyWord() {
-        if (this.gridService.letterForServer.length === 0) throw new Error("Vous n'avez entré aucun mot");
     }
 
     removeWord() {
@@ -119,12 +114,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     }
 
     removeLetterOnCanvas() {
-        let letter = this.gridService.letters.pop();
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        letter = { name: letter?.name.valueOf()!, score: letter?.score.valueOf()! };
+        const letter = this.gridService.letters.pop();
         const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         this.gridService.letterPosition.pop();
         this.gridService.letterForServer = this.gridService.letterForServer.slice(0, cst.LAST_INDEX);
+        if (!letter) throw new Error('tried to remove a letter when word is empty');
         this.gridService.rack.push(letter);
         this.gameContextService.addTempRack(letter);
         this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
