@@ -40,19 +40,8 @@ export class VirtualPlayer {
         }, cst.DELAY_CHECK_TURN);
     }
 
-    // TODO private when connected
     getPlayablePositions(length: number): PlacementOption[] {
-        const positions = this.board.getPlayablePositions(length);
-        const arrayPos: PlacementOption[] = [];
-        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
-            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
-                // pour chaque orientation
-                for (const k of [0, 1]) {
-                    const valid = [...positions[i][j][k]].some((char) => char !== ' ');
-                    if (valid) arrayPos.push(new PlacementOption(i, j, k === 0, positions[i][j][k]));
-                }
-            }
-        }
+        const arrayPos = this.board.getPlayablePositions(length);
         return this.validateCrosswords(arrayPos);
     }
 
@@ -163,7 +152,7 @@ export class VirtualPlayer {
                 if (letterAvailable) validWords.push(option.deepCopy(option.word.replace(cst.CONTACT_CHAR, solution)));
             }
         } else {
-            const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
+            const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(new PlacementOption(row, col, !option.isHorizontal, ''));
             const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
             exploredOptions.push(new PlacementOption(row, col, option.isHorizontal, possibleLetters));
         }

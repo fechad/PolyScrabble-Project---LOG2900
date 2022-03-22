@@ -1,8 +1,8 @@
 import { PlacementOption } from '@app/classes/placement-option';
 import * as cst from '@app/constants';
 import { DictionnaryService } from '@app/services/dictionnary.service';
-import { WordGetter } from '@app/services/word-getter';
 import { GameTile } from './game-tile';
+import { Position, WordGetter } from './word-getter';
 
 export class Board {
     board: GameTile[][];
@@ -49,22 +49,19 @@ export class Board {
         return command.word.length === cst.WORD_LENGTH_BONUS ? score + cst.BONUS_POINTS : score;
     }
 
-    getPlayablePositions(rackLength: number): string[][][] {
-        const playablePositions: string[][][] = [];
+    getPlayablePositions(rackLength: number): PlacementOption[] {
+        const arrayPos: PlacementOption[] = [];
         for (let i = 0; i < cst.BOARD_LENGTH; i++) {
-            playablePositions[i] = [];
             for (let j = 0; j < cst.BOARD_LENGTH; j++) {
-                playablePositions[i][j] = [];
-                if (!this.board[i][j].empty) {
-                    playablePositions[i][j][0] = '';
-                    playablePositions[i][j][1] = '';
-                } else {
-                    playablePositions[i][j][0] = this.getPositionString(i, j, rackLength, true);
-                    playablePositions[i][j][1] = this.getPositionString(i, j, rackLength, false);
+                if (!this.board[i][j].empty) continue;
+                // for each direction
+                for (const isHorizontal of [true, false]) {
+                    const word = this.getPositionString(new PlacementOption(i, j, isHorizontal, ''), rackLength);
+                    if ([...word].some((char) => char !== ' ')) arrayPos.push(new PlacementOption(i, j, isHorizontal, word));
                 }
             }
         }
-        return playablePositions;
+        return arrayPos;
     }
 
     getScore(words: PlacementOption[], placeWord: boolean): number {
@@ -72,16 +69,14 @@ export class Board {
         words.forEach((word) => {
             let wordScore = 0;
             let wordMultiplier = 1;
-            let row = word.row;
-            let col = word.col;
 
             for (let offset = 0; offset < word.word.length; offset++) {
-                if (word.isHorizontal) col = word.col + offset;
-                else row = word.row + offset;
+                const pos = WordGetter.wordWithOffset(word, offset);
+                const tile = this.board[pos.row][pos.col];
 
-                if (this.board[row][col].empty) this.board[row][col].setLetter(word.word.charAt(offset));
-                wordScore += this.board[row][col].getPoints();
-                wordMultiplier *= this.board[row][col].wordMultiplier;
+                if (tile.empty) tile.setLetter(word.word.charAt(offset));
+                wordScore += tile.getPoints();
+                wordMultiplier *= tile.wordMultiplier;
             }
             score += wordScore * wordMultiplier;
         });
@@ -90,115 +85,98 @@ export class Board {
     }
 
     private changeNewlyPlaced(attemptedWord: PlacementOption, placeWord: boolean) {
-        let row = attemptedWord.row;
-        let col = attemptedWord.col;
         let offset = 0;
         while (offset < attemptedWord.word.length) {
-            if (!placeWord && this.board[row][col].newlyPlaced) {
-                this.board[row][col].deleteLetter();
+            const pos = WordGetter.wordWithOffset(attemptedWord, offset);
+            const tile = this.board[pos.row][pos.col];
+
+            if (!placeWord && tile.newlyPlaced) {
+                tile.deleteLetter();
             } else {
-                this.board[row][col].newlyPlaced = false;
+                tile.newlyPlaced = false;
             }
-            if (attemptedWord.isHorizontal) col++;
-            else row++;
             offset++;
         }
     }
 
     private getContacts(placement: PlacementOption): number[][] {
         if (this.board[cst.HALF_LENGTH][cst.HALF_LENGTH].empty) return [];
-        let collisions = 0;
-        let wordPos = 0;
         const contacts = [];
-        let row = placement.row;
-        let col = placement.col;
-        if (placement.isHorizontal) while (this.containsLetter(row, col - 1)) col--;
-        else while (this.containsLetter(row - 1, col)) row--;
+        let collisions = 0;
 
-        for (let offset = 0; offset <= placement.word.length + collisions || this.containsLetter(row, col); offset++) {
-            if (placement.isHorizontal) col = placement.col + offset;
-            else row = placement.row + offset;
+        let pos = this.findStart(placement);
+        placement = new PlacementOption(pos.row, pos.col, placement.isHorizontal, placement.word);
 
-            if (this.isInContact(row, col, placement.isHorizontal) && this.board[row][col].empty) {
-                contacts.push([row, col, wordPos]);
-            }
-            if (this.board[row][col].empty) wordPos++;
-            else collisions++;
+        for (let offset = 0; this.containsLetter(pos.row, pos.col) || offset <= placement.word.length + collisions; offset++) {
+            pos = WordGetter.wordWithOffset(placement, offset);
+
+            if (!this.board[pos.row][pos.col].empty) collisions++;
+            else if (offset < placement.word.length + collisions && this.isInContact(pos.row, pos.col, placement.isHorizontal))
+                contacts.push([pos.row, pos.col, offset - collisions]);
         }
-        if (collisions === 0 && contacts.length === 0) {
-            throw new Error('Placement invalide aucun point de contact');
-        }
+        if (collisions === 0 && contacts.length === 0) throw new Error('Placement invalide aucun point de contact');
         return contacts;
     }
 
     private firstWordValidation(placement: PlacementOption): boolean {
-        if (!this.board[cst.HALF_LENGTH][cst.HALF_LENGTH].empty) {
+        if (!this.board[cst.HALF_LENGTH][cst.HALF_LENGTH].empty) return true;
+        const length = placement.word.length - 1;
+        if (
+            placement.isHorizontal &&
+            placement.row === cst.HALF_LENGTH &&
+            placement.col <= cst.HALF_LENGTH &&
+            placement.col + length >= cst.HALF_LENGTH
+        )
             return true;
-        } else {
-            const length = placement.word.length - 1;
-            if (
-                placement.isHorizontal &&
-                placement.row === cst.HALF_LENGTH &&
-                placement.col <= cst.HALF_LENGTH &&
-                placement.col + length >= cst.HALF_LENGTH
-            ) {
-                return true;
-            } else if (
-                !placement.isHorizontal &&
-                placement.col === cst.HALF_LENGTH &&
-                placement.row <= cst.HALF_LENGTH &&
-                placement.row + length >= cst.HALF_LENGTH
-            ) {
-                return true;
-            }
-        }
-        return false;
+        return (
+            !placement.isHorizontal &&
+            placement.col === cst.HALF_LENGTH &&
+            placement.row <= cst.HALF_LENGTH &&
+            placement.row + length >= cst.HALF_LENGTH
+        );
     }
 
-    private isWordInBound(placement: PlacementOption) {
+    private isWordInBound(placement: PlacementOption): boolean {
         let collisions = 0;
         if (placement.row < 0 || placement.col < 0) return false;
-        let row = placement.row;
-        let col = placement.col;
         for (let offset = 0; offset < placement.word.length + collisions; offset++) {
-            if (placement.isHorizontal) col = placement.col + offset;
-            else row = placement.row + offset;
+            const pos = WordGetter.wordWithOffset(placement, offset);
 
-            if (row >= cst.BOARD_LENGTH || col >= cst.BOARD_LENGTH) return false;
-            if (this.containsLetter(row, col)) {
-                collisions++;
-            }
+            if (pos.row >= cst.BOARD_LENGTH || pos.col >= cst.BOARD_LENGTH) return false;
+            if (this.containsLetter(pos.row, pos.col)) collisions++;
         }
         return true;
     }
 
-    private getPositionString(startRow: number, startCol: number, rackLength: number, isHorizontal: boolean): string {
+    private getPositionString(placement: PlacementOption, rackLength: number): string {
         let position = '';
         let collisions = 0;
-        if (isHorizontal) while (this.containsLetter(startRow, startCol - 1)) startCol--;
-        else while (this.containsLetter(startRow - 1, startCol)) startRow--;
+        if (placement.isHorizontal) while (this.containsLetter(placement.row, placement.col - 1)) placement.col--;
+        else while (this.containsLetter(placement.row - 1, placement.col)) placement.row--;
 
-        let row = startRow;
-        let col = startCol;
-        for (let offset = 0; (isHorizontal ? startCol : startRow) + offset < cst.BOARD_LENGTH && offset < rackLength + collisions; offset++) {
-            if (isHorizontal) col = startCol + offset;
-            else row = startRow + offset;
+        for (let offset = 0; ; offset++) {
+            const pos = WordGetter.wordWithOffset(placement, offset);
+            if (pos.row >= cst.BOARD_LENGTH || pos.col >= cst.BOARD_LENGTH) break;
+            if (offset - collisions >= rackLength && !this.containsLetter(pos.row, pos.col)) break;
 
-            if (this.containsLetter(row, col)) {
-                position += this.board[row][col].getChar();
+            if (this.containsLetter(pos.row, pos.col)) {
+                position += this.board[pos.row][pos.col].getChar();
                 collisions++;
-            } else if (this.isInContact(row, col, isHorizontal)) {
+            } else if (this.isInContact(pos.row, pos.col, placement.isHorizontal)) {
                 position += cst.CONTACT_CHAR;
             } else {
                 position += ' ';
             }
         }
-        while (this.containsLetter(row, col)) {
-            position += this.board[row][col].getChar();
-            if (isHorizontal) col++;
-            else row++;
-        }
         return position;
+    }
+
+    private findStart(placement: PlacementOption): Position {
+        let row = placement.row;
+        let col = placement.col;
+        if (placement.isHorizontal) while (col > 0 && !this.board[row][col - 1].empty) col--;
+        else while (row > 0 && !this.board[row - 1][col].empty) row--;
+        return { row, col };
     }
 
     private containsLetter(row: number, col: number) {
