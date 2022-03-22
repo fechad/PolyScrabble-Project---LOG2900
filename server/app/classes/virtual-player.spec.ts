@@ -181,11 +181,4 @@ describe('VirtualPlayer', () => {
         const result = vP['contactReplacement'](exploredOptions, option, letterCount, availableLetters);
         expect(result).to.deep.equal(expectedReturn);
     });
-
-    it('randomtest', () => {
-        game.board.board[5][7].setLetter('f');
-        game.board.board[6][7].setLetter('a');
-        game.board.board[7][7].setLetter('n');
-        vP['chooseWord'](game.reserve.letterRacks[0].map((letter) => letter.name).join(''));
-    });
 });
