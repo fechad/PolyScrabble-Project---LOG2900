@@ -1,15 +1,9 @@
 import { PlacementOption } from '@app/classes/placement-option';
+import * as cst from '@app/constants';
 import { DictionnaryTrieService, WordConnection } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
 import { Game } from './game';
-
-const AI_ID = 'VP';
-const AI_GAME_INDEX = 1;
-const PROBABILITY = 10;
-const BOARD_LENGTH = 15;
-const CONTACT_CHAR = '#';
-const DELAY_CHECK_TURN = 1000; // ms
 
 export class VirtualPlayer {
     board: Board;
@@ -36,22 +30,22 @@ export class VirtualPlayer {
     waitForTurn() {
         let alreadyPlaying = false;
         setInterval(async () => {
-            if (this.game.getCurrentPlayer().id === AI_ID) {
+            if (this.game.getCurrentPlayer().id === cst.AI_ID) {
                 if (!alreadyPlaying) {
                     alreadyPlaying = true;
                     await this.playTurn();
                     alreadyPlaying = false;
                 }
             }
-        }, DELAY_CHECK_TURN);
+        }, cst.DELAY_CHECK_TURN);
     }
 
     // a mettre private quand connected
     getPlayablePositions(length: number): PlacementOption[] {
         const positions = this.board.getPlayablePositions(length);
         const arrayPos: PlacementOption[] = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
-            for (let j = 0; j < BOARD_LENGTH; j++) {
+        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
+            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
                 // pour chaque orientation
                 for (const k of [0, 1]) {
                     const valid = [...positions[i][j][k]].some((char) => char !== ' ');
@@ -63,11 +57,11 @@ export class VirtualPlayer {
     }
 
     async playTurn() {
-        const random = Math.floor(Math.random() * PROBABILITY);
+        const random = Math.floor(Math.random() * cst.PROBABILITY);
         if (this.isBeginner && random === 0) {
             // this.game.skipTurn(AI_ID); // to test
-            this.game.message({ emitter: AI_ID, text: 'I want to skip my turn' });
-            this.game.skipTurn(AI_ID);
+            this.game.message({ emitter: cst.AI_ID, text: 'I want to skip my turn' });
+            this.game.skipTurn(cst.AI_ID);
         } else if (this.isBeginner && random === 1) {
             /* let list = '';
             this.myRack.map((letter) => {
@@ -76,31 +70,45 @@ export class VirtualPlayer {
                 }
             });
             this.game.changeLetters(list, AI_ID);*/
-            this.game.message({ emitter: AI_ID, text: 'I want to exchange letters' });
-            this.game.skipTurn(AI_ID);
+            this.game.message({ emitter: cst.AI_ID, text: 'I want to exchange letters' });
+            this.game.skipTurn(cst.AI_ID);
         } else {
-            this.game.message({ emitter: AI_ID, text: 'I want to place some letters' });
+            this.game.message({ emitter: cst.AI_ID, text: 'I want to place some letters' });
             const chosenWord = this.chooseWord(this.rackToString()).at(0);
-            if (chosenWord === undefined) this.game.skipTurn(AI_ID);
-            else await this.game.placeLetters(AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
+            console.log(chosenWord);
+            if (chosenWord === undefined) this.game.skipTurn(cst.AI_ID);
+            else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
     }
 
     chooseWord(freeLetters: string): PlacementOption[] {
         const concretePositions: PlacementOption[] = [];
-        for (const position of this.getPlayablePositions(freeLetters.length)) {
-            const connectedLetters = VirtualPlayer.getWordConnections(position);
-            [...position.word]
-                .filter((letter) => letter.toUpperCase() === letter)
-                .forEach((letter) => {
-                    freeLetters = freeLetters.replace(letter.toLowerCase(), '');
-                });
-            this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
-                const newPosition = position.deepCopy(word);
+        if (this.board.board[cst.MIDDLE_INDEX][cst.MIDDLE_INDEX].empty) {
+            const emptyPlacement: WordConnection[] = [];
+            emptyPlacement.push({ connectedLetter: '', index: 0, isOnBoard: false });
+            emptyPlacement.push({ connectedLetter: undefined, index: 7, isOnBoard: false });
+            this.trie.generatePossibleWords([...freeLetters], emptyPlacement).forEach((word) => {
+                const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
+                const newPosition = new PlacementOption(cst.MIDDLE_INDEX, cst.MIDDLE_INDEX, isHorizontal, word);
                 newPosition.score = 5;
-                newPosition.buildCommand(connectedLetters);
+                newPosition.buildCommand(emptyPlacement);
                 concretePositions.push(newPosition);
             });
+        } else {
+            for (const position of this.getPlayablePositions(freeLetters.length)) {
+                const connectedLetters = VirtualPlayer.getWordConnections(position);
+                [...position.word]
+                    .filter((letter) => letter.toUpperCase() === letter)
+                    .forEach((letter) => {
+                        freeLetters = freeLetters.replace(letter.toLowerCase(), '');
+                    });
+                this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
+                    const newPosition = position.deepCopy(word);
+                    newPosition.score = 5;
+                    newPosition.buildCommand(connectedLetters);
+                    concretePositions.push(newPosition);
+                });
+            }
         }
         return concretePositions.sort((a, b) => b.score - a.score);
     }
@@ -117,7 +125,7 @@ export class VirtualPlayer {
                 if (letter.toLowerCase() !== letter) {
                     availableLetters = availableLetters.replace(letter, '');
                 }
-                if (letter === CONTACT_CHAR) {
+                if (letter === cst.CONTACT_CHAR) {
                     if (oneContact) {
                         starRemains = true;
                         break;
@@ -150,7 +158,7 @@ export class VirtualPlayer {
         if (alreadyFound) {
             for (const solution of alreadyFound.word) {
                 const letterAvailable = [...rackLetters].some((letter) => letter === solution);
-                if (letterAvailable) validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, solution)));
+                if (letterAvailable) validWords.push(option.deepCopy(option.word.replace(cst.CONTACT_CHAR, solution)));
             }
         } else {
             const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
@@ -164,9 +172,9 @@ export class VirtualPlayer {
         let possibleLetters = '';
         for (const rackLetter of rackLetters) {
             if ([...possibleLetters].includes(rackLetter)) continue;
-            const attemptedCrossword = crossword.replace(CONTACT_CHAR, rackLetter.toLowerCase());
+            const attemptedCrossword = crossword.replace(cst.CONTACT_CHAR, rackLetter.toLowerCase());
             if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
-                validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, rackLetter)));
+                validWords.push(option.deepCopy(option.word.replace(cst.CONTACT_CHAR, rackLetter)));
                 possibleLetters += rackLetter;
             }
         }
@@ -174,6 +182,6 @@ export class VirtualPlayer {
     }
 
     private rackToString(): string {
-        return this.game.reserve.letterRacks[AI_GAME_INDEX].map((letter) => letter.name).join('');
+        return this.game.reserve.letterRacks[cst.AI_GAME_INDEX].map((letter) => letter.name).join('');
     }
 }

@@ -55,7 +55,7 @@ export class Game {
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board(dictionnaryService);
         this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
-        this.isPlayer0Turn = room.parameters.difficulty ? true : Math.random() >= PLAYER_0_TURN_PROBABILITY;
+        this.isPlayer0Turn = Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
     }
 

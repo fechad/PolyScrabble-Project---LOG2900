@@ -32,4 +32,12 @@ describe('Dictionnary Trie', () => {
         expect(words.every((word) => word[2] === 's')).to.equal(true);
         expect(words.every((word) => word.length <= 4 && word.length >= 3)).to.equal(true);
     });
+    it('should generate words from rack', () => {
+        const rack = [...'salutd'];
+        const words = dictionnaryTrieService.generatePossibleWords(rack, [
+            { connectedLetter: '', index: 0, isOnBoard: true },
+            { connectedLetter: undefined, index: 4, isOnBoard: true },
+        ]);
+        console.log(words);
+    });
 });
