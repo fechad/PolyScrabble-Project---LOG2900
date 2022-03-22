@@ -14,6 +14,7 @@ export class MouseService {
     constructor(private gridService: GridService, public gameContextService: GameContextService) {}
 
     async mouseHitDetect(event: MouseEvent) {
+        const board = this.gameContextService.state.value.board;
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
         if (!myTurn) return;
         if (this.gridService.letterWritten !== 0) return;
@@ -24,6 +25,9 @@ export class MouseService {
             x: this.calculateX(event.offsetX),
             y: this.calculateY(event.offsetY),
         };
+        const y = Math.ceil(this.mousePosition.y / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
+        const x = Math.ceil(this.mousePosition.x / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
+        if (board[y][x] !== null) return;
         if (prevPos.x === this.mousePosition.x && prevPos.y === this.mousePosition.y) {
             this.isHorizontal = !this.isHorizontal;
         } else {

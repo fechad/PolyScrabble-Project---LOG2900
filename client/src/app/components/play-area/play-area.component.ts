@@ -86,7 +86,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         for (const elem of this.gridService.letterPosition) {
             this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
         }
-        this.gridService.letterPosition = [[0, 0]];
+        this.gridService.letterPosition = [];
         this.gridService.letterWritten = 0;
         this.gridService.letters = [];
         this.gridService.letterForServer = '';
@@ -101,7 +101,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
             this.gridService.firstLetter[0],
             this.mouseDetectService.isHorizontal,
         );
-        this.gridService.letterPosition = [[0, 0]];
+        this.gridService.letterPosition = [];
         this.gridService.letterWritten = 0;
         this.gridService.letters = [];
         this.gridService.letterForServer = '';

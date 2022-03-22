@@ -47,7 +47,7 @@ export class Room extends EventEmitter {
         if (playerId === this.mainPlayer.id) {
             return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
         }
-        if (this.otherPlayer !== undefined) {
+        if (this.otherPlayer) {
             return Error('Il y a déjà deux joueurs dans cette partie');
         }
         this.otherPlayer = { id: playerId, name: playerName, connected: true, virtual };
