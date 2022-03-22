@@ -21,13 +21,11 @@ export class SyntaxValidator {
     static separatePosition(position: string): string[] {
         const positionArray: string[] = [];
         positionArray[0] = position.charAt(0);
-        if (position.length === 3) {
-            if (isNaN(+position.charAt(2))) {
-                positionArray[1] = position.charAt(1);
-                positionArray[2] = position.charAt(2);
-            } else {
-                positionArray[1] = position.charAt(1) + position.charAt(2);
-            }
+        if (position.length === 3 && isNaN(+position.charAt(2))) {
+            positionArray[1] = position.charAt(1);
+            positionArray[2] = position.charAt(2);
+        } else if (position.length === 3) {
+            positionArray[1] = position.charAt(1) + position.charAt(2);
         } else if (position.length === 2) {
             positionArray[1] = position.charAt(1);
         } else {

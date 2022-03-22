@@ -79,7 +79,7 @@ describe('VirtualPlayer', () => {
             { row: 1, col: 1, isHorizontal: true, word: 'A      ', score: 0, command: '' },
             { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0, command: '' },
         ];
-        const result = vP.getPlayablePositions();
+        const result = vP.getPlayablePositions(game.reserve.letterRacks[1].length);
         expect(result).to.deep.equal(expectedValidOptions);
     });
 
@@ -186,6 +186,6 @@ describe('VirtualPlayer', () => {
         game.board.board[5][7].setLetter('f');
         game.board.board[6][7].setLetter('a');
         game.board.board[7][7].setLetter('n');
-        vP['chooseword']();
+        vP['chooseWord'](game.reserve.letterRacks[0].map((letter) => letter.name).join(''));
     });
 });

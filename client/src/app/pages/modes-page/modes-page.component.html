@@ -4,19 +4,19 @@
         <h2 class="subtitle">{{ mode === 'classic' ? 'Classique' : 'LOG2990' }}</h2>
         <button
             mat-raised-button
-            class="button champ.texte"
-            [ngClass]="champ.promptsDialog ? champ.texte : ''"
-            *ngFor="let champ of boutons"
+            class="button field.text"
+            [ngClass]="field.promptsDialog ? field.text : ''"
+            *ngFor="let field of buttons"
             (click)="
-                (champ.promptsDialog && champ.texte === 'Multijoueur' && openDialog()) ||
-                    (champ.promptsDialog && champ.texte === 'Solo' && openSoloDialog())
+                (field.promptsDialog && field.text === 'Multijoueur' && openDialog()) ||
+                    (field.promptsDialog && field.text === 'Solo' && openSoloDialog())
             "
-            routerLink="{{ champ.promptsDialog ? '/classic' : champ.route }}"
-            matTooltip="{{ champ.toolTip }}"
+            routerLink="{{ field.promptsDialog ? '/classic' : field.route }}"
+            matTooltip="{{ field.toolTip }}"
             matTooltipPosition="right"
             matTooltipClass="tool"
         >
-            {{ champ.texte }}
+            {{field.text}}
         </button>
     </div>
 </div>

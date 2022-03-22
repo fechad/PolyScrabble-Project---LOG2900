@@ -1,11 +1,14 @@
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
+import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
+import { Container } from 'typedi';
 import { Board } from './board';
 import { Reserve } from './reserve';
 import { Player, PlayerId, Room, State } from './room';
+import { VirtualPlayer } from './virtual-player';
 
 export type GameId = number;
 type Tile = Letter | undefined;
@@ -54,6 +57,14 @@ export class Game {
         this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * SEC_TO_MS);
         this.isPlayer0Turn = room.parameters.difficulty ? true : Math.random() >= PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
+    }
+
+    private static createCommand(word: string, row: number, col: number, isHorizontal?: boolean): string {
+        const columnOnBoard = col + 1;
+        const rowOnBoard = String.fromCharCode(row + ASCII_LOWERCASE_A);
+        const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
+        const position = rowOnBoard + columnOnBoard + orientation;
+        return `!placer ${position} ${word}`;
     }
 
     get id(): number {
@@ -109,21 +120,21 @@ export class Game {
                 const response = await this.board.placeWord(letters, row, col, isHorizontal);
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
                 this.scores[playerIndex] += response;
-                const columnOnBoard = col + 1;
-                const rowOnBoard = String.fromCharCode(row + ASCII_LOWERCASE_A);
-                const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
-                const position = rowOnBoard + columnOnBoard + orientation;
-                const validMessage = player.name + ' : !placer ' + position + ' ' + letters;
+                const validMessage = player.name + ' : ' + Game.createCommand(letters, row, col, isHorizontal);
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
                 this.eventEmitter.emit('game-error', player.id, e.message);
             }
             this.nextTurn(false);
-            if (this.reserve.getCount() === 0 && (this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER))) {
+            if (this.reserve.getCount() === 0 && this.emptiedRack()) {
                 this.endGame();
             }
             this.sendState();
         }
+    }
+
+    emptiedRack(): boolean {
+        return this.reserve.isPlayerRackEmpty(MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(OTHER_PLAYER);
     }
 
     matchRack(rack: Letter[]) {
@@ -152,6 +163,20 @@ export class Game {
         }
     }
 
+    hint(playerId: PlayerId) {
+        if (this.checkTurn(playerId)) {
+            const virtual = new VirtualPlayer(false, this, Container.get(DictionnaryService), Container.get(DictionnaryTrieService));
+            const player = playerId === this.players[MAIN_PLAYER].id ? MAIN_PLAYER : OTHER_PLAYER;
+            const options = virtual.chooseWord(this.reserve.letterRacks[player].map((letter) => letter.name).join('')).slice(0, 3);
+            const warning = options.length === 0 ? 'Aucun placement possible' : options.length < 3 ? 'Moins de 3 placements possible' : '';
+            const hintMessage =
+                'Indice:\n' +
+                options.map((opt, i) => ` ${i + 1}. ${Game.createCommand(opt.command, opt.row, opt.col, opt.isHorizontal)}`).join('\n') +
+                warning;
+            this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
+        }
+    }
+
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             const validMessage = this.getCurrentPlayer().name + ' a passé son tour !';
@@ -172,17 +197,17 @@ export class Game {
         this.sendState();
     }
 
-    getWinner(): [string | undefined, string] {
+    getWinner(): string | undefined {
         const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return [this.players[MAIN_PLAYER].id, this.players[MAIN_PLAYER].name];
-        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return [this.players[OTHER_PLAYER].id, this.players[OTHER_PLAYER].name];
-        return [undefined, this.players[MAIN_PLAYER].name + ' et ' + this.players[OTHER_PLAYER].name];
+        if (finalScores[MAIN_PLAYER] > finalScores[OTHER_PLAYER]) return this.players[MAIN_PLAYER].id;
+        else if (finalScores[MAIN_PLAYER] < finalScores[OTHER_PLAYER]) return this.players[OTHER_PLAYER].id;
+        return undefined;
     }
 
     endGame() {
         const winnerInfo = this.getWinner();
         this.room.end(false);
-        this.winner = winnerInfo[0];
+        this.winner = winnerInfo;
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),

@@ -4,13 +4,9 @@ import { GameState, PlayerInfo } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { PlayerId, State } from '@app/classes/room';
+import * as cst from '@app/constants';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-const NOT_FOUND = -1;
-const BOARD_LENGTH = 15;
-const NORMAL_RACK_LENGTH = 7;
-const DEFAULT_RESERVE = 88;
 
 export type Tile = Letter | null;
 export type Board = Tile[][];
@@ -30,9 +26,9 @@ export class GameContextService {
 
     constructor() {
         const board = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
+        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
             const row = [];
-            for (let j = 0; j < BOARD_LENGTH; j++) {
+            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
                 row.push(null);
             }
             board.push(row);
@@ -43,8 +39,8 @@ export class GameContextService {
             players: [
                 { id: '0', name: 'P1', connected: true, virtual: false },
                 { id: '1', name: 'P2', connected: true, virtual: false },
-            ].map((info) => ({ info, score: 0, rackCount: NORMAL_RACK_LENGTH })),
-            reserveCount: DEFAULT_RESERVE,
+            ].map((info) => ({ info, score: 0, rackCount: cst.NORMAL_RACK_LENGTH })),
+            reserveCount: cst.DEFAULT_RESERVE,
             board,
             turn,
             state: State.Started,
@@ -105,7 +101,7 @@ export class GameContextService {
             const index = tempRack.findIndex((foundLetter) => {
                 return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && CommandParsing.isUpperCaseLetter(letter));
             });
-            if (index === NOT_FOUND) throw new Error('Ces lettres ne sont pas dans le chevalet');
+            if (index === cst.MISSING) throw new Error('Ces lettres ne sont pas dans le chevalet');
             tempRack[index] = tempRack[tempRack.length - 1];
             tempRack.pop();
         }

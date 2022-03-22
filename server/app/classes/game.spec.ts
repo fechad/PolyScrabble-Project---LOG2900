@@ -205,12 +205,12 @@ describe('Game', () => {
         game.scores[0] = 20;
         game.scores[1] = 10;
         const result1 = game.getWinner();
-        assert(result1[0] === mainPlayer.id);
+        assert(result1 === mainPlayer.id);
 
         game.scores[0] = 10;
         game.scores[1] = 20;
         const result2 = game.getWinner();
-        assert(result2[0] === otherPlayer.id);
+        assert(result2 === otherPlayer.id);
     });
 
     it('getWinner should return tie if its a tie', () => {
@@ -218,7 +218,7 @@ describe('Game', () => {
         game.scores[0] = 20;
         game.scores[1] = 20;
         const result1 = game.getWinner();
-        expect(result1[0]).to.equal(undefined);
+        expect(result1).to.equal(undefined);
     });
 
     it('empty reserve and empty rack should trigger endGame', async () => {

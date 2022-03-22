@@ -48,6 +48,4 @@ describe('Parameters', () => {
         parameters.gameType = GameType.Solo;
         expect(parameters.validateParameters()).to.not.be.undefined;
     });
-
-    // TODO: test dictionnary ID existing when functionnality is done
 });

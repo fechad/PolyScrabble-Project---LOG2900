@@ -43,7 +43,6 @@ describe('Reserve', () => {
         const drawnLetters = reserve.drawLetters(numberOfDrawnLetters);
         // eslint-disable-next-line dot-notation
         const afterReserve = reserve['reserve'];
-        // assert(beforeReserve !== afterReserve);
         afterReserve.concat(drawnLetters).sort((a, b) => a.id - b.id);
         beforeReserve.sort((a, b) => a.id - b.id);
         for (let i = 0; i < beforeReserve.length; i++) {

@@ -23,6 +23,15 @@ export class VirtualPlayer {
         console.log(`Virtual player created of difficulty ${isBeginner ? 'beginner' : 'expert'} for game ${game.id}`);
     }
 
+    private static getWordConnections(position: PlacementOption) {
+        const connections: WordConnection[] = [];
+        [...position.word].forEach((letter, index) => {
+            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index, isOnBoard: letter.toLowerCase() === letter });
+        });
+        connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
+        return connections;
+    }
+
     waitForTurn() {
         let alreadyPlaying = false;
         setInterval(async () => {
@@ -37,41 +46,47 @@ export class VirtualPlayer {
     }
 
     // a mettre private quand connected
-    getPlayablePositions(): PlacementOption[] {
-        const arrayPos = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
+    getPlayablePositions(length: number): PlacementOption[] {
+        const arrayPos = this.board.getPlayablePositions(length);
         return this.validateCrosswords(arrayPos);
     }
 
-    private async playTurn() {
+    async playTurn() {
         const random = Math.floor(Math.random() * PROBABILITY);
         if (this.isBeginner && random === 0) {
-            // this.game.skipTurn(AI_ID); // to test
             this.game.message({ emitter: AI_ID, text: 'I want to skip my turn' });
             this.game.skipTurn(AI_ID);
         } else if (this.isBeginner && random === 1) {
-            /* let list = '';
+            /* TODO let list = '';
             this.myRack.map((letter) => {
                 if (Math.random() >= THRESHOLD) {
                     list += letter.name.toLowerCase();
                 }
             });
             this.game.changeLetters(list, AI_ID);*/
+
             this.game.message({ emitter: AI_ID, text: 'I want to exchange letters' });
             this.game.skipTurn(AI_ID);
         } else {
             this.game.message({ emitter: AI_ID, text: 'I want to place some letters' });
-            await this.chooseword();
+            const chosenWord = this.chooseWord(this.rackToString())[0];
+            if (chosenWord === undefined) this.game.skipTurn(AI_ID);
+            else {
+                // console.log(chosenWord);
+                await this.game.placeLetters(AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
+            }
         }
     }
 
-    private async chooseword() {
+    chooseWord(freeLetters: string): PlacementOption[] {
         const concretePositions: PlacementOption[] = [];
-        for (const position of this.getPlayablePositions()) {
-            const connectedLetters = this.getWordConnections(position);
-            let freeLetters = this.rackToString();
-            [...position.word].forEach((letter) => {
-                if (letter.toUpperCase() === letter) freeLetters = freeLetters.replace(letter.toLowerCase(), '');
-            });
+        for (const position of this.getPlayablePositions(freeLetters.length)) {
+            const connectedLetters = VirtualPlayer.getWordConnections(position);
+            [...position.word]
+                .filter((letter) => letter.toUpperCase() === letter)
+                .forEach((letter) => {
+                    freeLetters = freeLetters.replace(letter.toLowerCase(), '');
+                });
             this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
                 const newPosition = position.deepCopy(word);
                 newPosition.score = 5;
@@ -79,24 +94,7 @@ export class VirtualPlayer {
                 concretePositions.push(newPosition);
             });
         }
-        const chosen = concretePositions.reduce((acc, position) => {
-            return position.score < acc.score ? position : acc;
-        });
-        try {
-            await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
-        } catch (e) {
-            console.log(chosen);
-            console.log(e);
-        }
-    }
-
-    private getWordConnections(position: PlacementOption) {
-        const connections: WordConnection[] = [];
-        [...position.word].forEach((letter, index) => {
-            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index, isOnBoard: letter.toLowerCase() === letter });
-        });
-        connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
-        return connections;
+        return concretePositions.sort((a, b) => b.score - a.score);
     }
 
     private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {

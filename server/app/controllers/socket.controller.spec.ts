@@ -282,6 +282,4 @@ describe('SocketManager service tests', () => {
         expect(stub.args.map((args) => args[0].players[0].score)).to.deep.equal([expectedPoints]);
         expect(stub2.args.map((args) => args[0].players[0].score)).to.deep.equal([expectedPoints]);
     });
-
-    // TODO add tests
 });

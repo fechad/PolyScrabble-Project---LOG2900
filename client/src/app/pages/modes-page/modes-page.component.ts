@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { Button } from '@app/classes/button';
 import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
 import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.component';
 
@@ -11,11 +12,11 @@ import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.com
 })
 export class ModesPageComponent {
     mode: string;
-    boutons = [
-        { promptsDialog: true, route: '', toolTip: '', texte: 'Solo' },
-        { promptsDialog: true, route: '', toolTip: '', texte: 'Multijoueur' },
-        { promptsDialog: false, route: '/joining-room', toolTip: '', texte: 'Rejoindre une partie' },
-        { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', texte: 'Retour' },
+    buttons: Button[] = [
+        { promptsDialog: true, route: '', toolTip: '', text: 'Solo', disabled: false },
+        { promptsDialog: true, route: '', toolTip: '', text: 'Multijoueur', disabled: false },
+        { promptsDialog: false, route: '/joining-room', toolTip: '', text: 'Rejoindre une partie', disabled: false },
+        { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', text: 'Retour', disabled: false },
     ];
     constructor(public matDialog: MatDialog, public route: ActivatedRoute) {
         this.mode = this.route.snapshot.url[0].toString();

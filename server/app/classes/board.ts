@@ -41,7 +41,9 @@ export class Board {
             }, BOARD_PLACEMENT_DELAY);
         });
         if (!this.firstWordValidation(triedPlacement)) throw new Error('Placement invalide pour le premier mot');
+        console.log(triedPlacement);
         const contacts = this.getContacts(triedPlacement);
+        console.log(contacts);
 
         const words = this.wordGetter.getWords(triedPlacement, contacts);
         if (!words.every((wordOption) => this.dictionnary.isValidWord(wordOption.word)))
@@ -112,7 +114,7 @@ export class Board {
             pos = WordGetter.wordWithOffset(placement, offset);
 
             if (!this.board[pos.row][pos.col].empty) collisions++;
-            else if (this.isInContact(pos.row, pos.col, placement.isHorizontal)) contacts.push([pos.row, pos.col, offset - collisions]);
+            else if (offset < placement.word.length + collisions && this.isInContact(pos.row, pos.col, placement.isHorizontal)) contacts.push([pos.row, pos.col, offset - collisions]);
         }
         if (collisions === 0 && contacts.length === 0) throw new Error('Placement invalide aucun point de contact');
         return contacts;
