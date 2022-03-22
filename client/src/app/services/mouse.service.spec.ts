@@ -6,6 +6,13 @@ import { from } from 'rxjs';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 import { MouseService } from './mouse.service';
+<<<<<<< HEAD
+=======
+import { MouseButton } from '@app/constants';
+import { BehaviorSubject, from } from 'rxjs';
+import { GameContextService, Tile } from './game-context.service';
+>>>>>>> 2df9210... fix mouse service test
+
 
 const fakeIsInBound = (event: MouseEvent) => {
     const size = 500;
@@ -151,10 +158,18 @@ describe('MouseDetect', () => {
     });
 
     it('should call drawGrid on valid horizontal click', fakeAsync(() => {
+        const page = document.createElement('div');
+        const canvas = document.createElement('canvas');
+        canvas.width = 500;
+        page.appendChild(canvas);
+        
         spyOn(service, 'isInBound').and.callFake(fakeIsInBound);
+        for (let i = 0; i < 15; i++) 
+        gameContextService.state.value.board.push([null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]);
+
         mouseEvent = {
-            offsetX: Math.floor(Math.random() * (500 - 20) + 20),
-            offsetY: Math.floor(Math.random() * (500 - 20) + 20),
+            offsetX: 450,
+            offsetY: 450,
             button: MouseButton.Left,
         } as MouseEvent;
         service.mouseHitDetect(mouseEvent);
@@ -162,7 +177,7 @@ describe('MouseDetect', () => {
         expect(gridService.drawGrid).toHaveBeenCalled();
     }));
 
-    it('should not call drawGrid on left click but  invalid mouse position ', fakeAsync(() => {
+    it('should not call drawGrid on left click but invalid mouse position ', fakeAsync(() => {
         mouseEvent = {
             offsetX: 0,
             offsetY: 0,

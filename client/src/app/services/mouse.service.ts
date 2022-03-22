@@ -27,6 +27,7 @@ export class MouseService {
         };
         const y = Math.ceil(this.mousePosition.y / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
         const x = Math.ceil(this.mousePosition.x / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
+
         if (board[y][x] !== null) return;
         if (prevPos.x === this.mousePosition.x && prevPos.y === this.mousePosition.y) {
             this.isHorizontal = !this.isHorizontal;
