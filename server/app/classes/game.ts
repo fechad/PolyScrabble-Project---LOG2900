@@ -115,6 +115,7 @@ export class Game {
                 const validMessage = player.name + ' : ' + Game.createCommand(letters, row, col, isHorizontal);
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
+                this.eventEmitter.emit('message', { text: player.name + ' a fait ' + e.message, emitter: 'command' } as Message);
                 this.eventEmitter.emit('game-error', player.id, e.message);
             }
             this.nextTurn(false);

@@ -206,12 +206,15 @@ describe('VirtualPlayer', () => {
         }
     });
 
-    it('test', () => {
+    it('test JV random', () => {
         game.board.board[7][5].setLetter('j');
         game.board.board[7][6].setLetter('o');
         game.board.board[7][7].setLetter('i');
         game.board.board[7][8].setLetter('e');
-
-
-    })
+        const rack = 'athenee';
+        const result = vP.chooseWord(rack);
+        console.log('CHOSEN');
+        console.log(result[0]);
+        expect(result).to.not.equal(undefined);
+    });
 });

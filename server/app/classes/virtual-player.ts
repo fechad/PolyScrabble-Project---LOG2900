@@ -87,8 +87,13 @@ export class VirtualPlayer {
                     .forEach((letter) => {
                         freeLetters = freeLetters.replace(letter.toLowerCase(), '');
                     });
+
                 this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
                     const newPosition = position.deepCopy(word);
+                    if (newPosition.word === 'athenee') {
+                        console.log('PLACEMENT' + position.word);
+                        console.log(newPosition);
+                    }
                     newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
                     newPosition.buildCommand(connectedLetters);
                     concretePositions.push(newPosition);
