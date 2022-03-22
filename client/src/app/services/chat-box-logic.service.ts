@@ -79,6 +79,7 @@ export class ChatBoxLogicService {
         const isHorizontal = CommandParsing.isHorizontalOrientation(this.placementOrientation);
         this.gameContextService.place(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
         this.gridService.tempUpdateBoard(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
+        this.gridService.letterPosition = [];
     }
 
     private exchange() {
