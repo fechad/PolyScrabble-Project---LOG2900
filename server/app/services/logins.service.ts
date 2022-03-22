@@ -1,10 +1,8 @@
 import { PlayerId } from '@app/classes/room';
+import * as cst from '@app/constants';
 import { randomInt } from 'crypto';
 import { Service } from 'typedi';
 type Token = number;
-
-const TIMEOUT_DELETION = 5000; // ms
-const MAX_TOKEN_VALUE = 10000000; // 1 μs per request
 
 @Service()
 export class LoginsService {
@@ -16,7 +14,7 @@ export class LoginsService {
         }
         console.log(`Connexion par l'utilisateur avec id : ${id}`);
 
-        const token = randomInt(MAX_TOKEN_VALUE);
+        const token = randomInt(cst.MAX_TOKEN_VALUE);
 
         const prevDeletionTimeout = this.users[id]?.cancelDeletion;
         if (prevDeletionTimeout) clearTimeout(prevDeletionTimeout);
@@ -34,6 +32,6 @@ export class LoginsService {
         this.users[id].loggedIn = false;
         this.users[id].cancelDeletion = setTimeout(() => {
             delete this.users[id];
-        }, TIMEOUT_DELETION);
+        }, cst.TIMEOUT_DELETION);
     }
 }

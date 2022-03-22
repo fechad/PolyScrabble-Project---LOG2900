@@ -1,5 +1,6 @@
 import { Game } from '@app/classes/game';
 import { PlayerId, Room, State } from '@app/classes/room';
+import * as cst from '@app/constants';
 import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { LoginsService } from '@app/services/logins.service';
@@ -11,7 +12,6 @@ import * as io from 'socket.io';
 import { Service } from 'typedi';
 
 type Handlers = [string, (params: unknown[]) => void][];
-const AWOL_DELAY = 5000;
 
 @Service()
 export class SocketManager {
@@ -198,7 +198,7 @@ export class SocketManager {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
                 setTimeout(() => {
                     if (!this.logins.verify(id, this.token)) game.forfeit(id);
-                }, AWOL_DELAY);
+                }, cst.AWOL_DELAY);
             });
 
             game.sendState();

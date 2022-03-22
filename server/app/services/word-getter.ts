@@ -1,11 +1,6 @@
 import { GameTile } from '@app/classes/game-tile';
 import { PlacementOption } from '@app/classes/placement-option';
-
-const ROW_CONTACT = 0;
-const COL_CONTACT = 1;
-const CONTACT_CHAR = '#';
-const LETTER_PLACE_CONTACT = 2;
-const BOARD_LENGTH = 15;
+import * as cst from '@app/constants';
 
 export class WordGetter {
     constructor(public board: GameTile[][]) {}
@@ -16,15 +11,15 @@ export class WordGetter {
         let contactWord = '';
         if (isHoriontal) {
             while (col > 0 && !this.board[row][col - 1].empty) col--;
-            while (col < BOARD_LENGTH && (!this.board[row][col].empty || col === initialCol)) {
-                if (col === initialCol) contactWord += CONTACT_CHAR;
+            while (col < cst.BOARD_LENGTH && (!this.board[row][col].empty || col === initialCol)) {
+                if (col === initialCol) contactWord += cst.CONTACT_CHAR;
                 else contactWord += this.board[row][col].getChar();
                 col++;
             }
         } else {
             while (row > 0 && !this.board[row - 1][col].empty) row--;
-            while (row < BOARD_LENGTH && (!this.board[row][col].empty || row === initialRow)) {
-                if (row === initialRow) contactWord += CONTACT_CHAR;
+            while (row < cst.BOARD_LENGTH && (!this.board[row][col].empty || row === initialRow)) {
+                if (row === initialRow) contactWord += cst.CONTACT_CHAR;
                 else contactWord += this.board[row][col].getChar();
                 row++;
             }
@@ -39,8 +34,13 @@ export class WordGetter {
             ...contacts
                 .filter((contact) => contact.length !== 0)
                 .map((contact) => {
-                    const contactPlacement = new PlacementOption(contact[ROW_CONTACT], contact[COL_CONTACT], !placement.isHorizontal, placement.word);
-                    return this.getLettersContactWord(contactPlacement, contact[LETTER_PLACE_CONTACT]);
+                    const contactPlacement = new PlacementOption(
+                        contact[cst.ROW_CONTACT],
+                        contact[cst.COL_CONTACT],
+                        !placement.isHorizontal,
+                        placement.word,
+                    );
+                    return this.getLettersContactWord(contactPlacement, contact[cst.LETTER_PLACE_CONTACT]);
                 }),
         );
         return words;
@@ -89,7 +89,7 @@ export class WordGetter {
     }
 
     private containsLetter(row: number, col: number) {
-        const inBound = row >= 0 && row < BOARD_LENGTH && col >= 0 && col < BOARD_LENGTH;
+        const inBound = row >= 0 && row < cst.BOARD_LENGTH && col >= 0 && col < cst.BOARD_LENGTH;
         return inBound && !this.board[row][col].empty;
     }
 }
