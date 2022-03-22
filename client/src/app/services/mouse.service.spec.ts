@@ -6,12 +6,6 @@ import { from } from 'rxjs';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 import { MouseService } from './mouse.service';
-<<<<<<< HEAD
-=======
-import { MouseButton } from '@app/constants';
-import { BehaviorSubject, from } from 'rxjs';
-import { GameContextService, Tile } from './game-context.service';
->>>>>>> 2df9210... fix mouse service test
 
 
 const fakeIsInBound = (event: MouseEvent) => {
