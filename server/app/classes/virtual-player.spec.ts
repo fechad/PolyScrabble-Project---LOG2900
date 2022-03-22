@@ -91,12 +91,12 @@ describe('VirtualPlayer', () => {
         const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
         game.reserve.letterRacks[1] = [letterA, letterR, letterZ];
         const placementOptions = [
-            new PlacementOption(0, 2, true, 'as       '),
+            new PlacementOption(0, 0, true, 'as       '),
             new PlacementOption(0, 2, false, '#      '),
             new PlacementOption(1, 0, true, '##     '),
-            new PlacementOption(1, 0, false, 'a       '),
+            new PlacementOption(0, 0, false, 'a       '),
             new PlacementOption(1, 1, true, '#      '),
-            new PlacementOption(1, 1, false, 's       '),
+            new PlacementOption(0, 1, false, 's       '),
         ];
         const exploredOptions: PlacementOption[] = [new PlacementOption(7, 7, true, 'Z')];
 
@@ -107,16 +107,16 @@ describe('VirtualPlayer', () => {
             new PlacementOption(1, 1, true, 'A'),
         ];
         const expectedValidOptions = [
-            new PlacementOption(0, 2, true, 'as       '),
+            new PlacementOption(0, 0, true, 'as       '),
             new PlacementOption(0, 2, false, 'A      '),
             new PlacementOption(1, 0, true, 'A'),
-            new PlacementOption(1, 0, false, 'a       '),
+            new PlacementOption(0, 0, false, 'a       '),
             new PlacementOption(1, 1, true, 'A      '),
-            new PlacementOption(1, 1, false, 's       '),
+            new PlacementOption(0, 1, false, 's       '),
         ];
         const result = vP['validateCrosswords'](placementOptions, exploredOptions);
-        expect(result).to.deep.equal(expectedValidOptions);
         expect(exploredOptions).to.deep.equal(expectedExploredOptions);
+        expect(result).to.deep.equal(expectedValidOptions);
     });
 
     it('should give the rack as a string', () => {

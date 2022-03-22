@@ -7,7 +7,6 @@ import { Game } from './game';
 const AI_ID = 'VP';
 const AI_GAME_INDEX = 1;
 const PROBABILITY = 10;
-const BOARD_LENGTH = 15;
 const CONTACT_CHAR = '#';
 const DELAY_CHECK_TURN = 1000; // ms
 
@@ -39,17 +38,7 @@ export class VirtualPlayer {
 
     // a mettre private quand connected
     getPlayablePositions(): PlacementOption[] {
-        const positions = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
-        const arrayPos: PlacementOption[] = [];
-        for (let i = 0; i < BOARD_LENGTH; i++) {
-            for (let j = 0; j < BOARD_LENGTH; j++) {
-                // pour chaque orientation
-                for (const k of [0, 1]) {
-                    const valid = [...positions[i][j][k]].some((char) => char !== ' ');
-                    if (valid) arrayPos.push(new PlacementOption(i, j, k === 0, positions[i][j][k]));
-                }
-            }
-        }
+        const arrayPos = this.board.getPlayablePositions(this.game.reserve.letterRacks[AI_GAME_INDEX].length);
         return this.validateCrosswords(arrayPos);
     }
 
@@ -93,7 +82,12 @@ export class VirtualPlayer {
         const chosen = concretePositions.reduce((acc, position) => {
             return position.score < acc.score ? position : acc;
         });
-        await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
+        try {
+            await this.game.placeLetters(AI_ID, chosen.command, chosen.row, chosen.col, chosen.isHorizontal);
+        } catch (e) {
+            console.log(chosen);
+            console.log(e);
+        }
     }
 
     private getWordConnections(position: PlacementOption) {
@@ -153,7 +147,7 @@ export class VirtualPlayer {
                 if (letterAvailable) validWords.push(option.deepCopy(option.word.replace(CONTACT_CHAR, solution)));
             }
         } else {
-            const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(row, col, !option.isHorizontal);
+            const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(new PlacementOption(row, col, !option.isHorizontal, ''));
             const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
             exploredOptions.push(new PlacementOption(row, col, option.isHorizontal, possibleLetters));
         }
