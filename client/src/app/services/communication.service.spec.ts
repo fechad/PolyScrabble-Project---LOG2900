@@ -10,7 +10,7 @@ import { Room, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from './game-context.service';
+import { GameContextService, MessageType } from './game-context.service';
 
 /* eslint-disable dot-notation, max-lines */
 
@@ -125,29 +125,6 @@ describe('CommunicationService', () => {
         expect(service.selectedRoom.value).toBeUndefined();
     });
 
-    it('should not error on kick & leave when not in game', () => {
-        createRoom();
-        expect(() => service.kickLeave()).not.toThrow();
-        expect(service['roomSocket']).toBeUndefined();
-        expect(service.selectedRoom.value).toBeUndefined();
-    });
-
-    it('should kick & leave when main player', () => {
-        createRoom();
-        (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', GAME_NO);
-        const spy = (service['gameSocket'] as unknown as SocketMock).emitSpy;
-        service.kickLeave();
-        expect(spy).toHaveBeenCalledWith('kick');
-        expect(service['roomSocket']).toBeUndefined();
-        expect(service.selectedRoom.value).toBeUndefined();
-    });
-
-    it('should not kick & leave when other player', () => {
-        createRoom();
-        otherPlayer();
-        expect(() => service.kickLeave()).toThrow();
-    });
-
     it('should leave when in room', () => {
         createRoom();
         service.leave();
@@ -188,8 +165,10 @@ describe('CommunicationService', () => {
     it('should not join room when there is an error', async () => {
         (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
         const promise = service.joinRoom('aldabob', GAME_NO);
+        const spy = spyOn(service, 'handleError' as never);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', new Error('big bad error'));
         await expectAsync(promise).toBeRejected();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should create room', async () => {
@@ -212,8 +191,10 @@ describe('CommunicationService', () => {
 
     it('should not create room when there is an error', async () => {
         const promise = service.createRoom('aldabob', new Parameters());
+        const spy = spyOn(service, 'handleError' as never);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', new Error('big bad error'));
         await expectAsync(promise).toBeRejected();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should start/stop listening to broadcasts', async () => {
@@ -252,57 +233,58 @@ describe('CommunicationService', () => {
     const joinGame = () => {
         createRoom();
         (service['roomSocket'] as unknown as SocketMock).events.emit('join-game', GAME_NO);
-        (service['gameSocket'] as unknown as SocketMock).events.emit('state', DEFAULT_STATE);
+        (gameContext['socket'] as unknown as SocketMock).events.emit('state', DEFAULT_STATE);
     };
 
     it('should handle errors on room socket', async () => {
         joinGame();
-        const spy = spyOn(service, 'handleError' as never).and.callThrough();
+        const spy = spyOn(service, 'handleError' as never);
         (service['roomSocket'] as unknown as SocketMock).events.emit('error', 'BIG BAD ERROR');
         expect(spy).toHaveBeenCalled();
     });
 
     it('should forfeit', () => {
         joinGame();
-        (service['gameSocket'] as unknown as SocketMock).events.emit('state', { ...DEFAULT_STATE, ended: true });
-        const emitSpy = (service['gameSocket'] as unknown as SocketMock).emitSpy;
+        (gameContext['socket'] as unknown as SocketMock).events.emit('state', { ...DEFAULT_STATE, ended: true });
+        const emitSpy = (gameContext['socket'] as unknown as SocketMock).emitSpy;
         service.confirmForfeit();
         expect(emitSpy).toHaveBeenCalledWith('confirm-forfeit');
     });
 
     it('should receive state', () => {
         joinGame();
+        expect(gameContext.state.value).toBe(DEFAULT_STATE);
     });
 
     it('should receive message', async () => {
         const spy = spyOn(gameContext, 'receiveMessages');
         joinGame();
         const message: Message = { emitter: ID, text: 'Random text' };
-        (service['gameSocket'] as unknown as SocketMock).events.emit('message', message, 2);
+        (gameContext['socket'] as unknown as SocketMock).events.emit('message', message, 2);
         expect(spy).toHaveBeenCalledWith(message, 2, true);
         message.emitter = 'NotMe';
-        (service['gameSocket'] as unknown as SocketMock).events.emit('message', message, 2);
+        (gameContext['socket'] as unknown as SocketMock).events.emit('message', message, 2);
         expect(spy).toHaveBeenCalledWith(message, 2, false);
     });
 
     it('should receive game errors', async () => {
         const spy = spyOn(gameContext, 'addMessage');
         joinGame();
-        (service['gameSocket'] as unknown as SocketMock).events.emit('game-error', 'BOBO');
-        expect(spy).toHaveBeenCalledWith('BOBO', true, false);
+        (gameContext['socket'] as unknown as SocketMock).events.emit('game-error', 'BOBO');
+        expect(spy).toHaveBeenCalledWith('BOBO', MessageType.Local);
     });
 
     it('should receive valid exchanges', async () => {
         const spy = spyOn(gameContext, 'addMessage');
         joinGame();
-        (service['gameSocket'] as unknown as SocketMock).events.emit('valid-exchange', 'BOBO');
-        expect(spy).toHaveBeenCalledWith('BOBO', false, true);
+        (gameContext['socket'] as unknown as SocketMock).events.emit('valid-exchange', 'BOBO');
+        expect(spy).toHaveBeenCalledWith('BOBO', MessageType.Command);
     });
 
     it('should update racks', async () => {
         joinGame();
         const letters: Letter[] = [{ name: 'A', score: 1 }];
-        (service['gameSocket'] as unknown as SocketMock).events.emit('rack', letters);
+        (gameContext['socket'] as unknown as SocketMock).events.emit('rack', letters);
         expect(gameContext.rack.value).toBe(letters);
     });
 
@@ -318,39 +300,5 @@ describe('CommunicationService', () => {
         expect(closeHandler).not.toBe(undefined);
         closeHandler(new Event('beforeunload'));
         expect(sessionStorage.getItem('ids')).toBe(ID);
-    });
-
-    it('retrieve codes', async () => {
-        sessionStorage.clear();
-        expect(service['getAuth']()).toEqual({});
-
-        sessionStorage.setItem('ids', '');
-        expect(service['getAuth']()).toEqual({});
-
-        sessionStorage.setItem('ids', 'alibaba');
-        expect(service['getAuth']()).toEqual({ id: 'alibaba' });
-        expect(sessionStorage.getItem('ids')).toEqual('');
-
-        sessionStorage.setItem('ids', 'a;b;c;d;d;e');
-        expect(service['getAuth']()).toEqual({ id: 'e' });
-        expect(sessionStorage.getItem('ids')).toEqual('a;b;c;d;d');
-    });
-
-    it('save codes', async () => {
-        sessionStorage.clear();
-        service['saveAuth']('ab');
-        expect(sessionStorage.getItem('ids')).toEqual('ab');
-
-        sessionStorage.setItem('ids', '');
-        service['saveAuth']('ab');
-        expect(sessionStorage.getItem('ids')).toEqual('ab');
-
-        sessionStorage.setItem('ids', 'alibaba');
-        service['saveAuth']('ab');
-        expect(sessionStorage.getItem('ids')).toEqual('alibaba;ab');
-
-        sessionStorage.setItem('ids', 'a;b;c;d;d;e');
-        service['saveAuth']('ab');
-        expect(sessionStorage.getItem('ids')).toEqual('a;b;c;d;d;e;ab');
     });
 });

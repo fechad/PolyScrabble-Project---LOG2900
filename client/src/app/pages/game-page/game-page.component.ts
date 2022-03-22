@@ -69,7 +69,7 @@ export class GamePageComponent implements AfterViewChecked {
         }
     }
     skipMyTurn() {
-        this.communicationService.switchTurn(false);
+        this.gameContextService.switchTurn(false);
     }
 
     changeSize(multiplier: number) {

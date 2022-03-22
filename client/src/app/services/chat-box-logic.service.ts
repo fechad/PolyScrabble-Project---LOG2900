@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
-import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
+import { GameContextService, MessageType } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
+import { GridService } from './grid.service';
 
 @Injectable({
     providedIn: 'root',
@@ -16,11 +16,14 @@ export class ChatBoxLogicService {
     horizontalPosition: string;
     placementOrientation: string | undefined;
 
-    constructor(public communicationService: CommunicationService, public gameContextService: GameContextService) {}
+    constructor(public gameContextService: GameContextService, private gridService: GridService) {}
 
     async validateSyntax(textValue: string) {
         if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '')
-            return this.communicationService.sendLocalMessage('Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *');
+            return this.gameContextService.addMessage(
+                'Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *',
+                MessageType.Local,
+            );
         if (textValue.trim() === '') return;
         this.commandStructure = textValue.split(' ');
         if (this.commandStructure[cst.COMMAND_INDEX][cst.COMMAND_INDEX] === '!') {
@@ -29,11 +32,11 @@ export class ChatBoxLogicService {
             } catch (e: unknown) {
                 if (e instanceof Error) {
                     const message = e.message;
-                    this.communicationService.sendLocalMessage(message);
+                    this.gameContextService.addMessage(message, MessageType.Local);
                 }
             }
         } else {
-            this.communicationService.sendMessage(textValue);
+            this.gameContextService.addMessage(textValue);
         }
     }
 
@@ -56,7 +59,7 @@ export class ChatBoxLogicService {
     }
 
     private sendHelp() {
-        this.communicationService.sendCommandMessage(cst.HELP_MESSAGE);
+        this.gameContextService.addMessage(cst.HELP_MESSAGE, MessageType.Command);
     }
 
     private place() {
@@ -74,7 +77,8 @@ export class ChatBoxLogicService {
         const verticalIndex = CommandParsing.getVerticalIndex(this.verticalPosition);
         const horizontalIndex = parseInt(this.horizontalPosition, cst.DECIMAL_BASE) - 1;
         const isHorizontal = CommandParsing.isHorizontalOrientation(this.placementOrientation);
-        this.communicationService.place(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
+        this.gameContextService.place(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
+        this.gridService.tempUpdateBoard(this.parsedLetters, verticalIndex, horizontalIndex, isHorizontal);
     }
 
     private exchange() {
@@ -84,19 +88,19 @@ export class ChatBoxLogicService {
         if (!isInBound) throw new Error("Impossible d'échanger cette quantité de lettres");
 
         this.gameContextService.attemptTempRackUpdate(this.parsedLetters);
-        this.communicationService.exchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
+        this.gameContextService.exchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
     }
 
     private pass() {
-        this.communicationService.switchTurn(false);
+        this.gameContextService.switchTurn(false);
     }
 
     private hint() {
-        this.communicationService.hint();
+        this.gameContextService.hint();
     }
 
     private getReserve() {
-        this.communicationService.getReserve();
+        this.gameContextService.getReserve();
     }
 
     private assignPositionSpec(positionBlock: string) {

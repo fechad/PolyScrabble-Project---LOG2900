@@ -1,4 +1,4 @@
-<i class="material-icons" routerLink="/" (click)="this.isMainPlayer ? communicationService.kickLeave() : communicationService.leave()">cancel</i>
+<i class="material-icons" routerLink="/" (click)="communicationService.leave()">cancel</i>
 
 <div class="big-box">
     <div class="container" *ngIf="isMainPlayer">
