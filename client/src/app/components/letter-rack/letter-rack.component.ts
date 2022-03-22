@@ -1,11 +1,9 @@
 import { Component, HostListener } from '@angular/core';
 import { Letter } from '@app/classes/letter';
+import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
-
-const MAX_LETTERS = 7;
-const UNDEFINED = -1;
 
 @Component({
     selector: 'app-letter-rack',
@@ -17,7 +15,7 @@ export class LetterRackComponent {
     manipulating: number | undefined;
     exchanging: number[] = [];
     timeOut: number;
-    previousSelection = UNDEFINED;
+    previousSelection = cst.MISSING;
 
     constructor(public communicationService: CommunicationService, public gameContextService: GameContextService, public gridService: GridService) {
         this.gameContextService.rack.subscribe((newRack) => (this.letters = newRack));
@@ -84,7 +82,7 @@ export class LetterRackComponent {
 
     shiftLetter(keypress: string | number) {
         if (this.manipulating === undefined) return;
-        let newIndex = UNDEFINED;
+        let newIndex = cst.MISSING;
 
         if (keypress === 'ArrowRight' || keypress > 0) {
             newIndex = (this.manipulating + 1) % this.letters.length;
@@ -92,6 +90,7 @@ export class LetterRackComponent {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
         this.swapLetters(newIndex, this.manipulating);
+        this.communicationService.showMyRack();
     }
 
     swapLetters(index: number, oldIndex: number) {
@@ -121,6 +120,6 @@ export class LetterRackComponent {
     }
 
     getReserveCount(): boolean {
-        return this.gameContextService.state.value.reserveCount < MAX_LETTERS ? true : false;
+        return this.gameContextService.state.value.reserveCount < cst.NORMAL_RACK_LENGTH;
     }
 }

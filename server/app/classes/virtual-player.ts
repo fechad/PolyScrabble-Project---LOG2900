@@ -40,7 +40,7 @@ export class VirtualPlayer {
         }, cst.DELAY_CHECK_TURN);
     }
 
-    // a mettre private quand connected
+    // TODO private when connected
     getPlayablePositions(length: number): PlacementOption[] {
         const positions = this.board.getPlayablePositions(length);
         const arrayPos: PlacementOption[] = [];
@@ -63,7 +63,7 @@ export class VirtualPlayer {
             this.game.message({ emitter: cst.AI_ID, text: 'I want to skip my turn' });
             this.game.skipTurn(cst.AI_ID);
         } else if (this.isBeginner && random === 1) {
-            /* let list = '';
+            /* TODO let list = '';
             this.myRack.map((letter) => {
                 if (Math.random() >= THRESHOLD) {
                     list += letter.name.toLowerCase();

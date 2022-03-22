@@ -42,18 +42,6 @@ export class SocketManager {
             this.token = token;
             socket.emit('id', id, token);
             mainLobby.connect(socket, id);
-
-            // socket.on('solo-game', (playerName: string, isBeginner: boolean, parameters: Parameters, aiName: string) => {
-            //     const roomId = mainLobby.getNewRoomId();
-            //     const player: Player = { name: playerName, id, connected: true, virtual: true };
-            //     const virtualPlayer: Player = { name: aiName, id: 'VP', connected: true, virtual: true };
-            //     const game = new Game(roomId, [player, virtualPlayer], parameters, this.dictionnaryService, isBeginner);
-            //     this.games.push(game);
-            //     new VirtualPlayer(isBeginner, game);
-            //     socket.emit('join-game', game.gameId);
-            //     console.log(`Created solo-game ${game.gameId} for player ${playerName} and virtual player ${aiName}.`);
-            // });
-
             socket.on('disconnect', (reason) => {
                 console.log(`Raison de deconnexion : ${reason}`);
                 this.logins.logout(id);
@@ -83,8 +71,7 @@ export class SocketManager {
         rooms.use((socket, next) => {
             const roomId = Number.parseInt(socket.nsp.name.substring('/rooms/'.length), 10);
             const idx = this.roomsService.rooms.findIndex((room) => room.id === roomId);
-            const NOT_FOUND = -1;
-            if (idx === NOT_FOUND) {
+            if (idx === cst.NOT_FOUND) {
                 next(Error('Invalid room number'));
                 return;
             }
@@ -144,8 +131,7 @@ export class SocketManager {
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
             const idx = this.roomsService.games.findIndex((game) => game.id === gameId);
-            const NOT_FOUND = -1;
-            if (idx === NOT_FOUND) {
+            if (idx === cst.NOT_FOUND) {
                 next(Error('Invalid game number'));
                 return;
             }

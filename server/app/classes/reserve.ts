@@ -53,7 +53,9 @@ export class Reserve {
 
     matchRack(rack: Letter[], isMainPlayer: boolean) {
         const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
-        this.letterRacks[playerIndex] = rack;
+        rack.forEach((letter, idx) => {
+            this.letterRacks[playerIndex][idx] = letter;
+        });
     }
 
     getCount() {
@@ -62,7 +64,7 @@ export class Reserve {
 
     isPlayerRackEmpty(player: number): boolean {
         for (const letter of this.letterRacks[player]) {
-            if (letter !== undefined) return false;
+            if (letter) return false;
         }
         return true;
     }
