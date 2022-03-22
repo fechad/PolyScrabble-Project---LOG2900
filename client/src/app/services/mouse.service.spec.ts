@@ -147,6 +147,7 @@ describe('MouseDetect', () => {
     it('should call drawGrid on valid horizontal click', fakeAsync(() => {
         const page = document.createElement('div');
         const canvas = document.createElement('canvas');
+        canvas.id = 'canvas';
         canvas.width = 500;
         page.appendChild(canvas);
         
