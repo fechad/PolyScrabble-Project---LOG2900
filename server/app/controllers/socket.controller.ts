@@ -179,6 +179,8 @@ export class SocketManager {
             socket.on('switch-turn', () => game.skipTurn(id));
             socket.on('reserve-content', () => game.showReserveContent(id));
             socket.on('current-rack', (rack) => game.matchRack(rack));
+            socket.on('hint', () => game.hint(id));
+
             socket.on('disconnect', () => {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
                 setTimeout(() => {

@@ -144,6 +144,10 @@ export class CommunicationService {
         this.gameSocket?.emit('change-letters', letters);
     }
 
+    hint() {
+        this.gameSocket?.emit('hint');
+    }
+
     confirmForfeit() {
         this.gameSocket?.emit('confirm-forfeit');
         this.leaveGame();
