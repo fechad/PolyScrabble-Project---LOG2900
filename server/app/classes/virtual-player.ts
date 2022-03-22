@@ -90,9 +90,10 @@ export class VirtualPlayer {
             this.trie.generatePossibleWords([...freeLetters], emptyPlacement).forEach((word) => {
                 const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
                 const newPosition = new PlacementOption(cst.MIDDLE_INDEX, cst.MIDDLE_INDEX, isHorizontal, word);
-                newPosition.score = 5;
+                newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
                 newPosition.buildCommand(emptyPlacement);
                 concretePositions.push(newPosition);
+                console.log(newPosition);
             });
         } else {
             for (const position of this.getPlayablePositions(freeLetters.length)) {
@@ -104,9 +105,10 @@ export class VirtualPlayer {
                     });
                 this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
                     const newPosition = position.deepCopy(word);
-                    newPosition.score = 5;
+                    newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
                     newPosition.buildCommand(connectedLetters);
                     concretePositions.push(newPosition);
+                    console.log(newPosition);
                 });
             }
         }

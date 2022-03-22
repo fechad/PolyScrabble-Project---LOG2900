@@ -42,12 +42,18 @@ export class Board {
         });
         if (!this.firstWordValidation(triedPlacement)) throw new Error('Placement invalide pour le premier mot');
         const contacts = this.getContacts(triedPlacement);
-
         const words = this.wordGetter.getWords(triedPlacement, contacts);
         if (!words.every((wordOption) => this.dictionnary.isValidWord(wordOption.word)))
             throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
         const score = this.getScore(words, true);
         return word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
+    }
+
+    getScoreVirtualPlayer(command: PlacementOption) {
+        const contacts = this.getContacts(command);
+        const words = this.wordGetter.getWords(command, contacts);
+        const score = this.getScore(words, false);
+        return command.word.length === WORD_LENGTH_BONUS ? score + BONUS_POINTS : score;
     }
 
     getPlayablePositions(rackLength: number): string[][][] {
@@ -68,7 +74,7 @@ export class Board {
         return playablePositions;
     }
 
-    private getScore(words: PlacementOption[], placeWord: boolean): number {
+    getScore(words: PlacementOption[], placeWord: boolean): number {
         let score = 0;
         words.forEach((word) => {
             let wordScore = 0;
