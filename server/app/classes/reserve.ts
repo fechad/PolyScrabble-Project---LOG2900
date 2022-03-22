@@ -64,7 +64,7 @@ export class Reserve {
 
     isPlayerRackEmpty(player: number): boolean {
         for (const letter of this.letterRacks[player]) {
-            if (letter !== undefined) return false;
+            if (letter) return false;
         }
         return true;
     }
