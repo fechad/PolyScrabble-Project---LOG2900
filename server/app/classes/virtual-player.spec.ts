@@ -62,16 +62,16 @@ describe('VirtualPlayer', () => {
         }, timeout);
     });
 
-    it('should validate crosswords to list possible contacts', () => {
+    it('should get playable positions with valid crosswords', () => {
         game.board.board[0][0].setLetter('a');
         game.board.board[0][1].setLetter('s');
         const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
         const letterR: Letter = { id: 0, name: 'R', score: 1, quantity: 1 };
         const letterW: Letter = { id: 0, name: 'W', score: 1, quantity: 1 };
         const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
-        game.reserve.letterRacks[1] = [letterA, letterR, letterZ, letterZ, letterR, letterW, letterW];
+        game.reserve.letterRacks[1] = [letterA, letterR, letterZ, letterW];
 
-        const expectedValidOptions = [
+        const expectedOptions = [
             { row: 0, col: 2, isHorizontal: true, word: 'as       ', score: 0, command: '' },
             { row: 0, col: 2, isHorizontal: false, word: 'A      ', score: 0, command: '' },
             { row: 1, col: 0, isHorizontal: true, word: 'A', score: 0, command: '' },
@@ -79,11 +79,12 @@ describe('VirtualPlayer', () => {
             { row: 1, col: 1, isHorizontal: true, word: 'A      ', score: 0, command: '' },
             { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0, command: '' },
         ];
-        const result = vP.getPlayablePositions(game.reserve.letterRacks[1].length);
-        expect(result).to.deep.equal(expectedValidOptions);
+        const result = vP.getPlayablePositions(7);
+        console.log(result);
+        expect(result).to.deep.equal(expectedOptions);
     });
 
-    it('should validate crosswords to list possible contacts', () => {
+    it('should validate explored options from tried placements', () => {
         game.board.board[0][0].setLetter('a');
         game.board.board[0][1].setLetter('s');
         const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
@@ -115,8 +116,8 @@ describe('VirtualPlayer', () => {
             new PlacementOption(1, 1, false, 's       '),
         ];
         const result = vP['validateCrosswords'](placementOptions, exploredOptions);
-        expect(result).to.deep.equal(expectedValidOptions);
         expect(exploredOptions).to.deep.equal(expectedExploredOptions);
+        expect(result).to.deep.equal(expectedValidOptions);
     });
 
     it('should give the rack as a string', () => {
