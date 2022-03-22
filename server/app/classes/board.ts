@@ -33,6 +33,7 @@ export class Board {
                 resolve(null);
             }, cst.BOARD_PLACEMENT_DELAY);
         });
+        console.log(triedPlacement);
         if (!this.firstWordValidation(triedPlacement)) throw new Error('Placement invalide pour le premier mot');
         const contacts = this.getContacts(triedPlacement);
         const words = this.wordGetter.getWords(triedPlacement, contacts);
@@ -110,7 +111,7 @@ export class Board {
         for (let offset = 0; this.containsLetter(pos.row, pos.col) || offset <= placement.word.length + collisions; offset++) {
             pos = WordGetter.wordWithOffset(placement, offset);
 
-            if (!this.board[pos.row][pos.col].empty) collisions++;
+            if (this.containsLetter(pos.row, pos.col)) collisions++;
             else if (offset < placement.word.length + collisions && this.isInContact(pos.row, pos.col, placement.isHorizontal))
                 contacts.push([pos.row, pos.col, offset - collisions]);
         }

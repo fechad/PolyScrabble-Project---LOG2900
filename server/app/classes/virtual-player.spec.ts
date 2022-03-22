@@ -205,4 +205,13 @@ describe('VirtualPlayer', () => {
             }
         }
     });
+
+    it('test', () => {
+        game.board.board[7][5].setLetter('j');
+        game.board.board[7][6].setLetter('o');
+        game.board.board[7][7].setLetter('i');
+        game.board.board[7][8].setLetter('e');
+
+
+    })
 });

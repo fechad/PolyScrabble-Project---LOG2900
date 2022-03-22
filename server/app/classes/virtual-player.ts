@@ -59,7 +59,8 @@ export class VirtualPlayer {
             this.game.changeLetters(list, AI_ID);*/
             this.game.skipTurn(cst.AI_ID);
         } else {
-            const chosenWord = this.chooseWord(this.rackToString()).at(0);
+            const chosenWord = this.chooseWord(this.rackToString())[0];
+            console.log(chosenWord);
             if (chosenWord === undefined) this.game.skipTurn(cst.AI_ID);
             else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
