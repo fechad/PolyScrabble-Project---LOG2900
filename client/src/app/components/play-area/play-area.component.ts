@@ -137,9 +137,8 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
-        if (!item) {
-            this.gridService.letters.push(asterisk);
-        } else this.gridService.letters.push(item);
+        if (!item) this.gridService.letters.push(asterisk);
+        else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
             this.gridService.firstLetter = [
