@@ -32,7 +32,7 @@ export class VirtualPlayer {
         let alreadyPlaying = false;
         const waitTurnInterval = setInterval(async () => {
             if (this.game.getCurrentPlayer().id === cst.AI_ID) {
-                if (!alreadyPlaying ) {
+                if (!alreadyPlaying) {
                     alreadyPlaying = true;
                     await this.playTurn();
                     alreadyPlaying = false;
@@ -67,8 +67,7 @@ export class VirtualPlayer {
                 setTimeout(() => {
                     this.game.skipTurn(cst.AI_ID);
                 }, cst.DELAY_NO_PLACEMENT);
-            }
-            else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
+            } else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
     }
 

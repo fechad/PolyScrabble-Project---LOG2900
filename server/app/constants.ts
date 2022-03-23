@@ -34,7 +34,7 @@ export const PROBABILITY_OF_30 = 6;
 export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
-export const LOWER_POINT_BRACKET = [0, 6];
+export const LOWER_POINT_BRACKET = [1, 6];
 export const MIDDLE_POINT_BRACKET = [7, 12];
 export const HIGHER_POINT_BRACKET = [13, 18];
 export const MULT_WORDS_3 = [
