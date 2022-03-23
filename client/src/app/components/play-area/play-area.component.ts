@@ -51,7 +51,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         if (!this.myTurn || this.gameContextService.state.value.state !== State.Started) return;
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
-            this.sendPlacedLetters();
+            if (this.gridService.letterForServer.length === 0)
+                this.gameContextService.addMessage("Vous n'avez placé aucun mot sur le plateau", MessageType.Local);
+            else {
+                this.sendPlacedLetters();
+            }
         } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
             this.removeLetterOnCanvas();
         } else if (this.buttonPressed === 'Escape') {
@@ -113,12 +117,10 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         this.gridService.letterPosition.pop();
         this.gridService.letterForServer = this.gridService.letterForServer.slice(0, cst.LAST_INDEX);
-        if (letter !== undefined) {
-            this.gridService.rack.push(letter);
-            this.gameContextService.addTempRack(letter);
-        }
-        if (letterRemoved[1] !== undefined && letterRemoved[0] !== undefined)
-            this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
+        if (!letter) throw new Error('tried to remove a letter when word is empty');
+        this.gridService.rack.push(letter);
+        this.gameContextService.addTempRack(letter);
+        this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
         this.gridService.letterWritten -= 1;
@@ -126,10 +128,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     placeWordOnCanvas() {
         const word = CommandParsing.removeAccents(this.buttonPressed);
+        const star = { name: '*', score: 0 };
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
-        if (item === undefined) this.gridService.letters.push({ name: '*', score: 0 });
+        if (item === undefined) this.gridService.letters.push(star);
         else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
