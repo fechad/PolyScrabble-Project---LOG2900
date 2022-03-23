@@ -133,11 +133,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     placeWordOnCanvas() {
         const word = CommandParsing.removeAccents(this.buttonPressed);
+        const asterisk: Letter = { name: '*', score: 0 };
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
         if (!item) {
-            const asterisk: Letter = { name: '*', score: 0 };
             this.gridService.letters.push(asterisk);
         } else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
