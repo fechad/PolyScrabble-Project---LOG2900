@@ -46,21 +46,21 @@ export class VirtualPlayer {
     }
 
     async playTurn() {
-        const random = Math.floor(Math.random() * cst.PROBABILITY);
-        if (this.isBeginner && random === 0) {
+        const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
+        if (this.isBeginner && randomOutOfTen === 0) {
+            // 10 % chance
             this.game.skipTurn(cst.AI_ID);
-        } else if (this.isBeginner && random === 1) {
-            /* TODO let list = '';
-            this.myRack.map((letter) => {
-                if (Math.random() >= THRESHOLD) {
-                    list += letter.name.toLowerCase();
-                }
-            });
-            this.game.changeLetters(list, AI_ID);*/
-            this.game.skipTurn(cst.AI_ID);
+        } else if (this.isBeginner && randomOutOfTen === 1) {
+            // 10 % chance
+            if (this.game.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
+                const sliceIndex = Math.floor(Math.random() * this.rackToString().length);
+                this.game.changeLetters(this.rackToString().slice(sliceIndex), cst.AI_ID);
+            } else this.game.skipTurn(cst.AI_ID);
         } else {
-            const chosenWord = this.chooseWord(this.rackToString())[0];
-            console.log(chosenWord);
+            // 80 % chance
+            const sortedWordOptions = this.chooseWord(this.rackToString());
+            const randomIndex = Math.floor(Math.random() * sortedWordOptions.length);
+            const chosenWord = sortedWordOptions[randomIndex];
             if (chosenWord === undefined) this.game.skipTurn(cst.AI_ID);
             else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
@@ -68,18 +68,24 @@ export class VirtualPlayer {
 
     chooseWord(freeLetters: string): PlacementOption[] {
         const concretePositions: PlacementOption[] = [];
+        const bracket = this.getRandomPointBracket();
         if (this.board.board[cst.MIDDLE_INDEX][cst.MIDDLE_INDEX].empty) {
+            // on first placement of game
             const emptyPlacement: WordConnection[] = [];
             emptyPlacement.push({ connectedLetter: '', index: 0, isOnBoard: false });
             emptyPlacement.push({ connectedLetter: undefined, index: 7, isOnBoard: false });
             this.trie.generatePossibleWords([...freeLetters], emptyPlacement).forEach((word) => {
                 const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
                 const newPosition = new PlacementOption(cst.MIDDLE_INDEX, cst.MIDDLE_INDEX, isHorizontal, word);
-                newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
-                newPosition.buildCommand(emptyPlacement);
-                concretePositions.push(newPosition);
+                const score = this.board.getScoreVirtualPlayer(newPosition);
+                if (score >= bracket[cst.LOWER_BOUND_INDEX] && score <= bracket[cst.HIGHER_BOUND_INDEX]) {
+                    newPosition.score = score;
+                    newPosition.buildCommand(emptyPlacement);
+                    concretePositions.push(newPosition);
+                }
             });
         } else {
+            // rest of placements
             for (const position of this.getPlayablePositions(freeLetters.length)) {
                 const connectedLetters = VirtualPlayer.getWordConnections(position);
                 [...position.word]
@@ -90,17 +96,30 @@ export class VirtualPlayer {
 
                 this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
                     const newPosition = position.deepCopy(word);
-                    if (newPosition.word === 'athenee') {
-                        console.log('PLACEMENT' + position.word);
-                        console.log(newPosition);
+                    const score = this.board.getScoreVirtualPlayer(newPosition);
+                    if (score >= bracket[cst.LOWER_BOUND_INDEX] && score <= bracket[cst.HIGHER_BOUND_INDEX]) {
+                        newPosition.score = score;
+                        newPosition.buildCommand(connectedLetters);
+                        concretePositions.push(newPosition);
                     }
-                    newPosition.score = this.board.getScoreVirtualPlayer(newPosition);
-                    newPosition.buildCommand(connectedLetters);
-                    concretePositions.push(newPosition);
                 });
             }
         }
-        return concretePositions.sort((a, b) => b.score - a.score);
+        return concretePositions.sort((a, b) => a.score - b.score);
+    }
+
+    private getRandomPointBracket() {
+        const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
+        if (randomOutOfTen < cst.PROBABILITY_OF_40) {
+            // 40 % chance
+            return cst.LOWER_POINT_BRACKET;
+        } else if (randomOutOfTen < cst.PROBABILITY_OF_30) {
+            // 30 % chance
+            return cst.MIDDLE_POINT_BRACKET;
+        } else {
+            // 30 % chance
+            return cst.HIGHER_POINT_BRACKET;
+        }
     }
 
     private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {

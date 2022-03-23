@@ -105,8 +105,8 @@ export class Board {
         const contacts = [];
         let collisions = 0;
 
-        if(!this.isInBound(placement.row, placement.col)) return [];
-        
+        if (!this.isInBound(placement.row, placement.col)) return [];
+
         let pos = this.findStart(placement);
         placement = new PlacementOption(pos.row, pos.col, placement.isHorizontal, placement.word);
 
@@ -177,10 +177,10 @@ export class Board {
     private findStart(placement: PlacementOption): Position {
         let row = placement.row;
         let col = placement.col;
-        if (row >= cst.BOARD_LENGTH || col >= cst.BOARD_LENGTH) return { row: -1, col:-1 } as Position;
+        if (row >= cst.BOARD_LENGTH || col >= cst.BOARD_LENGTH) return { row: -1, col: -1 } as Position;
         if (placement.isHorizontal) while (col > 0 && !this.board[row][col - 1].empty) col--;
         else while (row > 0 && !this.board[row - 1][col].empty) row--;
-        return { row: row, col: col } as Position;
+        return { row, col } as Position;
     }
 
     private containsLetter(row: number, col: number) {
