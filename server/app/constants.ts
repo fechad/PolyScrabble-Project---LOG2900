@@ -27,7 +27,15 @@ export const HALF_LENGTH = 7;
 export const WORD_LENGTH_BONUS = 7;
 export const BONUS_POINTS = 50;
 export const BOARD_PLACEMENT_DELAY = 3000; // ms
+export const ONE_TENTH = 0.1;
+export const PROBABILITY_OF_40 = 3;
+export const PROBABILITY_OF_30 = 6;
+export const LOWER_BOUND_INDEX = 0;
+export const HIGHER_BOUND_INDEX = 1;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
+export const LOWER_POINT_BRACKET = [0, 6];
+export const MIDDLE_POINT_BRACKET = [7, 12];
+export const HIGHER_POINT_BRACKET = [13, 18];
 export const MULT_WORDS_3 = [
     [0, 0],
     [0, 7],

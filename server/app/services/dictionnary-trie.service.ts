@@ -21,7 +21,12 @@ export class DictionnaryTrieService {
     generatePossibleWords(rack: string[], connections: WordConnection[]): string[] {
         const validWords: Set<string> = new Set();
         const permute = (remainingLetters: string[], attemptedPermutation: string = '', currentIndex: number = 0) => {
-            if (currentIndex !== 0 && this.isValidBranching([...attemptedPermutation], true)) {
+            OUTER_IF: if (currentIndex !== 0 && this.isValidBranching([...attemptedPermutation], true)) {
+                if (connections[currentIndex + 1]) {
+                    const letterExists = connections[currentIndex].connectedLetter;
+                    const isAdjascent = connections[currentIndex + 1].index === connections[currentIndex].index + 1;
+                    if (isAdjascent && letterExists && connections[currentIndex + 1].isOnBoard) break OUTER_IF;
+                }
                 validWords.add(attemptedPermutation);
             }
             const currentConnection = connections[currentIndex];

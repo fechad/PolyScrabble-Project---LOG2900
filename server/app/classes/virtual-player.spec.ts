@@ -80,7 +80,6 @@ describe('VirtualPlayer', () => {
             { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0, command: '' },
         ];
         const result = vP.getPlayablePositions(7);
-        console.log(result);
         expect(result).to.deep.equal(expectedOptions);
     });
 
@@ -204,5 +203,15 @@ describe('VirtualPlayer', () => {
                 expect(possibleLetters.includes(letter));
             }
         }
+    });
+
+    it('test JV random', () => {
+        game.board.board[7][5].setLetter('j');
+        game.board.board[7][6].setLetter('o');
+        game.board.board[7][7].setLetter('i');
+        game.board.board[7][8].setLetter('e');
+        const rack = 'athenee';
+        const result = vP.chooseWord(rack);
+        expect(result).to.not.equal(undefined);
     });
 });
