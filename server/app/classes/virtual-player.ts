@@ -4,6 +4,7 @@ import { DictionnaryTrieService, WordConnection } from '@app/services/dictionnar
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
 import { Game } from './game';
+import { State } from './room';
 
 export class VirtualPlayer {
     board: Board;
@@ -29,7 +30,7 @@ export class VirtualPlayer {
 
     waitForTurn() {
         let alreadyPlaying = false;
-        setInterval(async () => {
+        const waitTurnInterval = setInterval(async () => {
             if (this.game.getCurrentPlayer().id === cst.AI_ID) {
                 if (!alreadyPlaying) {
                     alreadyPlaying = true;
@@ -37,6 +38,7 @@ export class VirtualPlayer {
                     alreadyPlaying = false;
                 }
             }
+            if (this.game.room.getState() !== State.Started) clearInterval(waitTurnInterval);
         }, cst.DELAY_CHECK_TURN);
     }
 
@@ -61,8 +63,11 @@ export class VirtualPlayer {
             const sortedWordOptions = this.chooseWord(this.rackToString());
             const randomIndex = Math.floor(Math.random() * sortedWordOptions.length);
             const chosenWord = sortedWordOptions[randomIndex];
-            if (chosenWord === undefined) this.game.skipTurn(cst.AI_ID);
-            else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
+            if (chosenWord === undefined) {
+                setTimeout(() => {
+                    this.game.skipTurn(cst.AI_ID);
+                }, cst.DELAY_NO_PLACEMENT);
+            } else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
         }
     }
 

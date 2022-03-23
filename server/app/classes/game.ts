@@ -42,7 +42,7 @@ export class Game {
     private winner: PlayerId | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
 
-    constructor(private room: Room, dictionnaryService: DictionnaryService) {
+    constructor(readonly room: Room, dictionnaryService: DictionnaryService) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board(dictionnaryService);

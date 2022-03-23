@@ -5,6 +5,7 @@ export const PROBABILITY = 10;
 export const BOARD_LENGTH = 15;
 export const CONTACT_CHAR = '#';
 export const DELAY_CHECK_TURN = 1000; // ms
+export const DELAY_NO_PLACEMENT = 20000; // ms
 export const HALF_PROBABILITY = 0.5;
 export const ROW_CONTACT = 0;
 export const COL_CONTACT = 1;
@@ -33,7 +34,7 @@ export const PROBABILITY_OF_30 = 6;
 export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
-export const LOWER_POINT_BRACKET = [0, 6];
+export const LOWER_POINT_BRACKET = [1, 6];
 export const MIDDLE_POINT_BRACKET = [7, 12];
 export const HIGHER_POINT_BRACKET = [13, 18];
 export const MULT_WORDS_3 = [
