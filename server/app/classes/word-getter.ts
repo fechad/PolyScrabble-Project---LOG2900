@@ -13,8 +13,9 @@ export class WordGetter {
         return { row, col };
     }
 
-    getStringPositionVirtualPlayer(placement: PlacementOption) {
+    getStringPositionVirtualPlayer(placement: PlacementOption): string {
         let contactWord = '';
+        if (!this.isInBound({ row: placement.row, col: placement.col})) return contactWord;
         const pos = this.findStart(placement);
         if (placement.isHorizontal) {
             while (pos.col < cst.BOARD_LENGTH && (!this.board[pos.row][pos.col].empty || pos.col === placement.col)) {
@@ -63,6 +64,7 @@ export class WordGetter {
         let letterCount = 0;
         let letters = '';
 
+        if (!this.isInBound({ row: placement.row, col: placement.col})) return placement;
         const pos = this.findStart(placement);
 
         const minRow = pos.row;

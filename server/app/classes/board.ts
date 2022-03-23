@@ -105,6 +105,8 @@ export class Board {
         const contacts = [];
         let collisions = 0;
 
+        if(!this.isInBound(placement.row, placement.col)) return [];
+        
         let pos = this.findStart(placement);
         placement = new PlacementOption(pos.row, pos.col, placement.isHorizontal, placement.word);
 
@@ -175,9 +177,10 @@ export class Board {
     private findStart(placement: PlacementOption): Position {
         let row = placement.row;
         let col = placement.col;
+        if (row >= cst.BOARD_LENGTH || col >= cst.BOARD_LENGTH) return { row: -1, col:-1 } as Position;
         if (placement.isHorizontal) while (col > 0 && !this.board[row][col - 1].empty) col--;
         else while (row > 0 && !this.board[row - 1][col].empty) row--;
-        return { row, col };
+        return { row: row, col: col } as Position;
     }
 
     private containsLetter(row: number, col: number) {
@@ -186,14 +189,19 @@ export class Board {
     }
 
     private isInContact(row: number, col: number, isWordHorizontal: boolean): boolean {
+        if (row < 0 || col < 0 || row >= cst.BOARD_LENGTH || col >= cst.BOARD_LENGTH) return false;
         return isWordHorizontal
-            ? (row - 1 >= 0 && !this.board[row - 1][col].empty) || (row + 1 < cst.BOARD_LENGTH && !this.board[row + 1][col].empty)
-            : (col - 1 >= 0 && !this.board[row][col - 1].empty) || (col + 1 < cst.BOARD_LENGTH && !this.board[row][col + 1].empty);
+            ? (row > 0 && !this.board[row - 1][col].empty) || (row + 1 < cst.BOARD_LENGTH && !this.board[row + 1][col].empty)
+            : (col > 0 && !this.board[row][col - 1].empty) || (col + 1 < cst.BOARD_LENGTH && !this.board[row][col + 1].empty);
     }
 
     private initList(array: number[][], multLetter: number, multWord?: number) {
         for (const position of array) {
             this.board[position[0]][position[1]] = new GameTile(multLetter, multWord);
         }
+    }
+
+    private isInBound(row: number, col: number): boolean {
+        return row >= 0 && row < cst.BOARD_LENGTH && col >= 0 && col < cst.BOARD_LENGTH;
     }
 }
