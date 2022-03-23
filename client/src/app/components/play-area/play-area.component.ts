@@ -1,5 +1,6 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
+import { Letter } from '@app/classes/letter';
 import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import * as cst from '@app/constants';
@@ -52,7 +53,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
             if (this.gridService.letterForServer.length === 0)
-                this.gameContextService.addMessage("Vous n'avez placé aucun mot sur le plateau", MessageType.Local);
+                this.gameContextService.addMessage("Vous n'avez placé aucune lettre sur le plateau de jeu", MessageType.Local);
             else {
                 this.sendPlacedLetters();
             }
@@ -128,7 +129,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     placeWordOnCanvas() {
         const word = CommandParsing.removeAccents(this.buttonPressed);
-        const star = { name: '*', score: 0 };
+        const star: Letter = { name: '*', score: 0 };
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
