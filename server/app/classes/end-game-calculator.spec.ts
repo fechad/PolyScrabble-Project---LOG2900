@@ -3,6 +3,8 @@ import { Player } from '@app/classes/room';
 import { assert, expect } from 'chai';
 import { EndGameCalculator } from './end-game-calculator';
 
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+
 describe('EndGameService', () => {
     let endGameService: EndGameCalculator;
     let reserve: Reserve;

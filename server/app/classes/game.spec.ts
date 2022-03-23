@@ -10,7 +10,7 @@ import { Game } from './game';
 import { Parameters } from './parameters';
 import { Player, Room } from './room';
 
-/* eslint-disable dot-notation */
+/* eslint-disable dot-notation, @typescript-eslint/no-magic-numbers */
 
 const RESPONSE_DELAY = 400;
 const HALF_LENGTH = 7;
