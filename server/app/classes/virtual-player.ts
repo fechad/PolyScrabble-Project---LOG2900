@@ -31,7 +31,7 @@ export class VirtualPlayer {
         let alreadyPlaying = false;
         setInterval(async () => {
             if (this.game.getCurrentPlayer().id === cst.AI_ID) {
-                if (!alreadyPlaying && !this.game.getWinner()) {
+                if (!alreadyPlaying) {
                     alreadyPlaying = true;
                     await this.playTurn();
                     alreadyPlaying = false;
