@@ -71,10 +71,7 @@ export class Game {
 
     sendState() {
         const state: GameState = {
-            players: [
-                this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id) as PlayerInfo,
-                this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id) as PlayerInfo,
-            ],
+            players: [this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id), this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id)],
             reserveCount: this.reserve.getCount(),
             board: this.formatSendableBoard(),
             turn: this.room.getState() === State.Started ? this.getCurrentPlayer().id : undefined,
@@ -86,14 +83,14 @@ export class Game {
         this.eventEmitter.emit('rack', this.players[cst.OTHER_PLAYER].id, this.reserve.letterRacks[cst.OTHER_PLAYER]);
     }
 
-    getPlayerInfo(id: PlayerId): PlayerInfo | undefined {
+    getPlayerInfo(id: PlayerId): PlayerInfo {
         let idx;
         if (id === this.players[cst.MAIN_PLAYER].id) {
             idx = cst.MAIN_PLAYER;
         } else if (id === this.players[cst.OTHER_PLAYER].id) {
             idx = cst.OTHER_PLAYER;
         } else {
-            return undefined;
+            throw new Error('Not one of the players');
         }
         return { info: this.players[idx], score: this.scores[idx], rackCount: this.reserve.letterRacks[idx].length };
     }
@@ -192,16 +189,15 @@ export class Game {
     }
 
     getWinner(): string | undefined {
-        const finalScores = EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        if (finalScores[cst.MAIN_PLAYER] > finalScores[cst.OTHER_PLAYER]) return this.players[cst.MAIN_PLAYER].id;
-        else if (finalScores[cst.MAIN_PLAYER] < finalScores[cst.OTHER_PLAYER]) return this.players[cst.OTHER_PLAYER].id;
+        if (this.scores[cst.MAIN_PLAYER] > this.scores[cst.OTHER_PLAYER]) return this.players[cst.MAIN_PLAYER].id;
+        else if (this.scores[cst.MAIN_PLAYER] < this.scores[cst.OTHER_PLAYER]) return this.players[cst.OTHER_PLAYER].id;
         return undefined;
     }
 
     endGame() {
-        const winnerInfo = this.getWinner();
+        EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
         this.room.end(false);
-        this.winner = winnerInfo;
+        this.winner = this.getWinner();
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
                 this.players.map((p) => p),

@@ -67,39 +67,29 @@ describe('HttpController', () => {
 
     it('should not add high scores when the input format is not respected', async () => {
         await supertest(expressApp).post('/api/high-scores').expect(StatusCodes.BAD_REQUEST);
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID }).expect(StatusCodes.BAD_REQUEST);
-        await supertest(expressApp).post('/api/high-scores').send({ token: TOKEN }).expect(StatusCodes.BAD_REQUEST);
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, tokenn: TOKEN }).expect(StatusCodes.BAD_REQUEST);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, room: 0 }).expect(StatusCodes.BAD_REQUEST);
+        await supertest(expressApp).post('/api/high-scores').send({ token: TOKEN, room: 0 }).expect(StatusCodes.BAD_REQUEST);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, tokenn: TOKEN, room: 0 }).expect(StatusCodes.BAD_REQUEST);
     });
 
     it('should not add high scores when wrong identifier/token pair', async () => {
         await supertest(expressApp)
             .post('/api/high-scores')
-            .send({ id: ID, token: TOKEN + 1 })
+            .send({ id: ID, token: TOKEN + 1, room: 0 })
             .expect(StatusCodes.UNAUTHORIZED);
     });
 
     it('should not add high scores when not in room', async () => {
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.NOT_FOUND);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.NOT_FOUND);
         const room2 = new Room(1, 'DummyId2', 'Dummy2', new Parameters());
         room2.addPlayer('DummyId3', 'Dummy3', false);
         roomsService.rooms.push(new Room(0, 'DummyId', 'Dummy', new Parameters()), room2);
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.NOT_FOUND);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.FORBIDDEN);
     });
 
     it('should not add high scores when room not in game', async () => {
         roomsService.rooms.push(new Room(0, ID, 'Dummy', new Parameters()));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.NOT_FOUND);
-    });
-
-    it('should return a 500 if the game and room are inconsistent', async () => {
-        const room = new Room(0, ID, 'Dummy', new Parameters());
-        room.addPlayer(ID + 1, 'Not Dummy', false);
-        const room2 = new Room(0, ID + 2, 'Dummy', new Parameters());
-        room2.addPlayer(ID + 1, 'Not Dummy', false);
-        roomsService.rooms.push(room);
-        roomsService.games.push(new Game(room2, dictionnaryService as unknown as DictionnaryService));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.INTERNAL_SERVER_ERROR);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.NOT_FOUND);
     });
 
     it('should not add score if virtual player', async () => {
@@ -107,7 +97,7 @@ describe('HttpController', () => {
         room.addPlayer(ID, 'Not Dummy', true);
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.FORBIDDEN);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.FORBIDDEN);
     });
 
     it('should add score for main player in normal mode', async () => {
@@ -115,7 +105,7 @@ describe('HttpController', () => {
         room.addPlayer(ID + 1, 'Not Dummy', false);
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.ACCEPTED);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Dummy', score: 0, log2990: false }]]);
     });
 
@@ -124,7 +114,7 @@ describe('HttpController', () => {
         room.addPlayer(ID, 'Not Dummy', false);
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.ACCEPTED);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: false }]]);
     });
 
@@ -135,7 +125,7 @@ describe('HttpController', () => {
         room.addPlayer(ID + 1, 'Not Dummy', false);
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.ACCEPTED);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Dummy', score: 0, log2990: true }]]);
     });
 
@@ -146,7 +136,7 @@ describe('HttpController', () => {
         room.addPlayer(ID, 'Not Dummy', false);
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
-        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN }).expect(StatusCodes.ACCEPTED);
+        await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: true }]]);
     });
 });

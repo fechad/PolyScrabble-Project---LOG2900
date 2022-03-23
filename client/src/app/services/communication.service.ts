@@ -14,7 +14,9 @@ import { AuthService } from './auth.service';
 import { GameContextService } from './game-context.service';
 
 type Token = number;
-type HTTPBody = { id: string | undefined; token: number };
+type SaveScoreBody = { id: string | undefined; token: number; room: number | undefined };
+type ConnectBody = { id: string | undefined; token: number };
+
 @Injectable({
     providedIn: 'root',
 })
@@ -51,7 +53,7 @@ export class CommunicationService {
 
     async saveScore() {
         try {
-            const body: HTTPBody = { id: this.myId.value, token: this.token };
+            const body: SaveScoreBody = { id: this.myId.value, token: this.token, room: this.selectedRoom.value?.id };
             await this.httpClient.post(`${environment.serverUrl}/high-scores`, body).toPromise();
         } catch (e) {
             /* Discard errors */
@@ -152,7 +154,7 @@ export class CommunicationService {
     }
 
     private joinRoomHandler(roomId: RoomId) {
-        const body: HTTPBody = { id: this.myId.value, token: this.token };
+        const body: ConnectBody = { id: this.myId.value, token: this.token };
         this.roomSocket = this.io.io(`${environment.socketUrl}/rooms/${roomId}`, { auth: body });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
@@ -173,7 +175,7 @@ export class CommunicationService {
     }
 
     private joinGameHandler(gameId: string) {
-        const body: HTTPBody = { id: this.myId.value, token: this.token };
+        const body: ConnectBody = { id: this.myId.value, token: this.token };
         const gameSocket = this.io.io(`${environment.socketUrl}/games/${gameId}`, { auth: body });
 
         this.gameContextService.init(gameSocket);

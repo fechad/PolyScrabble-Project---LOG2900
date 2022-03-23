@@ -14,10 +14,10 @@ import { GameState } from '@app/classes/game';
 import { State } from '@app/classes/room';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BehaviorSubject, of } from 'rxjs';
@@ -54,12 +54,27 @@ describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
     let communicationService: CommunicationServiceMock;
+    let gameContext: jasmine.SpyObj<GameContextService>;
 
     beforeEach(async () => {
         communicationService = new CommunicationServiceMock();
+        gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn'], {
+            state: new BehaviorSubject({
+                players: [
+                    { id: '0', name: 'P1', connected: true, virtual: false },
+                    { id: '1', name: 'P2', connected: true, virtual: false },
+                ].map((info) => ({ info, score: 0, rackCount: 7 })),
+                reserveCount: 88,
+                board: [],
+                turn: undefined,
+                state: State.Started,
+            } as GameState),
+            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+        });
+        gameContext.isMyTurn.and.callFake(() => of(true));
 
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent],
+            declarations: [GamePageComponent, SidebarComponent, ChatBoxComponent, LetterRackComponent],
             schemas: [NO_ERRORS_SCHEMA],
             imports: [
                 RouterTestingModule.withRoutes(routes),
@@ -74,6 +89,7 @@ describe('GamePageComponent', () => {
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
                 { provide: CommunicationService, useValue: communicationService },
+                { provide: GameContextService, useValue: gameContext },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
@@ -103,13 +119,12 @@ describe('GamePageComponent', () => {
     });
 
     it('should switch turn if skipTurn() is called', () => {
-        const turnSpy = spyOn(component.gameContextService, 'switchTurn').and.callThrough();
         component.skipMyTurn();
-        expect(turnSpy).toHaveBeenCalled();
+        expect(component.gameContextService.switchTurn).toHaveBeenCalled();
     });
 
     it('click on reducing font size of board should call changeSize()', fakeAsync(() => {
-        const reduceFontSpy = spyOn(component, 'changeSize').and.callThrough();
+        const reduceFontSpy = spyOn(component, 'changeSize');
         const button = fixture.debugElement.query(By.css('#reduce'));
         button.nativeElement.click();
         tick();
@@ -117,7 +132,7 @@ describe('GamePageComponent', () => {
     }));
 
     it('click on reset font size of board should call changeSize()', fakeAsync(() => {
-        const resetFontSpy = spyOn(component, 'changeSize').and.callThrough();
+        const resetFontSpy = spyOn(component, 'changeSize');
         const button = fixture.debugElement.query(By.css('#reset'));
         button.nativeElement.click();
         tick();
@@ -125,7 +140,7 @@ describe('GamePageComponent', () => {
     }));
 
     it('click on increasing font size of board should call changeSize()', fakeAsync(() => {
-        const increaseFontSpy = spyOn(component, 'changeSize').and.callThrough();
+        const increaseFontSpy = spyOn(component, 'changeSize');
         const button = fixture.debugElement.query(By.css('#increase'));
         button.nativeElement.click();
         tick();
@@ -141,21 +156,6 @@ describe('GamePageComponent', () => {
     it('should confirmForfeit if confirmed alert and state is started', fakeAsync(() => {
         const forfeitSpy = spyOn(component.communicationService, 'confirmForfeit').and.callThrough();
 
-        const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
-            state: new BehaviorSubject({
-                players: [
-                    { id: '0', name: 'P1', connected: true, virtual: false },
-                    { id: '1', name: 'P2', connected: true, virtual: false },
-                ].map((info) => ({ info, score: 0, rackCount: 7 })),
-                reserveCount: 88,
-                board: [],
-                turn: undefined,
-                state: State.Started,
-            } as GameState),
-            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
-        });
-        gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
-        component.gameContextService = gameContextServiceSpy;
         component.quitGame();
         Swal.clickConfirm();
         tick();
@@ -166,23 +166,7 @@ describe('GamePageComponent', () => {
     it('should leave if state is aborted', fakeAsync(() => {
         const leaveSpy = spyOn(component.communicationService, 'leave').and.callThrough();
 
-        const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
-            myId: '23509',
-            state: new BehaviorSubject({
-                players: [
-                    { id: '0', name: 'P1', connected: true, virtual: false },
-                    { id: '1', name: 'P2', connected: true, virtual: false },
-                ].map((info) => ({ info, score: 0, rackCount: 7 })),
-                reserveCount: 88,
-                board: [],
-                turn: undefined,
-                state: State.Aborted,
-                winner: '1',
-            } as GameState),
-            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
-        });
-        gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
-        component.gameContextService = gameContextServiceSpy;
+        gameContext.state.next({ ...gameContext.state.value, state: State.Aborted });
         component.quitGame();
         Swal.clickConfirm();
         tick();
@@ -191,25 +175,9 @@ describe('GamePageComponent', () => {
     }));
 
     it('should saveScore if state is aborted', fakeAsync(() => {
-        const scoreSpy = spyOn(component.communicationService, 'saveScore').and.callThrough();
+        const scoreSpy = spyOn(component.communicationService, 'saveScore');
 
-        const gameContextServiceSpy = jasmine.createSpyObj('GameContextService', ['subscribe', 'isMyTurn', 'isEnded'], {
-            state: new BehaviorSubject({
-                players: [
-                    { id: '0', name: 'P1', connected: true, virtual: false },
-                    { id: '1', name: 'P2', connected: true, virtual: false },
-                ].map((info) => ({ info, score: 0, rackCount: 7 })),
-                reserveCount: 88,
-                board: [],
-                turn: undefined,
-                state: State.Ended,
-            } as GameState),
-            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
-        });
-        gameContextServiceSpy.isMyTurn.and.callFake(() => of(true));
-        component.gameContextService = gameContextServiceSpy;
-        component.quitGame();
-        Swal.clickConfirm();
+        gameContext.state.next({ ...gameContext.state.value, state: State.Ended });
         tick();
         expect(scoreSpy).toHaveBeenCalled();
         flush();

@@ -1,7 +1,9 @@
 import { Reserve } from '@app/classes/reserve';
 import { Player } from '@app/classes/room';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import { EndGameCalculator } from './end-game-calculator';
+
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 
 describe('EndGameService', () => {
     let endGameService: EndGameCalculator;
@@ -25,15 +27,15 @@ describe('EndGameService', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
-        const result = EndGameCalculator.calculateFinalScores(scores, reserve);
-        assert(result);
+        EndGameCalculator.calculateFinalScores(scores, reserve);
+        expect(scores).to.deep.equal([8, 18]);
     });
     it('should calulate the final scores and update one of the letter lists', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
-        const result = EndGameCalculator.calculateFinalScores(scores, reserve);
-        assert(result);
+        EndGameCalculator.calculateFinalScores(scores, reserve);
+        expect(scores).to.deep.equal([8, 18]);
     });
     it('createGameSummary should create a message summarizing the game', () => {
         const mainPlayer: Player = { name: 'firstName', id: 'id1', connected: true, virtual: false };
@@ -41,6 +43,6 @@ describe('EndGameService', () => {
         const summary = 'Fin de partie - lettres restantes \n' + '\nfirstName: AB \n ' + '\nsecondName: C \n ';
 
         const result = EndGameCalculator.createGameSummaryMessage([mainPlayer, otherPlayer], reserve);
-        assert(result === summary);
+        expect(result).to.equal(summary);
     });
 });
