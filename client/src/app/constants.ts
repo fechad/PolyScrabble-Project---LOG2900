@@ -47,8 +47,6 @@ export const NORMAL_RACK_LENGTH = 7;
 
 export const MISSING = -1;
 
-export const IDS_KEY = 'ids';
-
 export const COMMAND_INDEX = 0;
 export const LETTERS_TO_EXCHANGE_INDEX = 1;
 export const POSITION_BLOCK_INDEX = 1;
@@ -86,6 +84,8 @@ export const HELP_MESSAGE: string =
     'en tapant les touches correspondantes du clavier,\n' +
     'cliquez une seconde fois pour placer verticalement\n';
 
+export const DEFAULT_FONT = '20px system-ui';
+
 export enum MouseButton {
     Left = 0,
     Middle = 1,
@@ -100,4 +100,7 @@ export enum Colors {
     Green = '#54bd9d',
     Blue = '#65CCD2',
     Grey = '#838383',
+    DarkGrey = '#575757',
+    Black = '#000000',
+    White = '#FFFFFF',
 }

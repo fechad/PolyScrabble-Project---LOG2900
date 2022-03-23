@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { PlayerId } from '@app/classes/room';
 
 const IDS_KEY = 'ids';
-
 @Injectable({
     providedIn: 'root',
 })
