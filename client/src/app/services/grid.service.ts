@@ -97,10 +97,38 @@ export class GridService {
     }
 
     drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
-        if (this.gameContext.state.value.board[posX][posY] !== undefined && this.gameContext.state.value.board[posX][posY] !== null) {
+        if (this.gameContext.state.value.board[posX][posY] !== null) {
             const tile = this.gameContext.state.value.board[posX][posY] as Letter;
             this.gridContext.fillStyle = 'burlywood';
+            this.gridContext.beginPath();
+            this.gridContext.moveTo(canvasX + cst.RADIUS, canvasY - cst.Y_PLACEMENT);
+            this.gridContext.lineTo(canvasX + cst.SQUARE_SIZE - cst.RADIUS, canvasY - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(
+                canvasX + cst.SQUARE_SIZE,
+                canvasY - cst.Y_PLACEMENT,
+                canvasX + cst.SQUARE_SIZE,
+                canvasY + cst.RADIUS - cst.Y_PLACEMENT,
+            );
+            this.gridContext.lineTo(canvasX + cst.SQUARE_SIZE, canvasY + cst.SQUARE_SIZE - cst.RADIUS - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(
+                canvasX + cst.SQUARE_SIZE,
+                canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT,
+                canvasX + cst.SQUARE_SIZE - cst.RADIUS,
+                canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT,
+            );
+            this.gridContext.lineTo(canvasX + cst.RADIUS, canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(
+                canvasX,
+                canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT,
+                canvasX,
+                canvasY + cst.SQUARE_SIZE - cst.RADIUS - cst.Y_PLACEMENT,
+            );
+            this.gridContext.lineTo(canvasX, canvasY + cst.RADIUS - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(canvasX, canvasY - cst.Y_PLACEMENT, canvasX + cst.RADIUS, canvasY - cst.Y_PLACEMENT);
             this.gridContext.fill();
+            this.gridContext.strokeStyle = '#000';
+            this.gridContext.lineWidth = 0.5;
+            this.gridContext.stroke();
             this.drawMessage(tile.name, canvasX + cst.AJUST_TILE_X, canvasY + cst.AJUST_TILE_Y, cst.TILE_SIZE);
         }
     }
