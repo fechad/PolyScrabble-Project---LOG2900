@@ -33,7 +33,6 @@ export class Board {
                 resolve(null);
             }, cst.BOARD_PLACEMENT_DELAY);
         });
-        console.log(triedPlacement);
         if (!this.firstWordValidation(triedPlacement)) throw new Error('Placement invalide pour le premier mot');
         const contacts = this.getContacts(triedPlacement);
         const words = this.wordGetter.getWords(triedPlacement, contacts);

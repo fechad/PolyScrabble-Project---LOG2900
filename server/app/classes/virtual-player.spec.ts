@@ -80,7 +80,6 @@ describe('VirtualPlayer', () => {
             { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0, command: '' },
         ];
         const result = vP.getPlayablePositions(7);
-        console.log(result);
         expect(result).to.deep.equal(expectedOptions);
     });
 
@@ -213,8 +212,6 @@ describe('VirtualPlayer', () => {
         game.board.board[7][8].setLetter('e');
         const rack = 'athenee';
         const result = vP.chooseWord(rack);
-        console.log('CHOSEN');
-        console.log(result[0]);
         expect(result).to.not.equal(undefined);
     });
 });
