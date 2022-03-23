@@ -38,6 +38,8 @@ export const BOARD_LENGTH = 15;
 export const FOURTH_SQUARE = 4;
 export const BOUNDS = BOARD_LENGTH / BOARD_LENGTH;
 export const SQUARE_SIZE = DEFAULT_INNER_WIDTH / BOARD_LENGTH - BOUNDS;
+export const RADIUS = 7.5;
+export const Y_PLACEMENT = 16;
 
 export const DEFAULT_RESERVE = 88;
 
@@ -46,8 +48,6 @@ export const SEC_CONVERT = 60;
 export const NORMAL_RACK_LENGTH = 7;
 
 export const MISSING = -1;
-
-export const IDS_KEY = 'ids';
 
 export const COMMAND_INDEX = 0;
 export const LETTERS_TO_EXCHANGE_INDEX = 1;
@@ -79,12 +79,14 @@ export const HELP_MESSAGE: string =
     '\n!indice : obtenir 3 choix de mots à placer\n' +
     '\n!aide : obtenir une explication des commandes disponibles\n' +
     '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
-    '\ncliquer sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
-    '\nou taper sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
+    '\ncliquez sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
+    '\nou tapez sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
     '\nfaites un clic droit sur les tuiles pour sélectionner des lettres à échanger\n' +
-    '\ncliquer sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
+    '\ncliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
     'en tapant les touches correspondantes du clavier,\n' +
-    'cliquer une seconde fois pour placer verticalement\n';
+    'cliquez une seconde fois pour placer verticalement\n';
+
+export const DEFAULT_FONT = '20px system-ui';
 
 export enum MouseButton {
     Left = 0,
@@ -100,4 +102,7 @@ export enum Colors {
     Green = '#54bd9d',
     Blue = '#65CCD2',
     Grey = '#838383',
+    DarkGrey = '#575757',
+    Black = '#000000',
+    White = '#FFFFFF',
 }

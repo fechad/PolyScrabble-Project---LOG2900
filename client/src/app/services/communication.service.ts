@@ -2,24 +2,19 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
-import { GameState } from '@app/classes/game';
-import { Letter } from '@app/classes/letter';
-import { Message } from '@app/classes/message';
 import { Parameters } from '@app/classes/parameters';
-import { PlayerId, Room, RoomId, State } from '@app/classes/room';
+import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
-import { IDS_KEY } from '@app/constants';
-import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import swal from 'sweetalert2';
+import { AuthService } from './auth.service';
 import { GameContextService } from './game-context.service';
-import { GridService } from './grid.service';
 
 type Token = number;
-
+type HTTPBody = { id: string | undefined; token: number };
 @Injectable({
     providedIn: 'root',
 })
@@ -33,17 +28,10 @@ export class CommunicationService {
     private readonly waitingRoomsSocket: Socket;
     private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined = undefined;
-    private gameSocket: Socket | undefined = undefined;
 
-    constructor(
-        public gameContextService: GameContextService,
-        public gridService: GridService,
-        private httpClient: HttpClient,
-        private router: Router,
-        private io: IoWrapper,
-    ) {
+    constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private router: Router, private io: IoWrapper) {
         this.waitingRoomsSocket = this.io.io(`${environment.socketUrl}/waitingRoom`);
-        const auth = this.getAuth();
+        const auth = AuthService.getAuth();
         this.mainSocket = this.io.io(`${environment.socketUrl}/`, { auth });
 
         this.listenRooms();
@@ -57,13 +45,14 @@ export class CommunicationService {
             this.token = token;
             this.gameContextService.myId = id;
 
-            addEventListener('beforeunload', () => this.saveAuth(id), { capture: true });
+            addEventListener('beforeunload', () => AuthService.saveAuth(id), { capture: true });
         });
     }
 
     async saveScore() {
         try {
-            await this.httpClient.post(`${environment.serverUrl}/high-scores`, { id: this.myId.value, token: this.token }).toPromise();
+            const body: HTTPBody = { id: this.myId.value, token: this.token };
+            await this.httpClient.post(`${environment.serverUrl}/high-scores`, body).toPromise();
         } catch (e) {
             /* Discard errors */
         }
@@ -78,15 +67,6 @@ export class CommunicationService {
             this.roomSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
-        }
-    }
-
-    kickLeave() {
-        if (this.isMainPlayer()) {
-            this.gameSocket?.emit('kick');
-            this.leaveGame();
-        } else {
-            throw new Error('Tried to leave when not in room');
         }
     }
 
@@ -106,59 +86,13 @@ export class CommunicationService {
         }
     }
 
-    sendLocalMessage(message: string) {
-        this.gameContextService.addMessage(message, true, false);
-    }
-    sendCommandMessage(message: string) {
-        this.gameContextService.addMessage(message, false, true);
-    }
-    sendMessage(message: string) {
-        this.gameSocket?.emit('message', message);
-        this.gameContextService.addMessage(message, false, false);
-    }
-
-    showReserveContent(sortedReserve: ReserveLetter[]) {
-        let message = '';
-        for (const letter of sortedReserve) {
-            message += letter.name + ' : ' + letter.qtyInReserve + '\n';
-        }
-        this.sendCommandMessage(message);
-    }
-
     getId(): BehaviorSubject<PlayerId | undefined> {
         return this.myId;
     }
 
-    switchTurn(timerRequest: boolean) {
-        this.gameSocket?.emit('switch-turn', timerRequest);
-    }
-
-    place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
-        this.gameContextService.tempUpdateRack();
-        this.gridService.tempUpdateBoard(letters, rowIndex, columnIndex, isHorizontal);
-        this.gameContextService.allowSwitch(false);
-        this.gameSocket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
-    }
-
-    exchange(letters: string) {
-        this.gameSocket?.emit('change-letters', letters);
-    }
-
-    hint() {
-        this.gameSocket?.emit('hint');
-    }
-
     confirmForfeit() {
-        this.gameSocket?.emit('confirm-forfeit');
+        this.gameContextService.confirmForfeit();
         this.leaveGame();
-    }
-
-    getReserve() {
-        this.gameSocket?.emit('reserve-content');
-    }
-
-    showMyRack() {
-        this.gameSocket?.emit('current-rack', this.gameContextService.rack.value);
     }
 
     async joinRoom(playerName: string, roomId: RoomId) {
@@ -211,17 +145,15 @@ export class CommunicationService {
     }
 
     private leaveGame() {
-        this.gameContextService.clearMessages();
         this.roomSocket?.close();
         this.roomSocket = undefined;
-        this.gameSocket?.close();
-        this.gameSocket = undefined;
-        this.gameContextService.clearMessages();
+        this.gameContextService.close();
         this.selectedRoom.next(undefined);
     }
 
     private joinRoomHandler(roomId: RoomId) {
-        this.roomSocket = this.io.io(`${environment.socketUrl}/rooms/${roomId}`, { auth: { id: this.myId.value, token: this.token } });
+        const body: HTTPBody = { id: this.myId.value, token: this.token };
+        this.roomSocket = this.io.io(`${environment.socketUrl}/rooms/${roomId}`, { auth: body });
         this.roomSocket.on('kick', () => {
             this.leaveGame();
             swal.fire({
@@ -241,63 +173,9 @@ export class CommunicationService {
     }
 
     private joinGameHandler(gameId: string) {
-        this.gameSocket = this.io.io(`${environment.socketUrl}/games/${gameId}`, { auth: { id: this.myId.value, token: this.token } });
+        const body: HTTPBody = { id: this.myId.value, token: this.token };
+        const gameSocket = this.io.io(`${environment.socketUrl}/games/${gameId}`, { auth: body });
 
-        this.gameSocket.on('forfeit', (idLoser) => {
-            if (idLoser !== this.myId.value) {
-                let text = [''];
-                if (this.gameContextService.state.value.state !== State.Started)
-                    text = [
-                        'La salle est devenue bien silencieuse...',
-                        'Votre adversaire a quitté la partie, voulez-vous retourner au menu principal?',
-                    ];
-                else text = ['Gagnant par défaut', '👑 Votre adversaire a abandonné, vous avez gagné! 👑 Voulez-vous retourner au menu principal?'];
-                swal.fire({
-                    title: text[0],
-                    text: text[1],
-                    showCloseButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Oui',
-                    cancelButtonText: 'Non',
-                }).then((result) => {
-                    if (result.value) {
-                        this.gameContextService.clearMessages();
-                        this.router.navigate(['/']);
-                    }
-                });
-            }
-            this.leaveGame();
-        });
-
-        this.gameSocket.on('state', (state: GameState) => this.gameContextService.state.next(state));
-        this.gameSocket.on('message', (message: Message, msgCount: number) => {
-            this.gameContextService.receiveMessages(message, msgCount, message.emitter === this.myId.value);
-        });
-        this.gameSocket.on('game-error', (error: string) => this.sendLocalMessage(error));
-        this.gameSocket.on('valid-exchange', (response: string) => this.sendCommandMessage(response));
-        this.gameSocket.on('rack', (rack: Letter[]) => {
-            this.gameContextService.rack.next(rack);
-            this.gameContextService.allowSwitch(true);
-        });
-        this.gameSocket.on('reserve-content', (sortedReserve: ReserveLetter[]) => this.showReserveContent(sortedReserve));
-    }
-
-    private getAuth(): { id?: PlayerId } {
-        const idsString = sessionStorage.getItem(IDS_KEY) || '';
-        const ids = idsString.split(';').filter((s) => s.length > 0);
-        const auth: { id?: PlayerId } = {};
-        if (ids.length > 0) {
-            auth.id = ids.pop();
-            sessionStorage.setItem(IDS_KEY, ids.join(';'));
-        }
-        return auth;
-    }
-
-    private saveAuth(id: PlayerId) {
-        const idsString = sessionStorage.getItem(IDS_KEY) || '';
-        const ids = idsString.split(';').filter((s) => s.length > 0);
-        const filteredIds = ids.filter((ident) => ident !== id);
-        filteredIds.push(id);
-        sessionStorage.setItem(IDS_KEY, filteredIds.join(';'));
+        this.gameContextService.init(gameSocket);
     }
 }

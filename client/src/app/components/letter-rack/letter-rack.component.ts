@@ -1,7 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import * as cst from '@app/constants';
-import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
@@ -17,7 +16,7 @@ export class LetterRackComponent {
     timeOut: number;
     previousSelection = cst.MISSING;
 
-    constructor(public communicationService: CommunicationService, public gameContextService: GameContextService, public gridService: GridService) {
+    constructor(public gameContextService: GameContextService, public gridService: GridService) {
         this.gameContextService.rack.subscribe((newRack) => (this.letters = newRack));
     }
     @HostListener('document:keydown', ['$event'])
@@ -90,7 +89,7 @@ export class LetterRackComponent {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
         this.swapLetters(newIndex, this.manipulating);
-        this.communicationService.showMyRack();
+        this.gameContextService.showMyRack();
     }
 
     swapLetters(index: number, oldIndex: number) {
@@ -116,7 +115,7 @@ export class LetterRackComponent {
 
     exchange() {
         const selectedLetters = this.exchanging.map((letter) => this.letters[letter].name.toLowerCase()).join('');
-        this.communicationService.exchange(selectedLetters);
+        this.gameContextService.exchange(selectedLetters);
     }
 
     getReserveCount(): boolean {

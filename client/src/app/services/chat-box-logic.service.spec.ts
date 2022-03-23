@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { alphabet } from '@app/alphabet-letters';
 import { Letter } from '@app/classes/letter';
 import { ChatBoxLogicService } from './chat-box-logic.service';
+import { MessageType } from './game-context.service';
 
 describe('ChatBoxLogicService', () => {
     let service: ChatBoxLogicService;
@@ -25,7 +26,7 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('validateCommand should call placer for a list of valid !placer commands ', async () => {
-        const place = spyOn(service, 'place' as never).and.callThrough();
+        const place = spyOn(service, 'place' as never);
         for (const i of placeCommands) {
             await service.validateSyntax(i);
             expect(place).toHaveBeenCalled();
@@ -33,7 +34,7 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('placer should call communicationService.placer() for a list of valid !placer commands', async () => {
-        const comPlace = spyOn(service.communicationService, 'place').and.callThrough();
+        const comPlace = spyOn(service.gameContextService, 'place');
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {
@@ -47,15 +48,15 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('validateSyntax should call communicationService.sendLocalMessage for a list of invalid !placer commands ', async () => {
-        const sendLocalMessage = spyOn(service.communicationService, 'sendLocalMessage').and.callThrough();
+        const sendLocalMessage = spyOn(service.gameContextService, 'addMessage');
         for (const i of invalidPlaceCommands) {
             await service.validateSyntax(i);
-            expect(sendLocalMessage).toHaveBeenCalled();
+            expect(sendLocalMessage).toHaveBeenCalledWith('Ces lettres ne sont pas dans le chevalet', MessageType.Local);
         }
     });
 
     it('validateCommand should call echanger for a list of valid !echanger commands ', async () => {
-        const exchange = spyOn(service, 'exchange' as never).and.callThrough();
+        const exchange = spyOn(service, 'exchange' as never);
         for (const i of exchangeCommands) {
             await service.validateSyntax(i);
             expect(exchange).toHaveBeenCalled();
@@ -63,7 +64,7 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('placer should call communicationService.echanger() for a list of valid !echanger commands', async () => {
-        const comExchange = spyOn(service.communicationService, 'exchange').and.callThrough();
+        const comExchange = spyOn(service.gameContextService, 'exchange');
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {
@@ -77,10 +78,10 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('validateSyntax should call communicationService.sendLocalMessage for a list of invalid !echanger commands ', async () => {
-        const sendLocalMessage = spyOn(service.communicationService, 'sendLocalMessage').and.callThrough();
+        const sendLocalMessage = spyOn(service.gameContextService, 'addMessage');
         for (const i of invalidExchangeCommands) {
             await service.validateSyntax(i);
-            expect(sendLocalMessage).toHaveBeenCalled();
+            expect(sendLocalMessage).toHaveBeenCalledWith('La commande !échanger ne respecte pas la syntaxe demandée', MessageType.Local);
         }
     });
 
@@ -91,39 +92,39 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('pass should call communicationService.switchTurn() for a valid !passer command', async () => {
-        const switchTurn = spyOn(service.communicationService, 'switchTurn').and.callThrough();
+        const switchTurn = spyOn(service.gameContextService, 'switchTurn');
         await service.validateSyntax('!passer');
         expect(switchTurn).toHaveBeenCalled();
     });
 
     it('validateSyntax should call communicationService.sendLocalMessage for a list of invalid !passer commands ', async () => {
-        const sendLocalMessage = spyOn(service.communicationService, 'sendLocalMessage').and.callThrough();
+        const sendLocalMessage = spyOn(service.gameContextService, 'addMessage');
         for (const i of ['!passer 5', '!passer a', '!passer A', '!passer *']) {
             await service.validateSyntax(i);
-            expect(sendLocalMessage).toHaveBeenCalled();
+            expect(sendLocalMessage).toHaveBeenCalledWith('La commande !passer ne respecte pas la syntaxe demandée', MessageType.Local);
         }
     });
 
     it('validateSyntax should call communicationService.sendMessage for a list of commands not starting with !', async () => {
-        const sendMessage = spyOn(service.communicationService, 'sendMessage').and.callThrough();
+        const sendMessage = spyOn(service.gameContextService, 'addMessage');
         for (const i of ['passer', 'placer g14v ab', 'echanger aw', 'aide']) {
             await service.validateSyntax(i);
-            expect(sendMessage).toHaveBeenCalled();
+            expect(sendMessage).toHaveBeenCalledWith('passer');
         }
     });
     it('validateSyntax should not call communicationService.sendMessage for an empty message', async () => {
-        const sendMessage = spyOn(service.communicationService, 'sendMessage').and.callThrough();
+        const sendMessage = spyOn(service.gameContextService, 'addMessage');
         await service.validateSyntax('');
         expect(sendMessage).not.toHaveBeenCalled();
     });
     it('validateSyntax should not call communicationService.sendLocalMessage for the accepted characters', async () => {
-        const sendLocalMessage = spyOn(service.communicationService, 'sendLocalMessage').and.callThrough();
+        const sendLocalMessage = spyOn(service.gameContextService, 'addMessage');
         const invalidText = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         await service.validateSyntax(invalidText);
-        expect(sendLocalMessage).not.toHaveBeenCalled();
+        expect(sendLocalMessage).toHaveBeenCalledOnceWith('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
     });
     it('validateSyntax should call communicationService.sendCommandMessage for the !aide command', async () => {
-        const sendLocalMessage = spyOn(service.communicationService, 'sendCommandMessage').and.callThrough();
+        const sendLocalMessage = spyOn(service.gameContextService, 'addMessage');
         await service.validateSyntax('!aide');
         expect(sendLocalMessage).toHaveBeenCalled();
     });

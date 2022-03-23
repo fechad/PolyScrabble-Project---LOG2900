@@ -1,10 +1,10 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommandParsing } from '@app/classes/command-parsing';
+import { Letter } from '@app/classes/letter';
 import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import * as cst from '@app/constants';
-import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
+import { GameContextService, MessageType } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
 import { Subject } from 'rxjs';
@@ -25,12 +25,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     private isLoaded = false;
     private canvasSize = { x: cst.DEFAULT_WIDTH, y: cst.DEFAULT_HEIGHT };
 
-    constructor(
-        public gridService: GridService,
-        public gameContextService: GameContextService,
-        public mouseDetectService: MouseService,
-        public communicationservice: CommunicationService,
-    ) {
+    constructor(public gridService: GridService, public gameContextService: GameContextService, public mouseDetectService: MouseService) {
         this.mousePosition = this.mouseDetectService.mousePosition;
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
@@ -57,7 +52,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         if (!this.myTurn || this.gameContextService.state.value.state !== State.Started) return;
         this.buttonPressed = event.key;
         if (this.buttonPressed === 'Enter') {
-            this.sendPlacedLetters();
+            if (this.gridService.letterForServer.length === 0)
+                this.gameContextService.addMessage("Vous n'avez placé aucune lettre sur le plateau de jeu", MessageType.Local);
+            else {
+                this.sendPlacedLetters();
+            }
         } else if (this.buttonPressed === 'Backspace' && this.gridService.letters.length > 0) {
             this.removeLetterOnCanvas();
         } else if (this.buttonPressed === 'Escape') {
@@ -67,7 +66,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
                 this.placeWordOnCanvas();
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
-                this.communicationservice.sendLocalMessage(e.message);
+                this.gameContextService.addMessage(e.message, MessageType.Local);
             }
         }
     }
@@ -95,7 +94,13 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     sendPlacedLetters() {
         for (const elem of this.gridService.letterPosition) this.gameContextService.state.value.board[elem[0]][elem[1]] = null;
-        this.communicationservice.place(
+        this.gameContextService.place(
+            this.gridService.letterForServer,
+            this.gridService.firstLetter[1],
+            this.gridService.firstLetter[0],
+            this.mouseDetectService.isHorizontal,
+        );
+        this.gridService.tempUpdateBoard(
             this.gridService.letterForServer,
             this.gridService.firstLetter[1],
             this.gridService.firstLetter[0],
@@ -113,12 +118,10 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         this.gridService.letterPosition.pop();
         this.gridService.letterForServer = this.gridService.letterForServer.slice(0, cst.LAST_INDEX);
-        if (letter !== undefined) {
-            this.gridService.rack.push(letter);
-            this.gameContextService.addTempRack(letter);
-        }
-        if (letterRemoved[1] !== undefined && letterRemoved[0] !== undefined)
-            this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
+        if (!letter) throw new Error('tried to remove a letter when word is empty');
+        this.gridService.rack.push(letter);
+        this.gameContextService.addTempRack(letter);
+        this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
         this.gridService.letterWritten -= 1;
@@ -126,10 +129,11 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     placeWordOnCanvas() {
         const word = CommandParsing.removeAccents(this.buttonPressed);
+        const asterisk: Letter = { name: '*', score: 0 };
         this.gameContextService.attemptTempRackUpdate(word);
         this.gridService.letterWritten += 1;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
-        if (item === undefined) this.gridService.letters.push({ name: '*', score: 0 });
+        if (!item) this.gridService.letters.push(asterisk);
         else this.gridService.letters.push(item);
         this.gridService.letterForServer += word;
         if (this.gridService.letters.length === 1)
