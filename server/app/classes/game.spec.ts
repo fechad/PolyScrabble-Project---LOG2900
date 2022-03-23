@@ -246,20 +246,34 @@ describe('Game', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
+        game.reserve.letterRacks = [
+            [
+                { name: 'A', score: 1, quantity: 20, id: 0 },
+                { name: 'B', score: 1, quantity: 3, id: 1 },
+            ],
+            [{ name: 'C', score: 2, quantity: 2, id: 2 }],
+        ];
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER].length = 0;
-        const result = EndGameCalculator.calculateFinalScores(scores, game.reserve);
-        assert(result);
+        EndGameCalculator.calculateFinalScores(scores, game.reserve);
+        expect(scores).to.deep.equal([12, 18]);
     });
 
     it('should calculate the final scores when the otherPlayer rack is empty', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
+        game.reserve.letterRacks = [
+            [
+                { name: 'A', score: 1, quantity: 20, id: 0 },
+                { name: 'B', score: 1, quantity: 3, id: 1 },
+            ],
+            [{ name: 'C', score: 2, quantity: 2, id: 2 }],
+        ];
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[OTHER_PLAYER].length = 0;
-        const result = EndGameCalculator.calculateFinalScores(scores, game.reserve);
-        assert(result);
+        EndGameCalculator.calculateFinalScores(scores, game.reserve);
+        expect(scores).to.deep.equal([8, 22]);
     });
 
     it('should initialise a game', (done) => {

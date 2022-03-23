@@ -30,7 +30,16 @@ export class GamePageComponent implements AfterViewChecked {
         public gameContextService: GameContextService,
         public router: Router,
         private detectChanges: ChangeDetectorRef,
-    ) {}
+    ) {
+        let ended = false;
+        this.gameContextService.state.subscribe(async (state) => {
+            if (ended) return;
+            if (state.state === State.Ended || (state.state === State.Aborted && state.winner === this.gameContextService.myId)) {
+                await this.communicationService.saveScore();
+            }
+            ended = state.state !== State.Started;
+        });
+    }
 
     ngAfterViewChecked(): void {
         this.placingWords = this.gridService.letterForServer.length === 0;
@@ -58,13 +67,7 @@ export class GamePageComponent implements AfterViewChecked {
         if (!result.value) return;
         if (this.gameContextService.state.value.state === State.Started) {
             this.communicationService.confirmForfeit();
-        } else if (
-            this.gameContextService.state.value.state === State.Aborted &&
-            this.gameContextService.state.value.winner !== this.gameContextService.myId
-        ) {
-            this.communicationService.leave();
         } else {
-            await this.communicationService.saveScore();
             this.communicationService.leave();
         }
     }

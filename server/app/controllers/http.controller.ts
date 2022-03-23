@@ -1,4 +1,4 @@
-import { Player, Room, State } from '@app/classes/room';
+import { State } from '@app/classes/room';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
@@ -55,22 +55,14 @@ export class HttpController {
         this.router.post('/high-scores', validate({ body: NEW_SCORE_SCHEMA }), async (req: Request, res: Response) => {
             if (!this.logins.verify(req.body.id, req.body.token)) return res.sendStatus(StatusCodes.UNAUTHORIZED);
 
-            const result = this.roomsService.rooms
-                .flatMap((r): [Room, Player | undefined][] => [
-                    [r, r.mainPlayer],
-                    [r, r.getOtherPlayer()],
-                ])
-                .find(([_, p]) => p?.id === req.body.id);
-            if (!result || !result[1]) return res.sendStatus(StatusCodes.NOT_FOUND);
-            const [room, player] = result;
+            const room = this.roomsService.rooms.find((r) => r.id === req.body.room);
+            if (!room) return res.sendStatus(StatusCodes.NOT_FOUND);
+            const player =
+                room.mainPlayer.id === req.body.id ? room.mainPlayer : room.getOtherPlayer()?.id === req.body.id ? room.getOtherPlayer() : undefined;
+            if (!player) return res.sendStatus(StatusCodes.FORBIDDEN);
             const game = this.roomsService.games.find((g) => g.id === room.id);
-            if (game === undefined) return res.sendStatus(StatusCodes.NOT_FOUND);
+            if (!game) return res.sendStatus(StatusCodes.NOT_FOUND);
             const info = game.getPlayerInfo(player.id);
-            if (info === undefined) {
-                // Impossible during execution, since the game players are the same as the rooms's one
-                console.error('Different players in game and in room??');
-                return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-            }
             if (info.info.virtual) return res.sendStatus(StatusCodes.FORBIDDEN);
             if (room.getState() === State.Aborted && game.getWinner() !== player.id) return res.sendStatus(StatusCodes.FORBIDDEN);
             await this.highScoreService.addScore({ name: info.info.name, score: info.score, log2990: room.parameters.log2990 });

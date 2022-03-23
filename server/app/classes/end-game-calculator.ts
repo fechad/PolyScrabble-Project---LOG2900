@@ -3,7 +3,7 @@ import { Player } from '@app/classes/room';
 import * as cst from '@app/constants';
 
 export class EndGameCalculator {
-    static calculateFinalScores(scores: number[], reserve: Reserve): number[] {
+    static calculateFinalScores(scores: number[], reserve: Reserve) {
         const mainRackScore = reserve.letterRacks[cst.MAIN_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x, 0);
         const otherRackScore = reserve.letterRacks[cst.OTHER_PLAYER].map((letter) => letter.score).reduce((acc, x) => acc + x, 0);
         if (reserve.getCount() === 0 && mainRackScore === 0) {
@@ -16,7 +16,6 @@ export class EndGameCalculator {
             scores[cst.MAIN_PLAYER] -= mainRackScore;
             scores[cst.OTHER_PLAYER] -= otherRackScore;
         }
-        return scores;
     }
 
     static createGameSummaryMessage(players: Player[], reserve: Reserve): string {
