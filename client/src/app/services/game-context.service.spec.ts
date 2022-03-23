@@ -61,4 +61,13 @@ describe('GameContextService', () => {
         service.receiveMessages(MESSAGES[1], 1, true);
         expect(service.messages.value).toEqual(MESSAGES);
     });
+
+    it('should place letters', () => {
+        const updateRack = spyOn(service, 'tempUpdateRack');
+        const allowSwitch = spyOn(service, 'allowSwitch');
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        service.place('allo', 7, 7, true);
+        expect(updateRack).toHaveBeenCalled();
+        expect(allowSwitch).toHaveBeenCalledWith(false);
+    });
 });
