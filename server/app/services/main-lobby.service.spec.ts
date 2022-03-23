@@ -1,8 +1,10 @@
-import { Parameters } from '@app/classes/parameters';
+import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
 import { assert, expect } from 'chai';
 import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
+import { DictionnaryTrieService } from './dictionnary-trie.service';
+import { DictionnaryService } from './dictionnary.service';
 import { MainLobbyService } from './main-lobby.service';
 import { RoomsService } from './rooms.service';
 
@@ -10,10 +12,12 @@ describe('MainLobby service tests', () => {
     let service: MainLobbyService;
     let rooms: RoomsService;
     let playersSocket: EventEmitter[];
+    let dictionnaryService: DictionnaryService;
+    let dictionnaryTrie: DictionnaryTrieService;
 
     beforeEach(async () => {
         rooms = new RoomsService();
-        service = new MainLobbyService(rooms);
+        service = new MainLobbyService(rooms, dictionnaryService, dictionnaryTrie);
 
         const player1 = new EventEmitter();
         service.connect(player1, 'DummyId');
@@ -34,6 +38,19 @@ describe('MainLobby service tests', () => {
         done();
     });
 
+    it('should create a room with virtual player', (done) => {
+        const parameters = new Parameters();
+        parameters.dictionnary = 0;
+        parameters.difficulty = Difficulty.Beginner;
+        parameters.gameType = GameType.Solo;
+        playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
+        const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
+        expectedRoom.addPlayer('VP', 'Anna', true);
+        expectedRoom.start();
+        expect(rooms.rooms).to.deep.equal([expectedRoom]);
+        done();
+    });
+
     it('should join a room', (done) => {
         const parameters = new Parameters();
         playersSocket[0].emit('create-room', 'Dummy', parameters);
@@ -49,14 +66,16 @@ describe('MainLobby service tests', () => {
         assert(stub.calledWith(0));
 
         const expectedRoom2 = new Room(0, 'DummyId', 'Dummy', parameters);
-        expectedRoom2.addPlayer('NotDummyId', 'NotDummy');
+        expectedRoom2.addPlayer('NotDummyId', 'NotDummy', false);
         expect(rooms.rooms).to.deep.equal([expectedRoom2]);
         done();
     });
 
     it('should emit join if already joined room', (done) => {
-        const parameters = new Parameters();
-        playersSocket[0].emit('create-room', 'Dummy', parameters);
+        const room = new Room(0, 'DummyId', 'Dummy', new Parameters());
+        room.addPlayer('NotDummyId', 'NotDummy', false);
+        room.start();
+        rooms.rooms.push(room);
 
         const stub = sinon.stub();
         playersSocket[0].on('join', stub);

@@ -1,66 +1,84 @@
-import { Component, Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
+import { State } from '@app/classes/room';
+import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
-import { DEFAULT_HEIGHT, GridService } from '@app/services/grid.service';
+import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faAngleDoubleRight, faFont, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Subject } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-@Injectable()
-export class GamePageComponent {
+export class GamePageComponent implements AfterViewChecked {
     faQuestionCircle = faQuestionCircle;
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
     faAngleDoubleRight = faAngleDoubleRight;
-    resetSize = DEFAULT_HEIGHT + DEFAULT_HEIGHT;
+    faPlay = faPlay;
+    resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
+    placingWords = true;
+    readonly sent: Subject<void> = new Subject<void>();
     constructor(
-        private router: Router,
         public gridService: GridService,
         public communicationService: CommunicationService,
-        public dialog: MatDialog,
         public gameContextService: GameContextService,
-    ) {}
-
-    helpInfo() {
-        this.dialog.open(HelpInfoComponent);
+        public router: Router,
+        private detectChanges: ChangeDetectorRef,
+    ) {
+        let ended = false;
+        this.gameContextService.state.subscribe(async (state) => {
+            if (ended) return;
+            if (state.state === State.Ended || (state.state === State.Aborted && state.winner === this.gameContextService.myId)) {
+                await this.communicationService.saveScore();
+            }
+            ended = state.state !== State.Started;
+        });
     }
 
-    openConfirmation() {
-        if (confirm('Voulez-vous abandonner la partie?')) {
+    ngAfterViewChecked(): void {
+        this.placingWords = this.gridService.letterForServer.length === 0;
+        this.detectChanges.detectChanges();
+    }
+
+    send() {
+        this.sent.next();
+    }
+
+    async quitGame() {
+        const text =
+            this.gameContextService.state.value.state !== State.Started
+                ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
+                : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+        const result = await Swal.fire({
+            title: text[0],
+            text: text[1],
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: text[2],
+            cancelButtonText: text[3],
+        });
+
+        if (!result.value) return;
+        if (this.gameContextService.state.value.state === State.Started) {
             this.communicationService.confirmForfeit();
-            this.quitGame();
+        } else {
+            this.communicationService.leave();
         }
     }
-
-    quitGame() {
-        this.router.navigateByUrl('http://localhost:4200/');
-    }
     skipMyTurn() {
-        this.communicationService.switchTurn(false);
+        this.gameContextService.switchTurn(false);
     }
-    resetFont() {
-        this.gridService.multiplier = 1;
+
+    changeSize(multiplier: number) {
+        this.gridService.multiplier = multiplier;
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
-        this.gridService.drawGrid();
-    }
-    reduceFont() {
-        this.gridService.multiplier = 0.9;
-        this.gridService.gridContext.beginPath();
-        this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
-        this.gridService.drawGrid();
-    }
-    increaseFont() {
-        this.gridService.multiplier = 1.1;
-        this.gridService.gridContext.beginPath();
-        this.gridService.gridContext.clearRect(0, 0, this.gridService.width, this.gridService.height);
         this.gridService.drawGrid();
     }
 }

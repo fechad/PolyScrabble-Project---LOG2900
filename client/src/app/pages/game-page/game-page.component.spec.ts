@@ -1,5 +1,7 @@
+// eslint-disable-next-line max-classes-per-file
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,14 +10,18 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { GameState } from '@app/classes/game';
+import { State } from '@app/classes/room';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
-import { HelpInfoComponent } from '@app/components/help-info/help-info.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BehaviorSubject, of } from 'rxjs';
+import Swal from 'sweetalert2';
 import { GamePageComponent } from './game-page.component';
 
 const dialogMock = {
@@ -24,13 +30,52 @@ const dialogMock = {
     },
 };
 
+class CommunicationServiceMock {
+    isWinner = false;
+    getId(): number {
+        return 1;
+    }
+    confirmForfeit() {
+        return;
+    }
+    leave() {
+        return;
+    }
+    switchTurn(timerRequest: boolean) {
+        return timerRequest;
+    }
+
+    saveScore() {
+        return;
+    }
+}
+
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    let communicationService: CommunicationServiceMock;
+    let gameContext: jasmine.SpyObj<GameContextService>;
 
     beforeEach(async () => {
+        communicationService = new CommunicationServiceMock();
+        gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn'], {
+            state: new BehaviorSubject({
+                players: [
+                    { id: '0', name: 'P1', connected: true, virtual: false },
+                    { id: '1', name: 'P2', connected: true, virtual: false },
+                ].map((info) => ({ info, score: 0, rackCount: 7 })),
+                reserveCount: 88,
+                board: [],
+                turn: undefined,
+                state: State.Started,
+            } as GameState),
+            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+        });
+        gameContext.isMyTurn.and.callFake(() => of(true));
+
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent, ChatBoxComponent, LetterRackComponent, HelpInfoComponent],
+            declarations: [GamePageComponent, SidebarComponent, ChatBoxComponent, LetterRackComponent],
+            schemas: [NO_ERRORS_SCHEMA],
             imports: [
                 RouterTestingModule.withRoutes(routes),
                 HttpClientTestingModule,
@@ -43,6 +88,8 @@ describe('GamePageComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: GridService, usevalue: {} },
+                { provide: CommunicationService, useValue: communicationService },
+                { provide: GameContextService, useValue: gameContext },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(GamePageComponent);
@@ -57,42 +104,82 @@ describe('GamePageComponent', () => {
     });
 
     it('should call openConfirmation() when quit-game button clicked ', fakeAsync(() => {
-        const quitGameSpy = spyOn(component, 'openConfirmation').and.callThrough();
+        const forfeitGameSpy = spyOn(component, 'quitGame').and.callThrough();
         const button = fixture.debugElement.query(By.css('#quit-game'));
         button.nativeElement.click();
         tick();
-        expect(quitGameSpy).toHaveBeenCalled();
+        expect(forfeitGameSpy).toHaveBeenCalled();
+        flush();
     }));
 
-    it('click on reducing font size of board should call reduceFont()', fakeAsync(() => {
-        const reduceFontSpy = spyOn(component, 'reduceFont').and.callThrough();
+    it('should call fire a swal alert when quit-game button clicked ', () => {
+        const swalSpy = spyOn(Swal, 'fire').and.callThrough();
+        component.quitGame();
+        expect(swalSpy).toHaveBeenCalled();
+    });
+
+    it('should switch turn if skipTurn() is called', () => {
+        component.skipMyTurn();
+        expect(component.gameContextService.switchTurn).toHaveBeenCalled();
+    });
+
+    it('click on reducing font size of board should call changeSize()', fakeAsync(() => {
+        const reduceFontSpy = spyOn(component, 'changeSize');
         const button = fixture.debugElement.query(By.css('#reduce'));
         button.nativeElement.click();
         tick();
         expect(reduceFontSpy).toHaveBeenCalled();
     }));
 
-    it('click on reset font size of board should call resetFont()', fakeAsync(() => {
-        const resetFontSpy = spyOn(component, 'resetFont').and.callThrough();
+    it('click on reset font size of board should call changeSize()', fakeAsync(() => {
+        const resetFontSpy = spyOn(component, 'changeSize');
         const button = fixture.debugElement.query(By.css('#reset'));
         button.nativeElement.click();
         tick();
         expect(resetFontSpy).toHaveBeenCalled();
     }));
 
-    it('click on increasing font size of board should call increaseFont()', fakeAsync(() => {
-        const increaseFontSpy = spyOn(component, 'increaseFont').and.callThrough();
+    it('click on increasing font size of board should call changeSize()', fakeAsync(() => {
+        const increaseFontSpy = spyOn(component, 'changeSize');
         const button = fixture.debugElement.query(By.css('#increase'));
         button.nativeElement.click();
         tick();
         expect(increaseFontSpy).toHaveBeenCalled();
     }));
 
-    it('click on ? button should call helpInfo()', fakeAsync(() => {
-        const helpSpy = spyOn(component, 'helpInfo').and.callThrough();
-        const button = fixture.debugElement.query(By.css('#help'));
-        button.nativeElement.click();
+    it('send should call send in service', () => {
+        const nextSpy = spyOn(component.sent, 'next').and.callThrough();
+        component.send();
+        expect(nextSpy).toHaveBeenCalled();
+    });
+
+    it('should confirmForfeit if confirmed alert and state is started', fakeAsync(() => {
+        const forfeitSpy = spyOn(component.communicationService, 'confirmForfeit').and.callThrough();
+
+        component.quitGame();
+        Swal.clickConfirm();
         tick();
-        expect(helpSpy).toHaveBeenCalled();
+        expect(forfeitSpy).toHaveBeenCalled();
+        flush();
+    }));
+
+    it('should leave if state is aborted', fakeAsync(() => {
+        const leaveSpy = spyOn(component.communicationService, 'leave').and.callThrough();
+
+        gameContext.state.next({ ...gameContext.state.value, state: State.Aborted });
+        component.quitGame();
+        Swal.clickConfirm();
+        tick();
+        expect(leaveSpy).toHaveBeenCalled();
+        flush();
+    }));
+
+    it('should saveScore if state is aborted', fakeAsync(() => {
+        const scoreSpy = spyOn(component.communicationService, 'saveScore');
+
+        gameContext.state.next({ ...gameContext.state.value, state: State.Ended });
+        tick();
+        expect(scoreSpy).toHaveBeenCalled();
+        flush();
     }));
 });

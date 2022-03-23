@@ -15,15 +15,22 @@ import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteu
 import { CountdownModule } from 'ngx-countdown';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
-import { HelpInfoComponent } from './components/help-info/help-info.component';
+import { HighScoresComponent } from './components/high-scores/high-scores.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
 import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
 import { LetterRackComponent } from './components/letter-rack/letter-rack.component';
+import { SoloDialogComponent } from './components/solo-dialog/solo-dialog.component';
 import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { CommunicationService } from './services/communication.service';
 
+/**
+ * Main module that is used in main.ts.
+ * All automatically generated components will appear in this module.
+ * Please do not move this module in the module folder.
+ * Otherwise Angular Cli will not know in which module to put new component
+ */
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -45,7 +52,8 @@ import { CommunicationService } from './services/communication.service';
         ChatBoxComponent,
         InfosBoxComponent,
         ModesPageComponent,
-        HelpInfoComponent,
+        SoloDialogComponent,
+        HighScoresComponent,
     ],
     imports: [
         AppMaterialModule,

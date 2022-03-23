@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Room, State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
-import { skip } from 'rxjs/operators';
+import { map, skip } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -10,15 +11,21 @@ import { skip } from 'rxjs/operators';
 })
 export class AppComponent {
     constructor(communicationService: CommunicationService, router: Router) {
-        const prevRoom = { exists: false, started: false };
-        communicationService.selectedRoom.pipe(skip(1)).subscribe((room) => {
-            if (room === undefined && prevRoom.exists) router.navigate(['/']);
-            else if (!room?.started && prevRoom.started) router.navigate(['/waiting-room']);
-            else if (room?.started && !prevRoom.started) router.navigate(['/game']);
-            else if (room !== undefined && !prevRoom.exists) router.navigate(['/waiting-room']);
+        let prevState: State | undefined;
+        communicationService.selectedRoom
+            .pipe(
+                skip(1),
+                map((room: Room | undefined) => room?.state),
+            )
+            .subscribe((state: State | undefined) => {
+                if (prevState === state) return;
 
-            prevRoom.exists = room !== undefined;
-            prevRoom.started = room?.started || false;
-        });
+                if (state === State.Setup) router.navigate(['/waiting-room']);
+                else if (state === State.Started) router.navigate(['/game']);
+                else if (state === undefined || prevState === undefined) router.navigate(['/']);
+
+                prevState = state;
+            });
+        router.navigate(['/']);
     }
 }

@@ -3,12 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Parameters } from '@app/classes/parameters';
+import { Room, State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CommunicationService } from '@app/services/communication.service';
 
 describe('AppComponent', () => {
-    const ROOM = {
+    const ROOM: Room = {
         id: 0,
         name: 'Trantor',
         parameters: new Parameters(),
@@ -16,9 +17,10 @@ describe('AppComponent', () => {
             id: 'Gaals ID',
             name: 'Gaal',
             connected: true,
+            virtual: false,
         },
         otherPlayer: undefined,
-        started: false,
+        state: State.Setup,
     };
 
     let router: jasmine.SpyObj<Router>;
@@ -35,6 +37,7 @@ describe('AppComponent', () => {
         communicationService = TestBed.inject(CommunicationService);
         const fixture = TestBed.createComponent(AppComponent);
         app = fixture.componentInstance;
+        router.navigate.calls.reset();
     });
 
     it('should create the app', () => {
@@ -47,28 +50,32 @@ describe('AppComponent', () => {
     });
 
     it('should redirect the app when the room is started', () => {
-        communicationService.selectedRoom.next({ ...ROOM, started: true });
+        communicationService.selectedRoom.next({ ...ROOM, state: State.Started });
         expect(router.navigate).toHaveBeenCalledOnceWith(['/game']);
     });
 
-    it('should redirect the app when the room is exited', () => {
+    it('should redirect the app when the room is undefined', () => {
         communicationService.selectedRoom.next(ROOM);
         router.navigate.calls.reset();
         communicationService.selectedRoom.next(undefined);
-        expect(router.navigate).toHaveBeenCalledOnceWith(['/']);
+        expect(router.navigate).toHaveBeenCalled();
     });
 
     it('should redirect the app when the room is no longer started', () => {
-        communicationService.selectedRoom.next({ ...ROOM, started: true });
-        communicationService.selectedRoom.next(ROOM);
+        communicationService.selectedRoom.next({ ...ROOM, state: State.Started });
         expect(router.navigate).toHaveBeenCalledWith(['/game']);
+        router.navigate.calls.reset();
+        communicationService.selectedRoom.next(ROOM);
         expect(router.navigate).toHaveBeenCalledWith(['/waiting-room']);
     });
 
     it('should not redirect when not updating room', () => {
         communicationService.selectedRoom.next(ROOM);
         router.navigate.calls.reset();
-        communicationService.selectedRoom.next({ ...ROOM, otherPlayer: { id: 'Hari Seldons ID', name: 'Hari Seldon', connected: true } });
+        communicationService.selectedRoom.next({
+            ...ROOM,
+            otherPlayer: { id: 'Hari Seldons ID', name: 'Hari Seldon', connected: true, virtual: false },
+        });
         expect(router.navigate).not.toHaveBeenCalled();
     });
 

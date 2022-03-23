@@ -1,7 +1,6 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import * as cst from '@app/constants';
 import { Letter } from '@app/letter';
-
-const INVALID = -1;
 
 export class GameTile {
     empty: boolean;
@@ -26,14 +25,14 @@ export class GameTile {
         }
     }
 
+    deleteLetter() {
+        this.empty = true;
+        this.newlyPlaced = true;
+    }
+
     getPoints(): number {
-        if (this.letter !== undefined) {
-            if (this.newlyPlaced) {
-                return this.letter.score * this.multiplier;
-            }
-            return this.letter.score;
-        }
-        return INVALID;
+        if (this.letter === undefined || this.empty) return cst.UNDEFINED;
+        return this.letter.score * (this.newlyPlaced ? this.multiplier : 1);
     }
 
     getChar(): string {
@@ -43,7 +42,7 @@ export class GameTile {
     private getLetter(char: string): Letter {
         for (const letter of alphabetTemplate) {
             if (letter.name === char.toUpperCase()) {
-                return letter;
+                return Object.assign({}, letter);
             }
         }
         return alphabetTemplate[alphabetTemplate.length - 1];

@@ -1,36 +1,21 @@
+import { Game } from '@app/classes/game';
 import { Room, RoomId } from '@app/classes/room';
+import * as cst from '@app/constants';
 import { Service } from 'typedi';
-
-export const DELETION_DELAY = 5000; // ms
-const NOT_FOUND = -1;
 
 @Service()
 export class RoomsService {
     readonly rooms: Room[] = [];
-    private markedForDeletion: { [key: number]: NodeJS.Timer } = {};
-
-    pendDeletion(roomId: RoomId, onDelete: () => void) {
-        this.markedForDeletion[roomId] = setTimeout(() => {
-            this.remove(roomId);
-            delete this.markedForDeletion[roomId];
-            onDelete();
-        }, DELETION_DELAY);
-    }
+    readonly games: Game[] = [];
 
     remove(roomId: RoomId) {
-        const idx = this.rooms.findIndex((room) => room.id === roomId);
-        if (idx !== NOT_FOUND) {
-            this.rooms.splice(idx, 1);
+        const roomIdx = this.rooms.findIndex((room) => room.id === roomId);
+        if (roomIdx !== cst.UNDEFINED) {
+            this.rooms.splice(roomIdx, 1);
         }
-    }
-
-    unpendDeletion(roomId: RoomId) {
-        const room = this.rooms.find((r) => r.id === roomId);
-        if (room === undefined) return;
-        if (!room.mainPlayer.connected || !room.getOtherPlayer()?.connected) return;
-        if (this.markedForDeletion[roomId]) {
-            clearTimeout(this.markedForDeletion[roomId]);
-            delete this.markedForDeletion[roomId];
+        const gameIdx = this.games.findIndex((game) => game.id === roomId);
+        if (gameIdx !== cst.UNDEFINED) {
+            this.games.splice(gameIdx, 1);
         }
     }
 }

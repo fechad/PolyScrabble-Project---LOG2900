@@ -10,7 +10,7 @@ export class CanvasTestHelper {
     }
 }
 
-const CALLNUMBER = 61;
+const CALL_NUMBER = 61;
 describe('GridService', () => {
     let service: GridService;
     let gameContext: GameContextService;
@@ -19,6 +19,7 @@ describe('GridService', () => {
     const CANVAS_HEIGHT = 500;
     const ORIGIN = 0;
     const POLICE_SIZE = 9;
+    const H7H_INDEX = 7;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
@@ -26,7 +27,7 @@ describe('GridService', () => {
         gameContext = TestBed.inject(GameContextService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         service.gridContext = ctxStub;
-        service.tempUpdateBoard('A', 'h7h');
+        service.tempUpdateBoard('a', H7H_INDEX, H7H_INDEX, true);
     });
 
     it('should be created', () => {
@@ -110,12 +111,12 @@ describe('GridService', () => {
     it('bonusConditions should call drawBonus 61 times', () => {
         const drawTripleWordSpy = spyOn(service, 'drawBonus').and.callThrough();
         service.drawGrid();
-        expect(drawTripleWordSpy).toHaveBeenCalledTimes(CALLNUMBER);
+        expect(drawTripleWordSpy).toHaveBeenCalledTimes(CALL_NUMBER);
     });
 
     it('should not place two times the same letter', () => {
-        service.tempUpdateBoard('V', 'h7v');
-        service.tempUpdateBoard('Q', 'h7h');
-        expect(gameContext.board.value[7][6]?.name).toBe('A');
+        service.tempUpdateBoard('V', H7H_INDEX, H7H_INDEX, true);
+        service.tempUpdateBoard('Q', H7H_INDEX, H7H_INDEX, true);
+        expect(gameContext.state.value.board[H7H_INDEX][H7H_INDEX]?.name).toBe('A');
     });
 });

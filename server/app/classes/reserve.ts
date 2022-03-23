@@ -1,6 +1,8 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import * as cst from '@app/constants';
+import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { Letter } from '@app/letter';
-import { MAIN_PLAYER, OTHER_PLAYER } from './game';
+import { ReserveLetter } from '@app/reserve-letter';
 
 export class Reserve {
     letterRacks: Letter[][] = [];
@@ -19,11 +21,10 @@ export class Reserve {
         const lettersToSend: Letter[] = [];
         const pullableQuantity = this.reserve.length > quantity ? quantity : this.reserve.length;
         for (let i = 0; i < pullableQuantity; i++) {
-            const listLength: number = this.reserve.length - 1;
-            const index: number = Math.floor(Math.random() * listLength); // random number from array
+            const index: number = Math.floor(Math.random() * this.reserve.length); // random number from array
             lettersToSend.push(this.reserve[index]);
             // remove chosen element
-            this.reserve[index] = this.reserve[listLength];
+            this.reserve[index] = this.reserve[this.reserve.length - 1];
             this.reserve.pop();
         }
         return lettersToSend;
@@ -31,24 +32,25 @@ export class Reserve {
 
     updateReserve(lettersToChange: string, isMainPlayer: boolean, putBack: boolean) {
         const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
+        const rack = this.letterRacks[playerIndex];
 
         for (const unwantedLetter of lettersToChange) {
-            const listLength = this.letterRacks[playerIndex].length - 1;
-            for (let i = 0; i <= listLength; i++) {
-                if (
-                    unwantedLetter === this.letterRacks[playerIndex][i].name.toLowerCase() ||
-                    (unwantedLetter.match(/[A-Z]/g) && this.letterRacks[playerIndex][i].name.match(/[*]/g))
-                ) {
-                    if (putBack) {
-                        this.reserve.push(this.letterRacks[playerIndex][i]);
-                    }
-                    this.letterRacks[playerIndex][i] = this.letterRacks[playerIndex][listLength];
-                    this.letterRacks[playerIndex].pop();
-                    break;
-                }
-            }
+            const i = rack.findIndex(
+                (letter) => unwantedLetter === letter.name.toLowerCase() || (unwantedLetter.match(/[A-Z]/g) && letter.name.match(/[*]/g)),
+            );
+            if (i === cst.UNDEFINED) continue;
+            if (putBack) this.reserve.push(rack[i]);
+            rack[i] = rack[rack.length - 1];
+            rack.pop();
         }
-        this.letterRacks[playerIndex] = this.letterRacks[playerIndex].concat(this.drawLetters(lettersToChange.length));
+        rack.push(...this.drawLetters(lettersToChange.length));
+    }
+
+    matchRack(rack: Letter[], isMainPlayer: boolean) {
+        const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
+        rack.forEach((letter, idx) => {
+            this.letterRacks[playerIndex][idx] = letter;
+        });
     }
 
     getCount() {
@@ -56,19 +58,24 @@ export class Reserve {
     }
 
     isPlayerRackEmpty(player: number): boolean {
-        for (const letter of this.letterRacks[player]) {
-            if (letter !== undefined) return false;
+        return this.letterRacks[player].every((letter) => !letter);
+    }
+
+    getContent() {
+        const reserveToShow: ReserveLetter[] = alphabetTemplate.map((letter) => ({ name: letter.name, qtyInReserve: 0 }));
+        for (const content of this.reserve) {
+            reserveToShow[content.id - 1].qtyInReserve++;
         }
-        return true;
+        return reserveToShow;
     }
 
     private setRacks() {
         const rackLength = 7;
-        let rack1: Letter[] = [];
-        let rack2: Letter[] = [];
+        const rack1: Letter[] = [];
+        const rack2: Letter[] = [];
         for (let i = 0; i < rackLength; i++) {
-            rack1 = rack1.concat(this.drawLetters(1));
-            rack2 = rack2.concat(this.drawLetters(1));
+            rack1.push(...this.drawLetters(1));
+            rack2.push(...this.drawLetters(1));
         }
         this.letterRacks.push(rack1);
         this.letterRacks.push(rack2);

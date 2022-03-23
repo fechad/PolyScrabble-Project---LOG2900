@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -36,6 +37,7 @@ describe('JoinSetupDialogComponent', () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
         await TestBed.configureTestingModule({
             declarations: [JoinSetupDialogComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
             imports: [
                 HttpClientTestingModule,
                 MatCardModule,
@@ -69,10 +71,6 @@ describe('JoinSetupDialogComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('form invalid if no name entered', () => {
-        expect(component.joiningRoomForm.valid).toBeFalsy();
     });
 
     it('form invalid if no name entered', () => {

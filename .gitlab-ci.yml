@@ -145,6 +145,7 @@ pages:
 
 variables:
     EC2_USER: ec2-user
+    ORIGIN: 'https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}'
 
 deploy:server:
     stage: deploy
@@ -165,10 +166,15 @@ deploy:server:
                 forever stopall && sudo fuser -k '${SERVER_PORT}/tcp' && sudo killall node
 
                 # Clone the repository
-                git clone 'https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}' repo || echo Git repository already exist
+                git clone ${ORIGIN} repo || echo Git repository already exist
                 cd repo
 
-                # Checkout to the targeted commit
+                # Update the remote origin
+                # This action is important because the CI_JOB_TOKEN become invalid after each pipeline
+                git remote remove origin
+                git remote add origin ${ORIGIN}
+
+                # Checkout to the targeted commit 
                 git fetch --all
                 git checkout ${CI_COMMIT_SHA}
 

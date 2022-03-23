@@ -1,10 +1,12 @@
 import { HttpClientModule } from '@angular/common/http';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
-import { Room } from '@app/classes/room';
+import { Room, State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
@@ -17,7 +19,7 @@ export class CommunicationServiceMock {
         parameters: new Parameters(),
         mainPlayer: { name: 'Player 1', id: '0', connected: true },
         otherPlayer: undefined,
-        started: false,
+        state: State.Setup,
     } as Room);
     dictionnaries: Promise<Dictionnary[]> = Promise.resolve([{ id: 0, name: 'français' }]);
 
@@ -42,6 +44,12 @@ export class CommunicationServiceMock {
     }
 }
 
+const dialogMock = {
+    close: () => {
+        return;
+    },
+};
+
 describe('WaitingRoomPageComponent', () => {
     let component: WaitingRoomPageComponent;
     let fixture: ComponentFixture<WaitingRoomPageComponent>;
@@ -53,8 +61,14 @@ describe('WaitingRoomPageComponent', () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             declarations: [WaitingRoomPageComponent],
-            providers: [{ provide: CommunicationService, useValue: service }],
-        }).compileComponents();
+            providers: [
+                { provide: CommunicationService, useValue: service },
+                { provide: MatDialog, useValue: dialogMock },
+                { provide: ActivatedRoute, useValue: {} },
+            ],
+        })
+            .overrideComponent(WaitingRoomPageComponent, { set: { changeDetection: ChangeDetectionStrategy.Default } })
+            .compileComponents();
     });
 
     beforeEach(() => {
@@ -63,7 +77,7 @@ describe('WaitingRoomPageComponent', () => {
         router.initialNavigation();
         service.selectedRoom.subscribe(async (room) => {
             if (room === undefined) router.navigate(['/']);
-            else if (room.started) router.navigate(['/game']);
+            else if (room.state === State.Started) router.navigate(['/game']);
             fixture.detectChanges();
         });
         component = fixture.componentInstance;

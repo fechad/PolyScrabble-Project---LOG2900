@@ -25,6 +25,10 @@
     font-size: 20px;
 }
 
+.endgame-infos {
+    background-color: #54bd9d;
+}
+
 .opponent,
 .player {
     flex-direction: row;
@@ -32,7 +36,7 @@
 }
 
 .tour {
-    background-color: #ffe454;
+    background-color: #54bd9d;
 }
 
 p {

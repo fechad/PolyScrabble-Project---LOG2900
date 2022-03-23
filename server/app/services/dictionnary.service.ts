@@ -6,7 +6,7 @@ export type DictionnaryInfo = { id: number; name: string; words: string[] };
 
 @Service()
 export class DictionnaryService {
-    private dictionnaries: Dictionnary[] = [];
+    dictionnaries: Dictionnary[] = [];
 
     async init() {
         const fileBuffer = await promises.readFile('./assets/dictionnary.json');
@@ -18,7 +18,6 @@ export class DictionnaryService {
         return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
     }
 
-    // TODO: valider au moins 2 lettres
     isValidWord(playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;

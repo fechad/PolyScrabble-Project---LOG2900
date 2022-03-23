@@ -1,19 +1,22 @@
 <div class="container main-container">
     <div class="vertical">
         <img class="logo" src="assets/logo.svg" alt="Scrabble" />
-        <h2 class="subtitle">{{ this.mode.mode }}</h2>
+        <h2 class="subtitle">{{ mode === 'classic' ? 'Classique' : 'LOG2990' }}</h2>
         <button
             mat-raised-button
-            class="button champ.texte"
-            [ngClass]="champ.promptsDialog ? champ.texte : ''"
-            [disabled]="champ.disabled"
-            *ngFor="let champ of boutons"
-            (click)="champ.promptsDialog && openDialog()"
-            routerLink="{{ champ.promptsDialog ? '/classic' : champ.route }}"
-            matTooltip="{{ champ.toolTip }}"
+            class="button field.text"
+            [ngClass]="field.promptsDialog ? field.text : ''"
+            *ngFor="let field of buttons"
+            (click)="
+                (field.promptsDialog && field.text === 'Multijoueur' && openDialog()) ||
+                    (field.promptsDialog && field.text === 'Solo' && openSoloDialog())
+            "
+            routerLink="{{ field.promptsDialog ? '/classic' : field.route }}"
+            matTooltip="{{ field.toolTip }}"
             matTooltipPosition="right"
+            matTooltipClass="tool"
         >
-            {{ champ.texte }}
+            {{field.text}}
         </button>
     </div>
 </div>

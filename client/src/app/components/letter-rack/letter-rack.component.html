@@ -1,10 +1,39 @@
-<div class="rack-container">
-    <div class="letter-container" *ngFor="let letter of letters">
-        <div class="letter-name">
-            <p>{{ letter.name }}</p>
+<div class="rack-container" #letterContainer>
+    <div
+        *ngFor="let letter of letters; let idx = index"
+        (click)="manipulate(idx)"
+        (contextmenu)="select(idx); $event.preventDefault();"
+        class="letter-container"
+        [ngClass]="{ manipulating: manipulating === idx, exchanging: exchanging.includes(idx) }"
+    >
+        <div
+            [ngClass]="{
+                'letter-name': this.gridService.multiplier === 1,
+                'big-let': this.gridService.multiplier === 1.1,
+                'small-let': this.gridService.multiplier === 0.9
+            }"
+        >
+            <p class="name">{{ letter.name }}</p>
         </div>
-        <div class="letter-score">
-            <p>{{ letter.score }}</p>
+        <div
+            [ngClass]="{
+                'letter-score': this.gridService.multiplier === 1,
+                'big-sco': this.gridService.multiplier === 1.1,
+                'small-sco': this.gridService.multiplier === 0.9
+            }"
+        >
+            <p class="score">{{ letter.score }}</p>
         </div>
     </div>
+</div>
+
+<div id="menu" class="context-menu" *ngIf="exchanging.length > 0">
+    <button
+        id="exchange"
+        (click)="exchange()"
+        [disabled]="(gameContextService.isMyTurn() | async) === false || getReserveCount()"
+    >
+        Échanger
+    </button>
+    <button id="cancel" (click)="exchanging = []">Annuler</button>
 </div>

@@ -1,14 +1,16 @@
 import { alphabetTemplate } from '@app/alphabet-template';
+import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { Letter } from '@app/letter';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import { Game, MAIN_PLAYER, OTHER_PLAYER } from './game';
+import { EndGameCalculator } from './end-game-calculator';
+import { Game } from './game';
 import { Parameters } from './parameters';
-import { Player } from './room';
+import { Player, Room } from './room';
 
-/* eslint-disable dot-notation */
+/* eslint-disable dot-notation, @typescript-eslint/no-magic-numbers */
 
 const RESPONSE_DELAY = 400;
 const HALF_LENGTH = 7;
@@ -28,13 +30,16 @@ describe('Game', () => {
 
     beforeEach(() => {
         players = [
-            { name: 'Bob', id: '0', connected: true },
-            { name: 'notBob', id: '1', connected: true },
+            { name: 'Bob', id: '0', connected: true, virtual: false },
+            { name: 'notBob', id: '1', connected: true, virtual: false },
         ];
         parameters = new Parameters();
-        game = new Game(0, players, parameters, dictionnary);
+        const room = new Room(0, players[0].id, players[0].name, parameters);
+        room.addPlayer(players[1].id, players[1].name, false);
+        game = new Game(room, dictionnary);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
+        game['isPlayer0Turn'] = true;
     });
 
     afterEach(() => {
@@ -57,7 +62,6 @@ describe('Game', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
         const letters = game.reserve.letterRacks[0][0].name.toLowerCase() + game.reserve.letterRacks[0][3].name.toLowerCase();
-        game['isPlayer0Turn'] = true;
         game.changeLetters(letters, game.players[0].id);
         assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
         assert(stubError.notCalled);
@@ -68,7 +72,6 @@ describe('Game', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
         const letters = 'abcd';
-        game['isPlayer0Turn'] = true;
         game.changeLetters(letters, '1');
         assert(stub.notCalled);
         assert(stubError.called);
@@ -76,38 +79,35 @@ describe('Game', () => {
     });
 
     it('should place letters', async () => {
-        const stubScore = sinon.stub();
         const stubValidCommand = sinon.stub();
-        const stubReserve = sinon.stub();
-        const stubBoard = sinon.stub();
+        const stubState = sinon.stub();
 
-        game.eventEmitter.on('score', stubScore);
-        game.eventEmitter.on('valid-command', stubValidCommand);
-        game.eventEmitter.on('reserve', stubReserve);
-        game.eventEmitter.on('board', stubBoard);
-        const position = 'h7h';
+        game.eventEmitter.on('message', stubValidCommand);
+        game.eventEmitter.on('state', stubState);
+        const row = 7;
+        const col = 6;
+        const isHoriontal = true;
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'E', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'S', score: 1, quantity: 0 } as Letter);
         game.reserve.letterRacks[0].push({ id: 0, name: 'T', score: 1, quantity: 0 } as Letter);
         const letters = 'test';
-        game['isPlayer0Turn'] = true;
-        await game.placeLetters(letters, position, game.players[0].id);
-        assert(stubScore.called);
-        assert(stubValidCommand.called);
-        assert(stubReserve.called);
-        assert(stubBoard.called);
-        assert(stubError.notCalled);
+        await game.placeLetters(game.players[0].id, letters, row, col, isHoriontal);
+        assert(stubValidCommand.called, 'Did not send message');
+        assert(stubState.called, 'Did not update state');
+        assert(stubError.notCalled, 'Errored');
     });
 
     it('should not place letters when it is not your turn', async () => {
         const letters = 'test';
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         game['isPlayer0Turn'] = false;
         const stubValidCommand = sinon.stub();
         game.eventEmitter.on('valid-command', stubValidCommand);
 
-        await game.placeLetters(letters, position, game.players[0].id);
+        await game.placeLetters(game.players[0].id, letters, row, col, isHorizontal);
 
         assert(stubValidCommand.notCalled);
         assert(stubError.called);
@@ -115,102 +115,122 @@ describe('Game', () => {
 
     it('should output an error when not placing letters', async () => {
         const stub = sinon.stub();
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         const letters = 'testaaaaaaaaaaa';
         game.eventEmitter.on('score', stub);
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(letters, position, '0');
+        await game.placeLetters(game.players[0].id, letters, row, col, isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
     });
 
     it('should not place letters if it is not your turn', (done) => {
         const stub = sinon.stub();
-        const position = 'h7h';
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
         const letters = 'test';
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(letters, position, '1');
+        game.placeLetters(game.players[1].id, letters, row, col, isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
         done();
     });
 
     it('should check turn of player', (done) => {
-        game['isPlayer0Turn'] = true;
         game['checkTurn']('0');
         assert(stubError.notCalled);
-        assert(game['isPlayer0Turn']);
         game['checkTurn']('1');
         assert(stubError.called);
         done();
     });
 
     it('should skip turn', (done) => {
-        game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[0].id, true);
+        game.skipTurn(game.players[0].id);
         assert(!game['isPlayer0Turn']);
-        game.skipTurn(game.players[1].id, true);
+        game.skipTurn(game.players[1].id);
         assert(game['isPlayer0Turn']);
         assert(stubError.notCalled);
         done();
     });
 
     it('should not skip turn if it is not your turn', (done) => {
-        game['isPlayer0Turn'] = true;
-        game.skipTurn(game.players[1].id, true);
+        game.skipTurn(game.players[1].id);
         assert(game['isPlayer0Turn']);
         assert(stubError.called);
         done();
     });
 
+    it('should show content of reserve', (done) => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('reserve-content', stub);
+        game.showReserveContent('me');
+        assert(stub.calledWith('me', game.reserve.getContent()));
+        assert(stubError.notCalled);
+        done();
+    });
+
     it('Skipping 6 turns in a row should call endGame', () => {
         game['skipCounter'] = 5;
-        const endGame = sinon.spy(game, 'endGame');
-        game.updateSkipCounter(true);
+        const endGame = sinon.spy(game, 'endGame' as never);
+        game['nextTurn'](true);
         assert(endGame.called);
     });
 
-    it('updating the skipCouter after a valid command should reset the counter', () => {
-        game.updateSkipCounter(false);
-        assert(game['skipCounter'] === 0);
+    it('updating the skipCounter after a valid command should reset the counter', () => {
+        game['skipCounter'] = 5;
+        game['nextTurn'](false);
+        expect(game['skipCounter']).to.equal(0);
     });
 
-    it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
-        const calculateFinalScores = sinon.spy(game.endGameService, 'calculateFinalScores');
-        const createGameSummaryMessage = sinon.spy(game.endGameService, 'createGameSummaryMessage');
-        const getWinner = sinon.spy(game, 'getWinner');
-        game.endGame();
-        assert(calculateFinalScores.called);
-        assert(createGameSummaryMessage.called);
-        assert(getWinner.called);
-    });
+    // it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
+    //     const calculateFinalScores = sinon.spy(EndGameCalculator, 'calculateFinalScores');
+    //     const createGameSummaryMessage = sinon.spy(EndGameCalculator, 'createGameSummaryMessage');
+    //     game.endGame();
+    //     assert(calculateFinalScores.called, 'Did not call final scores');
+    //     assert(createGameSummaryMessage.called, 'Did not call game summary');
+    //     expect(game['winner']).to.not.equal(undefined);
+    // });
 
     it('getWinner should return the winners id', () => {
         const mainPlayer = game.players[MAIN_PLAYER];
         const otherPlayer = game.players[OTHER_PLAYER];
-        const mainPlayerScore = 20;
-        const otherPlayerScore = 10;
-        const result1 = game.getWinner([mainPlayerScore, otherPlayerScore]);
-        assert(result1 === mainPlayer);
 
-        const result2 = game.getWinner([otherPlayerScore, mainPlayerScore]);
-        assert(result2 === otherPlayer);
+        game.reserve.letterRacks[0] = [];
+        game.reserve.letterRacks[1] = [];
+
+        game.scores[0] = 20;
+        game.scores[1] = 10;
+        const result1 = game.getWinner();
+        assert(result1 === mainPlayer.id);
+
+        game.scores[0] = 10;
+        game.scores[1] = 20;
+        const result2 = game.getWinner();
+        assert(result2 === otherPlayer.id);
     });
 
-    it('getWinner should return a player with an id called equalScore if its a tie', () => {
-        const score = 20;
-        const result1 = game.getWinner([score, score]);
-        assert(result1.id === 'equalScore');
+    it('getWinner should return tie if its a tie', () => {
+        game.reserve['letterRacks'][0] = [...game.reserve['letterRacks'][1]];
+        game.scores[0] = 20;
+        game.scores[1] = 20;
+        const result1 = game.getWinner();
+        expect(result1).to.equal(undefined);
     });
 
     it('empty reserve and empty rack should trigger endGame', async () => {
-        const endGame = sinon.stub(game, 'endGame');
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
+        const endGame = sinon.stub(game, 'endGame' as never);
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
         game['isPlayer0Turn'] = true;
-        await game.placeLetters('allo', 'h7h', game.players[MAIN_PLAYER].id);
+        await game.placeLetters(game.players[MAIN_PLAYER].id, 'allo', row, col, isHorizontal);
         assert(endGame.called);
     });
 
@@ -218,96 +238,55 @@ describe('Game', () => {
         const remainingLettersInReserve = 4;
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
         game.reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
-        game['isPlayer0Turn'] = true;
         game.changeLetters('allo', game.players[MAIN_PLAYER].id);
         assert(stubError.called);
     });
 
-    it('should calulate the final scores when the mainPlayer rack is empty', () => {
+    it('should calculate the final scores when the mainPlayer rack is empty', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
+        game.reserve.letterRacks = [
+            [
+                { name: 'A', score: 1, quantity: 20, id: 0 },
+                { name: 'B', score: 1, quantity: 3, id: 1 },
+            ],
+            [{ name: 'C', score: 2, quantity: 2, id: 2 }],
+        ];
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER].length = 0;
-        const result = game.endGameService.calculateFinalScores(scores, game.reserve);
-        assert(result);
+        EndGameCalculator.calculateFinalScores(scores, game.reserve);
+        expect(scores).to.deep.equal([12, 18]);
     });
 
-    it('should calulate the final scores when the otherPlayer rack is empty', () => {
+    it('should calculate the final scores when the otherPlayer rack is empty', () => {
         const scoreMainPlayer = 10;
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
+        game.reserve.letterRacks = [
+            [
+                { name: 'A', score: 1, quantity: 20, id: 0 },
+                { name: 'B', score: 1, quantity: 3, id: 1 },
+            ],
+            [{ name: 'C', score: 2, quantity: 2, id: 2 }],
+        ];
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[OTHER_PLAYER].length = 0;
-        const result = game.endGameService.calculateFinalScores(scores, game.reserve);
-        assert(result);
-    });
-
-    it('should send the players rack', (done) => {
-        const stub = sinon.stub();
-        game.eventEmitter.on('rack', stub);
-
-        game['sendRack']();
-        assert(stub.called);
-        done();
-    });
-
-    it('should forfeit the game', (done) => {
-        const stub = sinon.stub();
-        game.eventEmitter.on('forfeit', stub);
-
-        game.forfeit(game.players[0].id);
-        assert(stub.calledWith(game.players[0].id));
-        done();
+        EndGameCalculator.calculateFinalScores(scores, game.reserve);
+        expect(scores).to.deep.equal([8, 22]);
     });
 
     it('should initialise a game', (done) => {
         const stubBoard = sinon.stub();
-        game.eventEmitter.on('board', stubBoard);
+        game.eventEmitter.on('state', stubBoard);
         const stubRack = sinon.stub();
         game.eventEmitter.on('rack', stubRack);
-        const stubTurn = sinon.stub();
-        game.eventEmitter.on('turn', stubTurn);
-        const stubPlayers = sinon.stub();
-        game.eventEmitter.on('players', stubPlayers);
-        const stubReserve = sinon.stub();
-        game.eventEmitter.on('reserve', stubReserve);
 
-        game['isPlayer0Turn'] = true;
-        game.gameInit();
+        game.sendState();
 
         assert(stubBoard.called);
         assert(stubRack.calledTwice);
-        assert(stubTurn.calledWith(game.players[0].id));
-        assert(stubReserve.calledWith(game.reserve.getCount()));
 
-        done();
-    });
-
-    it('should get the name of the player', (done) => {
-        game['isPlayer0Turn'] = true;
-        expect(game.getPlayerName()).to.equal(game.players[0].name);
-
-        game['isPlayer0Turn'] = false;
-        expect(game.getPlayerName()).to.equal(game.players[1].name);
-        done();
-    });
-
-    it('should get the id of the player', (done) => {
-        game['isPlayer0Turn'] = true;
-        expect(game['getPlayerId'](true)).to.equal(game.players[0].id);
-
-        expect(game['getPlayerId'](false)).to.equal(game.players[1].id);
-        done();
-    });
-
-    it('should get reserve called', (done) => {
-        const stub = sinon.stub();
-        game.eventEmitter.on('reserve', stub);
-
-        const count = game.reserve.getCount();
-        game.getReserveCount();
-        assert(stub.calledWith(count));
         done();
     });
 

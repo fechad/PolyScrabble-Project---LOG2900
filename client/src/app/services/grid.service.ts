@@ -1,39 +1,8 @@
-import { Injectable } from '@angular/core';
+import { HostListener, Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
+import * as cst from '@app/constants';
 import { GameContextService, Tile } from './game-context.service';
-// TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
-const CENTERTILE = 7;
-const AJUSTY = 16;
-const AJUSTTILEY = 10;
-const AJUSTTILEX = 5;
-const AJUSTSTARX = 4;
-const AJUSTSTARY = 10;
-const AJUSTBONUS = 10;
-const AJUSTBONUSWORD = 5;
-const AJUSTBONUSLETTER = 1;
-const AJUSTLETTER = 4;
-const TWOCHARNUMBER = 10;
-const AJUSTSTEP = 0.5;
-const EXCEPTIONX = 11;
-const EXCEPTIONY = 0;
-const AMOUNTOFNUMBER = 15;
-const DEFAULT_SIZE = 9;
-const TILE_SIZE = 30;
-const BOARD_LENGTH = 15;
-const COMMAND_X_INDEX = 1;
-const COMMAND_Y_INDEX = 0;
-const LOWERCASE_A_ASCII = 97;
-
-enum Colors {
-    Mustard = '#E1AC01',
-    Yellow = '#FFE454',
-    Green = '#54bd9d',
-    Blue = '#65CCD2',
-    Grey = '#838383',
-}
 
 @Injectable({
     providedIn: 'root',
@@ -42,66 +11,160 @@ export class GridService {
     gridContext: CanvasRenderingContext2D;
     fontSize = '';
     multiplier = 1;
-    private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    buttonPressed = '';
+    letters: Letter[] = [];
+    rack: Letter[] = [];
+    letterForServer = '';
+    letterWritten = 0;
+    letterPosition: number[][] = [];
+    firstLetter = [0, 0];
+    private canvasSize: Vec2 = { x: cst.DEFAULT_INNER_WIDTH, y: cst.DEFAULT_INNER_HEIGHT };
 
-    constructor(private gameContext: GameContextService) {}
+    constructor(private gameContext: GameContextService) {
+        this.gameContext.rack.subscribe((rack) => {
+            this.rack = [...rack];
+        });
+    }
+
+    @HostListener('keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+    }
 
     drawGrid() {
-        const offset = BOARD_LENGTH / BOARD_LENGTH;
-        const squareSize = DEFAULT_WIDTH / BOARD_LENGTH - offset;
-        this.gridContext.lineWidth = offset;
+        this.gridContext.clearRect(0, 0, cst.PLAY_AREA_SIZE, cst.PLAY_AREA_SIZE);
+        this.gridContext.lineWidth = cst.BOUNDS;
         this.gridContext.beginPath();
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
 
-        this.gridContext.fillStyle = '#c4c4c4';
-        this.gridContext.strokeStyle = '#B1ACAC';
-        const gridOrigin = 20;
-        for (let i = 0; i < BOARD_LENGTH; i++) {
-            for (let j = 0; j < BOARD_LENGTH; j++) {
+        this.gridContext.fillStyle = cst.Colors.DarkGrey;
+        this.gridContext.strokeStyle = cst.Colors.Black;
+        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
+            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
                 this.gridContext.beginPath();
-                this.gridContext.rect((squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin, squareSize, squareSize);
+                this.gridContext.rect(
+                    (cst.SQUARE_SIZE + cst.BOUNDS) * i + cst.GRID_ORIGIN,
+                    (cst.SQUARE_SIZE + cst.BOUNDS) * j + cst.GRID_ORIGIN,
+                    cst.SQUARE_SIZE,
+                    cst.SQUARE_SIZE,
+                );
                 this.gridContext.fill();
-                this.bonusConditions(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUSTY);
-                this.drawTiles(i, j, (squareSize + offset) * i + gridOrigin, (squareSize + offset) * j + gridOrigin + AJUSTY);
-                this.gridContext.fillStyle = '#353535';
+                this.bonusConditions(
+                    i,
+                    j,
+                    (cst.SQUARE_SIZE + cst.BOUNDS) * i + cst.GRID_ORIGIN,
+                    (cst.SQUARE_SIZE + cst.BOUNDS) * j + cst.GRID_ORIGIN + cst.AJUST_Y,
+                );
+                this.drawTiles(
+                    i,
+                    j,
+                    (cst.SQUARE_SIZE + cst.BOUNDS) * i + cst.GRID_ORIGIN,
+                    (cst.SQUARE_SIZE + cst.BOUNDS) * j + cst.GRID_ORIGIN + cst.AJUST_Y,
+                );
+                this.drawWhiteSquare(i, j);
+                this.gridContext.fillStyle = cst.Colors.DarkGrey;
             }
         }
     }
 
-    drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
-        if (this.gameContext.board.value[posX][posY] !== undefined && this.gameContext.board.value[posX][posY] !== null) {
-            const tile = this.gameContext.board.value[posX][posY] as Letter;
-            this.gridContext.fillStyle = 'burlywood';
-            this.gridContext.fill();
-            this.drawMessage(tile.name, canvasX + AJUSTTILEX, canvasY + AJUSTTILEY, TILE_SIZE);
+    drawWhiteSquare(posX: number, posY: number) {
+        for (const elem of this.letterPosition) {
+            if (elem[1] === posX && elem[0] === posY && this.gameContext.state.value.board[posY][posX] !== null) {
+                this.gridContext.strokeStyle = cst.Colors.White;
+                this.gridContext.lineWidth = 2.5;
+                this.gridContext.stroke();
+            }
         }
     }
 
-    tempUpdateBoard(lettersToAdd: string, position: string) {
-        const COMMAND_ORIENTATION_INDEX = position.length - 1;
-        const verticalPosition = position.charCodeAt(COMMAND_Y_INDEX) - LOWERCASE_A_ASCII;
-        const horizontalPositionString = position.substring(COMMAND_X_INDEX, COMMAND_ORIENTATION_INDEX);
-        const horizontalPosition = parseInt(horizontalPositionString, 10) - 1;
+    drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
+        const x = canvasX;
+        const y = canvasY;
+        this.gridContext.fillStyle = cst.Colors.Black;
+        this.gridContext.beginPath();
+        if (isHorizontal) {
+            this.gridContext.moveTo(x, y);
+            this.gridContext.lineTo(x - cst.SQUARE_SIZE / cst.FOURTH_SQUARE, y + cst.SQUARE_SIZE / cst.FOURTH_SQUARE);
+            this.gridContext.lineTo(x - cst.SQUARE_SIZE / cst.FOURTH_SQUARE, y - cst.SQUARE_SIZE / cst.FOURTH_SQUARE);
+            this.gridContext.fill();
+        } else {
+            this.gridContext.moveTo(x - cst.SQUARE_SIZE / cst.FOURTH_SQUARE, y + cst.SQUARE_SIZE / cst.FOURTH_SQUARE);
+            this.gridContext.lineTo(x - cst.SQUARE_SIZE / 2, y);
+            this.gridContext.lineTo(x, y);
+            this.gridContext.fill();
+        }
+    }
 
-        const isVerticalPlacement = position[COMMAND_ORIENTATION_INDEX] === 'v';
-        const iterationPosition = isVerticalPlacement ? verticalPosition : horizontalPosition;
+    drawTiles(posY: number, posX: number, canvasX: number, canvasY: number) {
+        if (this.gameContext.state.value.board[posX][posY] !== null) {
+            const tile = this.gameContext.state.value.board[posX][posY] as Letter;
+            this.gridContext.fillStyle = 'burlywood';
+            this.gridContext.beginPath();
+            this.gridContext.moveTo(canvasX + cst.RADIUS, canvasY - cst.Y_PLACEMENT);
+            this.gridContext.lineTo(canvasX + cst.SQUARE_SIZE - cst.RADIUS, canvasY - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(
+                canvasX + cst.SQUARE_SIZE,
+                canvasY - cst.Y_PLACEMENT,
+                canvasX + cst.SQUARE_SIZE,
+                canvasY + cst.RADIUS - cst.Y_PLACEMENT,
+            );
+            this.gridContext.lineTo(canvasX + cst.SQUARE_SIZE, canvasY + cst.SQUARE_SIZE - cst.RADIUS - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(
+                canvasX + cst.SQUARE_SIZE,
+                canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT,
+                canvasX + cst.SQUARE_SIZE - cst.RADIUS,
+                canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT,
+            );
+            this.gridContext.lineTo(canvasX + cst.RADIUS, canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(
+                canvasX,
+                canvasY + cst.SQUARE_SIZE - cst.Y_PLACEMENT,
+                canvasX,
+                canvasY + cst.SQUARE_SIZE - cst.RADIUS - cst.Y_PLACEMENT,
+            );
+            this.gridContext.lineTo(canvasX, canvasY + cst.RADIUS - cst.Y_PLACEMENT);
+            this.gridContext.quadraticCurveTo(canvasX, canvasY - cst.Y_PLACEMENT, canvasX + cst.RADIUS, canvasY - cst.Y_PLACEMENT);
+            this.gridContext.fill();
+            this.gridContext.strokeStyle = '#000';
+            this.gridContext.lineWidth = 0.5;
+            this.gridContext.stroke();
+            this.drawMessage(tile.name, canvasX + cst.AJUST_TILE_X, canvasY + cst.AJUST_TILE_Y, cst.TILE_SIZE);
+        }
+    }
 
-        const temporaryBoard = this.gameContext.board.value;
-        let letterPosition = 0;
-        for (let i = iterationPosition; i < BOARD_LENGTH; i++) {
-            if (letterPosition > lettersToAdd.length - 1) break;
-            const tile = isVerticalPlacement ? temporaryBoard[i][horizontalPosition] : temporaryBoard[verticalPosition][i];
-            if (tile !== null) continue;
+    tempUpdateBoard(lettersToAdd: string, verticalIndex: number, horizontalIndex: number, isHorizontalPlacement: boolean | undefined) {
+        const iterationPosition = isHorizontalPlacement ? horizontalIndex : verticalIndex;
+        const temporaryBoard = this.gameContext.state.value.board;
+        if (isHorizontalPlacement === undefined) {
             const letter: Tile = {
-                name: lettersToAdd[letterPosition].toUpperCase(),
+                name: lettersToAdd[0].toUpperCase(),
                 score: 0,
             } as Letter;
-            if (isVerticalPlacement) temporaryBoard[i][horizontalPosition] = letter;
-            else temporaryBoard[verticalPosition][i] = letter;
-            letterPosition++;
+            temporaryBoard[verticalIndex][horizontalIndex] = letter;
+        } else {
+            let pos = 0;
+            for (let i = iterationPosition; i < cst.BOARD_LENGTH; i++) {
+                if (pos > lettersToAdd.length - 1) break;
+                const tile = isHorizontalPlacement ? temporaryBoard[verticalIndex][i] : temporaryBoard[i][horizontalIndex];
+                if (tile !== null) continue;
+                const letter: Tile = {
+                    name: lettersToAdd[pos].toUpperCase(),
+                    score: 0,
+                } as Letter;
+                if (isHorizontalPlacement) {
+                    temporaryBoard[verticalIndex][i] = letter;
+                    this.letterPosition.push([verticalIndex, i]);
+                } else {
+                    temporaryBoard[i][horizontalIndex] = letter;
+                    this.letterPosition.push([i, horizontalIndex]);
+                }
+                pos++;
+            }
         }
-        this.gameContext.board.next(temporaryBoard);
+        const newState = this.gameContext.state.value;
+        newState.board = temporaryBoard;
+        this.gameContext.state.next(newState);
     }
 
     bonusConditions(posX: number, posY: number, canvasX: number, canvasY: number) {
@@ -135,35 +198,35 @@ export class GridService {
             '1411',
         ];
         if (tripleWord.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, Colors.Mustard, 'MOT x3');
+            this.drawBonus(canvasX, canvasY, cst.Colors.Mustard, 'MOT x3');
         } else if (tripleLetter.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, Colors.Green, 'LETTRE x3');
+            this.drawBonus(canvasX, canvasY, cst.Colors.Green, 'LETTRE x3');
         } else if (doubleWord.includes(coord)) {
-            this.drawBonus(canvasX, canvasY, Colors.Yellow, 'MOT x2');
-        } else if (doubleLetter.includes(coord) || (posX === EXCEPTIONX && posY === EXCEPTIONY)) {
-            this.drawBonus(canvasX, canvasY, Colors.Blue, 'LETTRE x2');
-        } else if (posX === CENTERTILE && posY === CENTERTILE) {
-            this.drawBonus(canvasX - AJUSTSTARX, canvasY + AJUSTSTARY, Colors.Grey, '⭐');
+            this.drawBonus(canvasX, canvasY, cst.Colors.Yellow, 'MOT x2');
+        } else if (doubleLetter.includes(coord) || (posX === cst.EXCEPTION_X && posY === cst.EXCEPTION_Y)) {
+            this.drawBonus(canvasX, canvasY, cst.Colors.Blue, 'LETTRE x2');
+        } else if (posX === cst.CENTER_TILE && posY === cst.CENTER_TILE) {
+            this.drawBonus(canvasX - cst.AJUST_STAR_X, canvasY + cst.AJUST_STAR_Y, cst.Colors.Grey, '⭐');
         }
     }
 
     drawBonus(canvasX: number, canvasY: number, color: string, word: string) {
         this.gridContext.fillStyle = color;
         this.gridContext.fill();
-        this.drawMessage(word, canvasX, canvasY, DEFAULT_SIZE);
+        this.drawMessage(word, canvasX, canvasY, cst.INITIAL_SIZE);
     }
 
     drawMessage(word: string, posX: number, posY: number, size: number) {
-        this.gridContext.fillStyle = '#000000';
+        this.gridContext.fillStyle = cst.Colors.Black;
         this.gridContext.font = word === '⭐' ? '30px system-ui' : this.multiplier * size + 'px system-ui';
         const sentence = word.split(' ');
         const step = 10;
         if (sentence.length === 2 && sentence[0] === 'MOT') {
-            this.gridContext.fillText(sentence[0], posX + AJUSTBONUSWORD, posY);
-            this.gridContext.fillText(sentence[1], posX + AJUSTBONUS, posY + step);
+            this.gridContext.fillText(sentence[0], posX + cst.AJUST_BONUS_WORD, posY);
+            this.gridContext.fillText(sentence[1], posX + cst.AJUST_BONUS, posY + step);
         } else if (sentence.length === 2 && sentence[0] === 'LETTRE') {
-            this.gridContext.fillText(sentence[0], posX + AJUSTBONUSLETTER, posY);
-            this.gridContext.fillText(sentence[1], posX + AJUSTBONUS, posY + step);
+            this.gridContext.fillText(sentence[0], posX + cst.AJUST_BONUS_LETTER, posY);
+            this.gridContext.fillText(sentence[1], posX + cst.AJUST_BONUS, posY + step);
         } else {
             for (let i = 0; i < sentence.length; i++) {
                 this.gridContext.fillText(sentence[i], posX, posY + step * i);
@@ -174,26 +237,26 @@ export class GridService {
     drawWord(word: string) {
         const startPosition: Vec2 = { x: -4, y: 40 };
         const step = 33.5;
-        this.gridContext.font = '20px system-ui';
+        this.gridContext.font = cst.DEFAULT_FONT;
         for (let i = 0; i < word.length; i++) {
-            this.gridContext.fillStyle = '#E1AC01';
-            this.gridContext.fillText(word[i], startPosition.x + AJUSTLETTER, startPosition.y + step * i);
+            this.gridContext.fillStyle = cst.Colors.Mustard;
+            this.gridContext.fillText(word[i], startPosition.x + cst.AJUST_LETTER, startPosition.y + step * i);
         }
     }
 
     drawNumbers(numbers: string) {
         const startPosition: Vec2 = { x: 28, y: 10 };
         const step = 33.5;
-        this.gridContext.fillStyle = '#E1AC01';
-        this.gridContext.font = '20px system-ui';
-        const numberList = numbers.split(' ', AMOUNTOFNUMBER);
+        this.gridContext.fillStyle = cst.Colors.Mustard;
+        this.gridContext.font = cst.DEFAULT_FONT;
+        const numberList = numbers.split(' ', cst.AMOUNT_OF_NUMBER);
 
         for (let i = 0; i < numberList.length; i++) {
             const number: number = +numberList[i];
-            if (number < TWOCHARNUMBER) {
-                this.gridContext.fillText(number.toString(), startPosition.x + step * i, startPosition.y + AJUSTLETTER);
+            if (number < cst.TWO_CHAR_NUMBER) {
+                this.gridContext.fillText(number.toString(), startPosition.x + step * i, startPosition.y + cst.AJUST_LETTER);
             } else {
-                this.gridContext.fillText(number.toString(), startPosition.x + (step - AJUSTSTEP) * i, startPosition.y + AJUSTLETTER);
+                this.gridContext.fillText(number.toString(), startPosition.x + (step - cst.AJUST_STEP) * i, startPosition.y + cst.AJUST_LETTER);
             }
         }
     }
