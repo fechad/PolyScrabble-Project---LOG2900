@@ -77,10 +77,6 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         });
     }
 
-    isEmptyWord() {
-        if (this.gridService.letterForServer.length === 0) throw new Error("Vous n'avez entré aucun mot");
-    }
-
     removeWord() {
         for (const elem of this.gridService.letters) {
             this.gridService.rack.push(elem);
