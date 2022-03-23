@@ -1,21 +1,23 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent } from 'ngx-countdown';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-infos-box',
     templateUrl: './infos-box.component.html',
     styleUrls: ['./infos-box.component.scss'],
 })
-export class InfosBoxComponent implements AfterViewInit {
+export class InfosBoxComponent implements AfterViewInit, OnDestroy {
     @ViewChild('countdown', { static: false }) cd: CountdownComponent;
     myRackIsVisible = false;
     opponentRackIsVisible = false;
     summary: string | undefined = undefined;
     previousTurn: string | undefined = '';
+    subscription: Subscription;
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.gameContextService.state.subscribe((state) => {
@@ -37,12 +39,16 @@ export class InfosBoxComponent implements AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.gameContextService.state.subscribe((state) => {
-            if (state.turn !== this.previousTurn) {
+        this.subscription = this.gameContextService.state.subscribe((state) => {
+            if (state.turn !== this.previousTurn && this.cd) {
                 this.cd.restart();
                 this.cd.begin();
                 this.previousTurn = state.turn;
             }
         });
+    }
+
+    ngOnDestroy(): void {
+        if (this.subscription) this.subscription.unsubscribe();
     }
 }
