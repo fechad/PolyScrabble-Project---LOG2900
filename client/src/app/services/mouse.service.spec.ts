@@ -7,6 +7,7 @@ import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
 import { MouseService } from './mouse.service';
 
+
 const fakeIsInBound = (event: MouseEvent) => {
     const size = 500;
     const origin = 20;
@@ -75,25 +76,18 @@ describe('MouseDetect', () => {
         expect(gridService.drawGrid).not.toHaveBeenCalled();
     });
 
-    it('calculateX should return a number', async () => {
+    it('calculateAxis should return a number', async () => {
         mouseEvent = {
             offsetX: 20,
             offsetY: 20,
             button: MouseButton.Right,
         } as MouseEvent;
-        const result = service.calculateX(mouseEvent.offsetX);
-        expect(typeof result).toEqual(typeof 20);
+        const resultX = service.calculateAxis(mouseEvent.offsetX, true);
+        const resultY = service.calculateAxis(mouseEvent.offsetY, false);
+        expect(typeof resultX).toEqual(typeof 20);
+        expect(typeof resultY).toEqual(typeof 20);
     });
 
-    it('calculateY should return a number', async () => {
-        mouseEvent = {
-            offsetX: 20,
-            offsetY: 20,
-            button: MouseButton.Right,
-        } as MouseEvent;
-        const result = service.calculateY(mouseEvent.offsetY);
-        expect(typeof result).toEqual(typeof 20);
-    });
 
     it('isInBound should return false if positionX is under 20', async () => {
         spyOn(service, 'isInBound').and.callFake(fakeIsInBound);
@@ -151,10 +145,19 @@ describe('MouseDetect', () => {
     });
 
     it('should call drawGrid on valid horizontal click', fakeAsync(() => {
+        const page = document.createElement('div');
+        const canvas = document.createElement('canvas');
+        canvas.id = 'canvas';
+        canvas.width = 500;
+        page.appendChild(canvas);
+        
         spyOn(service, 'isInBound').and.callFake(fakeIsInBound);
+        for (let i = 0; i < 15; i++) 
+        gameContextService.state.value.board.push([null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]);
+
         mouseEvent = {
-            offsetX: Math.floor(Math.random() * (500 - 20) + 20),
-            offsetY: Math.floor(Math.random() * (500 - 20) + 20),
+            offsetX: 450,
+            offsetY: 450,
             button: MouseButton.Left,
         } as MouseEvent;
         service.mouseHitDetect(mouseEvent);
@@ -162,7 +165,7 @@ describe('MouseDetect', () => {
         expect(gridService.drawGrid).toHaveBeenCalled();
     }));
 
-    it('should not call drawGrid on left click but  invalid mouse position ', fakeAsync(() => {
+    it('should not call drawGrid on left click but invalid mouse position ', fakeAsync(() => {
         mouseEvent = {
             offsetX: 0,
             offsetY: 0,

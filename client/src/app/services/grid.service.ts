@@ -38,8 +38,8 @@ export class GridService {
         this.drawWord('ABCDEFGHIJKLMNO');
         this.drawNumbers('1 2 3 4 5 6 7 8 9 10 11 12 13 14 15');
 
-        this.gridContext.fillStyle = '#575757';
-        this.gridContext.strokeStyle = '#000';
+        this.gridContext.fillStyle = cst.Colors.DarkGrey;
+        this.gridContext.strokeStyle = cst.Colors.Black;
         for (let i = 0; i < cst.BOARD_LENGTH; i++) {
             for (let j = 0; j < cst.BOARD_LENGTH; j++) {
                 this.gridContext.beginPath();
@@ -63,7 +63,7 @@ export class GridService {
                     (cst.SQUARE_SIZE + cst.BOUNDS) * j + cst.GRID_ORIGIN + cst.AJUST_Y,
                 );
                 this.drawWhiteSquare(i, j);
-                this.gridContext.fillStyle = '#575757';
+                this.gridContext.fillStyle = cst.Colors.DarkGrey;
             }
         }
     }
@@ -71,7 +71,7 @@ export class GridService {
     drawWhiteSquare(posX: number, posY: number) {
         for (const elem of this.letterPosition) {
             if (elem[1] === posX && elem[0] === posY && this.gameContext.state.value.board[posY][posX] !== null) {
-                this.gridContext.strokeStyle = '#fff';
+                this.gridContext.strokeStyle = cst.Colors.White;
                 this.gridContext.lineWidth = 2.5;
                 this.gridContext.stroke();
             }
@@ -81,7 +81,7 @@ export class GridService {
     drawArrow(canvasX: number, canvasY: number, isHorizontal: boolean) {
         const x = canvasX;
         const y = canvasY;
-        this.gridContext.fillStyle = '#000';
+        this.gridContext.fillStyle = cst.Colors.Black;
         this.gridContext.beginPath();
         if (isHorizontal) {
             this.gridContext.moveTo(x, y);
@@ -189,7 +189,7 @@ export class GridService {
     }
 
     drawMessage(word: string, posX: number, posY: number, size: number) {
-        this.gridContext.fillStyle = '#000000';
+        this.gridContext.fillStyle = cst.Colors.Black;
         this.gridContext.font = word === '⭐' ? '30px system-ui' : this.multiplier * size + 'px system-ui';
         const sentence = word.split(' ');
         const step = 10;
@@ -209,9 +209,9 @@ export class GridService {
     drawWord(word: string) {
         const startPosition: Vec2 = { x: -4, y: 40 };
         const step = 33.5;
-        this.gridContext.font = '20px system-ui';
+        this.gridContext.font = cst.DEFAULT_FONT;
         for (let i = 0; i < word.length; i++) {
-            this.gridContext.fillStyle = '#E1AC01';
+            this.gridContext.fillStyle = cst.Colors.Mustard;
             this.gridContext.fillText(word[i], startPosition.x + cst.AJUST_LETTER, startPosition.y + step * i);
         }
     }
@@ -219,8 +219,8 @@ export class GridService {
     drawNumbers(numbers: string) {
         const startPosition: Vec2 = { x: 28, y: 10 };
         const step = 33.5;
-        this.gridContext.fillStyle = '#E1AC01';
-        this.gridContext.font = '20px system-ui';
+        this.gridContext.fillStyle = cst.Colors.Mustard;
+        this.gridContext.font = cst.DEFAULT_FONT;
         const numberList = numbers.split(' ', cst.AMOUNT_OF_NUMBER);
 
         for (let i = 0; i < numberList.length; i++) {
