@@ -38,6 +38,8 @@ export const BOARD_LENGTH = 15;
 export const FOURTH_SQUARE = 4;
 export const BOUNDS = BOARD_LENGTH / BOARD_LENGTH;
 export const SQUARE_SIZE = DEFAULT_INNER_WIDTH / BOARD_LENGTH - BOUNDS;
+export const RADIUS = 7.5;
+export const Y_PLACEMENT = 16;
 
 export const DEFAULT_RESERVE = 88;
 
