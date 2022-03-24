@@ -6,7 +6,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faFont, faPlay, faSignOutAlt, faWalking } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -20,6 +20,8 @@ export class GamePageComponent implements AfterViewChecked {
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
     faPlay = faPlay;
+    faWalking = faWalking;
+    faArrowRight = faArrowRight;
     resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
     placingWords = true;
     readonly sent: Subject<void> = new Subject<void>();

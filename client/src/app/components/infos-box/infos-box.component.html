@@ -2,7 +2,8 @@
     <div class="opponent">
         <div class="profile"></div>
         <div class="p-infos">
-            <p>{{ (this.gameContextService.getOther() | async)?.info?.name }} : {{ (this.gameContextService.getOther() | async)?.score }} points</p>
+            <p>{{ (this.gameContextService.getOther() | async)?.info?.name }}</p>
+            <p>{{ (this.gameContextService.getOther() | async)?.score }} points</p>
             <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} restantes dans le chevalet</p>
             <div *ngIf="(gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false" class="tour">
                 En cours de jeu...
@@ -25,7 +26,8 @@
     <div class="player">
         <div class="profile"></div>
         <div class="p-infos">
-            <p>{{ (this.gameContextService.getMe() | async)?.info?.name }} : {{ (this.gameContextService.getMe() | async)?.score }} points</p>
+            <p>{{ (this.gameContextService.getMe() | async)?.info?.name }}</p>
+            <p>{{ (this.gameContextService.getMe() | async)?.score }} points</p>
             <p *ngIf="myRackIsVisible">{{ (this.gameContextService.getMe() | async)?.rackCount }} lettres restantes dans le chevalet</p>
             <!--<div *ngIf="(gameContextService.isMyTurn() | async) === true && !(this.gameContextService.state | async)?.ended" class="tour">
                 En cours de jeu...

@@ -5,23 +5,14 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
 import { CountdownComponent } from 'ngx-countdown';
-<<<<<<< HEAD
 import { Subscription } from 'rxjs';
-=======
-
-const NORMAL_RACK_LENGTH = 7;
->>>>>>> 52a4d1c... basicaly fini le nouveau ui-ux, il manque les photos de profils et de tweeker un peut avec les couleurs et petits détails
 
 @Component({
     selector: 'app-infos-box',
     templateUrl: './infos-box.component.html',
     styleUrls: ['./infos-box.component.scss'],
 })
-<<<<<<< HEAD
 export class InfosBoxComponent implements AfterViewInit, OnDestroy {
-=======
-export class InfosBoxComponent implements AfterViewInit {
->>>>>>> 52a4d1c... basicaly fini le nouveau ui-ux, il manque les photos de profils et de tweeker un peut avec les couleurs et petits détails
     @ViewChild('countdown', { static: false }) cd: CountdownComponent;
     faAngleDoubleRight = faAngleDoubleRight;
     myRackIsVisible = false;

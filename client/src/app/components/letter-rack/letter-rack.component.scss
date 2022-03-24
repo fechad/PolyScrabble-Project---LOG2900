@@ -71,15 +71,18 @@
 }
 
 #menu {
+    display: flex;
+    flex-direction: column;
     position: fixed;
     right: 60%;
-    top: 86vh;
+    top: 85vh;
     color: white;
 }
 
 #menu button {
     font-size: 15px;
-    width: 15vh;
+    width: 15vw;
+    height: auto;
     font-family: Signika Negative;
     border-radius: 15px;
     margin: 2px;

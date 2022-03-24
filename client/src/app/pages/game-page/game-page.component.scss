@@ -6,11 +6,11 @@
     background-color: darken(desaturate(#e1ac01, 70%), 35%);
 }
 
-.infosArea {
+.infos-area {
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 20%;
+    width: 15%;
     padding: 0 5px 0 5px;
     margin-right: 5px;
     background-color: #e1ac01;
@@ -43,20 +43,20 @@
     padding-left: 0.5vw;
 }
 
-#lower-infosArea {
+#infos-area-content {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     height: 80vh;
 }
 
-#bottom-infosArea {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-top: 10vh;
-}
+// #bottom-infosArea {
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: space-between;
+//     padding-top: 10vh;
+// }
 
 #settings {
     height: 5vh;
