@@ -14,6 +14,14 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-md-10">
+                        <label>Choisissez votre avatar: </label>
+                    </div>
+                    <div>
+                        <button (click)="chooseIcon(false)"><fa-icon [icon]="faArrowLeft"></fa-icon></button>
+                        <img [src]="imgChosen" /><img />
+                        <button (click)="chooseIcon(true)"><fa-icon [icon]="faArrowRight"></fa-icon></button>
+                    </div>
+                    <div class="col-md-10">
                         <label>Votre nom: </label>
                         <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" />
                     </div>
