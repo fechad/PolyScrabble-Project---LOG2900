@@ -56,10 +56,31 @@
                 </div>
                 <div id="objectives-container">
                     <div class="objectives" id="private-objective">
-                        <div class="objective-header"><h1>Objectif privé</h1></div>
+                        <div [ngClass]="{ close: !privateObjectivesShown, open: privateObjectivesShown }" class="objective-infos">
+                            <div class="objective-header"><h1>Objectif privé</h1></div>
+                            <div><p>Objectif Privé</p></div>
+                        </div>
+                        <button *ngIf="!privateObjectivesShown" class="private-objective-button" (click)="showObjective(false)">
+                            <fa-icon [icon]="faAngleRight" size="3x"></fa-icon>
+                        </button>
+                        <button *ngIf="privateObjectivesShown" class="private-objective-button" (click)="showObjective(false)">
+                            <fa-icon [icon]="faAngleLeft" size="3x"></fa-icon>
+                        </button>
                     </div>
                     <div class="objectives" id="public-objective">
-                        <div class="objective-header"><h1>Objectifs publics</h1></div>
+                        <div [ngClass]="{ close: !publicObjectivesShown, open: publicObjectivesShown }" class="objective-infos">
+                            <div class="objective-header"><h1>Objectifs publics</h1></div>
+                            <div>
+                                <div><p>Objectif public #1</p></div>
+                                <div><p>Objectif public #2</p></div>
+                            </div>
+                        </div>
+                        <button *ngIf="!publicObjectivesShown" class="public-objective-button" (click)="showObjective(true)">
+                            <fa-icon [icon]="faAngleRight" size="3x"></fa-icon>
+                        </button>
+                        <button *ngIf="publicObjectivesShown" class="public-objective-button" (click)="showObjective(true)">
+                            <fa-icon [icon]="faAngleLeft" size="3x"></fa-icon>
+                        </button>
                     </div>
                 </div>
             </div>

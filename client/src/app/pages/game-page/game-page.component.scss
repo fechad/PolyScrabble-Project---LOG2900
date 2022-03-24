@@ -32,30 +32,51 @@
     height: 50vh;
     width: 14vw;
     margin-top: 10vh;
+    margin-right: 5vw;
 }
 
 .objectives {
+    display: flex;
+    flex-direction: row;
     border-radius: 15px;
     width: 100%;
-    border: black solid;
-    border-width: thin;
+}
+
+.objective-infos {
+    width: 80%;
+    border-radius: 15px 0 0 15px;
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+.open {
+    width: 80%;
+}
+.close {
+    width: 0%;
+}
+
+#private-objective .objective-infos {
+    background-color: #65ccd2;
 }
 
 #private-objective {
     height: 10vh;
     margin-bottom: 10vh;
     margin-top: 2vh;
-    background-color: #65ccd2;
+}
+
+#public-objective .objective-infos {
+    background-color: #ffe454;
 }
 #public-objective {
     height: 20vh;
-    background-color: #ffe454;
 }
 
 .objectives .objective-header {
     width: 100%;
     height: 4vh;
-    border-radius: 15px 15px 0 0;
+    border-radius: 15px 0 0 0;
     border: black solid;
     border-width: thin;
     background-color: burlywood;
@@ -64,6 +85,24 @@
 
 .objectives .objective-header h1 {
     padding-left: 0.5vw;
+}
+
+.objectives button {
+    height: 100%;
+    width: 15%;
+    border-radius: 0 15px 15px 0;
+}
+
+.objectives button:hover {
+    cursor: pointer;
+}
+
+.objectives .private-objective-button {
+    background-color: #e1ac01;
+}
+
+.objectives .public-objective-button {
+    background-color: blueviolet;
 }
 
 #infos-area-content {
@@ -133,7 +172,8 @@
 
 #middle {
     width: 40vw;
-    padding-left: 5vw;
+    margin-left: 5vw;
+    position: relative;
 }
 
 #right-side {

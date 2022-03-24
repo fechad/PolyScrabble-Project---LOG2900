@@ -6,7 +6,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faArrowRight, faFont, faPlay, faSignOutAlt, faWalking } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faAngleRight, faArrowRight, faFont, faPlay, faSignOutAlt, faWalking } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -22,8 +22,12 @@ export class GamePageComponent implements AfterViewChecked {
     faPlay = faPlay;
     faWalking = faWalking;
     faArrowRight = faArrowRight;
+    faAngleLeft = faAngleLeft;
+    faAngleRight = faAngleRight;
     resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
     placingWords = true;
+    publicObjectivesShown: boolean = true;
+    privateObjectivesShown: boolean = true;
     readonly sent: Subject<void> = new Subject<void>();
     constructor(
         public gridService: GridService,
@@ -81,5 +85,12 @@ export class GamePageComponent implements AfterViewChecked {
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
         this.gridService.drawGrid();
+    }
+
+    showObjective(isPublic: boolean) {
+        if (isPublic) this.publicObjectivesShown = !this.publicObjectivesShown;
+        else this.privateObjectivesShown = !this.privateObjectivesShown;
+
+        console.log(this.privateObjectivesShown);
     }
 }
