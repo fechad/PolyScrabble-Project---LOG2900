@@ -22,24 +22,47 @@
     padding-top: 2vh;
 }
 
-#objectives {
+.chat-area {
+    margin: 25px 2vw 20px 2vw;
+}
+
+#objectives-container {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    height: 50vh;
+    width: 14vw;
+    margin-top: 10vh;
+}
+
+.objectives {
+    border-radius: 15px;
+    width: 100%;
     border: black solid;
     border-width: thin;
 }
 
-#objectives #objectives-header {
-    width: 8vw;
+#private-objective {
+    height: 10vh;
+    margin-bottom: 10vh;
+    margin-top: 2vh;
+    background-color: #65ccd2;
+}
+#public-objective {
+    height: 20vh;
+    background-color: #ffe454;
+}
+
+.objectives .objective-header {
+    width: 100%;
     height: 4vh;
-    border-radius: 15px 0 15px 0;
+    border-radius: 15px 15px 0 0;
     border: black solid;
     border-width: thin;
     background-color: burlywood;
+    text-align: center;
 }
 
-#objectives #objectives-header h1 {
+.objectives .objective-header h1 {
     padding-left: 0.5vw;
 }
 
@@ -51,28 +74,16 @@
     height: 80vh;
 }
 
-// #bottom-infosArea {
-//     display: flex;
-//     flex-direction: column;
-//     justify-content: space-between;
-//     padding-top: 10vh;
-// }
-
 #settings {
     height: 5vh;
-    padding: 0;
+    padding: 0 0 5vh 0;
 }
 
 #quit-area {
+    display: flex;
+    justify-content: flex-end;
     height: 10vh;
-    margin-bottom: 0;
-}
-
-#objectives {
-    height: 30vh;
-    width: 20vw;
-    background-color: rgb(247, 247, 60);
-    border-radius: 15px;
+    margin-left: 11.5vw;
 }
 
 .play-area-container {
@@ -120,8 +131,13 @@
     width: 10vw;
 }
 
-#middle-side {
+#middle {
     width: 40vw;
+    padding-left: 5vw;
+}
+
+#right-side {
+    padding-left: 5vw;
 }
 
 .size-container {
@@ -196,26 +212,3 @@
     color: #000 !important;
     opacity: 0.95;
 }
-
-/*
-.goals,
-.game-goals {
-    display: flex;
-    flex-direction: column;
-    width: 10vw;
-    margin-left: 2vh;
-}
-#easy-goal,
-#hard-goal,
-#personal-goal {
-    width: 20vw;
-    margin: 2vh;
-}
-.goals {
-    font-style: Signika Negative;
-    font-size: 20px;
-    margin-top: 10vh;
-    color: #e1ac01;
-}
-
-*/

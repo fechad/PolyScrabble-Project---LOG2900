@@ -54,19 +54,22 @@
                         <fa-icon id="increase" [icon]="faFont" size="3x" (click)="changeSize(1.1)"></fa-icon>
                     </button>
                 </div>
-                <div id="objectives">
-                    <div id="objectives-header"><h1>Objectifs</h1></div>
-                    <div class="objective" id="private-objective"></div>
-                    <div class="objective" id="public-objective"></div>
+                <div id="objectives-container">
+                    <div class="objectives" id="private-objective">
+                        <div class="objective-header"><h1>Objectif privé</h1></div>
+                    </div>
+                    <div class="objectives" id="public-objective">
+                        <div class="objective-header"><h1>Objectifs publics</h1></div>
+                    </div>
                 </div>
             </div>
-            <div id="middle-side">
+            <div id="middle">
                 <div class="play-area-container">
                     <app-play-area class="play-area" tabindex="0" [sent]="sent"></app-play-area>
                 </div>
             </div>
             <div id="right-side">
-                <div class="chatArea">
+                <div class="chat-area">
                     <app-chat-box></app-chat-box>
                 </div>
             </div>

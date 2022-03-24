@@ -1,9 +1,3 @@
-/*.opponent,
-.player {
-    border-width: thin;
-    border-style: solid;
-}
-*/
 .infos {
     display: flex;
     flex-direction: column;
@@ -15,7 +9,7 @@
 
 .opponent,
 .player {
-    padding: 10vh 0 10vh 0;
+    padding: 5vh 0 5vh 0;
     height: 30%;
 }
 
@@ -41,31 +35,35 @@
     font-size: 20px;
 }
 
-.profile {
-    background-color: gray;
-    border: gray solid;
+.profile,
+.profile-icon {
     border-radius: 100%;
     height: 4vw;
     width: 4vw;
-    padding-left: 0.5vw;
-    margin: 0.05vw;
 }
 
-// .opponent,
-// .player {
-//     flex-direction: row;
-//     justify-content: space-between;
-// }
+.profile {
+    border: rgb(201, 201, 201) solid;
+}
 
-.tour {
+.status-container,
+.status {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 4vh;
     width: 8vw;
     border-radius: 10px;
-    background-color: #54bd9d;
     margin-top: 1vh;
+}
+
+.status {
+    background-color: #54bd9d;
+}
+
+.status p {
+    text-align: center;
+    width: 100%;
 }
 
 .skip-turn {
@@ -101,9 +99,6 @@ p {
     flex-direction: column;
     width: 95%;
 }
-.p-infos p {
-    margin-left: 1vh;
-}
 
 .winner-left,
 .winner-right {
@@ -123,4 +118,12 @@ p {
     flex-direction: column;
     align-items: center;
     width: 100%;
+}
+
+.name {
+    font-size: 25px;
+    padding: 2vh 0 2vh 0;
+}
+.points {
+    font-size: 30px;
 }
