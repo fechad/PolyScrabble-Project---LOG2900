@@ -27,7 +27,7 @@
         </button>
     </div>
     <div class="opponent">
-        <div class="profile"><img class="profile-icon" src="assets/icon-images/1.png" /></div>
+        <div class="profile"><img class="profile-icon" [src]="opponentAvatar" /></div>
         <div class="p-infos">
             <p class="name">{{ (this.gameContextService.getOther() | async)?.info?.name }}</p>
             <p class="points">{{ (this.gameContextService.getOther() | async)?.score }} points</p>

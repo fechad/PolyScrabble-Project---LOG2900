@@ -17,16 +17,21 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
     faAngleDoubleRight = faAngleDoubleRight;
     myRackIsVisible = false;
     opponentRackIsVisible = false;
+    myAvatar: string;
+    opponentAvatar: string;
     summary: string | undefined = undefined;
     previousTurn: string | undefined = '';
     subscription: Subscription;
+    myIdx: number;
+    otherIdx: number;
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.gameContextService.state.subscribe((state) => {
-            const [myIdx, otherIdx] =
+            [this.myIdx, this.otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
-            if (state.players[myIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
-            if (state.players[otherIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
+
+            if (state.players[this.myIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
+            if (state.players[this.otherIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
             if (state.state === State.Aborted) {
                 this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
             } else if (state.state !== State.Ended) {
@@ -47,6 +52,8 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
                 this.cd.begin();
                 this.previousTurn = state.turn;
             }
+            this.opponentAvatar = state.players[this.otherIdx].info.avatar;
+            this.myAvatar = state.players[this.myIdx].info.avatar;
         });
     }
 

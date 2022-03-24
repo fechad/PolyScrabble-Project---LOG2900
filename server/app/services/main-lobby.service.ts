@@ -2,6 +2,7 @@ import { Game } from '@app/classes/game';
 import { Difficulty, Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { VirtualPlayer } from '@app/classes/virtual-player';
+import { imgList } from '@app/constants';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { DictionnaryTrieService } from './dictionnary-trie.service';
@@ -22,13 +23,13 @@ export class MainLobbyService {
             socket.emit('join', alreadyJoinedRoom.id);
         }
 
-        socket.on('join-room', (roomId: RoomId, playerName: string) => {
+        socket.on('join-room', (roomId: RoomId, playerName: string, avatar: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);
             if (!room) {
                 socket.emit('error', 'Room is no longer available');
                 return;
             }
-            const error = room.addPlayer(id, playerName, false);
+            const error = room.addPlayer(id, playerName, false, avatar);
             if (error) {
                 socket.emit('error', error.message);
                 return;
@@ -43,7 +44,7 @@ export class MainLobbyService {
             console.log(`Created room ${roomId} for player ${playerName}`);
             this.roomsService.rooms.push(room);
             if (virtualPlayer) {
-                room.addPlayer('VP', virtualPlayer, true);
+                room.addPlayer('VP', virtualPlayer, true, imgList[Math.floor(Math.random() * 4)]);
                 room.start();
                 const game = new Game(room, this.dictionnaryService);
                 this.roomsService.games.push(game);

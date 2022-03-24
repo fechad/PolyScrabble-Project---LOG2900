@@ -13,8 +13,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 })
 export class GameSetupDialogComponent implements OnInit {
     gameParametersForm: FormGroup;
-    imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-images/2.png', 'assets/icon-images/3.png', 'assets/icon-images/4.png'];
-    imgChosen: string = this.imgList[0];
+    imgChosen: string = cst.imgList[0];
     idx: number = 0;
     faArrowRight = faArrowRight;
     faArrowLeft = faArrowLeft;
@@ -57,6 +56,6 @@ export class GameSetupDialogComponent implements OnInit {
         if (next) this.idx++;
         else this.idx--;
         if (this.idx === -1) this.idx = 3;
-        this.imgChosen = this.imgList[this.idx % 4];
+        this.imgChosen = cst.imgList[this.idx % 4];
     }
 }

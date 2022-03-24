@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { GameType, Parameters } from './parameters';
 
-export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
+export type Player = { avatar: string; name: string; id: PlayerId; connected: boolean; virtual: boolean };
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -27,6 +27,7 @@ export class Room extends EventEmitter {
             name: playerName,
             connected: true,
             virtual: false,
+            avatar: parameters.avatar,
         };
         this.name = `Partie de ${playerName}`;
     }
@@ -40,7 +41,7 @@ export class Room extends EventEmitter {
         );
     }
 
-    addPlayer(playerId: PlayerId, playerName: string, virtual: boolean): Error | undefined {
+    addPlayer(playerId: PlayerId, playerName: string, virtual: boolean, avatar: string): Error | undefined {
         if (playerName === this.mainPlayer.name) {
             return Error('Ce nom a déjà été prit');
         }
@@ -50,7 +51,7 @@ export class Room extends EventEmitter {
         if (this.otherPlayer) {
             return Error('Il y a déjà deux joueurs dans cette partie');
         }
-        this.otherPlayer = { id: playerId, name: playerName, connected: true, virtual };
+        this.otherPlayer = { id: playerId, avatar: avatar, name: playerName, connected: true, virtual };
         this.emit('update-room');
         return undefined;
     }

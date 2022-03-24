@@ -2,7 +2,7 @@ import { Parameters } from './parameters';
 
 export type RoomId = number;
 export type PlayerId = string;
-export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
+export type Player = { avatar: string; name: string; id: PlayerId; connected: boolean; virtual: boolean };
 export enum State {
     Setup,
     Started,
