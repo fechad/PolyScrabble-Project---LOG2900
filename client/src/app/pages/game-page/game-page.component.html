@@ -66,8 +66,10 @@
                         <fa-icon id="increase" [icon]="faFont" size="3x" (click)="changeSize(1.1)"></fa-icon>
                     </button>
                 </div>
-                <div id="objectives-container">
-                    <div class="objectives" id="private-objective">
+                <div id="objectives-container" *ngIf="gameContextService.isModeLog2990 === true">
+                    <app-objectives [isPublic]="false"></app-objectives>
+                    <app-objectives id="public-objective" [isPublic]="true"></app-objectives>
+                    <!-- <div class="objectives" id="private-objective">
                         <div [ngClass]="{ close: !privateObjectivesShown, open: privateObjectivesShown }" class="objective-infos">
                             <div class="objective-header"><h1>Objectif privé</h1></div>
                             <div><p>Objectif Privé</p></div>
@@ -93,7 +95,7 @@
                         <button *ngIf="publicObjectivesShown" class="public-objective-button" (click)="showObjective(true)">
                             <fa-icon [icon]="faAngleLeft" size="2x"></fa-icon>
                         </button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div id="middle">

@@ -1,0 +1,67 @@
+p {
+    font-size: 15px;
+}
+
+.open {
+    width: 80%;
+}
+:not(.open) {
+    width: 0%;
+}
+
+.available p{
+    color: black;
+    font-size: 15px;
+}
+
+:not(.available) p{
+    text-decoration: line-through;
+}
+
+.isMine p{
+    color: greenyellow;
+}
+
+:not(.available,.isMine) p{
+    color: red;
+}
+
+.objectives {
+    display: flex;
+    flex-direction: row;
+    border-radius: 15px;
+    width: 100%;
+    height: 20vh;
+}
+
+.objective-header {
+    width: 100%;
+    height: 4vh;
+    border-radius: 15px 0 0 0;
+    border: black solid;
+    border-width: thin;
+    background-color: burlywood;
+    text-align: center;
+}
+
+h1 {
+    padding-left: 0.5vw;
+}
+
+.objective-infos {
+    border-radius: 15px 0 0 15px;
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+    background-color: #ffe454;
+}
+
+button {
+    height: 100%;
+    width: 15%;
+    border-radius: 0 15px 15px 0;
+    background-color: #e1ac01;
+}
+
+button:hover {
+    cursor: pointer;
+}

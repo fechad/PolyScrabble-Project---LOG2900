@@ -1,1 +1,16 @@
-<p>objectives works!</p>
+<div class="objectives">
+    <div [ngClass]="{ open: isOpen }" class="objective-infos">
+        <div class="objective-header"><h1>{{headerName}}</h1></div>
+        <div *ngFor="let objective of objectives">
+            <p [ngClass]="{ available: !objective.doneByPlayer, isMine: objective.doneByPlayer === gameContext.myId }">
+                {{objective.text}}: {{objective.score}}pts
+            </p>
+        </div>
+    </div>
+    <button *ngIf="!isOpen" (click)="showObjectives()">
+        <fa-icon [icon]="faAngleRight" size="3x"></fa-icon>
+    </button>
+    <button *ngIf="isOpen" (click)="showObjectives()">
+        <fa-icon [icon]="faAngleLeft" size="3x"></fa-icon>
+    </button>
+</div>
