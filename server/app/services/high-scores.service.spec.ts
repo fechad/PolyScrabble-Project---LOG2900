@@ -1,7 +1,8 @@
-import { DEFAULT_USERS, HighScoresService } from '@app/services/high-scores.service';
+import { DataBaseController, DEFAULT_USERS } from '@app/controllers/db.controller';
 import { expect } from 'chai';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { HighScoresService } from './high-scores.service';
 
 // List your collection names here
 const COLLECTIONS: string[] = ['col'];
@@ -30,15 +31,17 @@ class DBManager {
 
 describe('High scores service', () => {
     let highScoresService: HighScoresService;
+    const dataBase = new DataBaseController();
     const dbman: DBManager = new DBManager();
     let collection: Collection;
 
     beforeEach(async () => {
         await dbman.start();
-        highScoresService = new HighScoresService();
+        await dataBase.connect();
+        highScoresService = new HighScoresService(dataBase);
         collection = dbman.db.collection(COLLECTIONS[0]);
         // eslint-disable-next-line dot-notation
-        highScoresService['db'] = collection;
+        highScoresService['collection'] = collection;
     });
 
     after(async () => dbman.stop());
