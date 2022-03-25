@@ -25,6 +25,7 @@ import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { CommunicationService } from './services/communication.service';
 import { ChronoContainerComponent } from './components/chrono-container/chrono-container.component';
+import { ObjectivesComponent } from './components/objectives/objectives.component';
 
 /**
  * Main module that is used in main.ts.
@@ -56,6 +57,7 @@ import { ChronoContainerComponent } from './components/chrono-container/chrono-c
         SoloDialogComponent,
         HighScoresComponent,
         ChronoContainerComponent,
+        ObjectivesComponent,
     ],
     imports: [
         AppMaterialModule,
