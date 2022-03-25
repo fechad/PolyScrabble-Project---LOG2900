@@ -102,7 +102,7 @@ export class LetterRackComponent {
             this.letters = tempRack;
         } else if (oldIndex === 0 && keypress === 'ArrowLeft') {
             for (let i = this.letters.length - 1; i >= 0; i--) {
-                if (i === 0) tempRack[6] = this.letters[0];
+                if (i === 0) tempRack[this.letters.length - 1] = this.letters[i];
                 const idx = (i - 1) % this.letters.length;
                 tempRack[idx] = this.letters[i];
             }
