@@ -73,7 +73,7 @@ describe('CommunicationService', () => {
                 id: 0,
                 name: 'Game',
                 parameters: new Parameters(),
-                mainPlayer: { name: 'BOB', id: ID, connected: true, virtual: false },
+                mainPlayer: { avatar: 'a', name: 'BOB', id: ID, connected: true, virtual: false },
                 otherPlayer: undefined,
                 state: State.Setup,
             },
@@ -89,7 +89,7 @@ describe('CommunicationService', () => {
             id: GAME_NO,
             name: 'Room name',
             parameters: new Parameters(),
-            mainPlayer: { name: 'Player 1', id: ID, connected: true },
+            mainPlayer: { avatar: 'a', name: 'Player 1', id: ID, connected: true },
             otherPlayer: undefined,
             started: false,
         });
@@ -146,25 +146,25 @@ describe('CommunicationService', () => {
     });
 
     it('should join room', async () => {
-        const promise = service.joinRoom('aldabob', GAME_NO);
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', GAME_NO, 'aldabob');
+        const promise = service.joinRoom('a', 'aldabob', GAME_NO);
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', GAME_NO, 'aldabob', 'a');
         createRoom();
         setTimeout(() => otherPlayer(), 0);
         await promise;
     });
 
     it('should not join room 2 times', async () => {
-        const promise = service.joinRoom('aldabob', GAME_NO);
-        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', GAME_NO, 'aldabob');
+        const promise = service.joinRoom('a', 'aldabob', GAME_NO);
+        expect((service['mainSocket'] as unknown as SocketMock).emitSpy).toHaveBeenCalledWith('join-room', GAME_NO, 'aldabob', 'a');
         createRoom();
         setTimeout(() => otherPlayer(), 0);
         await promise;
-        await expectAsync(service.joinRoom('aldabob', 0)).toBeRejected();
+        await expectAsync(service.joinRoom('a', 'aldabob', 0)).toBeRejected();
     });
 
     it('should not join room when there is an error', async () => {
         (service['mainSocket'] as unknown as SocketMock).events.emit('id', ID, TOKEN);
-        const promise = service.joinRoom('aldabob', GAME_NO);
+        const promise = service.joinRoom('a', 'aldabob', GAME_NO);
         const spy = spyOn(service, 'handleError' as never);
         (service['mainSocket'] as unknown as SocketMock).events.emit('error', new Error('big bad error'));
         await expectAsync(promise).toBeRejected();
@@ -222,8 +222,8 @@ describe('CommunicationService', () => {
 
     const DEFAULT_STATE: GameState = {
         players: [
-            { info: { id: ID, name: 'BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
-            { info: { id: 'Dummy', name: 'Not BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
+            { info: { id: ID, avatar: 'a', name: 'BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
+            { info: { id: 'Dummy', avatar: 'a', name: 'Not BOB', connected: true, virtual: false }, score: 0, rackCount: 7 },
         ],
         reserveCount: 88,
         board: [[]],

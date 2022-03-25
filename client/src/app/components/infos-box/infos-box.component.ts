@@ -42,6 +42,8 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
                 const winnerName = state.players.find((player) => player.info.id === state.winner)?.info.name;
                 this.summary = `👑 Félicitations ${winnerName}! 👑`;
             }
+            this.opponentAvatar = state.players[this.otherIdx].info.avatar;
+            this.myAvatar = state.players[this.myIdx].info.avatar;
         });
     }
 
@@ -52,8 +54,6 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
                 this.cd.begin();
                 this.previousTurn = state.turn;
             }
-            this.opponentAvatar = state.players[this.otherIdx].info.avatar;
-            this.myAvatar = state.players[this.myIdx].info.avatar;
         });
     }
 

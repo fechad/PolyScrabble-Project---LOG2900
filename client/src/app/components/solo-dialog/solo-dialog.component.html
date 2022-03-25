@@ -11,6 +11,15 @@
         <form [formGroup]="soloParametersForm" (submit)="onSubmit()">
             <div class="form-group">
                 <div class="row">
+                    <div>
+                        <button (click)="this.avatarSelectionService.chooseIcon(false)">
+                            <fa-icon [icon]="this.avatarSelectionService.faArrowLeft"></fa-icon>
+                        </button>
+                        <img [src]="this.avatarSelectionService.imgChosen" /><img />
+                        <button (click)="this.avatarSelectionService.chooseIcon(true)">
+                            <fa-icon [icon]="this.avatarSelectionService.faArrowRight"></fa-icon>
+                        </button>
+                    </div>
                     <div class="col-md-10">
                         <label>Votre nom: </label>
                         <input type="text" formControlName="playerName" class="form-control" />
@@ -18,19 +27,19 @@
 
                     <div class="requirement" *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''">
                         Rentrez un nom contenant seulement des lettres.
-                        
                     </div>
 
                     <div class="col-md-10">
                         <label>Votre adversaire:</label>
-                        {{switchName(opponentName)}}
-
+                        {{ switchName(opponentName) }}
                     </div>
 
                     <div class="col-md-10">
                         <label>Profil de l'adversaire: </label>
                         <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control">
-                            <option [ngValue] ='difficulties.id' [disabled]="difficulties.id===1" *ngFor="let difficulties of difficulty"> {{difficulties.name}} </option>
+                            <option [ngValue]="difficulties.id" [disabled]="difficulties.id === 1" *ngFor="let difficulties of difficulty">
+                                {{ difficulties.name }}
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-10">

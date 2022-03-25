@@ -1,6 +1,6 @@
 <div class="infos">
     <div class="player">
-        <div class="profile"><img class="profile-icon" src="assets/icon-images/4.png" /></div>
+        <div class="profile"><img class="profile-icon" [src]="myAvatar" /></div>
         <div class="p-infos">
             <p class="name">{{ (this.gameContextService.getMe() | async)?.info?.name }}</p>
             <p class="points">{{ (this.gameContextService.getMe() | async)?.score }} points</p>

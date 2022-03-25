@@ -12,6 +12,18 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-md-10">
+                        <label>Choisissez votre avatar: </label>
+                    </div>
+                    <div>
+                        <button (click)="this.avatarSelectionService.chooseIcon(false)">
+                            <fa-icon [icon]="this.avatarSelectionService.faArrowLeft"></fa-icon>
+                        </button>
+                        <img [src]="this.avatarSelectionService.imgChosen" /><img />
+                        <button (click)="this.avatarSelectionService.chooseIcon(true)">
+                            <fa-icon [icon]="this.avatarSelectionService.faArrowRight"></fa-icon>
+                        </button>
+                    </div>
+                    <div class="col-md-10">
                         <label>Votre nom: </label>
                         <input type="text" formControlName="secondPlayerName" class="form-control" />
                     </div>

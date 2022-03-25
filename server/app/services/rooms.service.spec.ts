@@ -18,7 +18,7 @@ describe('Rooms service', () => {
             new Room(9, 'DummyId5', 'Dummy5', new Parameters()),
         );
         roomsService.rooms.forEach((room, i) => {
-            room.addPlayer(`NotDummyId${i}`, 'NotDummy', false);
+            room.addPlayer(`NotDummyId${i}`, 'NotDummy', false, 'a');
         });
     });
     it('should be created', () => {

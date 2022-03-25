@@ -3,8 +3,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Parameters } from '@app/classes/parameters';
 import * as cst from '@app/constants';
+import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-game-setup-dialog',
@@ -13,14 +13,12 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 })
 export class GameSetupDialogComponent implements OnInit {
     gameParametersForm: FormGroup;
-    imgChosen: string = cst.imgList[0];
-    idx: number = 0;
-    faArrowRight = faArrowRight;
-    faArrowLeft = faArrowLeft;
+
     constructor(
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<GameSetupDialogComponent>,
         public communicationService: CommunicationService,
+        public avatarSelectionService: AvatarSelectionService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 
@@ -45,17 +43,10 @@ export class GameSetupDialogComponent implements OnInit {
         }
 
         const parameters = new Parameters();
-        parameters.avatar = this.imgChosen;
+        parameters.avatar = this.avatarSelectionService.imgChosen;
         parameters.timer = this.gameParametersForm.value.minutes * cst.SEC_CONVERT + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters, undefined);
         this.dialogRef.close();
-    }
-
-    chooseIcon(next: boolean) {
-        if (next) this.idx++;
-        else this.idx--;
-        if (this.idx === -1) this.idx = 3;
-        this.imgChosen = cst.imgList[this.idx % 4];
     }
 }

@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { difficulties, Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import * as cst from '@app/constants';
+import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 @Component({
     selector: 'app-solo-dialog',
@@ -18,6 +19,7 @@ export class SoloDialogComponent implements OnInit {
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<SoloDialogComponent>,
         public communicationService: CommunicationService,
+        public avatarSelectionService: AvatarSelectionService,
         @Inject(MAT_DIALOG_DATA) public data: unknown,
     ) {}
 
@@ -52,6 +54,7 @@ export class SoloDialogComponent implements OnInit {
         }
         if (this.communicationService.selectedRoom.value) this.communicationService.leave();
         const parameters = new Parameters();
+        parameters.avatar = this.avatarSelectionService.imgChosen;
         parameters.timer = this.soloParametersForm.value.minutes * cst.SEC_CONVERT + this.soloParametersForm.value.seconds;
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
         parameters.difficulty = Difficulty.Beginner;
