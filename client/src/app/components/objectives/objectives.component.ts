@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { GameContextService, Objective } from '@app/services/game-context.service';
+import { faAngleLeft, faAngleRight, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'app-objectives',
@@ -7,9 +10,25 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ObjectivesComponent implements OnInit {
 
-  constructor() { }
+  @Input() isPublic: boolean;
 
-  ngOnInit(): void {
+  isOpen: boolean;
+  objectives: Objective[];
+  headerName: string;
+  faAngleLeft: IconDefinition = faAngleLeft;
+  faAngleRight: IconDefinition = faAngleRight;
+
+  constructor(readonly gameContext: GameContextService) {
+    this.gameContext.objectives.subscribe((newObjectives) => (this.objectives = newObjectives));
+  }
+
+  ngOnInit() {
+    this.headerName = this.isPublic ? 'Objectifs publiques' : 'Objectifs privés';
+    this.isOpen = true;
+  }
+
+  showObjectives() {
+    this.isOpen = !this.isOpen;
   }
 
 }
