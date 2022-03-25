@@ -26,6 +26,11 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
 @Service()
 export class HttpController {
     router: Router;
+<<<<<<< HEAD
+=======
+    highScoreService: HighScoresService;
+    gameHistoryService: GameHistoryService;
+>>>>>>> 89f0803... http client get history
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
