@@ -24,6 +24,7 @@ import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room
 import { ModesPageComponent } from './pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { CommunicationService } from './services/communication.service';
+import { GameHistoryComponent } from './components/game-history/game-history.component';
 
 /**
  * Main module that is used in main.ts.
@@ -54,6 +55,7 @@ import { CommunicationService } from './services/communication.service';
         ModesPageComponent,
         SoloDialogComponent,
         HighScoresComponent,
+        GameHistoryComponent,
     ],
     imports: [
         AppMaterialModule,

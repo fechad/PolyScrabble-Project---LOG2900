@@ -1,5 +1,6 @@
 import { State } from '@app/classes/room';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
 import { RoomsService } from '@app/services/rooms.service';
@@ -27,6 +28,7 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
 export class HttpController {
     router: Router;
     highScoreService: HighScoresService;
+    gameHistoryService: GameHistoryService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
@@ -41,6 +43,7 @@ export class HttpController {
     private async configureRouter(): Promise<void> {
         await this.dataBase.connect();
         this.highScoreService = new HighScoresService(this.dataBase);
+        this.gameHistoryService = new GameHistoryService(this.dataBase);
         const { validate } = new Validator({});
         this.router = Router();
         this.router.get('/dictionnaries', (req: Request, res: Response) => {
@@ -70,6 +73,10 @@ export class HttpController {
             if (room.getState() === State.Aborted && game.getWinner() !== player.id) return res.sendStatus(StatusCodes.FORBIDDEN);
             await this.highScoreService.addScore({ name: info.info.name, score: info.score, log2990: room.parameters.log2990 });
             return res.sendStatus(StatusCodes.ACCEPTED);
+        });
+        this.router.get('/game-history', async (req: Request, res: Response) => {
+            const games = await this.gameHistoryService.getHistory();
+            res.json(games);
         });
     }
 }

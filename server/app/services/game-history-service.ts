@@ -5,7 +5,7 @@ import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
 @Service()
-export class HighScoresService {
+export class GameHistoryService {
     private collection: Collection | undefined = undefined;
     constructor(private dataBase: DataBaseController) {
         this.collection = this.dataBase.db?.collection(cst.GAMES_COLLECTION);
