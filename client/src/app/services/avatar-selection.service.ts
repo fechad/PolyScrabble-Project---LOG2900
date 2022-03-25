@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import * as cst from '@app/constants';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 @Injectable({
     providedIn: 'root',
 })
 export class AvatarSelectionService {
     imgChosen: string = cst.imgList[0];
     idx: number = 0;
-    faArrowRight = faArrowRight;
-    faArrowLeft = faArrowLeft;
+    faAngleRight = faAngleRight;
+    faAngleLeft = faAngleLeft;
     constructor() {}
 
     chooseIcon(next: boolean) {
