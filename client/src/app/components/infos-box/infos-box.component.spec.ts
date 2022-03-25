@@ -93,7 +93,7 @@ describe('InfosBoxComponent', () => {
     it('should send winning summary if state of game is aborted', (done) => {
         gameContextService.state.next({ ...gameContextService.state.value, state: State.Aborted });
         fixture.detectChanges();
-        expect(component.summary).toEqual('👑 Votre adversaire a abandonné, vous avez gagné! 👑');
+        expect(component.summary).toEqual('Votre adversaire a abandonné, vous avez gagné!');
         done();
     });
 
@@ -111,7 +111,7 @@ describe('InfosBoxComponent', () => {
     it('should congratulate the winner if game ended and winner is defined', () => {
         gameContextService.state.next({ ...gameContextService.state.value, state: State.Ended });
         gameContextService.state.next({ ...gameContextService.state.value, winner: '1' });
-        expect(component.summary).toEqual('👑 Félicitations P2! 👑');
+        expect(component.summary).toEqual('Félicitations P2!');
     });
 
     it('should not put my number of letters visible if rack has 7 letters', () => {

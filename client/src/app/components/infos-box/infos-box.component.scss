@@ -9,7 +9,7 @@
 
 .opponent,
 .player {
-    padding: 5vh 0 5vh 0;
+    padding: 5vh 0 1vh 0;
     height: 30%;
 }
 
@@ -43,8 +43,16 @@
 }
 
 .profile {
-    border: rgb(201, 201, 201) solid;
+    border: rgb(201, 201, 201) solid 5px;
 }
+
+.playing {
+    border: #188162 solid 5px;
+    border-radius: 100%;
+    height: 4vw;
+    width: 4vw;
+}
+
 
 .status-container,
 .status {
@@ -52,7 +60,7 @@
     align-items: center;
     justify-content: center;
     height: 4vh;
-    width: 8vw;
+    width: 10vw;
     border-radius: 10px;
     margin-top: 1vh;
 }
@@ -64,6 +72,7 @@
 .status p {
     text-align: center;
     width: 100%;
+    font-size: 80%;
 }
 
 .skip-turn {
@@ -118,6 +127,7 @@ p {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    margin-top: 2vh
 }
 
 .name {
@@ -126,4 +136,32 @@ p {
 }
 .points {
     font-size: 30px;
+}
+
+.reserve, .reserve-title{
+    font-size: 20px;
+}
+
+.reserve-title{
+    margin-top: 2vh;
+}
+
+.summary-container {
+    display: flex;
+    width: 100%;
+    height: 40%;
+    background-color: #54bd9d;
+    align-items: center;
+    justify-content: center;
+    font-size: 90%;
+    margin-top: 2vh;
+}
+
+
+.rack-number{
+    font-size: 80%;
+}
+
+.opponent .rack-number{
+    margin-top: 5%;
 }

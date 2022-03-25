@@ -12,17 +12,17 @@
             <div class="form-group">
                 <div class="row">
                     <div>
-                        <button (click)="this.avatarSelectionService.chooseIcon(false)">
+                        <button type="button" (click)="this.avatarSelectionService.chooseIcon(false)">
                             <fa-icon [icon]="this.avatarSelectionService.faArrowLeft"></fa-icon>
                         </button>
                         <img [src]="this.avatarSelectionService.imgChosen" /><img />
-                        <button (click)="this.avatarSelectionService.chooseIcon(true)">
+                        <button type="button" (click)="this.avatarSelectionService.chooseIcon(true)">
                             <fa-icon [icon]="this.avatarSelectionService.faArrowRight"></fa-icon>
                         </button>
                     </div>
                     <div class="col-md-10">
                         <label>Votre nom: </label>
-                        <input type="text" formControlName="playerName" class="form-control" />
+                        <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" />
                     </div>
 
                     <div class="requirement" *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''">

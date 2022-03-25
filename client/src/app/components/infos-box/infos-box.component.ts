@@ -24,6 +24,7 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
     subscription: Subscription;
     myIdx: number;
     otherIdx: number;
+    isWinner: boolean;
 
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {
         this.gameContextService.state.subscribe((state) => {
@@ -33,14 +34,15 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
             if (state.players[this.myIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
             if (state.players[this.otherIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
             if (state.state === State.Aborted) {
-                this.summary = '👑 Votre adversaire a abandonné, vous avez gagné! 👑';
+                this.summary = 'Votre adversaire a abandonné, vous avez gagné!';
             } else if (state.state !== State.Ended) {
                 this.summary = undefined;
             } else if (state.winner === undefined) {
-                this.summary = `👑 Félicitations ${state.players[0].info.name} et ${state.players[1].info.name}! 👑`;
+                this.summary = `Félicitations ${state.players[0].info.name} et ${state.players[1].info.name}!`;
             } else {
                 const winnerName = state.players.find((player) => player.info.id === state.winner)?.info.name;
-                this.summary = `👑 Félicitations ${winnerName}! 👑`;
+                this.isWinner = gameContextService.myId === state.winner;
+                this.summary = `Félicitations ${winnerName}!`;
             }
             this.opponentAvatar = state.players[this.otherIdx].info.avatar;
             this.myAvatar = state.players[this.myIdx].info.avatar;
