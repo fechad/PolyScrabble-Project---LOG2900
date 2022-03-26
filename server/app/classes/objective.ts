@@ -51,10 +51,10 @@ export class ObjectiveAnagram extends Objective {
         return cst.NO_POINTS;
     }
 
-    isAnagram(triedWord: string, word2: string): boolean {
+    private isAnagram(triedWord: string, word2: string): boolean {
         if (triedWord.length !== word2.length) return false;
         if ([...triedWord].some((letter) => !word2.includes(letter))) return false;
-        return true;
+        return ![...word2].some((letter) => !triedWord.includes(letter));
     }
 }
 
@@ -74,9 +74,7 @@ export class Objective2BigLetters extends Objective {
     isObjectiveAccomplished(wordPlacement: PlacementOption): number {
         let count = 0;
         Objective.playedWords.add(wordPlacement.word);
-        [...wordPlacement.word].forEach((letter) => {
-            if (cst.BIG_POINTS.has(letter)) count++;
-        });
+        [...wordPlacement.word].filter((letter) => cst.BIG_POINTS.has(letter)).forEach(() => count++);
         return count >= 2 ? this.points : cst.NO_POINTS;
     }
 }
@@ -90,6 +88,7 @@ export class Objective7LettersOrMore extends Objective {
     }
 }
 
+// TODO mettre les corner placement dans une structure de donnee
 export class ObjectiveCornerPlacement extends Objective {
     points = cst.OBJECTIVE_CORNER_PLACEMENT;
 

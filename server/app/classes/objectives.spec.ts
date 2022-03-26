@@ -163,7 +163,7 @@ describe('Objectives', () => {
 
     it('should not give points for no anagram', () => {
         objective = new ObjectiveAnagram();
-        placement = new PlacementOption(3, 4, false, 'premierstests');
+        placement = new PlacementOption(3, 4, false, 'premiertttt');
         objective.isObjectiveAccomplished(placement);
 
         placement = new PlacementOption(7, 7, true, 'premiertest');
