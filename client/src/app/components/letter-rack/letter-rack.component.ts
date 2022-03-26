@@ -88,25 +88,21 @@ export class LetterRackComponent {
         } else if (keypress === 'ArrowLeft' || keypress < 0) {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
-        this.swapLetters(newIndex, this.manipulating, keypress);
+        this.swapLetters(newIndex, this.manipulating);
         this.gameContextService.showMyRack();
     }
 
-    swapLetters(index: number, oldIndex: number, keypress: string | number) {
+    swapLetters(index: number, oldIndex: number) {
         const tempRack: Letter[] = [];
-        if (oldIndex === this.letters.length - 1 && keypress === 'ArrowRight') {
+        if (index === 0) {
             for (let i = 0; i < this.letters.length; i++) {
                 const idx = (i + 1) % this.letters.length;
                 tempRack[idx] = this.letters[i];
             }
             this.letters = tempRack;
-        } else if (oldIndex === 0 && keypress === 'ArrowLeft') {
-            for (let i = this.letters.length - 1; i >= 0; i--) {
-                if (i === 0) tempRack[this.letters.length - 1] = this.letters[i];
-                const idx = (i - 1) % this.letters.length;
-                tempRack[idx] = this.letters[i];
-            }
-            this.letters = tempRack;
+        } else if ((index = this.letters.length - 1)) {
+            // this.letters.push(this.letters.shift());
+            // this.letters.unshift(this.letters.pop());
         } else {
             const temp = this.letters[oldIndex];
             this.letters[oldIndex] = this.letters[index];
