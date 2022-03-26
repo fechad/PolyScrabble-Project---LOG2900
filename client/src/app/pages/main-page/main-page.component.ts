@@ -21,7 +21,7 @@ export class MainPageComponent {
             route: '/2990',
             toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
             text: 'Mode LOG2990',
-            disabled: true,
+            disabled: false,
             promptsDialog: false,
         },
         { route: undefined, toolTip: 'Voyez qui règne', text: 'Meilleurs scores', disabled: false, promptsDialog: true },
