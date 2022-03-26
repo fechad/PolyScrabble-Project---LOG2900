@@ -23,7 +23,8 @@
                 <div class="input-area">
                     <div class="col-md-10">
                         <label>Votre nom: </label>
-                        <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" />
+                        <input cdkFocusInitial type="text" formControlName="playerName" class="form-control"/> 
+                        
                     </div>
 
                     <div class="requirement" *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''">

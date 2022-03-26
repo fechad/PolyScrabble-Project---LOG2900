@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.component';
 import { CommunicationService } from '@app/services/communication.service';
 
@@ -13,6 +14,7 @@ export class WaitingRoomPageComponent {
     canControl: boolean;
     isMainPlayer: boolean;
     otherPlayerName: string | undefined;
+    dictionnaries: Dictionnary[] | undefined = undefined;
 
     constructor(public communicationService: CommunicationService, public matDialog: MatDialog, public route: ActivatedRoute) {
         this.communicationService.selectedRoom.subscribe(async (room) => {
@@ -22,9 +24,25 @@ export class WaitingRoomPageComponent {
             const hasOtherPlayer = room?.otherPlayer !== undefined;
             this.canControl = hasOtherPlayer && this.isMainPlayer;
         });
+
+        this.communicationService.dictionnaries.then((dictionnaries) => {
+            this.dictionnaries = dictionnaries;
+        });
     }
 
     openSoloDialog() {
-        this.matDialog.open(SoloDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
+        if (this.communicationService.selectedRoom.value) {
+            this.matDialog.open(SoloDialogComponent, {
+                data: {
+                    name: this.communicationService.selectedRoom.value.mainPlayer.name,
+                    dictionnary: this.dictionnaries
+                        ? this.dictionnaries[this.communicationService.selectedRoom.value.parameters?.dictionnary || 0]?.name
+                        : '…',
+                    timer: this.communicationService.selectedRoom.value.parameters.timer,
+                },
+            });
+        } else {
+            this.matDialog.open(SoloDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
+        }
     }
 }
