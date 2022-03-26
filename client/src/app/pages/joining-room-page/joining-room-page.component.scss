@@ -79,3 +79,13 @@
 #icon-container {
     padding-left: 2em;
 }
+
+.mat-card-content{
+    display: flex;
+    justify-content: space-around;
+}
+
+.avatar{
+    width: 20%;
+    height: 80%;
+}
