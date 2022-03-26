@@ -90,7 +90,5 @@ export class GamePageComponent implements AfterViewChecked {
     showObjective(isPublic: boolean) {
         if (isPublic) this.publicObjectivesShown = !this.publicObjectivesShown;
         else this.privateObjectivesShown = !this.privateObjectivesShown;
-
-        console.log(this.privateObjectivesShown);
     }
 }

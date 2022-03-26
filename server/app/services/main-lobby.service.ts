@@ -2,7 +2,7 @@ import { Game } from '@app/classes/game';
 import { Difficulty, Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
 import { VirtualPlayer } from '@app/classes/virtual-player';
-import { imgList } from '@app/constants';
+import { imgList, NUMBER_ICONS } from '@app/constants';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { DictionnaryTrieService } from './dictionnary-trie.service';
@@ -44,7 +44,7 @@ export class MainLobbyService {
             console.log(`Created room ${roomId} for player ${playerName}`);
             this.roomsService.rooms.push(room);
             if (virtualPlayer) {
-                room.addPlayer('VP', virtualPlayer, true, imgList[Math.floor(Math.random() * 4)]);
+                room.addPlayer('VP', virtualPlayer, true, imgList[Math.floor(Math.random() * NUMBER_ICONS)]);
                 room.start();
                 const game = new Game(room, this.dictionnaryService);
                 this.roomsService.games.push(game);

@@ -9,12 +9,11 @@ export class AvatarSelectionService {
     idx: number = 0;
     faAngleRight = faAngleRight;
     faAngleLeft = faAngleLeft;
-    constructor() {}
 
     chooseIcon(next: boolean) {
         if (next) this.idx++;
         else this.idx--;
-        if (this.idx === -1) this.idx = 3;
-        this.imgChosen = cst.imgList[this.idx % 4];
+        if (this.idx === cst.MISSING) this.idx = cst.LAST_IMG;
+        this.imgChosen = cst.imgList[this.idx % cst.NUMBER_ICONS];
     }
 }

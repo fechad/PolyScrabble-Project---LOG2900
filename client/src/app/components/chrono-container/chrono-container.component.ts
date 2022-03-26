@@ -10,7 +10,7 @@ import { CountdownComponent } from 'ngx-countdown';
 })
 export class ChronoContainerComponent implements AfterViewInit {
     @ViewChild('countdown', { static: false }) cd: CountdownComponent;
-    previousTurn = '';
+    previousTurn: string | undefined = '';
     constructor(public gameContextService: GameContextService, public communicationService: CommunicationService) {}
 
     ngAfterViewInit() {
@@ -18,7 +18,7 @@ export class ChronoContainerComponent implements AfterViewInit {
             if (state.turn !== this.previousTurn) {
                 this.cd.restart();
                 this.cd.begin();
-                this.previousTurn = state.turn?.valueOf()!;
+                this.previousTurn = state.turn;
             }
         });
     }

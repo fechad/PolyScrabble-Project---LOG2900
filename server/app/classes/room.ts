@@ -51,7 +51,7 @@ export class Room extends EventEmitter {
         if (this.otherPlayer) {
             return Error('Il y a déjà deux joueurs dans cette partie');
         }
-        this.otherPlayer = { id: playerId, avatar: avatar, name: playerName, connected: true, virtual };
+        this.otherPlayer = { id: playerId, avatar, name: playerName, connected: true, virtual };
         this.emit('update-room');
         return undefined;
     }
