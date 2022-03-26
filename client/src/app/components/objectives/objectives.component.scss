@@ -1,28 +1,29 @@
 p {
-    font-size: 15px;
+    font-size: 1em;
+    overflow: hidden;
 }
 
 .open {
     width: 80%;
 }
-:not(.open) {
+.close {
     width: 0%;
 }
 
-.available p{
+.available p {
     color: black;
     font-size: 15px;
 }
 
-:not(.available) p{
+:not(.available) p {
     text-decoration: line-through;
 }
 
-.isMine p{
+.isMine p {
     color: greenyellow;
 }
 
-:not(.available,.isMine) p{
+:not(.available, .isMine) p {
     color: red;
 }
 
@@ -44,24 +45,26 @@ p {
     text-align: center;
 }
 
-h1 {
-    padding-left: 0.5vw;
+.objective-header h1 {
+    height: 100%;
+    font-size: 01em;
+    overflow: hidden;
 }
 
 .objective-infos {
-    border-radius: 15px 0 0 15px;
+    border-radius: 15px 0 15px 15px;
     transition: all 0.5s ease-in-out;
     overflow: hidden;
     background-color: #ffe454;
 }
 
-button {
-    height: 100%;
+.objectives button {
+    height: 50%;
     width: 15%;
     border-radius: 0 15px 15px 0;
     background-color: #e1ac01;
 }
 
-button:hover {
+.objectives button:hover {
     cursor: pointer;
 }
