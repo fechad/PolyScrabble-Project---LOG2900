@@ -1,19 +1,20 @@
-import { alphabetTemplate } from '@app/alphabet-template';
+import { ALPHABET } from '@app/alphabet-template';
 import * as cst from '@app/constants';
 import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
-import { Letter } from '@app/letter';
-import { ReserveLetter } from '@app/reserve-letter';
+
+export type Letter = string;
 
 export class Reserve {
-    letterRacks: Letter[][] = [];
-    private reserve: Letter[] = [];
+    letterRacks: [Letter[], Letter[]];
+    private reserve: Letter[];
 
     constructor() {
-        for (const letter of alphabetTemplate) {
-            for (let i = 0; i < letter.quantity; i++) {
+        this.reserve = [];
+        Object.entries(ALPHABET).forEach(([letter, info]) => {
+            for (let i = 0; i < info.quantity; i++) {
                 this.reserve.push(letter);
             }
-        }
+        });
         this.setRacks();
     }
 
@@ -35,9 +36,7 @@ export class Reserve {
         const rack = this.letterRacks[playerIndex];
 
         for (const unwantedLetter of lettersToChange) {
-            const i = rack.findIndex(
-                (letter) => unwantedLetter === letter.name.toLowerCase() || (unwantedLetter.match(/[A-Z]/g) && letter.name.match(/[*]/g)),
-            );
+            const i = rack.findIndex((letter) => unwantedLetter === letter.toLowerCase() || (unwantedLetter.match(/[A-Z]/g) && letter === '*'));
             if (i === cst.UNDEFINED) continue;
             if (putBack) this.reserve.push(rack[i]);
             rack[i] = rack[rack.length - 1];
@@ -46,14 +45,14 @@ export class Reserve {
         rack.push(...this.drawLetters(lettersToChange.length));
     }
 
-    matchRack(rack: Letter[], isMainPlayer: boolean) {
+    matchRack(rack: Letter[], isMainPlayer: boolean): void {
         const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
         rack.forEach((letter, idx) => {
             this.letterRacks[playerIndex][idx] = letter;
         });
     }
 
-    getCount() {
+    getCount(): number {
         return this.reserve.length;
     }
 
@@ -62,22 +61,21 @@ export class Reserve {
     }
 
     getContent() {
-        const reserveToShow: ReserveLetter[] = alphabetTemplate.map((letter) => ({ name: letter.name, qtyInReserve: 0 }));
-        for (const content of this.reserve) {
-            reserveToShow[content.id - 1].qtyInReserve++;
+        const reserveToShow: { [letter: string]: number } = Object.fromEntries(Object.keys(ALPHABET).map((letter) => [letter, 0]));
+        for (const letter of this.reserve) {
+            reserveToShow[letter]++;
         }
         return reserveToShow;
     }
 
     private setRacks() {
         const rackLength = 7;
-        const rack1: Letter[] = [];
-        const rack2: Letter[] = [];
+        const rack1: string[] = [];
+        const rack2: string[] = [];
         for (let i = 0; i < rackLength; i++) {
             rack1.push(...this.drawLetters(1));
             rack2.push(...this.drawLetters(1));
         }
-        this.letterRacks.push(rack1);
-        this.letterRacks.push(rack2);
+        this.letterRacks = [rack1, rack2];
     }
 }

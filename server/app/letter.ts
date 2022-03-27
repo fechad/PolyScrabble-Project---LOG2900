@@ -1,6 +1,4 @@
-export interface Letter {
-    id: number;
-    name: string;
+export interface LetterInfo {
     score: number;
     quantity: number;
 }

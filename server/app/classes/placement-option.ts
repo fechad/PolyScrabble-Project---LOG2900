@@ -1,20 +1,23 @@
-import { WordConnection } from '@app/services/dictionnary-trie.service';
+import { Board } from './board';
+import { Position } from './position';
 
 export class PlacementOption {
-    score: number = 0;
-    command: string = '';
-    constructor(public row: number, public col: number, public isHorizontal: boolean, public word: string) {}
-    deepCopy(newWord?: string): PlacementOption {
-        return new PlacementOption(this.row, this.col, this.isHorizontal, newWord ? newWord : this.word);
-    }
+    constructor(public isHorizontal: boolean, public newLetters: LetterPlacement[]) {}
 
-    buildCommand(connectedLetters: WordConnection[]) {
-        const commandArray = [...this.word];
-        connectedLetters
-            .filter((letter) => letter.isOnBoard)
-            .forEach((letter) => {
-                commandArray[letter.index] = '';
-            });
-        this.command = commandArray.join('');
+    static newPlacement(board: Board, position: Position, isHorizontal: boolean, word: string): PlacementOption {
+        const newLetters: LetterPlacement[] = [];
+        const letters = [...word];
+        for (let offset = 0; letters.length > 0; offset++) {
+            const pos = position.withOffset(isHorizontal, offset);
+            if (!pos.isInBound()) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
+            if (board.get(pos).letter) continue;
+            newLetters.push({ letter: letters.shift()?.toUpperCase() as string, position: pos });
+        }
+        return new PlacementOption(isHorizontal, newLetters);
     }
 }
+
+export type LetterPlacement = {
+    letter: string;
+    position: Position;
+};

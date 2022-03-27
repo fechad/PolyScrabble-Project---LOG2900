@@ -1,19 +1,17 @@
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import * as cst from '@app/constants';
-import { Letter } from '@app/letter';
 import { Message } from '@app/message';
-import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
-import { Container } from 'typedi';
 import { Board } from './board';
+import { PlacementOption } from './placement-option';
+import { Position } from './position';
 import { Reserve } from './reserve';
 import { Player, PlayerId, Room, State } from './room';
-import { VirtualPlayer } from './virtual-player';
+import { WordGetter } from './word-getter';
 
 export type GameId = number;
-type Tile = Letter | undefined;
-type SendableBoard = Tile[][];
+type Tile = string | undefined;
 
 type PlayerInfo = {
     info: Player;
@@ -41,14 +39,16 @@ export class Game {
     private skipCounter;
     private winner: PlayerId | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
+    private readonly wordGetter;
 
-    constructor(readonly room: Room, dictionnaryService: DictionnaryService) {
+    constructor(readonly room: Room, private readonly dictionnaryService: DictionnaryService) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
-        this.board = new Board(dictionnaryService);
+        this.board = new Board();
         this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * cst.SEC_TO_MS);
         this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
+        this.wordGetter = new WordGetter(this.board);
     }
 
     private static createCommand(word: string, row: number, col: number, isHorizontal?: boolean): string {
@@ -73,7 +73,7 @@ export class Game {
         const state: GameState = {
             players: [this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id), this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id)],
             reserveCount: this.reserve.getCount(),
-            board: this.formatSendableBoard(),
+            board: this.board.getState(),
             turn: this.room.getState() === State.Started ? this.getCurrentPlayer().id : undefined,
             state: this.room.getState(),
             winner: this.winner,
@@ -106,9 +106,25 @@ export class Game {
             const player = this.getCurrentPlayer();
             this.clearTimeout();
             try {
-                const response = await this.board.placeWord(letters, row, col, isHorizontal);
+                isHorizontal ||= this.board.isInContact(row, col, false);
+                const triedPlacement = PlacementOption.newPlacement(this.board, new Position(row, col), isHorizontal, letters);
+
+                await new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(null);
+                    }, cst.BOARD_PLACEMENT_DELAY);
+                });
+                const words = this.wordGetter.getWords(triedPlacement);
+                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
+                    throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
+
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
-                this.scores[playerIndex] += response;
+
+                this.scores[playerIndex] += words.reduce((sum, word) => (sum += word.score), 0);
+                if (letters.length === cst.WORD_LENGTH_BONUS) this.scores[playerIndex] += cst.BONUS_POINTS;
+
+                this.board.place(triedPlacement.newLetters);
+
                 const validMessage = player.name + ' : ' + Game.createCommand(letters, row, col, isHorizontal);
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
@@ -127,7 +143,7 @@ export class Game {
         return this.reserve.isPlayerRackEmpty(cst.MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(cst.OTHER_PLAYER);
     }
 
-    matchRack(rack: Letter[]) {
+    matchRack(rack: string[]) {
         this.reserve.matchRack(rack, this.isPlayer0Turn);
     }
 
@@ -153,7 +169,7 @@ export class Game {
         }
     }
 
-    hint(playerId: PlayerId) {
+    /* hint(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             const virtual = new VirtualPlayer(false, this, Container.get(DictionnaryService), Container.get(DictionnaryTrieService));
             const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
@@ -166,7 +182,7 @@ export class Game {
                 warning;
             this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
         }
-    }
+    }*/
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
@@ -238,18 +254,5 @@ export class Game {
             this.eventEmitter.emit('game-error', playerId, new Error("Ce n'est pas votre tour").message);
         }
         return validTurn;
-    }
-
-    private formatSendableBoard(): SendableBoard {
-        const board: SendableBoard = [];
-        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
-            const row = [];
-            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
-                const gameTile = this.board.board[i][j];
-                row.push(gameTile.empty ? undefined : gameTile.letter);
-            }
-            board.push(row);
-        }
-        return board;
     }
 }

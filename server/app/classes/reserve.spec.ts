@@ -1,6 +1,5 @@
-import { alphabetTemplate } from '@app/alphabet-template';
 import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import { Reserve } from './reserve';
 
 describe('Reserve', () => {
@@ -13,15 +12,15 @@ describe('Reserve', () => {
     });
 
     it('should have 7 elements in each rack', (done) => {
-        assert(reserve.letterRacks[0].length === RACKS_LENGTH);
-        assert(reserve.letterRacks[1].length === RACKS_LENGTH);
+        expect(reserve.letterRacks[0].length).to.equal(RACKS_LENGTH);
+        expect(reserve.letterRacks[1].length).to.equal(RACKS_LENGTH);
         done();
     });
 
     it('should return the right number of letters', (done) => {
         const numberOfLetters = 4;
-        assert(reserve.drawLetters(numberOfLetters).length === numberOfLetters);
-        assert(reserve.drawLetters(RACKS_LENGTH).length === RACKS_LENGTH);
+        expect(reserve.drawLetters(numberOfLetters).length).to.equal(numberOfLetters);
+        expect(reserve.drawLetters(RACKS_LENGTH).length).to.equal(RACKS_LENGTH);
         done();
     });
 
@@ -32,38 +31,33 @@ describe('Reserve', () => {
         reserve.drawLetters(numberOfDrawnLetters);
         // eslint-disable-next-line dot-notation
         const afterReserveLength = reserve['reserve'].length;
-        assert(beforeReserveLength === afterReserveLength + numberOfDrawnLetters);
+        expect(beforeReserveLength).to.equal(afterReserveLength + numberOfDrawnLetters);
         done();
     });
 
-    it('should take the correct letters from the reserve', (done) => {
+    it('should take the correct letters from the reserve', () => {
         const numberOfDrawnLetters = 5;
         // eslint-disable-next-line dot-notation
-        const beforeReserve = reserve['reserve'];
+        const beforeReserve = reserve['reserve'].slice();
         const drawnLetters = reserve.drawLetters(numberOfDrawnLetters);
         // eslint-disable-next-line dot-notation
-        const afterReserve = reserve['reserve'];
-        afterReserve.concat(drawnLetters).sort((a, b) => a.id - b.id);
-        beforeReserve.sort((a, b) => a.id - b.id);
-        for (let i = 0; i < beforeReserve.length; i++) {
-            assert(beforeReserve[i].name === afterReserve[i].name);
-        }
-        done();
+        const afterReserve = reserve['reserve'].concat(drawnLetters).sort();
+        beforeReserve.sort();
+        expect(beforeReserve).to.deep.equal(afterReserve);
     });
 
-    it('should tell if a rack is empty', (done) => {
+    it('should tell if a rack is empty', () => {
         reserve.letterRacks[MAIN_PLAYER].length = 0;
         let result = reserve.isPlayerRackEmpty(MAIN_PLAYER);
-        assert(result);
+        expect(result).to.equal(true);
 
-        reserve.letterRacks[MAIN_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
+        reserve.letterRacks[MAIN_PLAYER] = [...'ALLO'];
         result = reserve.isPlayerRackEmpty(MAIN_PLAYER);
-        assert(!result);
+        expect(result).to.equal(false);
 
-        reserve.letterRacks[OTHER_PLAYER] = [alphabetTemplate[0], alphabetTemplate[11], alphabetTemplate[11], alphabetTemplate[14]];
+        reserve.letterRacks[OTHER_PLAYER] = [...'ALLO'];
         result = reserve.isPlayerRackEmpty(OTHER_PLAYER);
-        assert(!result);
-        done();
+        expect(result).to.equal(false);
     });
 
     it('should deal with draw bigger than number in reserve', () => {
@@ -71,17 +65,17 @@ describe('Reserve', () => {
         // eslint-disable-next-line dot-notation
         reserve.drawLetters(reserve['reserve'].length - remainingLetters);
         const letters = reserve.drawLetters(remainingLetters + 1);
-        assert(letters.length === remainingLetters);
+        expect(letters.length).to.equal(remainingLetters);
     });
 
     it('should update the reserve', (done) => {
         // eslint-disable-next-line dot-notation
         const lengthBefore = reserve['reserve'].length;
-        reserve.updateReserve(reserve.letterRacks[0][0].name.toLowerCase(), true, true);
+        reserve.updateReserve(reserve.letterRacks[0][0].toLowerCase(), true, true);
         // eslint-disable-next-line dot-notation
         expect(reserve['reserve'].length).to.equal(lengthBefore);
 
-        reserve.updateReserve(reserve.letterRacks[0][0].name.toLowerCase(), false, false);
+        reserve.updateReserve(reserve.letterRacks[0][0].toLowerCase(), false, false);
         // eslint-disable-next-line dot-notation
         expect(reserve['reserve'].length).to.equal(lengthBefore - 1);
         done();
@@ -90,13 +84,13 @@ describe('Reserve', () => {
     it('should set the racks', (done) => {
         // eslint-disable-next-line dot-notation
         reserve['setRacks']();
-        assert(reserve.letterRacks[0].length === RACKS_LENGTH);
-        assert(reserve.letterRacks[1].length === RACKS_LENGTH);
+        expect(reserve.letterRacks[0].length).to.equal(RACKS_LENGTH);
+        expect(reserve.letterRacks[1].length).to.equal(RACKS_LENGTH);
         done();
     });
 
     it('reserve content should show all 27 letters (including *)', (done) => {
-        assert(reserve.getContent().length === RESERVE_CONTENT_LENGTH);
+        expect(Object.keys(reserve.getContent()).length).to.equal(RESERVE_CONTENT_LENGTH);
         done();
     });
 });

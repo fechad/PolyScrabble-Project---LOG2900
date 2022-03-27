@@ -247,7 +247,7 @@ describe('SocketManager service tests', () => {
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
-        const letters = Container.get(RoomsService).games[0].reserve.letterRacks[0][0].name.toLowerCase();
+        const letters = Container.get(RoomsService).games[0].reserve.letterRacks[0][0].toLowerCase();
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
@@ -268,10 +268,7 @@ describe('SocketManager service tests', () => {
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
-        Container.get(RoomsService).games[0].reserve.letterRacks[0] = [
-            { id: 0, name: 'A', score: 1, quantity: 1 },
-            { id: 1, name: 'S', score: 1, quantity: 1 },
-        ];
+        Container.get(RoomsService).games[0].reserve.letterRacks[0] = [...'AS'];
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();

@@ -12,13 +12,7 @@ describe('EndGameService', () => {
     beforeEach(() => {
         endGameService = new EndGameCalculator();
         reserve = new Reserve();
-        reserve.letterRacks = [
-            [
-                { name: 'A', score: 1, quantity: 20, id: 0 },
-                { name: 'B', score: 1, quantity: 3, id: 1 },
-            ],
-            [{ name: 'C', score: 2, quantity: 2, id: 2 }],
-        ];
+        reserve.letterRacks = [['A', 'B'], ['C']];
     });
     it('should be created', () => {
         assert(endGameService !== undefined);
@@ -28,14 +22,7 @@ describe('EndGameService', () => {
         const scoreOtherPlayer = 20;
         const scores = [scoreMainPlayer, scoreOtherPlayer];
         EndGameCalculator.calculateFinalScores(scores, reserve);
-        expect(scores).to.deep.equal([8, 18]);
-    });
-    it('should calulate the final scores and update one of the letter lists', () => {
-        const scoreMainPlayer = 10;
-        const scoreOtherPlayer = 20;
-        const scores = [scoreMainPlayer, scoreOtherPlayer];
-        EndGameCalculator.calculateFinalScores(scores, reserve);
-        expect(scores).to.deep.equal([8, 18]);
+        expect(scores).to.deep.equal([6, 17]);
     });
     it('createGameSummary should create a message summarizing the game', () => {
         const mainPlayer: Player = { avatar: 'a', name: 'firstName', id: 'id1', connected: true, virtual: false };

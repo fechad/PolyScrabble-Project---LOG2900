@@ -1,3 +1,4 @@
+/*
 import { PlacementOption } from '@app/classes/placement-option';
 import * as cst from '@app/constants';
 import { DictionnaryTrieService, WordConnection } from '@app/services/dictionnary-trie.service';
@@ -199,3 +200,4 @@ export class VirtualPlayer {
         return this.game.reserve.letterRacks[cst.AI_GAME_INDEX].map((letter) => letter.name).join('');
     }
 }
+*/

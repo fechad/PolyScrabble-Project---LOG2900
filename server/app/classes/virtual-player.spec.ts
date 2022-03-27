@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable @typescript-eslint/no-magic-numbers, dot-notation*/
+
+/*
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { PlacementOption } from '@app/classes/placement-option';
 import { Letter } from '@app/letter';
@@ -9,7 +11,6 @@ import * as sinon from 'sinon';
 import { Game } from './game';
 import { Room } from './room';
 import { VirtualPlayer } from './virtual-player';
-/* eslint-disable dot-notation*/
 
 describe('VirtualPlayer', () => {
     let game: Game;
@@ -205,3 +206,4 @@ describe('VirtualPlayer', () => {
         }
     });
 });
+*/

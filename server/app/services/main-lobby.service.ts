@@ -1,19 +1,18 @@
 import { Game } from '@app/classes/game';
-import { Difficulty, Parameters } from '@app/classes/parameters';
+import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
-import { VirtualPlayer } from '@app/classes/virtual-player';
 import { imgList, NUMBER_ICONS } from '@app/constants';
 import { EventEmitter } from 'events';
-import { Service } from 'typedi';
-import { DictionnaryTrieService } from './dictionnary-trie.service';
+import { Container, Service } from 'typedi';
 import { DictionnaryService } from './dictionnary.service';
 import { RoomsService } from './rooms.service';
 
 @Service()
 export class MainLobbyService {
     private nextRoomId = 0;
+    private dictionnaryService = Container.get<DictionnaryService>(DictionnaryService);
 
-    constructor(private roomsService: RoomsService, private dictionnaryService: DictionnaryService, private trie: DictionnaryTrieService) {}
+    constructor(private roomsService: RoomsService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
         const alreadyJoinedRoom = this.roomsService.rooms
@@ -48,9 +47,8 @@ export class MainLobbyService {
                 room.start();
                 const game = new Game(room, this.dictionnaryService);
                 this.roomsService.games.push(game);
-                const isBeginner = parameters.difficulty !== Difficulty.Expert;
-                const vP = new VirtualPlayer(isBeginner, game, this.dictionnaryService, this.trie);
-                vP.waitForTurn();
+                /* const vP = new VirtualPlayer(parameters.difficulty, game, this.dictionnaryService, this.trie);
+                vP.waitForTurn();*/
             }
         });
     }

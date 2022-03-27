@@ -3,7 +3,6 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { SocketManager } from './controllers/socket.controller';
-import { DictionnaryTrieService } from './services/dictionnary-trie.service';
 import { DictionnaryService } from './services/dictionnary.service';
 import { LoginsService } from './services/logins.service';
 import { RoomsService } from './services/rooms.service';
@@ -39,8 +38,7 @@ export class Server {
         this.server = http.createServer(this.application.app);
 
         await this.dictionnnaryService.init();
-        const trie = new DictionnaryTrieService(this.dictionnnaryService);
-        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService, trie);
+        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService);
         this.socketManager.init();
 
         this.server.listen(Server.appPort);
