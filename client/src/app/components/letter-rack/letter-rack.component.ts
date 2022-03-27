@@ -93,16 +93,15 @@ export class LetterRackComponent {
     }
 
     swapLetters(index: number, oldIndex: number) {
-        const tempRack: Letter[] = [];
-        if (index === 0) {
-            for (let i = 0; i < this.letters.length; i++) {
-                const idx = (i + 1) % this.letters.length;
-                tempRack[idx] = this.letters[i];
-            }
-            this.letters = tempRack;
-        } else if ((index = this.letters.length - 1)) {
-            // this.letters.push(this.letters.shift());
-            // this.letters.unshift(this.letters.pop());
+        if (oldIndex === 0 && index === this.letters.length - 1) {
+            const firstElement = this.letters.shift();
+            // rack will never be empty if a letter is selected for manipulation
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.letters.push(firstElement!);
+        } else if (oldIndex === this.letters.length - 1 && index === 0) {
+            // rack will never be empty if a letter is selected for manipulation
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.letters.unshift(this.letters.pop()!);
         } else {
             const temp = this.letters[oldIndex];
             this.letters[oldIndex] = this.letters[index];
