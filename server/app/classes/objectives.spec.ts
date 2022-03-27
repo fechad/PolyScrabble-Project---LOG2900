@@ -9,7 +9,7 @@ import {
     OBJECTIVE_ONLY_VOWELS,
     OBJECTIVE_PALINDORME,
 } from '@app/constants';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import {
     Objective,
     Objective2BigLetters,
@@ -24,6 +24,8 @@ import {
 import { PlacementOption } from './placement-option';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable dot-notation */
+/* eslint-disable max-lines */
 
 describe('Objectives', () => {
     let placement: PlacementOption;
@@ -33,19 +35,37 @@ describe('Objectives', () => {
         Objective.playedWords = new Set<string>();
     });
 
+    it('should not let an objective be taken more than once', () => {
+        objective = new ObjectiveAlreadyOnBoard();
+
+        placement = new PlacementOption(3, 4, false, 'test');
+        objective.getObjectivePoints(placement);
+        assert(objective['isAvailable']);
+        placement = new PlacementOption(5, 6, true, 'test');
+        let points = objective.getObjectivePoints(placement);
+        assert(!objective['isAvailable']);
+        expect(points).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
+        placement = new PlacementOption(7, 8, false, 'test');
+        points = objective.getObjectivePoints(placement);
+        assert(!objective['isAvailable']);
+        expect(points).to.equal(NO_POINTS);
+    });
+
     it('should give points for a palindrome', () => {
         objective = new ObjectivePalindrome();
 
         placement = new PlacementOption(7, 7, true, 'laval');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_PALINDORME);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'elle');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_PALINDORME);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'ete');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_PALINDORME);
     });
 
@@ -53,15 +73,15 @@ describe('Objectives', () => {
         objective = new ObjectivePalindrome();
 
         placement = new PlacementOption(7, 7, true, 'lavel');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'aa');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'etre');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 
@@ -70,22 +90,24 @@ describe('Objectives', () => {
         const otherObjective = new ObjectivePalindrome();
 
         placement = new PlacementOption(3, 4, false, 'premiertest');
-        objective.isObjectiveAccomplished(placement);
+        objective.getObjectivePoints(placement);
         placement = new PlacementOption(3, 4, false, 'secondtest');
-        objective.isObjectiveAccomplished(placement);
+        objective.getObjectivePoints(placement);
         placement = new PlacementOption(3, 4, false, 'troisiemetest');
-        otherObjective.isObjectiveAccomplished(placement);
+        otherObjective.getObjectivePoints(placement);
 
         placement = new PlacementOption(7, 7, true, 'premiertest');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'secondtest');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'troisiemetest');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
     });
 
@@ -93,15 +115,15 @@ describe('Objectives', () => {
         objective = new ObjectiveAlreadyOnBoard();
 
         placement = new PlacementOption(7, 7, true, 'premiertest');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'secondtest');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'troisiemetest');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 
@@ -109,15 +131,17 @@ describe('Objectives', () => {
         objective = new Objective3Vowels();
 
         placement = new PlacementOption(7, 7, true, 'eau');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_3_VOWELS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'automobile');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_3_VOWELS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'auto');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_3_VOWELS);
     });
 
@@ -125,15 +149,15 @@ describe('Objectives', () => {
         objective = new Objective3Vowels();
 
         placement = new PlacementOption(7, 7, true, 'laval');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'aa');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'etre');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 
@@ -142,59 +166,63 @@ describe('Objectives', () => {
         const otherObjective = new ObjectivePalindrome();
 
         placement = new PlacementOption(3, 4, false, 'premiertest');
-        objective.isObjectiveAccomplished(placement);
+        objective.getObjectivePoints(placement);
         placement = new PlacementOption(3, 4, false, 'secondtest');
-        objective.isObjectiveAccomplished(placement);
+        objective.getObjectivePoints(placement);
         placement = new PlacementOption(3, 4, false, 'troisiemetest');
-        otherObjective.isObjectiveAccomplished(placement);
+        otherObjective.getObjectivePoints(placement);
 
         placement = new PlacementOption(7, 7, true, 'testpremier');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_ANAGRAM);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'tesecondst');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_ANAGRAM);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'testtroisieme');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_ANAGRAM);
     });
 
     it('should not give points for no anagram', () => {
         objective = new ObjectiveAnagram();
         placement = new PlacementOption(3, 4, false, 'premiertttt');
-        objective.isObjectiveAccomplished(placement);
+        objective.getObjectivePoints(placement);
 
         placement = new PlacementOption(7, 7, true, 'premiertest');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'secondtest');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
         placement = new PlacementOption(7, 7, true, 'troisiemetest');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 
     it('should give points for only placing vowels', () => {
         objective = new ObjectiveOnlyVowels();
 
-        placement = new PlacementOption(7, 7, true, 'eau');
-        let usedLetters = 'eau';
-        let result = objective.isObjectiveAccomplished(placement, usedLetters);
+        placement = new PlacementOption(7, 7, true, 'laval');
+        let usedLetters = 'aa';
+        let result = objective.getObjectivePoints(placement, usedLetters);
         expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'automobile');
         usedLetters = 'auoi';
-        result = objective.isObjectiveAccomplished(placement, usedLetters);
+        result = objective.getObjectivePoints(placement, usedLetters);
         expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'auto');
         usedLetters = 'o';
-        result = objective.isObjectiveAccomplished(placement, usedLetters);
+        result = objective.getObjectivePoints(placement, usedLetters);
         expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
     });
 
@@ -203,17 +231,19 @@ describe('Objectives', () => {
 
         placement = new PlacementOption(7, 7, true, 'laval');
         let usedLetters = 'ava';
-        let result = objective.isObjectiveAccomplished(placement, usedLetters);
+        let result = objective.getObjectivePoints(placement, usedLetters);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'aas');
         usedLetters = 'aas';
-        result = objective.isObjectiveAccomplished(placement, usedLetters);
+        result = objective.getObjectivePoints(placement, usedLetters);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'etre');
         usedLetters = 't';
-        result = objective.isObjectiveAccomplished(placement, usedLetters);
+        result = objective.getObjectivePoints(placement, usedLetters);
         expect(result).to.equal(NO_POINTS);
     });
 
@@ -221,15 +251,17 @@ describe('Objectives', () => {
         objective = new Objective2BigLetters();
 
         placement = new PlacementOption(7, 7, true, 'kiwi');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_2_BIG_LETTERS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'xqz');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_2_BIG_LETTERS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'yak');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_2_BIG_LETTERS);
     });
 
@@ -237,15 +269,17 @@ describe('Objectives', () => {
         objective = new Objective2BigLetters();
 
         placement = new PlacementOption(7, 7, true, 'premiertest');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'quoi');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'yeah');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 
@@ -253,15 +287,17 @@ describe('Objectives', () => {
         objective = new Objective7LettersOrMore();
 
         placement = new PlacementOption(7, 7, true, 'premiertest');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_7_LETTERS_OR_MORE);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'collines');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_7_LETTERS_OR_MORE);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'anticonstitutionnellement');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_7_LETTERS_OR_MORE);
     });
 
@@ -269,15 +305,17 @@ describe('Objectives', () => {
         objective = new Objective7LettersOrMore();
 
         placement = new PlacementOption(7, 7, true, 'test');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'colline');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 7, true, 'justice');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 
@@ -285,23 +323,27 @@ describe('Objectives', () => {
         objective = new ObjectiveCornerPlacement();
 
         placement = new PlacementOption(0, 0, true, 'premiertest');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(0, 7, true, 'collines');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(14, 0, true, 'test');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(9, 14, false, 'droite');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(0, 14, false, 'coin');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
     });
 
@@ -309,31 +351,37 @@ describe('Objectives', () => {
         objective = new ObjectiveCornerPlacement();
 
         placement = new PlacementOption(7, 7, true, 'test');
-        let result = objective.isObjectiveAccomplished(placement);
+        let result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(0, 1, true, 'colline');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(0, 6, true, 'justice');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(13, 0, true, 'test');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(7, 14, false, 'droite');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(1, 14, false, 'coin');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
 
+        objective['isAvailable'] = true;
         placement = new PlacementOption(0, 13, false, 'cote');
-        result = objective.isObjectiveAccomplished(placement);
+        result = objective.getObjectivePoints(placement);
         expect(result).to.equal(NO_POINTS);
     });
 });
