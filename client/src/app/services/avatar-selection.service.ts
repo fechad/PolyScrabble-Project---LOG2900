@@ -13,7 +13,7 @@ export class AvatarSelectionService {
     chooseIcon(next: boolean) {
         if (next) this.idx++;
         else this.idx--;
-        if (this.idx === cst.MISSING) this.idx = cst.LAST_IMG;
-        this.imgChosen = cst.imgList[this.idx % cst.NUMBER_ICONS];
+        if (this.idx < 0) this.imgChosen = cst.imgList[(this.idx + cst.NUMBER_ICONS) % cst.NUMBER_ICONS];
+        else this.imgChosen = cst.imgList[this.idx % cst.NUMBER_ICONS];
     }
 }

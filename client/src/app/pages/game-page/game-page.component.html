@@ -66,7 +66,7 @@
                         <fa-icon id="increase" [icon]="faFont" size="3x" (click)="changeSize(1.1)"></fa-icon>
                     </button>
                 </div>
-                <div id="objectives-container" *ngIf="gameContextService.isModeLog2990 === true">
+                <div id="objectives-container">
                     <div class="objectives" id="private-objective">
                         <div [ngClass]="{ close: !privateObjectivesShown, open: privateObjectivesShown }" class="objective-infos">
                             <div class="objective-header"><h1>Objectif privé</h1></div>

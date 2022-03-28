@@ -27,7 +27,6 @@ export class GameContextService {
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
     readonly state: BehaviorSubject<GameState>;
-    isModeLog2990: boolean = true;
     skipTurnEnabled: boolean = true;
     tempRack: Letter[];
     myId: PlayerId;
