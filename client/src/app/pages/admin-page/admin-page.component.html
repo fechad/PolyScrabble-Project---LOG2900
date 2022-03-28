@@ -8,10 +8,10 @@
 <body>
     <section class="admin">
         <div class="tab-selection" #tabs>
-            <button id="history" (click)="changeSelection($event)" class="selected">Historique des parties</button>
-            <button id="dictionnaries" (click)="changeSelection($event)">Dictionnaires</button>
-            <button id="VPs" (click)="changeSelection($event)">Joueurs Virtuels</button>
-            <button id="reset" (click)="changeSelection($event)">Mode Réinitialisation</button>
+            <button class="tab selected" id="history" (click)="changeSelection($event)">Historique des parties</button>
+            <button class="tab" id="dictionnaries" (click)="changeSelection($event)">Dictionnaires</button>
+            <button class="tab" id="VPs" (click)="changeSelection($event)">Joueurs Virtuels</button>
+            <button class="tab" id="reset" (click)="changeSelection($event)">Mode Réinitialisation</button>
         </div>
         <div class="tab-content">
             <div *ngIf="tabSelection === 'history'">
