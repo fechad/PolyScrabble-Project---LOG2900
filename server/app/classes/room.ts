@@ -43,7 +43,7 @@ export class Room extends EventEmitter {
 
     addPlayer(playerId: PlayerId, playerName: string, virtual: boolean, avatar: string): Error | undefined {
         if (playerName === this.mainPlayer.name) {
-            return Error('Ce nom a déjà été prit');
+            return Error('Ce nom a déjà été pris');
         }
         if (playerId === this.mainPlayer.id) {
             return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
