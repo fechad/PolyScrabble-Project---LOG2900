@@ -103,6 +103,10 @@
     box-shadow: 0px 0px 0px;
 }
 
+.trash-can:hover {
+    cursor: pointer;
+}
+
 .vp-names::-webkit-scrollbar {
     height: 1px;
     width: 10px;
