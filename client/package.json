@@ -30,6 +30,7 @@
         "@fortawesome/free-regular-svg-icons": "^5.15.4",
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@types/angular": "^1.8.4",
+        "font-awesome": "^4.7.0",
         "igniteui-angular": "^13.0.8",
         "ngx-countdown": "^13.0.0",
         "rxjs": "~6.6.0",

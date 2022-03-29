@@ -38,8 +38,8 @@ describe('EndGameService', () => {
         expect(scores).to.deep.equal([8, 18]);
     });
     it('createGameSummary should create a message summarizing the game', () => {
-        const mainPlayer: Player = { name: 'firstName', id: 'id1', connected: true, virtual: false };
-        const otherPlayer: Player = { name: 'secondName', id: 'id2', connected: true, virtual: false };
+        const mainPlayer: Player = { avatar: 'a', name: 'firstName', id: 'id1', connected: true, virtual: false };
+        const otherPlayer: Player = { avatar: 'b', name: 'secondName', id: 'id2', connected: true, virtual: false };
         const summary = 'Fin de partie - lettres restantes \n' + '\nfirstName: AB \n ' + '\nsecondName: C \n ';
 
         const result = EndGameCalculator.createGameSummaryMessage([mainPlayer, otherPlayer], reserve);

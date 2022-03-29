@@ -1,10 +1,133 @@
 .container {
+    display: flex;
+    flex-direction: row;
     height: 100%;
     display: flex;
     background-color: darken(desaturate(#e1ac01, 70%), 35%);
 }
 
+.infos-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 15%;
+    padding: 0 5px 0 5px;
+    margin-right: 5px;
+    background-color: #e1ac01;
+}
+
+#settings,
+#quit-area {
+    display: flex;
+    padding-top: 2vh;
+}
+
+.chat-area {
+    margin: 25px 2vw 20px 2vw;
+}
+
+#objectives-container {
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    width: 14vw;
+    margin-top: 10vh;
+    margin-right: 5vw;
+}
+
+.objectives {
+    display: flex;
+    flex-direction: row;
+    border-radius: 15px;
+    width: 100%;
+}
+
+.objective-infos {
+    width: 80%;
+    border-radius: 15px 0 0 15px;
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+.open {
+    width: 80%;
+}
+.close {
+    width: 0%;
+}
+
+#private-objective .objective-infos {
+    background-color: #65ccd2;
+}
+
+#private-objective {
+    height: 10vh;
+    margin-bottom: 10vh;
+    margin-top: 2vh;
+}
+
+#public-objective .objective-infos {
+    background-color: #ffe454;
+}
+#public-objective {
+    height: 20vh;
+}
+
+.objectives .objective-header {
+    width: 100%;
+    height: 4vh;
+    border-radius: 15px 0 0 0;
+    border: black solid;
+    border-width: thin;
+    background-color: burlywood;
+    text-align: center;
+}
+
+.objectives .objective-header h1 {
+    padding-left: 0.5vw;
+    font-size: 100%;
+}
+
+.objectives button {
+    height: 100%;
+    width: 15%;
+    border-radius: 0 15px 15px 0;
+}
+
+.objectives button:hover {
+    cursor: pointer;
+}
+
+.objectives .private-objective-button {
+    background-color: #e1ac01;
+}
+
+.objectives .public-objective-button {
+    background-color: blueviolet;
+}
+
+#infos-area-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 80vh;
+}
+
+#settings {
+    height: 5vh;
+    padding: 0 0 5vh 0;
+}
+
+#quit-area {
+    display: flex;
+    justify-content: flex-end;
+    height: 10vh;
+    margin-left: 10vw;
+}
+
 .play-area-container {
+    margin-top: 2vh;
     flex: 1 1 auto;
 }
 
@@ -23,15 +146,51 @@
 }
 .game-container {
     display: flex;
-    flex-direction: row;
-    height: 90vh;
+    flex-direction: column;
+    height: 100%;
+    width: 80%;
 }
+#upper-game-container,
+#lower-game-container {
+    display: flex;
+    flex-direction: row;
+}
+
+#upper-game-container {
+    justify-content: space-between;
+}
+
+#lower-game-container div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 10vw;
+}
+
+#left-side {
+    width: 10vw;
+}
+
+#middle {
+    width: 40vw;
+    margin-left: 5vw;
+    position: relative;
+}
+
+#right-side {
+    padding-left: 5vw;
+}
+
+.size-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 2vh;
+}
+
 .icon {
-    border-radius: 20px;
-    margin-bottom: 2vw;
-    margin-left: 2vh;
-    width: 3vh;
-    height: 3vh;
+    background-color: transparent;
 }
 
 .icon,
@@ -39,108 +198,60 @@
     border: none;
     outline: none;
     background-color: transparent;
-    margin-left: 2vh;
+    margin-left: 1vh;
     transition: transform 0.3s ease-in-out;
-    color: #e1ac01;
 }
 
-#left-container {
-    margin-top: 1vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-bottom: 4vh;
-    padding-left: 5vw;
-    padding-top: 25px;
-    width: 25vw;
+.sizing {
+    color: white;
 }
-.size-container {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    margin: 2vh;
+
+.play {
+    background-color: #e1ac01;
 }
-.goals,
-.game-goals {
-    display: flex;
-    flex-direction: column;
-    width: 10vw;
-    margin-left: 2vh;
-}
-#easy-goal,
-#hard-goal,
-#personal-goal {
-    width: 20vw;
-    margin: 2vh;
-}
-.goals {
-    font-style: Signika Negative;
-    font-size: 20px;
-    margin-top: 10vh;
-    color: #e1ac01;
+
+#quit-game {
+    background-color: #e15201;
 }
 
 #quit-game,
-.skip-turn,
 .play {
-    background-color: #e1ac01;
-    height: 6vh;
-    width: 8vh;
+    height: 7vh;
+    width: 10vh;
     font-size: 2em;
     border-radius: 15px;
     border-width: thin;
     border-style: solid;
     border-color: #000000;
     transition: transform 0.3s ease-in-out;
+    margin-left: 3vw;
 }
 
-.skip-turn,
-#quit-game,
-.play {
-    margin: 1vw 0vw 1vw 2vw;
-}
-.action-buttons {
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: column;
-}
-.params-buttons {
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-}
 .sizing:hover,
 .icon:hover,
 #quit-game:hover,
-.skip-turn:hover,
 .play {
     cursor: pointer;
-
     transform: scale(1.1);
 }
 
-.rackArea {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    align-items: center;
-    background-color: darken(desaturate(#e1ac01, 70%), 35%);
-}
-
-.skip-turn:disabled,
 .play:disabled {
     cursor: default;
     opacity: 0.5;
     transform: scale(1);
 }
 
-#bottom-area {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+#quit-game,
+.play {
+    margin: 1vw 0vw 1vw 2vw;
 }
+
+.walk, .arrow-right{
+    width: 20%;
+}
+
 ::ng-deep .tooltip {
-    font-size: 20px;
+    font-size: 15px;
     max-width: unset !important;
     background-color: #fff;
     color: #000 !important;

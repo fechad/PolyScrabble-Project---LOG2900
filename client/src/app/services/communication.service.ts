@@ -97,10 +97,10 @@ export class CommunicationService {
         this.leaveGame();
     }
 
-    async joinRoom(playerName: string, roomId: RoomId) {
+    async joinRoom(avatar: string, playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
-        this.mainSocket.emit('join-room', roomId, playerName);
+        this.mainSocket.emit('join-room', roomId, playerName, avatar);
         await this.waitForRoom();
     }
 

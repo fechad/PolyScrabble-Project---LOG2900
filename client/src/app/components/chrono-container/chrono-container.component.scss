@@ -1,0 +1,61 @@
+section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#outer,
+#inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#outer {
+    border: #18222d solid;
+    width: 10vw;
+    height: 10vh;
+    background-color: rgb(52, 52, 53);
+}
+
+#inner,
+#clock {
+    display: flex;
+    width: 8vw;
+    height: 8vh;
+}
+#inner {
+    border: #18222d solid;
+    background-color: aliceblue;
+}
+#clock {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#btn {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: bottom;
+    width: 150px;
+    height: 10px;
+    padding-bottom: 1px;
+}
+#start,
+#stop {
+    border: #18222d solid;
+    width: 2vw;
+    height: 2vh;
+    background-color: rgb(52, 52, 53);
+}
+
+.back-chrono,
+.ng-start-inserted {
+    display: flex;
+    justify-content: center;
+    font: 400 40px / 20px 'Signika Negative', sans-serif;
+}
+section {
+    align-items: center;
+}

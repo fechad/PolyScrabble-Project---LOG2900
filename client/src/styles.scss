@@ -48,19 +48,5 @@ body {
 }
 .container {
     display: flex;
-
     flex-direction: column;
-}
-.infosArea {
-    margin-left: 30%;
-    margin-right: 30%;
-    display: flex;
-    justify-content: space-around;
-}
-.play-area-container {
-    height: 40vh;
-}
-.chatArea {
-    flex-direction: column;
-    justify-content: space-evenly;
 }
