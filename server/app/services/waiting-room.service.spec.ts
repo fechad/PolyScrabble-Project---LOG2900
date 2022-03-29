@@ -109,7 +109,7 @@ describe('WaitingRoom service tests', () => {
 
         const parameters = new Parameters();
         const room = new Room(1, 'DummyId', 'Dummy', parameters);
-        expect(room.addPlayer('NotDummyId', 'NotDummy', false)).to.equal(undefined);
+        expect(room.addPlayer('NotDummyId', 'NotDummy', false, 'a')).to.equal(undefined);
         expect(room.hasOtherPlayer()).to.equal(true);
         rooms.rooms.push(room);
         expect(rooms.rooms.length).to.equal(1);

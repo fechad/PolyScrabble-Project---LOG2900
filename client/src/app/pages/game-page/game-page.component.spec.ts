@@ -61,8 +61,8 @@ describe('GamePageComponent', () => {
         gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn'], {
             state: new BehaviorSubject({
                 players: [
-                    { id: '0', name: 'P1', connected: true, virtual: false },
-                    { id: '1', name: 'P2', connected: true, virtual: false },
+                    { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
+                    { id: '1', avatar: 'a', name: 'P2', connected: true, virtual: false },
                 ].map((info) => ({ info, score: 0, rackCount: 7 })),
                 reserveCount: 88,
                 board: [],

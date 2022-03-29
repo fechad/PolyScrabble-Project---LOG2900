@@ -30,12 +30,12 @@ describe('Game', () => {
 
     beforeEach(() => {
         players = [
-            { name: 'Bob', id: '0', connected: true, virtual: false },
-            { name: 'notBob', id: '1', connected: true, virtual: false },
+            { avatar: 'a', name: 'Bob', id: '0', connected: true, virtual: false },
+            { avatar: 'b', name: 'notBob', id: '1', connected: true, virtual: false },
         ];
         parameters = new Parameters();
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        room.addPlayer(players[1].id, players[1].name, false);
+        room.addPlayer(players[1].id, players[1].name, false, 'a');
         game = new Game(room, dictionnary);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);

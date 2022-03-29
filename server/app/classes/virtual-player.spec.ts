@@ -32,8 +32,8 @@ describe('VirtualPlayer', () => {
         parameters.difficulty = Difficulty.Beginner;
         parameters.log2990 = false;
         const room = new Room(1, '1', 'Dummy', parameters);
-        room.addPlayer('2', 'otherDummy', false);
-        room.addPlayer('VP', 'heo', true);
+        room.addPlayer('2', 'otherDummy', false, 'a');
+        room.addPlayer('VP', 'heo', true, 'a');
         game = new Game(room, dictionnaryService);
         vP = new VirtualPlayer(true, game, dictionnaryService, trie);
     });

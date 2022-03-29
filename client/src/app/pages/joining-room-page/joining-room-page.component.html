@@ -14,12 +14,13 @@
     <mat-card matRipple class="clickable" (click)="openDialog(game)">
         <mat-card-content>
             <div class="container">
-                <span>
-                    <p id="firstPlayer">Nom du joueur: {{ game.name }}</p>
+                <span class="params">
+                    <p id="firstPlayer">{{ game.name }}</p>
                     <p id="timer">Temps limite par tour: {{ game.parameters.timer }} secondes</p>
                     <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[game.parameters.dictionnary].name : '…' }}</p>
                 </span>
             </div>
+            <img class="avatar" [src]="game.parameters.avatar" />
         </mat-card-content>
     </mat-card>
 </div>

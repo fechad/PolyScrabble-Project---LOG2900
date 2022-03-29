@@ -106,3 +106,5 @@ export const MULT_LETTERS_2 = [
     [14, 3],
     [14, 11],
 ];
+export const imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-images/2.png', 'assets/icon-images/3.png', 'assets/icon-images/4.png'];
+export const NUMBER_ICONS = 4;

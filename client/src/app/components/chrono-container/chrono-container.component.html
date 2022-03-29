@@ -1,0 +1,18 @@
+<section >
+    <div id="btn">
+        <div id="stop"></div>
+        <div id="start"></div>
+    </div>
+    <div id="outer">
+        <div id="inner">
+            <div id="clock">
+                <div class="back-chrono">
+                    <countdown
+                        #countdown
+                        [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
+                    ></countdown>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
