@@ -19,7 +19,7 @@ export class Server {
         private readonly application: Application,
         private readonly roomsService: RoomsService,
         private readonly logins: LoginsService,
-        private dictionnnaryService: DictionnaryService,
+        private readonly dictionnnaryService: DictionnaryService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {

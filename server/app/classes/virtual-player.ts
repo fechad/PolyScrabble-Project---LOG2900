@@ -1,117 +1,132 @@
-/*
-import { PlacementOption } from '@app/classes/placement-option';
+import { LetterPlacement, PlacementOption } from '@app/classes/placement-option';
 import * as cst from '@app/constants';
-import { DictionnaryTrieService, WordConnection } from '@app/services/dictionnary-trie.service';
-import { DictionnaryService } from '@app/services/dictionnary.service';
 import { Board } from './board';
 import { Game } from './game';
+import { LetterNode } from './letter-node';
+import { Difficulty } from './parameters';
+import { Position } from './position';
 import { State } from './room';
+import { WordGetter } from './word-getter';
+
+type SearchHead = {
+    position: Position;
+    isHorizontal: boolean;
+    letters: LetterPlacement[];
+    contact: boolean;
+    node: LetterNode;
+    rack: string[];
+};
 
 export class VirtualPlayer {
-    board: Board;
+    private board: Board;
+    private wordGetter: WordGetter;
 
-    constructor(
-        readonly isBeginner: boolean,
-        private game: Game,
-        private dictionnaryService: DictionnaryService,
-        private trie: DictionnaryTrieService,
-    ) {
+    constructor(readonly difficulty: Difficulty, private game: Game, private trie: LetterNode) {
         this.board = game.board;
-        console.log(`Virtual player created of difficulty ${isBeginner ? 'beginner' : 'expert'} for game ${game.id}`);
-    }
-
-    private static getWordConnections(position: PlacementOption) {
-        const connections: WordConnection[] = [];
-        [...position.word].forEach((letter, index) => {
-            if (letter !== ' ') connections.push({ connectedLetter: letter.toLowerCase(), index, isOnBoard: letter.toLowerCase() === letter });
-        });
-        connections.push({ connectedLetter: undefined, index: position.word.length - 1, isOnBoard: false });
-        return connections;
+        this.wordGetter = new WordGetter(this.board);
+        console.log(`Virtual player created of difficulty ${difficulty === Difficulty.Beginner ? 'beginner' : 'expert'} for game ${game.id}`);
     }
 
     waitForTurn() {
         let alreadyPlaying = false;
         const waitTurnInterval = setInterval(async () => {
-            if (this.game.getCurrentPlayer().id === cst.AI_ID) {
-                if (!alreadyPlaying) {
-                    alreadyPlaying = true;
-                    await this.playTurn();
-                    alreadyPlaying = false;
-                }
-            }
             if (this.game.room.getState() !== State.Started) clearInterval(waitTurnInterval);
+            if (this.game.getCurrentPlayer().id !== cst.AI_ID || alreadyPlaying) return;
+            alreadyPlaying = true;
+            await this.playTurn();
+            alreadyPlaying = false;
         }, cst.DELAY_CHECK_TURN);
-    }
-
-    getPlayablePositions(length: number): PlacementOption[] {
-        const arrayPos = this.board.getPlayablePositions(length);
-        return this.validateCrosswords(arrayPos);
     }
 
     async playTurn() {
         const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
-        if (this.isBeginner && randomOutOfTen === 0) {
+        if (this.difficulty === Difficulty.Beginner && randomOutOfTen === 0) {
             // 10 % chance
             this.game.skipTurn(cst.AI_ID);
-        } else if (this.isBeginner && randomOutOfTen === 1) {
+        } else if (this.difficulty === Difficulty.Beginner && randomOutOfTen === 1) {
             // 10 % chance
             if (this.game.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
-                const sliceIndex = Math.floor(Math.random() * this.rackToString().length);
-                this.game.changeLetters(this.rackToString().slice(sliceIndex), cst.AI_ID);
+                const sliceIndex = Math.floor(Math.random() * this.rack().length);
+                this.game.changeLetters(this.rack().slice(sliceIndex), cst.AI_ID);
             } else this.game.skipTurn(cst.AI_ID);
         } else {
             // 80 % chance
-            const sortedWordOptions = this.chooseWord(this.rackToString());
+            const sortedWordOptions = this.chooseWords(this.rack());
             const randomIndex = Math.floor(Math.random() * sortedWordOptions.length);
             const chosenWord = sortedWordOptions[randomIndex];
             if (chosenWord === undefined) {
                 setTimeout(() => {
                     this.game.skipTurn(cst.AI_ID);
                 }, cst.DELAY_NO_PLACEMENT);
-            } else await this.game.placeLetters(cst.AI_ID, chosenWord.command, chosenWord.row, chosenWord.col, chosenWord.isHorizontal);
+            } else {
+                const letters = chosenWord[0].newLetters.map((l) => l.letter);
+                await this.game.placeLetters(cst.AI_ID, letters, chosenWord[0].newLetters[0].position, chosenWord[0].isHorizontal);
+            }
         }
     }
 
-    chooseWord(freeLetters: string): PlacementOption[] {
-        const concretePositions: PlacementOption[] = [];
+    chooseWords(freeLetters: string[]): [PlacementOption, number][] {
+        const MIDDLE = new Position(cst.MIDDLE_INDEX, cst.MIDDLE_INDEX);
         const bracket = this.getRandomPointBracket();
-        if (this.board.board[cst.MIDDLE_INDEX][cst.MIDDLE_INDEX].empty) {
-            // on first placement of game
-            const emptyPlacement: WordConnection[] = [];
-            emptyPlacement.push({ connectedLetter: '', index: 0, isOnBoard: false });
-            emptyPlacement.push({ connectedLetter: undefined, index: 7, isOnBoard: false });
-            this.trie.generatePossibleWords([...freeLetters], emptyPlacement).forEach((word) => {
-                const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
-                const newPosition = new PlacementOption(cst.MIDDLE_INDEX, cst.MIDDLE_INDEX, isHorizontal, word);
-                const score = this.board.getScoreVirtualPlayer(newPosition);
-                if (score >= bracket[cst.LOWER_BOUND_INDEX] && score <= bracket[cst.HIGHER_BOUND_INDEX]) {
-                    newPosition.score = score;
-                    newPosition.buildCommand(emptyPlacement);
-                    concretePositions.push(newPosition);
-                }
+        const isStart = !this.board.get(MIDDLE).letter;
+        return this.getPlayablePositions(freeLetters, isStart)
+            .map((placement) => {
+                const score = this.wordGetter
+                    .getWords(placement)
+                    .map((p) => p.score)
+                    .reduce((acc, x) => acc + x, 0);
+                const out: [PlacementOption, number] = [placement, score];
+                return out;
+            })
+            .filter(([_placement, score]) => score >= bracket[cst.LOWER_BOUND_INDEX] && score <= bracket[cst.HIGHER_BOUND_INDEX])
+            .sort((a, b) => a[1] - b[1]);
+    }
+
+    private getPlayablePositions(rack: string[], start: boolean): PlacementOption[] {
+        const searchStack: SearchHead[] = [];
+        if (start) {
+            const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
+            searchStack.push({
+                position: new Position(cst.HALF_LENGTH, cst.HALF_LENGTH),
+                isHorizontal,
+                letters: [],
+                node: this.trie,
+                contact: true,
+                rack,
             });
         } else {
-            // rest of placements
-            for (const position of this.getPlayablePositions(freeLetters.length)) {
-                const connectedLetters = VirtualPlayer.getWordConnections(position);
-                [...position.word]
-                    .filter((letter) => letter.toUpperCase() === letter)
-                    .forEach((letter) => {
-                        freeLetters = freeLetters.replace(letter.toLowerCase(), '');
-                    });
-
-                this.trie.generatePossibleWords([...freeLetters], connectedLetters).forEach((word) => {
-                    const newPosition = position.deepCopy(word);
-                    const score = this.board.getScoreVirtualPlayer(newPosition);
-                    if (score >= bracket[cst.LOWER_BOUND_INDEX] && score <= bracket[cst.HIGHER_BOUND_INDEX]) {
-                        newPosition.score = score;
-                        newPosition.buildCommand(connectedLetters);
-                        concretePositions.push(newPosition);
+            for (let i = 0; i < cst.BOARD_LENGTH; i++) {
+                for (let j = 0; j < cst.BOARD_LENGTH; j++) {
+                    // for each direction
+                    for (const isHorizontal of [true, false]) {
+                        searchStack.push({ position: new Position(i, j), isHorizontal, letters: [], node: this.trie, contact: false, rack });
                     }
+                }
+            }
+        }
+        const validPositions: PlacementOption[] = [];
+        for (;;) {
+            const head = searchStack.pop();
+            if (!head) break;
+            const nextPos = head.position.withOffset(head.isHorizontal, 1);
+            const nextLetter = this.board.get(nextPos).letter;
+            if (!nextLetter && head.contact && head.node.terminal) validPositions.push(new PlacementOption(head.isHorizontal, head.letters));
+            if (nextLetter) {
+                const nextNode = head.node.getNext(nextLetter);
+                if (!nextNode) continue;
+                searchStack.push({ ...head, position: nextPos, node: nextNode, contact: true });
+            } else {
+                head.rack.forEach((letter, i) => {
+                    const nextNode = head.node.getNext(letter);
+                    if (!nextNode) return;
+                    const newRack = head.rack.slice();
+                    newRack.splice(i, 1);
+                    const newLetters: LetterPlacement[] = [...head.letters, { letter, position: head.position }];
+                    searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
                 });
             }
         }
-        return concretePositions.sort((a, b) => a.score - b.score);
+        return validPositions;
     }
 
     private getRandomPointBracket() {
@@ -128,76 +143,7 @@ export class VirtualPlayer {
         }
     }
 
-    private validateCrosswords(placementOptions: PlacementOption[], exploredOptions: PlacementOption[] = []): PlacementOption[] {
-        let validWords: PlacementOption[] = [];
-        let replacementOptions: PlacementOption[] = [];
-        let starRemains = false;
-        for (const option of placementOptions) {
-            let letterCount = 0;
-            let oneContact = false;
-            let availableLetters = this.rackToString();
-            for (const letter of option.word) {
-                if (letter.toLowerCase() !== letter) {
-                    availableLetters = availableLetters.replace(letter, '');
-                }
-                if (letter === cst.CONTACT_CHAR) {
-                    if (oneContact) {
-                        starRemains = true;
-                        break;
-                    }
-                    oneContact = true;
-                    replacementOptions = this.contactReplacement(exploredOptions, option, letterCount, availableLetters);
-                    validWords = validWords.concat(replacementOptions);
-                    if (replacementOptions.length === 0 && letterCount !== 0) validWords.push(option.deepCopy(option.word.slice(0, letterCount)));
-                }
-                letterCount++;
-            }
-            if (!oneContact) validWords.push(option);
-        }
-        if (starRemains) validWords = this.validateCrosswords(validWords, exploredOptions);
-        return validWords;
-    }
-
-    private contactReplacement(
-        exploredOptions: PlacementOption[],
-        option: PlacementOption,
-        letterCount: number,
-        rackLetters: string,
-    ): PlacementOption[] {
-        const row = option.isHorizontal ? option.row : option.row + letterCount;
-        const col = option.isHorizontal ? option.col + letterCount : option.col;
-        const validWords: PlacementOption[] = [];
-        const alreadyFound = exploredOptions.find(
-            (explored) => explored.row === row && explored.col === col && explored.isHorizontal === option.isHorizontal,
-        );
-        if (alreadyFound) {
-            for (const solution of alreadyFound.word) {
-                const letterAvailable = [...rackLetters].some((letter) => letter === solution);
-                if (letterAvailable) validWords.push(option.deepCopy(option.word.replace(cst.CONTACT_CHAR, solution)));
-            }
-        } else {
-            const crossword = this.board.wordGetter.getStringPositionVirtualPlayer(new PlacementOption(row, col, !option.isHorizontal, ''));
-            const possibleLetters = this.findNewOptions(validWords, option, rackLetters, crossword);
-            exploredOptions.push(new PlacementOption(row, col, option.isHorizontal, possibleLetters));
-        }
-        return validWords;
-    }
-
-    private findNewOptions(validWords: PlacementOption[], option: PlacementOption, rackLetters: string, crossword: string) {
-        let possibleLetters = '';
-        for (const rackLetter of rackLetters) {
-            if ([...possibleLetters].includes(rackLetter)) continue;
-            const attemptedCrossword = crossword.replace(cst.CONTACT_CHAR, rackLetter.toLowerCase());
-            if (this.dictionnaryService.isValidWord(attemptedCrossword)) {
-                validWords.push(option.deepCopy(option.word.replace(cst.CONTACT_CHAR, rackLetter)));
-                possibleLetters += rackLetter;
-            }
-        }
-        return possibleLetters;
-    }
-
-    private rackToString(): string {
-        return this.game.reserve.letterRacks[cst.AI_GAME_INDEX].map((letter) => letter.name).join('');
+    private rack(): string[] {
+        return this.game.reserve.letterRacks[cst.AI_GAME_INDEX];
     }
 }
-*/

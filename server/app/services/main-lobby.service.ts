@@ -1,18 +1,18 @@
 import { Game } from '@app/classes/game';
-import { Parameters } from '@app/classes/parameters';
+import { Difficulty, Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
+import { VirtualPlayer } from '@app/classes/virtual-player';
 import { imgList, NUMBER_ICONS } from '@app/constants';
 import { EventEmitter } from 'events';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
 import { DictionnaryService } from './dictionnary.service';
 import { RoomsService } from './rooms.service';
 
 @Service()
 export class MainLobbyService {
     private nextRoomId = 0;
-    private dictionnaryService = Container.get<DictionnaryService>(DictionnaryService);
 
-    constructor(private roomsService: RoomsService) {}
+    constructor(private roomsService: RoomsService, private readonly dictionnaryService: DictionnaryService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
         const alreadyJoinedRoom = this.roomsService.rooms
@@ -47,8 +47,12 @@ export class MainLobbyService {
                 room.start();
                 const game = new Game(room, this.dictionnaryService);
                 this.roomsService.games.push(game);
-                /* const vP = new VirtualPlayer(parameters.difficulty, game, this.dictionnaryService, this.trie);
-                vP.waitForTurn();*/
+                const vP = new VirtualPlayer(
+                    parameters.difficulty || Difficulty.Beginner,
+                    game,
+                    this.dictionnaryService.dictionnaries[parameters.dictionnary].trie,
+                );
+                vP.waitForTurn();
             }
         });
     }

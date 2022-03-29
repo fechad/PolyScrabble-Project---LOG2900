@@ -5,9 +5,11 @@ import { Message } from '@app/message';
 import { RoomsService } from '@app/services/rooms.service';
 import { Server } from 'app/server';
 import { assert, expect } from 'chai';
+import { Router } from 'express';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
+import { HttpController } from './http.controller';
 import { SocketManager } from './socket.controller';
 
 const RESPONSE_DELAY = 100;
@@ -28,6 +30,7 @@ describe('SocketManager service tests', () => {
 
     const urlString = 'http://localhost:3000';
     beforeEach(async () => {
+        Container.set(HttpController, { router: Router() });
         server = Container.get(Server);
         Container.get(RoomsService).rooms.splice(0);
         Container.get(RoomsService).games.splice(0);

@@ -4,10 +4,12 @@ import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
+import { Difficulty } from './parameters';
 import { PlacementOption } from './placement-option';
 import { Position } from './position';
 import { Reserve } from './reserve';
 import { Player, PlayerId, Room, State } from './room';
+import { VirtualPlayer } from './virtual-player';
 import { WordGetter } from './word-getter';
 
 export type GameId = number;
@@ -51,12 +53,12 @@ export class Game {
         this.wordGetter = new WordGetter(this.board);
     }
 
-    private static createCommand(word: string, row: number, col: number, isHorizontal?: boolean): string {
-        const columnOnBoard = col + 1;
-        const rowOnBoard = String.fromCharCode(row + cst.ASCII_LOWERCASE_A);
+    private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
+        const columnOnBoard = pos.col + 1;
+        const rowOnBoard = String.fromCharCode(pos.row + cst.ASCII_LOWERCASE_A);
         const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
         const position = rowOnBoard + columnOnBoard + orientation;
-        return `!placer ${position} ${word}`;
+        return `!placer ${position} ${letters.join('')}`;
     }
 
     get id(): number {
@@ -100,14 +102,15 @@ export class Game {
         this.eventEmitter.emit('message', message);
     }
 
-    async placeLetters(playerId: PlayerId, letters: string, row: number, col: number, isHorizontal?: boolean) {
+    async placeLetters(playerId: PlayerId, letters: string[], pos: Position, isHorizontal?: boolean) {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const player = this.getCurrentPlayer();
             this.clearTimeout();
             try {
-                isHorizontal ||= this.board.isInContact(row, col, false);
-                const triedPlacement = PlacementOption.newPlacement(this.board, new Position(row, col), isHorizontal, letters);
+                if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
+                isHorizontal ||= this.board.isInContact(pos, false);
+                const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
 
                 await new Promise((resolve) => {
                     setTimeout(() => {
@@ -125,7 +128,7 @@ export class Game {
 
                 this.board.place(triedPlacement.newLetters);
 
-                const validMessage = player.name + ' : ' + Game.createCommand(letters, row, col, isHorizontal);
+                const validMessage = player.name + ' : ' + Game.createCommand(letters, pos, isHorizontal);
                 this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
             } catch (e) {
                 this.eventEmitter.emit('message', { text: player.name + ' a fait un mauvais placement', emitter: 'command' } as Message);
@@ -152,7 +155,7 @@ export class Game {
         return this.players[playerIndex];
     }
 
-    changeLetters(letters: string, playerId: PlayerId) {
+    changeLetters(letters: string[], playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             if (this.reserve.getCount() >= cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
@@ -169,20 +172,29 @@ export class Game {
         }
     }
 
-    /* hint(playerId: PlayerId) {
+    hint(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            const virtual = new VirtualPlayer(false, this, Container.get(DictionnaryService), Container.get(DictionnaryTrieService));
+            const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
             const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
-            const options = virtual.chooseWord(this.reserve.letterRacks[player].map((letter) => letter.name).join('')).slice(0, 3);
+            const options = virtual.chooseWords(this.reserve.letterRacks[player]).slice(0, 3);
             const warning =
                 options.length === 0 ? 'Aucun placement possible' : options.length < cst.HINT_NUMBER_OPTIONS ? 'Moins de 3 placements possible' : '';
             const hintMessage =
                 'Indice:\n' +
-                options.map((opt, i) => ` ${i + 1}. ${Game.createCommand(opt.command, opt.row, opt.col, opt.isHorizontal)}`).join('\n') +
+                options
+                    .map(
+                        ([opt, _score], i) =>
+                            ` ${i + 1}. ${Game.createCommand(
+                                opt.newLetters.map((letter) => letter.letter),
+                                opt.newLetters[0].position,
+                                opt.isHorizontal,
+                            )}`,
+                    )
+                    .join('\n') +
                 warning;
             this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
         }
-    }*/
+    }
 
     skipTurn(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {

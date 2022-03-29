@@ -4,14 +4,14 @@ import { Position } from './position';
 export class PlacementOption {
     constructor(public isHorizontal: boolean, public newLetters: LetterPlacement[]) {}
 
-    static newPlacement(board: Board, position: Position, isHorizontal: boolean, word: string): PlacementOption {
+    static newPlacement(board: Board, position: Position, isHorizontal: boolean, letters: string[]): PlacementOption {
         const newLetters: LetterPlacement[] = [];
-        const letters = [...word];
-        for (let offset = 0; letters.length > 0; offset++) {
+        for (let offset = 0, idx = 0; idx < letters.length; offset++) {
             const pos = position.withOffset(isHorizontal, offset);
-            if (!pos.isInBound()) throw new Error('Placement invalide le mot ne rentre pas dans la grille');
+            if (!pos.isInBound()) throw new Error('Placement invalide: Le mot ne rentre pas dans la grille');
             if (board.get(pos).letter) continue;
-            newLetters.push({ letter: letters.shift()?.toUpperCase() as string, position: pos });
+            newLetters.push({ letter: letters[idx].toUpperCase() as string, position: pos });
+            idx++;
         }
         return new PlacementOption(isHorizontal, newLetters);
     }

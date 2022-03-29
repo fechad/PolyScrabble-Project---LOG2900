@@ -3,6 +3,7 @@ import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
+import { Container } from 'typedi';
 import { EndGameCalculator } from './end-game-calculator';
 import { Game } from './game';
 import { Parameters } from './parameters';
@@ -23,7 +24,7 @@ describe('Game', () => {
     let dictionnary: DictionnaryService;
 
     before(async () => {
-        dictionnary = new DictionnaryService();
+        dictionnary = Container.get(DictionnaryService);
         await dictionnary.init();
     });
 
@@ -60,7 +61,7 @@ describe('Game', () => {
     it('should change letters', (done) => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
-        const letters = game.reserve.letterRacks[0][0].toLowerCase() + game.reserve.letterRacks[0][3].toLowerCase();
+        const letters = [game.reserve.letterRacks[0][0].toLowerCase(), game.reserve.letterRacks[0][3].toLowerCase()];
         game.changeLetters(letters, game.players[0].id);
         assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
         assert(stubError.notCalled);
@@ -70,7 +71,7 @@ describe('Game', () => {
     it('should not change letters when it is not your turn', (done) => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
-        const letters = 'abcd';
+        const letters = [...'abcd'];
         game.changeLetters(letters, '1');
         assert(stub.notCalled);
         assert(stubError.called);
@@ -87,7 +88,7 @@ describe('Game', () => {
         const col = 6;
         game.reserve.letterRacks[0].push(...'TEST');
         const letters = 'test';
-        await game.placeLetters(game.players[0].id, letters, row, col, true);
+        await game.placeLetters(game.players[0].id, [...letters], new Position(row, col), true);
         assert(stubValidCommand.called, 'Did not send message');
         assert(stubState.called, 'Did not update state');
         assert(stubError.notCalled, 'Errored');
@@ -102,7 +103,7 @@ describe('Game', () => {
         const stubValidCommand = sinon.stub();
         game.eventEmitter.on('valid-command', stubValidCommand);
 
-        await game.placeLetters(game.players[0].id, letters, row, col, isHorizontal);
+        await game.placeLetters(game.players[0].id, [...letters], new Position(row, col), isHorizontal);
 
         assert(stubValidCommand.notCalled);
         assert(stubError.called);
@@ -113,10 +114,10 @@ describe('Game', () => {
         const row = 7;
         const col = 6;
         const isHorizontal = true;
-        const letters = 'testaaaaaaaaaaa';
+        const letters = [...'testaaaaaaaaaaa'];
         game.eventEmitter.on('score', stub);
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(game.players[0].id, letters, row, col, isHorizontal);
+        await game.placeLetters(game.players[0].id, [...letters], new Position(row, col), isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
     });
@@ -126,11 +127,11 @@ describe('Game', () => {
         const row = 7;
         const col = 6;
         const isHorizontal = true;
-        const letters = 'test';
+        const letters = [...'test'];
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(game.players[1].id, letters, row, col, isHorizontal);
+        game.placeLetters(game.players[1].id, letters, new Position(row, col), isHorizontal);
         assert(stub.notCalled);
         assert(stubError.called);
         done();
@@ -225,7 +226,7 @@ describe('Game', () => {
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = ['A', 'L', 'L', 'O'];
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(game.players[MAIN_PLAYER].id, 'allo', row, col, isHorizontal);
+        await game.placeLetters(game.players[MAIN_PLAYER].id, [...'allo'], new Position(row, col), isHorizontal);
         assert(endGame.called);
     });
 
@@ -233,7 +234,7 @@ describe('Game', () => {
         const remainingLettersInReserve = 4;
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
         game.reserve.letterRacks[MAIN_PLAYER] = ['A', 'L', 'L', 'O'];
-        game.changeLetters('allo', game.players[MAIN_PLAYER].id);
+        game.changeLetters([...'allo'], game.players[MAIN_PLAYER].id);
         assert(stubError.called);
     });
 

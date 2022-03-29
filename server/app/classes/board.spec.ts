@@ -1,6 +1,7 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { assert } from 'console';
+import { Container } from 'typedi';
 import { Board } from './board';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers, dot-notation, max-lines */
@@ -12,7 +13,7 @@ describe('Board', () => {
     let dictionnary: DictionnaryService;
 
     before(async () => {
-        dictionnary = new DictionnaryService();
+        dictionnary = Container.get(DictionnaryService);
         await dictionnary.init();
     });
 

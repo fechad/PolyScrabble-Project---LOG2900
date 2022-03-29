@@ -24,7 +24,7 @@ export class WordGetter {
         if (firstWord && !placeMiddle) throw new Error('Placement invalide: Le premier mot doit toucher le milieu du plateau');
         const mainWord = this.getWord(placement.newLetters, placement.isHorizontal);
         if (mainWord) words.push(mainWord);
-        if (!firstWord && !words.some(word => word.contact)) throw new Error('Placement invalide: Aucun point de contact');
+        if (!firstWord && !words.some((word) => word.contact)) throw new Error('Placement invalide: Aucun point de contact');
         // TODO: What if mainWord undefined?
         return words;
     }

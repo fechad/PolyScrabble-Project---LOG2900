@@ -24,32 +24,18 @@ export class Board {
         return this.board[position.row][position.col];
     }
 
-    /* getPlayablePositions(rackLength: number): PlacementOption[] {
-        const arrayPos: PlacementOption[] = [];
-        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
-            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
-                if (!this.board[i][j].letter) continue;
-                // for each direction
-                for (const isHorizontal of [true, false]) {
-                    const word = this.getPositionString(new PlacementOption(new Position(i, j), isHorizontal, ''), rackLength);
-                    if ([...word].some((char) => char !== ' ')) arrayPos.push(new PlacementOption(new Position(i, j), isHorizontal, word));
-                }
-            }
-        }
-        return arrayPos;
-    }*/
-
     place(newLetters: LetterPlacement[]) {
         for (const placement of newLetters) {
             this.board[placement.position.row][placement.position.col].letter = placement.letter.toUpperCase();
         }
     }
 
-    isInContact(row: number, col: number, isWordHorizontal: boolean): boolean {
-        if (row < 0 || col < 0 || row >= cst.BOARD_LENGTH || col >= cst.BOARD_LENGTH) return false;
+    isInContact(pos: Position, isWordHorizontal: boolean): boolean {
         return isWordHorizontal
-            ? (row > 0 && !!this.board[row - 1][col]) || (row + 1 < cst.BOARD_LENGTH && !!this.board[row + 1][col])
-            : (col > 0 && !!this.board[row][col - 1]) || (col + 1 < cst.BOARD_LENGTH && !!this.board[row][col + 1]);
+            ? (pos.row > 0 && !!this.board[pos.row - 1][pos.col].letter) ||
+                  (pos.row + 1 < cst.BOARD_LENGTH && !!this.board[pos.row + 1][pos.col].letter)
+            : (pos.col > 0 && !!this.board[pos.row][pos.col - 1].letter) ||
+                  (pos.col + 1 < cst.BOARD_LENGTH && !!this.board[pos.row][pos.col + 1].letter);
     }
 
     getState(): (string | undefined)[][] {

@@ -1,6 +1,6 @@
 export class LetterNode {
     nextNodes: LetterNode[] = [];
-    final: boolean = false;
+    terminal: boolean = false;
     constructor(readonly letter: string) {}
 
     addNext(letter: string) {

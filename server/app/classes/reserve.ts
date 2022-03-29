@@ -31,7 +31,7 @@ export class Reserve {
         return lettersToSend;
     }
 
-    updateReserve(lettersToChange: string, isMainPlayer: boolean, putBack: boolean) {
+    updateReserve(lettersToChange: string[], isMainPlayer: boolean, putBack: boolean) {
         const playerIndex = isMainPlayer ? MAIN_PLAYER : OTHER_PLAYER;
         const rack = this.letterRacks[playerIndex];
 

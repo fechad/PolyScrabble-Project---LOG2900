@@ -30,7 +30,7 @@ describe('HttpController', () => {
     let roomsService: RoomsService;
     let expressApp: Express.Application;
 
-    beforeEach(async () => {
+    before(async () => {
         dictionnaryService = createStubInstance(DictionnaryService);
         dictionnaryService.getDictionnaries.returns(DICTIONNARIES);
         highScoreService = createStubInstance(HighScoresService);
@@ -38,16 +38,22 @@ describe('HttpController', () => {
         const loginsService = createStubInstance(LoginsService);
         loginsService.verify.callsFake((id, token) => id === ID && token === TOKEN);
         roomsService = new RoomsService();
+        Container.set(DictionnaryService, dictionnaryService);
+        Container.set(HighScoresService, highScoreService);
+        Container.set(LoginsService, loginsService);
+        Container.set(RoomsService, roomsService);
         const app = Container.get(Application);
-        // eslint-disable-next-line dot-notation
-        Object.defineProperty(app['httpController'], 'dictionnaryService', { value: dictionnaryService });
-        // eslint-disable-next-line dot-notation
-        Object.defineProperty(app['httpController'], 'highScoreService', { value: highScoreService });
-        // eslint-disable-next-line dot-notation
-        Object.defineProperty(app['httpController'], 'logins', { value: loginsService });
-        // eslint-disable-next-line dot-notation
-        Object.defineProperty(app['httpController'], 'roomsService', { value: roomsService });
         expressApp = app.app;
+    });
+
+    beforeEach(() => {
+        while (roomsService.rooms.length > 0) roomsService.rooms.pop();
+        while (roomsService.games.length > 0) roomsService.games.pop();
+        highScoreService.addScore.reset();
+    });
+
+    after(() => {
+        Container.reset();
     });
 
     it('should return dictionnaries on request to /dictionnaries', async () => {

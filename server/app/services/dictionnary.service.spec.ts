@@ -1,11 +1,12 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert } from 'chai';
+import { Container } from 'typedi';
 
 describe('Dictionnary service', () => {
     let dictionnaryService: DictionnaryService;
 
-    beforeEach(async () => {
-        dictionnaryService = new DictionnaryService();
+    before(async () => {
+        dictionnaryService = Container.get(DictionnaryService);
         await dictionnaryService.init();
     });
     it('should be created', (done) => {
