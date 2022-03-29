@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -6,21 +6,14 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './admin-page.component.html',
     styleUrls: ['./admin-page.component.scss'],
 })
-export class AdminPageComponent implements OnInit, AfterViewInit {
+export class AdminPageComponent {
     @ViewChild('tabs') tabsRef: ElementRef;
     faHome = faHome;
     tabSelection: string = 'history';
-    constructor() {}
-
-    ngOnInit(): void {}
-
-    ngAfterViewInit() {
-        console.log(this.tabsRef);
-    }
 
     changeSelection(e: MouseEvent) {
-        const element = e.target as HTMLElement;
-        const id = element.id;
+        const selection = e.target as HTMLElement;
+        const id = selection.id;
         Array.from(this.tabsRef.nativeElement.children).forEach((element) => {
             const elem = element as HTMLElement;
             if (elem.id === id) {

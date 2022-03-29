@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -6,9 +6,6 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './virtual-players-tab.component.html',
     styleUrls: ['./virtual-players-tab.component.scss'],
 })
-export class VirtualPlayersTabComponent implements OnInit {
+export class VirtualPlayersTabComponent {
     faTrash = faTrashAlt;
-    constructor() {}
-
-    ngOnInit(): void {}
 }

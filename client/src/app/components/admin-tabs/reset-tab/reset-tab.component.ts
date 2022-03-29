@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { faUndoAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -6,9 +6,6 @@ import { faUndoAlt } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './reset-tab.component.html',
     styleUrls: ['./reset-tab.component.scss'],
 })
-export class ResetTabComponent implements OnInit {
+export class ResetTabComponent {
     faReset = faUndoAlt;
-    constructor() {}
-
-    ngOnInit(): void {}
 }

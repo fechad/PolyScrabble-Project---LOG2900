@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -6,10 +6,6 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './dictionary-tab.component.html',
     styleUrls: ['./dictionary-tab.component.scss'],
 })
-export class DictionaryTabComponent implements OnInit {
+export class DictionaryTabComponent {
     faTrash = faTrashAlt;
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -6,10 +6,6 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './game-history-tab.component.html',
     styleUrls: ['./game-history-tab.component.scss'],
 })
-export class GameHistoryTabComponent implements OnInit {
+export class GameHistoryTabComponent {
     faTrash = faTrashAlt;
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }
