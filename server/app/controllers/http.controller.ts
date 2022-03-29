@@ -7,7 +7,7 @@ import { RoomsService } from '@app/services/rooms.service';
 import { Request, Response, Router } from 'express';
 import { ValidateFunction, Validator } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { DataBaseController } from './db.controller';
 
 const NEW_SCORE_SCHEMA: ValidateFunction = {
@@ -27,23 +27,22 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
 @Service()
 export class HttpController {
     router: Router;
-    highScoreService: HighScoresService;
-    gameHistoryService: GameHistoryService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
         private readonly dataBase: DataBaseController,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
+        private readonly highScoreService: HighScoresService,
+        private readonly gameHistoryService: GameHistoryService,
     ) {
         this.dictionnaryService.init();
+        this.dataBase.connect();
+        this.highScoreService = Container.get(HighScoresService);
         this.configureRouter();
     }
 
-    private async configureRouter(): Promise<void> {
-        await this.dataBase.connect();
-        this.highScoreService = new HighScoresService(this.dataBase);
-        this.gameHistoryService = new GameHistoryService(this.dataBase);
+    private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
         this.router.get('/dictionnaries', (req: Request, res: Response) => {
