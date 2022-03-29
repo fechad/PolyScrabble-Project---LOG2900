@@ -12,7 +12,7 @@ import { Socket } from 'socket.io-client';
 
 export type Tile = Letter | null;
 export type Board = Tile[][];
-export type Objective = {text: string, score: number, isPublic: boolean, doneByPlayer?: PlayerId};
+export type Objective = { text: string; score: number; isPublic: boolean; doneByPlayer?: PlayerId };
 
 export enum MessageType {
     Normal,
@@ -77,7 +77,7 @@ export class GameContextService {
         });
         socket.on('objectives', (objectives: Objective[]) => {
             this.objectives.next(objectives);
-        }); 
+        });
     }
 
     close() {
