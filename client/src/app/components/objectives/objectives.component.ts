@@ -18,11 +18,11 @@ export class ObjectivesComponent implements OnInit {
 
     constructor(readonly gameContext: GameContextService) {
         this.gameContext.objectives.subscribe((newObjectives) => (this.objectives = newObjectives));
+        this.isOpen = true;
     }
 
     ngOnInit() {
         this.headerName = this.isPublic ? 'Objectifs publiques' : 'Objectifs privés';
-        this.isOpen = true;
     }
 
     showObjectives() {
