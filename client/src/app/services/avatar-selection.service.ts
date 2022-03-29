@@ -11,9 +11,7 @@ export class AvatarSelectionService {
     faAngleLeft = faAngleLeft;
 
     chooseIcon(next: boolean) {
-        if (next) this.idx++;
-        else this.idx--;
-        if (this.idx === cst.MISSING) this.idx = cst.LAST_IMG;
-        this.imgChosen = cst.imgList[this.idx % cst.NUMBER_ICONS];
+        this.idx = (this.idx + (next ? 1 : cst.MISSING) + cst.NUMBER_ICONS) % cst.NUMBER_ICONS;
+        this.imgChosen = cst.imgList[this.idx];
     }
 }

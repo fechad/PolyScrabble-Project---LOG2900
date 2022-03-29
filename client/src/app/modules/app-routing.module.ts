@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { JoiningRoomPageComponent } from '@app/pages/joining-room-page/joining-room-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
@@ -14,6 +15,7 @@ export const routes: Routes = [
     { path: 'game', component: GamePageComponent },
     { path: 'waiting-room', component: WaitingRoomPageComponent },
     { path: 'joining-room', component: JoiningRoomPageComponent },
+    { path: 'admin', component: AdminPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 
