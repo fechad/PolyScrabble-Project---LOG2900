@@ -21,6 +21,7 @@ export class Board {
     }
 
     get(position: Position): GameTile {
+        if (!position.isInBound()) throw new Error('Tried to get tile outside board');
         return this.board[position.row][position.col];
     }
 

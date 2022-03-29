@@ -14,7 +14,7 @@ export class DictionnaryService {
         for (const word of dictionnary) {
             let actualNode = trie;
             [...word].forEach((letter) => {
-                actualNode = actualNode.addNext(letter);
+                actualNode = actualNode.addNext(letter.toUpperCase());
             });
             actualNode.terminal = true;
         }

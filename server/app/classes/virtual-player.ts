@@ -15,6 +15,7 @@ type SearchHead = {
     contact: boolean;
     node: LetterNode;
     rack: string[];
+    startingPosition: Position;
 };
 
 export class VirtualPlayer {
@@ -39,6 +40,7 @@ export class VirtualPlayer {
     }
 
     async playTurn() {
+        const rack = this.game.reserve.letterRacks[cst.AI_GAME_INDEX];
         const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
         if (this.difficulty === Difficulty.Beginner && randomOutOfTen === 0) {
             // 10 % chance
@@ -46,12 +48,12 @@ export class VirtualPlayer {
         } else if (this.difficulty === Difficulty.Beginner && randomOutOfTen === 1) {
             // 10 % chance
             if (this.game.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
-                const sliceIndex = Math.floor(Math.random() * this.rack().length);
-                this.game.changeLetters(this.rack().slice(sliceIndex), cst.AI_ID);
+                const sliceIndex = Math.floor(Math.random() * rack.length);
+                this.game.changeLetters(rack.slice(sliceIndex), cst.AI_ID);
             } else this.game.skipTurn(cst.AI_ID);
         } else {
             // 80 % chance
-            const sortedWordOptions = this.chooseWords(this.rack());
+            const sortedWordOptions = this.chooseWords(rack);
             const randomIndex = Math.floor(Math.random() * sortedWordOptions.length);
             const chosenWord = sortedWordOptions[randomIndex];
             if (chosenWord === undefined) {
@@ -66,10 +68,8 @@ export class VirtualPlayer {
     }
 
     chooseWords(freeLetters: string[]): [PlacementOption, number][] {
-        const MIDDLE = new Position(cst.MIDDLE_INDEX, cst.MIDDLE_INDEX);
         const bracket = this.getRandomPointBracket();
-        const isStart = !this.board.get(MIDDLE).letter;
-        return this.getPlayablePositions(freeLetters, isStart)
+        return this.getPlayablePositions(freeLetters)
             .map((placement) => {
                 const score = this.wordGetter
                     .getWords(placement)
@@ -82,51 +82,116 @@ export class VirtualPlayer {
             .sort((a, b) => a[1] - b[1]);
     }
 
-    private getPlayablePositions(rack: string[], start: boolean): PlacementOption[] {
+    private getPlayablePositions(rack: string[]): PlacementOption[] {
+        const searchStack = this.getInitialStack(rack);
+        const validPositions: PlacementOption[] = [];
+        for (;;) {
+            const head = searchStack.pop();
+            if (!head) break;
+            if (this.isValidPosition(head)) {
+                validPositions.push(new PlacementOption(head.isHorizontal, head.letters));
+            }
+            if (!head.position.isInBound()) continue;
+            const letter = this.board.get(head.position).letter;
+            const nextPos = head.position.withOffset(head.isHorizontal, 1);
+            if (letter) {
+                const nextNode = head.node.getNext(letter);
+                if (!nextNode) continue;
+                searchStack.push({ ...head, position: nextPos, node: nextNode, contact: true });
+            } else {
+                const prefix = this.findPrefix(head.position, !head.isHorizontal);
+                [...new Set(head.rack)]
+                    .flatMap((l) => {
+                        if (l === '*') {
+                            return prefix?.nextNodes.map((node) => node.letter) || cst.ALL_LETTERS;
+                        } else {
+                            return [l];
+                        }
+                    })
+                    .forEach((nextLetter) => {
+                        const nextNode = head.node.getNext(nextLetter);
+                        if (!nextNode) return;
+                        if (prefix && !this.validSuffix(prefix, nextLetter, head.position, !head.isHorizontal)) return;
+                        const newRack = head.rack.slice();
+                        const idx = head.rack.findIndex((l) => l === nextLetter);
+                        newRack.splice(idx, 1);
+                        const newLetters: LetterPlacement[] = [...head.letters, { letter: nextLetter, position: head.position }];
+                        searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
+                    });
+            }
+        }
+        return validPositions;
+    }
+
+    private getInitialStack(rack: string[]): SearchHead[] {
+        const isStart = !this.board.get(cst.MIDDLE).letter;
         const searchStack: SearchHead[] = [];
-        if (start) {
+        if (isStart) {
             const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
             searchStack.push({
-                position: new Position(cst.HALF_LENGTH, cst.HALF_LENGTH),
+                position: cst.MIDDLE,
                 isHorizontal,
                 letters: [],
                 node: this.trie,
                 contact: true,
                 rack,
+                startingPosition: cst.MIDDLE,
             });
         } else {
-            for (let i = 0; i < cst.BOARD_LENGTH; i++) {
-                for (let j = 0; j < cst.BOARD_LENGTH; j++) {
+            for (let row = 0; row < cst.BOARD_LENGTH; row++) {
+                for (let col = 0; col < cst.BOARD_LENGTH; col++) {
+                    const pos = new Position(row, col);
                     // for each direction
                     for (const isHorizontal of [true, false]) {
-                        searchStack.push({ position: new Position(i, j), isHorizontal, letters: [], node: this.trie, contact: false, rack });
+                        let mightTouch = false;
+                        for (let delta = -cst.HALF_LENGTH; delta <= cst.HALF_LENGTH; delta++) {
+                            const pos = isHorizontal ? new Position(row, col + delta) : new Position(row + delta, col);
+                            if (pos.isInBound() && this.board.get(pos).letter) mightTouch = true;
+                        }
+                        if (!mightTouch) continue;
+
+                        const prevPos = pos.withOffset(isHorizontal, -1);
+                        if (prevPos.isInBound() && this.board.get(prevPos).letter) continue;
+                        searchStack.push({ position: pos, isHorizontal, letters: [], node: this.trie, contact: false, rack, startingPosition: pos });
                     }
                 }
             }
         }
-        const validPositions: PlacementOption[] = [];
-        for (;;) {
-            const head = searchStack.pop();
-            if (!head) break;
-            const nextPos = head.position.withOffset(head.isHorizontal, 1);
-            const nextLetter = this.board.get(nextPos).letter;
-            if (!nextLetter && head.contact && head.node.terminal) validPositions.push(new PlacementOption(head.isHorizontal, head.letters));
-            if (nextLetter) {
-                const nextNode = head.node.getNext(nextLetter);
-                if (!nextNode) continue;
-                searchStack.push({ ...head, position: nextPos, node: nextNode, contact: true });
-            } else {
-                head.rack.forEach((letter, i) => {
-                    const nextNode = head.node.getNext(letter);
-                    if (!nextNode) return;
-                    const newRack = head.rack.slice();
-                    newRack.splice(i, 1);
-                    const newLetters: LetterPlacement[] = [...head.letters, { letter, position: head.position }];
-                    searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
-                });
-            }
+        return searchStack;
+    }
+
+    private findPrefix(position: Position, isHorizontal: boolean): LetterNode | undefined {
+        const startingOffset = this.wordGetter.findStartingOffset(position, isHorizontal);
+        if (startingOffset === 0) return undefined;
+        let node: LetterNode = this.trie;
+        for (let offset = startingOffset; offset < 0; offset++) {
+            const pos = position.withOffset(isHorizontal, offset);
+            const letter = this.board.get(pos).letter;
+            if (!letter) throw new Error('Could backtrack but now stuck??');
+            const nextNode = node.getNext(letter);
+            if (!nextNode) throw new Error('Prefix is not a valid word??');
+            node = nextNode;
         }
-        return validPositions;
+        return node;
+    }
+
+    private validSuffix(prefix: LetterNode, letter: string, position: Position, isHorizontal: boolean): boolean {
+        let node = prefix.getNext(letter);
+        if (!node) return false;
+        for (let offset = 1; ; offset++) {
+            const pos = position.withOffset(isHorizontal, offset);
+            if (!pos.isInBound()) break;
+            const nextLetter = this.board.get(pos).letter;
+            if (!nextLetter) break;
+            node = node.getNext(nextLetter);
+            if (!node) return false;
+        }
+        return node.terminal;
+    }
+
+    private isValidPosition(head: SearchHead): boolean {
+        const hasAdjacentLetter = head.position.isInBound() && this.board.get(head.position).letter;
+        return !hasAdjacentLetter && head.letters.length > 0 && head.contact && head.node.terminal;
     }
 
     private getRandomPointBracket() {
@@ -141,9 +206,5 @@ export class VirtualPlayer {
             // 30 % chance
             return cst.HIGHER_POINT_BRACKET;
         }
-    }
-
-    private rack(): string[] {
-        return this.game.reserve.letterRacks[cst.AI_GAME_INDEX];
     }
 }

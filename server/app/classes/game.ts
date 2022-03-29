@@ -111,15 +111,15 @@ export class Game {
                 if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
                 isHorizontal ||= this.board.isInContact(pos, false);
                 const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
+                const words = this.wordGetter.getWords(triedPlacement);
+                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
+                    throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
 
                 await new Promise((resolve) => {
                     setTimeout(() => {
                         resolve(null);
                     }, cst.BOARD_PLACEMENT_DELAY);
                 });
-                const words = this.wordGetter.getWords(triedPlacement);
-                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
-                    throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
 
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
 

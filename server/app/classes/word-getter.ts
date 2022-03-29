@@ -29,6 +29,14 @@ export class WordGetter {
         return words;
     }
 
+    findStartingOffset(position: Position, isHorizontal: boolean): number {
+        if (!position.isInBound()) throw new Error('Initial position is out of bound');
+        for (let offset = -1; ; offset--) {
+            const newPos = position.withOffset(isHorizontal, offset);
+            if (!newPos.isInBound() || !this.board.get(newPos).letter) return offset + 1;
+        }
+    }
+
     private getWord(newLetters: LetterPlacement[], isHorizontal: boolean): Placement | undefined {
         let offset = this.findStartingOffset(newLetters[0].position, isHorizontal);
         const startingPos = newLetters[0].position.withOffset(isHorizontal, offset);
@@ -57,13 +65,5 @@ export class WordGetter {
         }
         if (word.length < 2) return undefined;
         return { word, horizontal: isHorizontal, position: startingPos, score: wordScore * wordMultiplier, contact };
-    }
-
-    private findStartingOffset(position: Position, isHorizontal: boolean): number {
-        if (!position.isInBound()) throw new Error('Initial position is out of bound');
-        for (let offset = -1; ; offset--) {
-            const newPos = position.withOffset(isHorizontal, offset);
-            if (!newPos.isInBound() || !this.board.get(newPos).letter) return offset + 1;
-        }
     }
 }
