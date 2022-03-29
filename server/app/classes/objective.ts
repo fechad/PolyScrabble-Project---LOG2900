@@ -6,7 +6,7 @@ import { PlacementOption } from './placement-option';
 export abstract class Objective {
     static playedWords: Set<string> = new Set<string>();
     protected points: number;
-    protected isAvailable: boolean;
+    protected isAvailable: boolean = true;
 
     getObjectivePoints(wordPlacement: PlacementOption, usedLetters?: string): number {
         if (!this.isAvailable) return cst.NO_POINTS;
@@ -20,17 +20,15 @@ export abstract class Objective {
 
 export class ObjectivePalindrome extends Objective {
     points = cst.OBJECTIVE_PALINDORME;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         if (wordPlacement.word.length < 3) return false;
-        return [...wordPlacement.word].every((letter, i) => wordPlacement.word.charAt(wordPlacement.word.length - ++i) === letter);
+        return [...wordPlacement.word].every((letter, i) => wordPlacement.word.charAt(wordPlacement.word.length - (i + 1)) === letter);
     }
 }
 
 export class ObjectiveAlreadyOnBoard extends Objective {
     points = cst.OBJECTIVE_ALREADY_ON_BOARD;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         return Objective.playedWords.has(wordPlacement.word);
@@ -39,7 +37,6 @@ export class ObjectiveAlreadyOnBoard extends Objective {
 
 export class Objective3Vowels extends Objective {
     points = cst.OBJECTIVE_3_VOWELS;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         let vowelCount = 0;
@@ -52,7 +49,6 @@ export class Objective3Vowels extends Objective {
 
 export class ObjectiveAnagram extends Objective {
     points = cst.OBJECTIVE_ANAGRAM;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         return [...Objective.playedWords].some((playedWord) => this.isAnagram(wordPlacement.word, playedWord));
@@ -70,7 +66,6 @@ export class ObjectiveAnagram extends Objective {
 
 export class ObjectiveOnlyVowels extends Objective {
     points = cst.OBJECTIVE_ONLY_VOWELS;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption, usedLetters: string): boolean {
         return [...usedLetters].every((letter) => cst.VOWELS.has(letter));
@@ -79,7 +74,6 @@ export class ObjectiveOnlyVowels extends Objective {
 
 export class Objective2BigLetters extends Objective {
     points = cst.OBJECTIVE_2_BIG_LETTERS;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         let count = 0;
@@ -90,7 +84,6 @@ export class Objective2BigLetters extends Objective {
 
 export class Objective7LettersOrMore extends Objective {
     points = cst.OBJECTIVE_7_LETTERS_OR_MORE;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         return wordPlacement.word.length > cst.OBJECTIVE_NUMBER_OF_LETTER;
@@ -100,7 +93,6 @@ export class Objective7LettersOrMore extends Objective {
 // TODO mettre les corner placement dans une structure de donnee
 export class ObjectiveCornerPlacement extends Objective {
     points = cst.OBJECTIVE_CORNER_PLACEMENT;
-    isAvailable = true;
 
     isObjectiveAccomplished(wordPlacement: PlacementOption): boolean {
         if (wordPlacement.row === 0 && wordPlacement.col === 0) return true;
