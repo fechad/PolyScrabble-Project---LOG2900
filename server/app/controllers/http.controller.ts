@@ -24,20 +24,6 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
     },
 };
 
-// const NEW_VP_SCHEMA: ValidateFunction = {
-//     type: 'object',
-//     required: ['default', 'beginner', 'name'],
-//     properties: {
-//         default: {
-//             type: 'string',
-//             minLength: 1,
-//         },
-//         : {
-//             type: 'number',
-//         },
-//     },
-// };
-
 @Service()
 export class HttpController {
     router: Router;
@@ -113,7 +99,7 @@ export class HttpController {
             res.json(names);
         });
         this.router.delete('/vp-names/:name', async (req: Request, res: Response) => {
-            const names = await this.vpNamesService.deleteVP(req.params.value);
+            const names = await this.vpNamesService.deleteVP(req.params.name);
             res.json(names);
         });
     }

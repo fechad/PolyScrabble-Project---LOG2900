@@ -22,6 +22,7 @@ export class VirtualPlayersTabComponent implements OnInit {
     beginnerList: VP[];
     expertList: VP[];
     clicked: boolean = false;
+    clickedExpert: boolean = false;
     nameInput: string = '';
 
     constructor(readonly httpClient: HttpClient, private readonly dialog: MatDialog) {}
@@ -43,23 +44,27 @@ export class VirtualPlayersTabComponent implements OnInit {
     }
 
     async addPlayer(name: string, beginner: boolean) {
+        if (name.trim() === '') return;
         const newVp: VP = { default: false, beginner, name };
         await this.httpClient.post<VP>(`${environment.serverUrl}/vp-names`, newVp).toPromise();
         this.updateList();
         console.log(newVp);
 
-        this.clicked = false;
+        if (beginner) this.clicked = false;
+        else this.clickedExpert = false;
     }
 
     async deletePlayer(name: string) {
         await this.httpClient.delete<VP>(`${environment.serverUrl}/vp-names/${name}`).toPromise();
+        this.updateList();
     }
 
     openDialog() {
         this.dialog.open(AddPlayerDialogComponent);
     }
 
-    createInput() {
-        this.clicked = true;
+    createInput(isBeginner: boolean) {
+        if (isBeginner) this.clicked = true;
+        else this.clickedExpert = true;
     }
 }
