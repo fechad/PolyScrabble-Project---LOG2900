@@ -3,7 +3,7 @@
     justify-content: flex-start;
     align-items: center;
     width: 95%;
-    height: 90%;
+    height: 88%;
     margin-top: 5%;
     overflow-y: auto;
 }
@@ -65,11 +65,11 @@
 }
 
 .trash-can {
+    color: red;
+    border: white;
     width: 80%;
     height: 100%;
-    border-radius: 100%;
-    background-color: #fa4e4e;
-    box-shadow: 2px 2px 2px;
+    background-color: white;
     margin-top: 2%;
 }
 

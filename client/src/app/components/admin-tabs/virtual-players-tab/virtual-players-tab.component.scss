@@ -14,7 +14,7 @@
     background-color: white;
     height: 80%;
     width: 40%;
-    border-radius: 0 0 20px 20px;
+    border-radius: 20px;
 }
 
 .title {
@@ -44,7 +44,8 @@
     overflow-y: auto;
 }
 
-.vp-names div {
+.vp-names div,
+.vp-names div div {
     height: 15%;
     min-height: 15%;
     width: 60%;
@@ -56,6 +57,18 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+}
+
+.vp-names div div {
+    position: relative;
+    height: 100%;
+    min-height: 100%;
+    left: 14%;
+}
+
+.vp-names .new-guy {
+    width: 100%;
+    background-color: #fff;
 }
 
 .vp-names div p:nth-child(1) {
@@ -93,11 +106,15 @@
 }
 
 .trash-can-vp {
+    position: relative;
+    left: 5%;
+    bottom: 14%;
+    font-size: 30px;
+    color: red;
     width: 15%;
     height: 80%;
-    border-radius: 100%;
-    background-color: #fa4e4e;
-    box-shadow: 2px 2px 2px;
+    background-color: #fff;
+    border: #fff;
 }
 .trash-can-vp:active {
     box-shadow: 0px 0px 0px;
