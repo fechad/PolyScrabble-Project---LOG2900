@@ -4,6 +4,7 @@ import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
 import { RoomsService } from '@app/services/rooms.service';
+import { VpNamesService } from '@app/services/vp-names.service';
 import { Request, Response, Router } from 'express';
 import { ValidateFunction, Validator } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
@@ -23,26 +24,46 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
     },
 };
 
+// const NEW_VP_SCHEMA: ValidateFunction = {
+//     type: 'object',
+//     required: ['default', 'beginner', 'name'],
+//     properties: {
+//         default: {
+//             type: 'string',
+//             minLength: 1,
+//         },
+//         : {
+//             type: 'number',
+//         },
+//     },
+// };
+
 @Service()
 export class HttpController {
     router: Router;
-<<<<<<< HEAD
-=======
+
     highScoreService: HighScoresService;
     gameHistoryService: GameHistoryService;
->>>>>>> 89f0803... http client get history
+    private highScoreService: HighScoresService;
+    private vpNamesService: VpNamesService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
-        private readonly highScoreService: HighScoresService,
         private readonly gameHistoryService: GameHistoryService,
     ) {
         this.dictionnaryService.init();
         this.gameHistoryService.connect();
         this.highScoreService.connect();
+        this.init();
         this.configureRouter();
+    }
+
+    private async init() {
+        await this.dataBase.connect();
+        this.highScoreService = Container.get(HighScoresService);
+        this.vpNamesService = Container.get(VpNamesService);
     }
 
     private configureRouter() {
@@ -79,6 +100,21 @@ export class HttpController {
         this.router.get('/game-history', async (req: Request, res: Response) => {
             const games = await this.gameHistoryService.getHistory();
             res.json(games);
+        });
+
+        this.router.get('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.getHNames();
+            res.json(names);
+        });
+
+        this.router.post('/vp-names', async (req: Request, res: Response) => {
+            console.log(req.body);
+            const names = await this.vpNamesService.addVP(req.body);
+            res.json(names);
+        });
+        this.router.delete('/vp-names/:name', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.deleteVP(req.params.value);
+            res.json(names);
         });
     }
 }

@@ -4,23 +4,17 @@
             <div><p>Débutant</p></div>
         </section>
         <section class="vp-names">
-            <div>
-                <p>François</p>
-            </div>
-            <div>
-                <p>Etienne</p>
-            </div>
-            <div>
-                <p>Anna</p>
-            </div>
-            <div class="new-player">
+            <div *ngFor="let player of beginnerList" class="new-player">
                 <div>
-                    <p>Mathéo</p>
+                    <p>{{player.name}}</p>
                 </div>
-                <button class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+                <button *ngIf="!player.default" class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
             </div>
         </section>
-        <section class="add-vp"><button>Ajouter un joueur</button></section>
+        <div *ngIf="clicked">
+            <input [(ngModel)]="nameInput" (keydown.enter)="addPlayer(nameInput, true)" type="text" />
+        </div>
+        <section class="add-vp" (click)="createInput()"><button>Ajouter un joueur</button></section>
     </section>
     <button class="refresh"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
     <section class="vp-expert">
@@ -28,22 +22,15 @@
             <div><p>Expert</p></div>
         </section>
         <section class="vp-names">
-            <div>
-                <p>Xavier</p>
-            </div>
-            <div>
-                <p>Fedwin</p>
-            </div>
-            <div>
-                <p>Justin</p>
-            </div>
             <div class="new-player">
-                <div>
-                    <p>Mathéo</p>
+                <div *ngFor="let player of expertList" class="new-player">
+                    <div>
+                        <p>{{player.name}}</p>
+                    </div>
+                    <button *ngIf="!player.default" class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
                 </div>
-                <button class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
             </div>
         </section>
-        <section class="add-vp"><button>Ajouter un joueur</button></section>
+        <section class="add-vp"><button (click)="createInput()">Ajouter un joueur</button></section>
     </section>
 </section>
