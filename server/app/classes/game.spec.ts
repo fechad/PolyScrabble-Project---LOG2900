@@ -22,6 +22,8 @@ describe('Game', () => {
     let game: Game;
     let stubError: sinon.SinonStub;
     let dictionnary: DictionnaryService;
+    let stubSetTimeout: sinon.SinonStub;
+    let stubClearTimeout: sinon.SinonStub;
 
     before(async () => {
         dictionnary = Container.get(DictionnaryService);
@@ -36,6 +38,8 @@ describe('Game', () => {
         parameters = new Parameters();
         const room = new Room(0, players[0].id, players[0].name, parameters);
         room.addPlayer(players[1].id, players[1].name, false, 'a');
+        stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
+        stubClearTimeout = sinon.stub(global, 'clearTimeout');
         game = new Game(room, dictionnary);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
@@ -46,36 +50,43 @@ describe('Game', () => {
         sinon.restore();
     });
 
+    it('should exit with error if trying to create game with only one player', () => {
+        const room = new Room(0, players[0].id, players[0].name, parameters);
+        expect(() => new Game(room, dictionnary)).to.throw();
+    });
+
     it('should get a message and broadcast it', (done) => {
         const stub = sinon.stub();
         const message: Message = { text: 'test message', emitter: '0' };
         game.eventEmitter.on('message', stub);
         game.message(message);
-        setTimeout(() => {
+        stubSetTimeout.callThrough()(() => {
             assert(stub.calledWith(message));
             assert(game['messages'][0] === message);
             done();
         }, RESPONSE_DELAY);
     });
 
-    it('should change letters', (done) => {
+    it('should change letters', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
         const letters = [game.reserve.letterRacks[0][0].toLowerCase(), game.reserve.letterRacks[0][3].toLowerCase()];
         game.changeLetters(letters, game.players[0].id);
         assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
         assert(stubError.notCalled);
-        done();
     });
 
-    it('should not change letters when it is not your turn', (done) => {
+    it('should error when trying to get unknown player', () => {
+        expect(() => game.getPlayerInfo('unknown')).to.throw();
+    });
+
+    it('should not change letters when it is not your turn', () => {
         const stub = sinon.stub();
         game.eventEmitter.on('rack', stub);
         const letters = [...'abcd'];
         game.changeLetters(letters, '1');
         assert(stub.notCalled);
         assert(stubError.called);
-        done();
     });
 
     it('should place letters', async () => {
@@ -88,7 +99,10 @@ describe('Game', () => {
         const col = 6;
         game.reserve.letterRacks[0].push(...'TEST');
         const letters = 'test';
-        await game.placeLetters(game.players[0].id, [...letters], new Position(row, col), true);
+        let promise = game.placeLetters(game.players[0].id, [...letters], new Position(row, col), true);
+        expect(stubClearTimeout.callCount).to.equal(1);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
         assert(stubValidCommand.called, 'Did not send message');
         assert(stubState.called, 'Did not update state');
         assert(stubError.notCalled, 'Errored');
@@ -103,13 +117,31 @@ describe('Game', () => {
         const stubValidCommand = sinon.stub();
         game.eventEmitter.on('valid-command', stubValidCommand);
 
-        await game.placeLetters(game.players[0].id, [...letters], new Position(row, col), isHorizontal);
+        const promise = game.placeLetters(game.players[0].id, [...letters], new Position(row, col), isHorizontal);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
 
         assert(stubValidCommand.notCalled);
         assert(stubError.called);
     });
 
-    it('should output an error when not placing letters', async () => {
+    it('should output an error when not placing valid words', async () => {
+        const stub = sinon.stub();
+        const row = 7;
+        const col = 6;
+        const isHorizontal = true;
+        const letters = [...'testz'];
+        game.reserve.letterRacks[0].push(...'TESTZ');
+        game.eventEmitter.on('score', stub);
+        game['isPlayer0Turn'] = true;
+        const promise = game.placeLetters(game.players[0].id, letters, new Position(row, col), isHorizontal);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
+        assert(stub.notCalled);
+        expect(stubError.args).to.deep.equal([[game.players[0].id, "Un des mots crees ne fait pas partie du dictionnaire"]]);
+    });
+
+    it('should output an error when placing valid words that go outside the board', async () => {
         const stub = sinon.stub();
         const row = 7;
         const col = 6;
@@ -117,12 +149,27 @@ describe('Game', () => {
         const letters = [...'testaaaaaaaaaaa'];
         game.eventEmitter.on('score', stub);
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(game.players[0].id, [...letters], new Position(row, col), isHorizontal);
+        const promise = game.placeLetters(game.players[0].id, [...letters], new Position(row, col), isHorizontal);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
+        assert(stub.notCalled);
+        expect(stubError.args).to.deep.equal([[game.players[0].id, "Placement invalide: Le mot ne rentre pas dans la grille"]]);
+    });
+
+    it('should output an error when placing outside the board', async () => {
+        const stub = sinon.stub();
+        const isHorizontal = true;
+        const letters = [...'testaaaaaaaaaaa'];
+        game.eventEmitter.on('score', stub);
+        game['isPlayer0Turn'] = true;
+        const promise = game.placeLetters(game.players[0].id, [...letters], new Position(80, 80), isHorizontal);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
         assert(stub.notCalled);
         assert(stubError.called);
     });
 
-    it('should not place letters if it is not your turn', (done) => {
+    it('should not place letters if it is not your turn', async () => {
         const stub = sinon.stub();
         const row = 7;
         const col = 6;
@@ -131,10 +178,11 @@ describe('Game', () => {
         game.eventEmitter.on('placed', stub);
         // eslint-disable-next-line dot-notation
         game['isPlayer0Turn'] = true;
-        game.placeLetters(game.players[1].id, letters, new Position(row, col), isHorizontal);
+        const promise = game.placeLetters(game.players[1].id, letters, new Position(row, col), isHorizontal);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
         assert(stub.notCalled);
         assert(stubError.called);
-        done();
     });
 
     it('should check turn of player', (done) => {
@@ -226,7 +274,9 @@ describe('Game', () => {
         game.reserve.drawLetters(game.reserve['reserve'].length);
         game.reserve.letterRacks[MAIN_PLAYER] = ['A', 'L', 'L', 'O'];
         game['isPlayer0Turn'] = true;
-        await game.placeLetters(game.players[MAIN_PLAYER].id, [...'allo'], new Position(row, col), isHorizontal);
+        const promise = game.placeLetters(game.players[MAIN_PLAYER].id, [...'allo'], new Position(row, col), isHorizontal);
+        stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
+        await promise;
         assert(endGame.called);
     });
 
@@ -285,5 +335,27 @@ describe('Game', () => {
                 }
             }
         }
+    });
+
+    it('should end turn after timeout', () => {
+        expect(stubSetTimeout.callCount).to.equal(1);
+        const callback = stubSetTimeout.args[0][0];
+        const prevTurn = game.getCurrentPlayer().id;
+        const stub = sinon.stub();
+        game.eventEmitter.on('state', stub);
+        callback();
+        expect(prevTurn).to.not.equal(game.getCurrentPlayer().id);
+        expect(stub.callCount).to.equal(1);
+    });
+
+    it('should cancel turn after timeout', () => {
+        expect(stubSetTimeout.callCount).to.equal(1);
+        const callback = stubSetTimeout.args[0][0];
+        const prevTurn = game.getCurrentPlayer().id;
+        const stub = sinon.stub();
+        game.eventEmitter.on('state', stub);
+        callback();
+        expect(prevTurn).to.not.equal(game.getCurrentPlayer().id);
+        expect(stub.callCount).to.equal(1);
     });
 });

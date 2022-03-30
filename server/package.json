@@ -24,7 +24,8 @@
             "**/*.spec.ts",
             "app/index.ts",
             "app/server.ts",
-            "app/app.ts"
+            "app/app.ts",
+            "app/test-jv.ts"
         ],
         "require": [
             "ts-node/register",

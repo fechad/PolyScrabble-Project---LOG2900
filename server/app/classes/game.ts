@@ -65,12 +65,6 @@ export class Game {
         return this.room.id;
     }
 
-    clearTimeout() {
-        if (this.timeout === undefined) return;
-        clearTimeout(this.timeout);
-        this.timeout = undefined;
-    }
-
     sendState() {
         const state: GameState = {
             players: [this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id), this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id)],
@@ -106,7 +100,8 @@ export class Game {
         if (this.checkTurn(playerId)) {
             const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const player = this.getCurrentPlayer();
-            this.clearTimeout();
+            if (this.timeout !== undefined) clearTimeout(this.timeout);
+            this.timeout = undefined;
             try {
                 if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
                 isHorizontal ||= this.board.isInContact(pos, false);

@@ -88,39 +88,42 @@ export class VirtualPlayer {
         for (;;) {
             const head = searchStack.pop();
             if (!head) break;
-            if (this.isValidPosition(head)) {
-                validPositions.push(new PlacementOption(head.isHorizontal, head.letters));
-            }
+            if (this.isValidPosition(head)) validPositions.push(new PlacementOption(head.isHorizontal, head.letters));
             if (!head.position.isInBound()) continue;
             const letter = this.board.get(head.position).letter;
-            const nextPos = head.position.withOffset(head.isHorizontal, 1);
             if (letter) {
                 const nextNode = head.node.getNext(letter);
                 if (!nextNode) continue;
+                const nextPos = head.position.withOffset(head.isHorizontal, 1);
                 searchStack.push({ ...head, position: nextPos, node: nextNode, contact: true });
             } else {
-                const prefix = this.findPrefix(head.position, !head.isHorizontal);
-                [...new Set(head.rack)]
-                    .flatMap((l) => {
-                        if (l === '*') {
-                            return prefix?.nextNodes.map((node) => node.letter) || cst.ALL_LETTERS;
-                        } else {
-                            return [l];
-                        }
-                    })
-                    .forEach((nextLetter) => {
-                        const nextNode = head.node.getNext(nextLetter);
-                        if (!nextNode) return;
-                        if (prefix && !this.validSuffix(prefix, nextLetter, head.position, !head.isHorizontal)) return;
-                        const newRack = head.rack.slice();
-                        const idx = head.rack.findIndex((l) => l === nextLetter);
-                        newRack.splice(idx, 1);
-                        const newLetters: LetterPlacement[] = [...head.letters, { letter: nextLetter, position: head.position }];
-                        searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
-                    });
+                this.searchNewLetter(searchStack, head);
             }
         }
         return validPositions;
+    }
+
+    private searchNewLetter(searchStack: SearchHead[], head: SearchHead) {
+        const prefix = this.findPrefix(head.position, !head.isHorizontal);
+        const nextPos = head.position.withOffset(head.isHorizontal, 1);
+        [...new Set(head.rack)]
+            .flatMap((l) => {
+                if (l === '*') {
+                    return prefix?.nextNodes.map((node) => node.letter) || cst.ALL_LETTERS;
+                } else {
+                    return [l];
+                }
+            })
+            .forEach((nextLetter) => {
+                const nextNode = head.node.getNext(nextLetter);
+                if (!nextNode) return;
+                if (prefix && !this.validSuffix(prefix, nextLetter, head.position, !head.isHorizontal)) return;
+                const newRack = head.rack.slice();
+                const idx = head.rack.findIndex((l) => l === nextLetter);
+                newRack.splice(idx, 1);
+                const newLetters: LetterPlacement[] = [...head.letters, { letter: nextLetter, position: head.position }];
+                searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
+            });
     }
 
     private getInitialStack(rack: string[]): SearchHead[] {
