@@ -1,4 +1,5 @@
 import { HostListener, Injectable } from '@angular/core';
+import { alphabet } from '@app/alphabet-letters';
 import { Letter } from '@app/classes/letter';
 import { Vec2 } from '@app/classes/vec2';
 import * as cst from '@app/constants';
@@ -130,6 +131,7 @@ export class GridService {
             this.gridContext.lineWidth = 0.5;
             this.gridContext.stroke();
             this.drawMessage(tile.name, canvasX + cst.AJUST_TILE_X, canvasY + cst.AJUST_TILE_Y, cst.TILE_SIZE);
+            this.drawMessage(tile.score.toString(), canvasX + cst.ADJUST_SCORE_X, canvasY + cst.ADJUST_SCORE_Y, cst.SCORE_SIZE);
         }
     }
 
@@ -139,7 +141,7 @@ export class GridService {
         if (isHorizontalPlacement === undefined) {
             const letter: Tile = {
                 name: lettersToAdd[0].toUpperCase(),
-                score: 0,
+                score: alphabet.find((j) => j.name.toLowerCase() === lettersToAdd[0])?.score || 0,
             } as Letter;
             temporaryBoard[verticalIndex][horizontalIndex] = letter;
         } else {
@@ -150,7 +152,7 @@ export class GridService {
                 if (tile !== null) continue;
                 const letter: Tile = {
                     name: lettersToAdd[pos].toUpperCase(),
-                    score: 0,
+                    score: alphabet.find((j) => j.name.toLowerCase() === lettersToAdd[pos])?.score || 0,
                 } as Letter;
                 if (isHorizontalPlacement) {
                     temporaryBoard[verticalIndex][i] = letter;

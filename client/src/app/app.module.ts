@@ -24,6 +24,7 @@ import { HighScoresComponent } from './components/high-scores/high-scores.compon
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
 import { JoinSetupDialogComponent } from './components/join-setup-dialog/join-setup-dialog.component';
 import { LetterRackComponent } from './components/letter-rack/letter-rack.component';
+import { ObjectivesComponent } from './components/objectives/objectives.component';
 import { SoloDialogComponent } from './components/solo-dialog/solo-dialog.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { JoiningRoomPageComponent } from './pages/joining-room-page/joining-room-page.component';
@@ -66,6 +67,7 @@ import { CommunicationService } from './services/communication.service';
         DictionaryTabComponent,
         VirtualPlayersTabComponent,
         ResetTabComponent,
+        ObjectivesComponent,
     ],
     imports: [
         AppMaterialModule,
