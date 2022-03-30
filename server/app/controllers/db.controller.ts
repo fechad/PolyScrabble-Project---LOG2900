@@ -9,8 +9,11 @@ export type VP = {
     beginner: boolean;
     name: string;
 };
+<<<<<<< HEAD
 
 export type DbDictionary = { id: number; title: string; description: string; words: string[] };
+=======
+>>>>>>> 48d55c7... can now add biginner and expert vp-players to the database and load them in admin page.
 
 const DB_USERNAME = 'default-user';
 const DB_PASSWORD = 'Oh6Hj7L7aCXZQfAb';
@@ -19,7 +22,10 @@ const DB_DB = 'scores';
 export const SCORES_COLLECTION = 'scores';
 export const GAMES_COLLECTION = 'games';
 export const VP_COLLECTION = 'vp';
+<<<<<<< HEAD
 export const DICTIONARY_COLLECTION = 'dictionaries';
+=======
+>>>>>>> 48d55c7... can now add biginner and expert vp-players to the database and load them in admin page.
 
 export const MAX_RESULTS = 5;
 export const DEFAULT_USERS: Score[] = [
@@ -38,6 +44,7 @@ export const DEFAULT_VPS: VP[] = [
     { default: true, beginner: false, name: 'Justin' },
     { default: true, beginner: false, name: 'Xavier' },
 ];
+<<<<<<< HEAD
 export const DEFAULT_DICTIONARY: DbDictionary[] = [];
 new Promise(async (resolve) => {
     const fileBuffer = await promises.readFile('./assets/dictionnary.json');
@@ -50,6 +57,8 @@ new Promise(async (resolve) => {
     DEFAULT_DICTIONARY.push(words[0]);
     return words;
 });
+=======
+>>>>>>> 48d55c7... can now add biginner and expert vp-players to the database and load them in admin page.
 
 @Service()
 export class DataBaseController {
