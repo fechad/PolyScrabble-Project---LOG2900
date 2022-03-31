@@ -42,10 +42,6 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
 @Service()
 export class HttpController {
     router: Router;
-
-    highScoreService: HighScoresService;
-    gameHistoryService: GameHistoryService;
-
     private highScoreService: HighScoresService;
     private vpNamesService: VpNamesService;
     private dbDictionaryService: DbDictionariesService;
@@ -55,8 +51,6 @@ export class HttpController {
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
         private readonly gameHistoryService: GameHistoryService,
-        private highScoreService: HighScoresService,
-        private vpNamesService: VpNamesService,
     ) {
         this.dictionnaryService.init();
         this.gameHistoryService.connect();
@@ -69,6 +63,7 @@ export class HttpController {
         await this.dataBase.connect();
         this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
+
         this.dbDictionaryService = Container.get(DbDictionariesService);
     }
 
