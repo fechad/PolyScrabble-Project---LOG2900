@@ -123,12 +123,11 @@ export class Game {
             this.timeout = undefined;
             try {
                 if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
-                isHorizontal ||= this.board.isInContact(pos, false);
+                isHorizontal ??= this.board.isInContact(pos, false);
                 const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
                 const words = this.wordGetter.getWords(triedPlacement);
-                console.log(words);
                 if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
-                    throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
+                    throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
 
                 await new Promise((resolve) => {
                     setTimeout(() => {

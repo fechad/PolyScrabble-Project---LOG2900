@@ -29,19 +29,19 @@ const createTestCase = (idx: number, game: Game): string => {
                 .join('')}
         ]);
         const rack = [...'${rack}'];
-        expect(() => vP.chooseWords(rack)).not.to.throw();
+        const options = vP.chooseWords(rack);
+        const wordGetter = game['wordGetter'];
+        for (const option of options) {
+            const words = wordGetter.getWords(option.placement);
+            for (const word of words) {
+                expect(dictionnaryService.isValidWord(word.word)).to.equal(true, \`\${word} is not a valid word\`);
+            }
+        }
     });
     `;
 };
 
-(async () => {
-    const seed = 'hello';
-    seedrandom(seed, { global: true });
-    console.log('\x1B[32mSeed:', seed, '\x1B[0m');
-
-    const dictionnaryService = new DictionnaryService();
-    await dictionnaryService.init();
-
+const playGame = async (dictionnaryService: DictionnaryService) => {
     const params = new Parameters();
     params.difficulty = Difficulty.Expert;
 
@@ -53,25 +53,39 @@ const createTestCase = (idx: number, game: Game): string => {
     game['timeoutHandler'] = () => {
         /* Handle turns manually */
     };
+    const prevSetTimeout = global.setTimeout;
     global.setTimeout = ((fct: () => void) => fct()) as unknown as typeof global.setTimeout;
     const vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
     const vP2 = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
     vP.id = ID_AI_2;
     game['isPlayer0Turn'] = true;
-    game.eventEmitter.addListener('message', (message) => console.log(message));
+    // game.eventEmitter.addListener('message', (message) => console.log(message));
     game.eventEmitter.addListener('game-error', (_id, error) => {
         console.error('\x1B[31;1mERROR:\x1B[0m', error);
         console.log(game.reserve.letterRacks);
         console.log('=====================');
         console.log(' 0123456789ABCDEF');
         console.log(game.board['board'].map((row, i) => i + row.map((tile) => tile.letter || ' ').join('')).join('\n'));
-        console.log(createTestCase(1, game));
+        console.log(createTestCase(2, game));
         process.exit(1);
     });
-    console.log();
     while (room.getState() !== State.Ended) {
         await vP.playTurn();
         await vP2.playTurn();
     }
-    process.exit(0);
+    global.setTimeout = prevSetTimeout;
+};
+
+(async () => {
+    const seed = 'hello';
+    seedrandom(seed, { global: true });
+    console.log('\x1B[32mSeed:', seed, '\x1B[0m');
+
+    const dictionnaryService = new DictionnaryService();
+    await dictionnaryService.init();
+
+    for (let i = 0; ; i++) {
+        console.log('Iteration ' + (i + 1));
+        await playGame(dictionnaryService);
+    }
 })();

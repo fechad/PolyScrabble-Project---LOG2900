@@ -256,6 +256,13 @@ describe('VirtualPlayer', () => {
             { letter: 'P', position: new Position(9, 0) },
         ]);
         const rack = [...'JQTPUER'];
-        expect(() => vP.chooseWords(rack)).not.to.throw();
+        const options = vP.chooseWords(rack);
+        const wordGetter = game['wordGetter'];
+        for (const option of options) {
+            const words = wordGetter.getWords(option.placement);
+            for (const word of words) {
+                expect(dictionnaryService.isValidWord(word.word)).to.equal(true, `${word} is not a valid word`);
+            }
+        }
     });
 });
