@@ -18,14 +18,14 @@ export abstract class Objective {
     protected abstract isObjectiveAccomplished(wordPlacement: PlacementOption, newWords: string[]): boolean;
 }
 
-export abstract class ObjectivePlacement {
+export abstract class ObjectivePlacement extends Objective {
     isObjectiveAccomplished(wordPlacement: PlacementOption, _newWords: string[]): boolean {
         return this.isObjectiveAccomplishedPlacement(wordPlacement);
     }
     protected abstract isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean;
 }
 
-export abstract class ObjectiveFormed {
+export abstract class ObjectiveFormed extends Objective {
     isObjectiveAccomplished(_wordPlacement: PlacementOption, newWords: string[]): boolean {
         return newWords.some((word) => this.isObjectiveAccomplishedFormed(word));
     }
