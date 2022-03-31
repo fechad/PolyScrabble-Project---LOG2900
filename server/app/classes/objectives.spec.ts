@@ -1,9 +1,25 @@
 import {
-    NO_POINTS, OBJECTIVE_2_BIG_LETTERS, OBJECTIVE_3_VOWELS, OBJECTIVE_7_LETTERS_OR_MORE, OBJECTIVE_ALREADY_ON_BOARD, OBJECTIVE_ANAGRAM, OBJECTIVE_CORNER_PLACEMENT, OBJECTIVE_ONLY_VOWELS, OBJECTIVE_PALINDORME
+    NO_POINTS,
+    OBJECTIVE_2_BIG_LETTERS,
+    OBJECTIVE_3_VOWELS,
+    OBJECTIVE_7_LETTERS_OR_MORE,
+    OBJECTIVE_ALREADY_ON_BOARD,
+    OBJECTIVE_ANAGRAM,
+    OBJECTIVE_CORNER_PLACEMENT,
+    OBJECTIVE_ONLY_VOWELS,
+    OBJECTIVE_PALINDORME,
 } from '@app/constants';
 import { assert, expect } from 'chai';
 import {
-    Objective, Objective2BigLetters, Objective3Vowels, Objective7LettersOrMore, ObjectiveAlreadyOnBoard, ObjectiveAnagram, ObjectiveCornerPlacement, ObjectiveOnlyVowels, ObjectivePalindrome
+    Objective,
+    Objective2BigLetters,
+    Objective3Vowels,
+    Objective7LettersOrMore,
+    ObjectiveAlreadyOnBoard,
+    ObjectiveAnagram,
+    ObjectiveCornerPlacement,
+    ObjectiveOnlyVowels,
+    ObjectivePalindrome,
 } from './objectives';
 import { PlacementOption } from './placement-option';
 import { Position } from './position';
@@ -28,7 +44,7 @@ describe('Objectives', () => {
 
     it('should not let an objective be taken more than once', () => {
         objective = new ObjectiveAlreadyOnBoard();
-        
+
         objective.getObjectivePoints(placement, ['test']);
         assert(objective['isAvailable']);
         let points = objective.getObjectivePoints(placement, ['test']);
@@ -158,7 +174,6 @@ describe('Objectives', () => {
         result = objective.getObjectivePoints(placement, ['secondtest']);
         expect(result).to.equal(NO_POINTS);
 
-
         result = objective.getObjectivePoints(placement, ['troisiemetest']);
         expect(result).to.equal(NO_POINTS);
     });
@@ -184,9 +199,7 @@ describe('Objectives', () => {
         expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
 
         objective['isAvailable'] = true;
-        placement = new PlacementOption(true, [
-            { letter: 'o', position: new Position(7, 10) },
-        ]);
+        placement = new PlacementOption(true, [{ letter: 'o', position: new Position(7, 10) }]);
         result = objective.getObjectivePoints(placement, ['auto']);
         expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
     });
@@ -212,9 +225,7 @@ describe('Objectives', () => {
         expect(result).to.equal(NO_POINTS);
 
         objective['isAvailable'] = true;
-        placement = new PlacementOption(true, [
-            { letter: 't', position: new Position(7, 7) },
-        ]);
+        placement = new PlacementOption(true, [{ letter: 't', position: new Position(7, 7) }]);
         result = objective.getObjectivePoints(placement, ['etre']);
         expect(result).to.equal(NO_POINTS);
     });
