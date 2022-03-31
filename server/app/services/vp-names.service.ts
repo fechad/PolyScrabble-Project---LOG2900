@@ -13,10 +13,12 @@ export class VpNamesService {
     async getHNames(): Promise<VP[]> {
         if (this.vpCollection === undefined) return cst.DEFAULT_VPS;
         const vpNames = (await this.vpCollection.aggregate().toArray()) as VP[];
+        console.log(vpNames);
         return vpNames;
     }
 
     async addVP(vp: VP) {
+        // const alreadyInReady = await this.vpCollection?.find(vp)
         await this.vpCollection?.insertOne(vp);
     }
 

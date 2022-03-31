@@ -24,6 +24,9 @@ export class VirtualPlayersTabComponent implements OnInit {
     clicked: boolean = false;
     clickedExpert: boolean = false;
     nameInput: string = '';
+    nameInputExpert: string = '';
+    error: string = '';
+    errorExpert: string = '';
 
     constructor(readonly httpClient: HttpClient, private readonly dialog: MatDialog) {}
 
@@ -46,12 +49,14 @@ export class VirtualPlayersTabComponent implements OnInit {
     async addPlayer(name: string, beginner: boolean) {
         if (name.trim() === '') return;
         const newVp: VP = { default: false, beginner, name };
+        if (this.list.find((vp) => vp.name.toLowerCase() === name.toLowerCase())) {
+            if (beginner) this.error = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
+            else this.errorExpert = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
+            return;
+        }
         await this.httpClient.post<VP>(`${environment.serverUrl}/vp-names`, newVp).toPromise();
         this.updateList();
-        console.log(newVp);
-
-        if (beginner) this.clicked = false;
-        else this.clickedExpert = false;
+        this.hideInput(beginner);
     }
 
     async deletePlayer(name: string) {
@@ -59,12 +64,18 @@ export class VirtualPlayersTabComponent implements OnInit {
         this.updateList();
     }
 
+    hideInput(beginner: boolean) {
+        if (beginner) {
+            this.nameInput = '';
+            this.error = '';
+            this.clicked = false;
+        } else {
+            this.nameInputExpert = '';
+            this.errorExpert = '';
+            this.clickedExpert = false;
+        }
+    }
     openDialog() {
         this.dialog.open(AddPlayerDialogComponent);
-    }
-
-    createInput(isBeginner: boolean) {
-        if (isBeginner) this.clicked = true;
-        else this.clickedExpert = true;
     }
 }
