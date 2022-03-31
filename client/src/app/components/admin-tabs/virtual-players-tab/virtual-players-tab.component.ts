@@ -1,12 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-<<<<<<< HEAD
-import { MatDialog } from '@angular/material/dialog';
-import { AddPlayerDialogComponent } from '@app/components/add-player-dialog/add-player-dialog.component';
 import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-=======
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
->>>>>>> 1e5ba3c... on peut maintenant modifier un nom de jv déjà dans la BD directement sur la vue, synchronisation implémenté
 import { environment } from 'src/environments/environment';
 
 type VP = {

@@ -3,68 +3,17 @@
     <div class="dico-box">
         <div class="header">
             <div class="title">
-                <h4>Dictionnaire Francais</h4>
+                <h4>Dictionnaire {{ dictionary.name }}</h4>
             </div>
-            <div class="label"></div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
-
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Anglais</h4>
+            <div class="label" *ngIf="dictionary.id === 0">
+                <span>defaut</span>
             </div>
-            <div class="label">
+            <div class="label" *ngIf="dictionary.id !== 0">
                 <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
             </div>
         </div>
         <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
-
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Tests</h4>
-            </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
-
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Tests</h4>
-            </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
-
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Tests</h4>
-            </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
+            <p>{{ dictionary.description }}</p>
         </div>
     </div>
 </section>

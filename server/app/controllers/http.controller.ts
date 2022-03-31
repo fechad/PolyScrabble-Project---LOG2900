@@ -1,4 +1,5 @@
 import { State } from '@app/classes/room';
+import { DbDictionariesService } from '@app/services/db-dictionaries.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
@@ -32,6 +33,7 @@ export class HttpController {
     gameHistoryService: GameHistoryService;
     private highScoreService: HighScoresService;
     private vpNamesService: VpNamesService;
+    private dbDictionaryService: DbDictionariesService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
@@ -50,6 +52,7 @@ export class HttpController {
         await this.dataBase.connect();
         this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
+        this.dbDictionaryService = Container.get(DbDictionariesService);
     }
 
     private configureRouter() {
@@ -89,7 +92,7 @@ export class HttpController {
         });
 
         this.router.get('/vp-names', async (req: Request, res: Response) => {
-            const names = await this.vpNamesService.getHNames();
+            const names = await this.vpNamesService.getNames();
             res.json(names);
         });
 
@@ -103,6 +106,24 @@ export class HttpController {
         });
         this.router.delete('/vp-names/:name', async (req: Request, res: Response) => {
             const names = await this.vpNamesService.deleteVP(req.params.name);
+            res.json(names);
+        });
+
+        this.router.get('/dictionaries', async (req: Request, res: Response) => {
+            const names = await this.dbDictionaryService.getDictionaries();
+            res.json(names);
+        });
+
+        this.router.post('/dictionaries', async (req: Request, res: Response) => {
+            const names = await this.dbDictionaryService.addDictionary(req.body);
+            res.json(names);
+        });
+        this.router.patch('/dictionaries', async (req: Request, res: Response) => {
+            const names = await this.dbDictionaryService.updateDictionary(req.body);
+            res.json(names);
+        });
+        this.router.delete('/dictionaries/:name', async (req: Request, res: Response) => {
+            const names = await this.dbDictionaryService.deleteDictionary(req.params.name);
             res.json(names);
         });
     }

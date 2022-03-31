@@ -10,7 +10,7 @@ export class VpNamesService {
         this.vpCollection = this.dataBase.db?.collection(cst.VP_COLLECTION);
     }
 
-    async getHNames(): Promise<VP[]> {
+    async getNames(): Promise<VP[]> {
         if (this.vpCollection === undefined) return cst.DEFAULT_VPS;
         const vpNames = (await this.vpCollection.aggregate().toArray()) as VP[];
         return vpNames;

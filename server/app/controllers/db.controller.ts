@@ -1,3 +1,4 @@
+import { promises } from 'fs';
 import { Db, MongoClient } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -9,6 +10,8 @@ export type VP = {
     name: string;
 };
 
+export type DbDictionary = { id: number; name: string; description: string; words: string[] };
+
 const DB_USERNAME = 'default-user';
 const DB_PASSWORD = 'Oh6Hj7L7aCXZQfAb';
 const DB_URL = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.407r1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -16,6 +19,7 @@ const DB_DB = 'scores';
 export const SCORES_COLLECTION = 'scores';
 export const GAMES_COLLECTION = 'games';
 export const VP_COLLECTION = 'vp';
+export const DICTIONARY_COLLECTION = 'dictionaries';
 
 export const MAX_RESULTS = 5;
 export const DEFAULT_USERS: Score[] = [
@@ -34,6 +38,20 @@ export const DEFAULT_VPS: VP[] = [
     { default: true, beginner: false, name: 'Justin' },
     { default: true, beginner: false, name: 'Xavier' },
 ];
+export let DEFAULT_DICTIONARY: DbDictionary[] = [];
+new Promise(async (resolve) => {
+    const fileBuffer = await promises.readFile('./assets/dictionnary.json');
+    const readDicitonnary = JSON.parse(fileBuffer.toString());
+    const description = 'Dictionnaire fourni par le département de génie informatique et logiciel. Soit le dictionnaire par défaut de ce jeu.';
+    const dictionary: DbDictionary[] = [{ id: 0, name: 'français', description: description, words: readDicitonnary.words }];
+    //console.log(dictionary);
+    resolve(dictionary);
+}).then((words: DbDictionary[]) => {
+    //console.log(words);
+    //const dictionary: DbDictionary[] = [{ id: 0, name: 'français', description: words.description, words: readDicitonnary.words }];
+    DEFAULT_DICTIONARY.push(words[0]);
+    return words;
+});
 
 @Service()
 export class DataBaseController {
