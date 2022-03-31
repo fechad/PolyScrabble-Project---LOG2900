@@ -4,9 +4,28 @@
             <div><p>Débutant</p></div>
         </section>
         <section class="vp-names">
+<<<<<<< HEAD
             <div *ngFor="let player of beginnerList" class="new-player">
                 <div>
                     <p>{{player.name}}</p>
+=======
+            <div *ngFor="let player of beginnerList">
+                <div *ngIf="player.default">
+                    <p>{{ player.name }}</p>
+                    <p>défaut</p>
+                </div>
+                <div *ngIf="!player.default">
+                    <p
+                        contenteditable="true"
+                        #inputName
+                        [(ngModel)]="nameInput"
+                        ngDefaultControl
+                        (keydown.enter)="$event.preventDefault(); updatePlayer(player.name, inputName.innerText, true)"
+                    >
+                        {{ player.name }}
+                    </p>
+                    <button class="trash-can-vp" (click)="deletePlayer(player.name)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+>>>>>>> 1e5ba3c... on peut maintenant modifier un nom de jv déjà dans la BD directement sur la vue, synchronisation implémenté
                 </div>
                 <button *ngIf="!player.default" class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
             </div>

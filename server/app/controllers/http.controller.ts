@@ -94,8 +94,11 @@ export class HttpController {
         });
 
         this.router.post('/vp-names', async (req: Request, res: Response) => {
-            console.log(req.body);
             const names = await this.vpNamesService.addVP(req.body);
+            res.json(names);
+        });
+        this.router.patch('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.updateVP(req.body);
             res.json(names);
         });
         this.router.delete('/vp-names/:name', async (req: Request, res: Response) => {

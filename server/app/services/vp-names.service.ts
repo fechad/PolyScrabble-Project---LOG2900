@@ -13,18 +13,19 @@ export class VpNamesService {
     async getHNames(): Promise<VP[]> {
         if (this.vpCollection === undefined) return cst.DEFAULT_VPS;
         const vpNames = (await this.vpCollection.aggregate().toArray()) as VP[];
-        console.log(vpNames);
         return vpNames;
     }
 
     async addVP(vp: VP) {
-        // const alreadyInReady = await this.vpCollection?.find(vp)
         await this.vpCollection?.insertOne(vp);
+    }
+
+    async updateVP(vps: Object) {
+        await this.vpCollection?.findOneAndReplace({ name: { $eq: vps['oldVp'].name } }, vps['newVp']);
     }
 
     async deleteVP(name: string) {
         if (this.vpCollection === undefined) return;
-        console.log(name);
         await this.vpCollection.deleteOne({ name: { $eq: name } });
     }
 }

@@ -1,8 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+<<<<<<< HEAD
 import { MatDialog } from '@angular/material/dialog';
 import { AddPlayerDialogComponent } from '@app/components/add-player-dialog/add-player-dialog.component';
 import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+=======
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+>>>>>>> 1e5ba3c... on peut maintenant modifier un nom de jv déjà dans la BD directement sur la vue, synchronisation implémenté
 import { environment } from 'src/environments/environment';
 
 type VP = {
@@ -28,7 +32,7 @@ export class VirtualPlayersTabComponent implements OnInit {
     error: string = '';
     errorExpert: string = '';
 
-    constructor(readonly httpClient: HttpClient, private readonly dialog: MatDialog) {}
+    constructor(readonly httpClient: HttpClient) {}
 
     async ngOnInit(): Promise<void> {
         this.updateList();
@@ -43,18 +47,21 @@ export class VirtualPlayersTabComponent implements OnInit {
                 this.beginnerList.push(vp);
             } else this.expertList.push(vp);
         }
-        console.log(this.beginnerList);
     }
 
     async addPlayer(name: string, beginner: boolean) {
-        if (name.trim() === '') return;
+        if (name.trim() === '' || this.findDoubles(name, beginner) || this.invalidName(name, beginner)) return;
         const newVp: VP = { default: false, beginner, name };
-        if (this.list.find((vp) => vp.name.toLowerCase() === name.toLowerCase())) {
-            if (beginner) this.error = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
-            else this.errorExpert = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
-            return;
-        }
         await this.httpClient.post<VP>(`${environment.serverUrl}/vp-names`, newVp).toPromise();
+        this.updateList();
+        this.hideInput(beginner);
+    }
+
+    async updatePlayer(oldName: string, newName: string, beginner: boolean) {
+        if (newName.trim() === '' || this.findDoubles(newName, beginner) || this.invalidName(newName, beginner)) return;
+        const oldVp = this.list.find((vp) => vp.name === oldName);
+        const newVp: VP = { default: false, beginner, name: newName };
+        await this.httpClient.patch<VP>(`${environment.serverUrl}/vp-names`, { oldVp, newVp }).toPromise();
         this.updateList();
         this.hideInput(beginner);
     }
@@ -62,6 +69,24 @@ export class VirtualPlayersTabComponent implements OnInit {
     async deletePlayer(name: string) {
         await this.httpClient.delete<VP>(`${environment.serverUrl}/vp-names/${name}`).toPromise();
         this.updateList();
+    }
+
+    invalidName(name: string, beginner: boolean): boolean {
+        if (!name.match(/[A-zÀ-ù]/g)) {
+            if (beginner) this.error = 'Les caractères doivent être des lettres seulement.';
+            else this.errorExpert = 'Les caractères doivent être des lettres seulement.';
+            return true;
+        }
+        return false;
+    }
+
+    findDoubles(nameToFind: string, beginner: boolean): boolean {
+        if (this.list.find((vp) => vp.name.toLowerCase() === nameToFind.toLowerCase())) {
+            if (beginner) this.error = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
+            else this.errorExpert = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
+            return true;
+        }
+        return false;
     }
 
     hideInput(beginner: boolean) {
@@ -74,8 +99,5 @@ export class VirtualPlayersTabComponent implements OnInit {
             this.errorExpert = '';
             this.clickedExpert = false;
         }
-    }
-    openDialog() {
-        this.dialog.open(AddPlayerDialogComponent);
     }
 }
