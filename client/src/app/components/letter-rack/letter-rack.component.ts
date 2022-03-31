@@ -89,7 +89,7 @@ export class LetterRackComponent {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
         this.swapLetters(newIndex, this.manipulating);
-        this.gameContextService.showMyRack();
+        this.gameContextService.syncRack();
     }
 
     swapLetters(index: number, oldIndex: number) {

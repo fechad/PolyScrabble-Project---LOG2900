@@ -8,9 +8,10 @@ import { EndGameCalculator } from './end-game-calculator';
 import { Game } from './game';
 import { Parameters } from './parameters';
 import { Position } from './position';
+import { Letter } from './reserve';
 import { Player, Room } from './room';
 
-/* eslint-disable dot-notation, @typescript-eslint/no-magic-numbers */
+/* eslint-disable dot-notation, @typescript-eslint/no-magic-numbers, max-lines */
 
 const RESPONSE_DELAY = 400;
 const HALF_LENGTH = 7;
@@ -69,10 +70,19 @@ describe('Game', () => {
 
     it('should change letters', () => {
         const stub = sinon.stub();
+        const before: Letter[] = game.reserve.letterRacks[0].slice();
         game.eventEmitter.on('rack', stub);
         const letters = [game.reserve.letterRacks[0][0].toLowerCase(), game.reserve.letterRacks[0][3].toLowerCase()];
+        expect(stub.args).to.deep.equal([]);
         game.changeLetters(letters, game.players[0].id);
-        assert(stub.calledWith(game.players[0].id, game.reserve.letterRacks[0]));
+        const transform = (args: { name: string; score: number }[][][]) =>
+            args.filter((call) => (call[0] as unknown as string) === game.players[0].id).map((call) => call[1].map((letter) => letter.name).sort());
+        const out = transform(stub.args);
+        expect(out.length).to.equal(1);
+        before.forEach((letter, i) => {
+            if (i === 0 || i === 3) return;
+            expect(out[0]).to.include(letter);
+        });
         assert(stubError.notCalled);
     });
 
@@ -99,7 +109,7 @@ describe('Game', () => {
         const col = 6;
         game.reserve.letterRacks[0].push(...'TEST');
         const letters = 'test';
-        let promise = game.placeLetters(game.players[0].id, [...letters], new Position(row, col), true);
+        const promise = game.placeLetters(game.players[0].id, [...letters], new Position(row, col), true);
         expect(stubClearTimeout.callCount).to.equal(1);
         stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
         await promise;
@@ -138,7 +148,7 @@ describe('Game', () => {
         stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
         await promise;
         assert(stub.notCalled);
-        expect(stubError.args).to.deep.equal([[game.players[0].id, "Un des mots crees ne fait pas partie du dictionnaire"]]);
+        expect(stubError.args).to.deep.equal([[game.players[0].id, 'Un des mots crees ne fait pas partie du dictionnaire']]);
     });
 
     it('should output an error when placing valid words that go outside the board', async () => {
@@ -153,7 +163,7 @@ describe('Game', () => {
         stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
         await promise;
         assert(stub.notCalled);
-        expect(stubError.args).to.deep.equal([[game.players[0].id, "Placement invalide: Le mot ne rentre pas dans la grille"]]);
+        expect(stubError.args).to.deep.equal([[game.players[0].id, 'Placement invalide: Le mot ne rentre pas dans la grille']]);
     });
 
     it('should output an error when placing outside the board', async () => {

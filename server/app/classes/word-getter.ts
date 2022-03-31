@@ -55,7 +55,7 @@ export class WordGetter {
                 const letter = newLetters[idx].letter;
                 idx++;
                 wordMultiplier *= tile.wordMultiplier;
-                wordScore += tile.multiplier * ALPHABET[letter].score;
+                wordScore += tile.multiplier * ALPHABET[letter.toUpperCase()].score;
                 word += letter;
             } else {
                 word += tile.letter;
@@ -64,6 +64,6 @@ export class WordGetter {
             }
         }
         if (word.length < 2) return undefined;
-        return { word, horizontal: isHorizontal, position: startingPos, score: wordScore * wordMultiplier, contact };
+        return { word: word.toLowerCase(), horizontal: isHorizontal, position: startingPos, score: wordScore * wordMultiplier, contact };
     }
 }

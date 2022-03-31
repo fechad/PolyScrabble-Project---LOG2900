@@ -126,74 +126,73 @@ describe('VirtualPlayer', () => {
         const availableLetters = [...'RZAAR'];
 
         const expectedReturn = [
-            new PlacementOption(false, [{ letter: 'A', position: new Position(8, 7) }]),
+            new PlacementOption(false, [{ letter: 'a', position: new Position(8, 7) }]),
             new PlacementOption(false, [
-                { letter: 'A', position: new Position(8, 7) },
-                { letter: 'R', position: new Position(9, 7) },
+                { letter: 'a', position: new Position(8, 7) },
+                { letter: 'r', position: new Position(9, 7) },
             ]),
             new PlacementOption(false, [
-                { letter: 'A', position: new Position(8, 7) },
-                { letter: 'R', position: new Position(9, 7) },
-                { letter: 'A', position: new Position(10, 7) },
+                { letter: 'a', position: new Position(8, 7) },
+                { letter: 'r', position: new Position(9, 7) },
+                { letter: 'a', position: new Position(10, 7) },
             ]),
-            new PlacementOption(false, [{ letter: 'A', position: new Position(8, 6) }]),
+            new PlacementOption(false, [{ letter: 'a', position: new Position(8, 6) }]),
             new PlacementOption(false, [
-                { letter: 'R', position: new Position(8, 6) },
-                { letter: 'A', position: new Position(9, 6) },
+                { letter: 'r', position: new Position(8, 6) },
+                { letter: 'a', position: new Position(9, 6) },
             ]),
-            new PlacementOption(true, [{ letter: 'A', position: new Position(7, 8) }]),
-            new PlacementOption(true, [{ letter: 'A', position: new Position(7, 5) }]),
-            new PlacementOption(true, [{ letter: 'R', position: new Position(7, 5) }]),
+            new PlacementOption(true, [{ letter: 'a', position: new Position(7, 8) }]),
+            new PlacementOption(true, [{ letter: 'a', position: new Position(7, 5) }]),
+            new PlacementOption(true, [{ letter: 'r', position: new Position(7, 5) }]),
             new PlacementOption(true, [
-                { letter: 'R', position: new Position(7, 5) },
-                { letter: 'A', position: new Position(7, 8) },
-            ]),
-
-            new PlacementOption(true, [
-                { letter: 'A', position: new Position(7, 4) },
-                { letter: 'R', position: new Position(7, 5) },
+                { letter: 'r', position: new Position(7, 5) },
+                { letter: 'a', position: new Position(7, 8) },
             ]),
             new PlacementOption(true, [
-                { letter: 'A', position: new Position(7, 4) },
-                { letter: 'R', position: new Position(7, 5) },
-                { letter: 'A', position: new Position(7, 8) },
+                { letter: 'a', position: new Position(7, 4) },
+                { letter: 'r', position: new Position(7, 5) },
             ]),
-            new PlacementOption(false, [{ letter: 'A', position: new Position(6, 7) }]),
-            new PlacementOption(false, [
-                { letter: 'A', position: new Position(6, 7) },
-                { letter: 'A', position: new Position(8, 7) },
+            new PlacementOption(true, [
+                { letter: 'a', position: new Position(7, 4) },
+                { letter: 'r', position: new Position(7, 5) },
+                { letter: 'a', position: new Position(7, 8) },
             ]),
-            new PlacementOption(false, [{ letter: 'A', position: new Position(6, 6) }]),
-            new PlacementOption(false, [{ letter: 'R', position: new Position(6, 6) }]),
+            new PlacementOption(false, [{ letter: 'a', position: new Position(6, 7) }]),
             new PlacementOption(false, [
-                { letter: 'R', position: new Position(6, 6) },
-                { letter: 'Z', position: new Position(8, 6) },
+                { letter: 'a', position: new Position(6, 7) },
+                { letter: 'a', position: new Position(8, 7) },
             ]),
+            new PlacementOption(false, [{ letter: 'a', position: new Position(6, 6) }]),
+            new PlacementOption(false, [{ letter: 'r', position: new Position(6, 6) }]),
             new PlacementOption(false, [
-                { letter: 'A', position: new Position(5, 7) },
-                { letter: 'A', position: new Position(6, 7) },
-            ]),
-            new PlacementOption(false, [
-                { letter: 'A', position: new Position(5, 7) },
-                { letter: 'R', position: new Position(6, 7) },
+                { letter: 'r', position: new Position(6, 6) },
+                { letter: 'z', position: new Position(8, 6) },
             ]),
             new PlacementOption(false, [
-                { letter: 'R', position: new Position(5, 7) },
-                { letter: 'A', position: new Position(6, 7) },
+                { letter: 'a', position: new Position(5, 7) },
+                { letter: 'a', position: new Position(6, 7) },
             ]),
             new PlacementOption(false, [
-                { letter: 'R', position: new Position(5, 7) },
-                { letter: 'A', position: new Position(6, 7) },
-                { letter: 'A', position: new Position(8, 7) },
+                { letter: 'a', position: new Position(5, 7) },
+                { letter: 'r', position: new Position(6, 7) },
             ]),
             new PlacementOption(false, [
-                { letter: 'A', position: new Position(5, 6) },
-                { letter: 'R', position: new Position(6, 6) },
+                { letter: 'r', position: new Position(5, 7) },
+                { letter: 'a', position: new Position(6, 7) },
             ]),
             new PlacementOption(false, [
-                { letter: 'A', position: new Position(4, 7) },
-                { letter: 'R', position: new Position(5, 7) },
-                { letter: 'A', position: new Position(6, 7) },
+                { letter: 'r', position: new Position(5, 7) },
+                { letter: 'a', position: new Position(6, 7) },
+                { letter: 'a', position: new Position(8, 7) },
+            ]),
+            new PlacementOption(false, [
+                { letter: 'a', position: new Position(5, 6) },
+                { letter: 'r', position: new Position(6, 6) },
+            ]),
+            new PlacementOption(false, [
+                { letter: 'a', position: new Position(4, 7) },
+                { letter: 'r', position: new Position(5, 7) },
+                { letter: 'a', position: new Position(6, 7) },
             ]),
         ];
         const result = vP['getPlayablePositions'](availableLetters);
@@ -204,8 +203,8 @@ describe('VirtualPlayer', () => {
         const result = vP.chooseWords([...'ABCDLO']);
         expect(result).to.not.equal(undefined);
         for (const placement of result) {
-            expect(placement[0].newLetters[0].position.row).to.equal(7);
-            expect(placement[0].newLetters[0].position.col).to.equal(7);
+            expect(placement.placement.newLetters[0].position.row).to.equal(7);
+            expect(placement.placement.newLetters[0].position.col).to.equal(7);
         }
     });
 
@@ -215,12 +214,48 @@ describe('VirtualPlayer', () => {
             { letter: 's', position: new Position(7, 7) },
         ]);
         const rack = [...'ABCDLO'];
-        const result = vP.chooseWords(rack);
+        const options = vP.chooseWords(rack);
 
-        expect(result).to.not.equal(undefined);
-        const possibleLetters = rack.concat([...'as']);
-        for (const placement of result) {
-            expect(placement[0].newLetters.every((l) => possibleLetters.includes(l.letter))).to.equal(true);
+        expect(options).to.not.equal(undefined);
+        const possibleLetters = rack.concat([...'AS']);
+        for (const option of options) {
+            for (const letter of option.placement.newLetters) {
+                expect(possibleLetters).to.include(letter.letter.toUpperCase());
+            }
         }
+    });
+
+    it('test case 1', () => {
+        game.board.place([
+            { letter: 'L', position: new Position(1, 0) },
+            { letter: 'N', position: new Position(2, 0) },
+            { letter: 'O', position: new Position(2, 1) },
+            { letter: 'D', position: new Position(2, 2) },
+            { letter: 'A', position: new Position(2, 3) },
+            { letter: 'L', position: new Position(2, 4) },
+            { letter: 'E', position: new Position(2, 5) },
+            { letter: 'N', position: new Position(3, 0) },
+            { letter: 'O', position: new Position(3, 1) },
+            { letter: 'N', position: new Position(3, 2) },
+            { letter: 'E', position: new Position(3, 3) },
+            { letter: 'S', position: new Position(3, 4) },
+            { letter: 'U', position: new Position(3, 5) },
+            { letter: 'A', position: new Position(4, 0) },
+            { letter: 'V', position: new Position(4, 1) },
+            { letter: 'E', position: new Position(4, 2) },
+            { letter: 'R', position: new Position(4, 3) },
+            { letter: 'S', position: new Position(4, 4) },
+            { letter: 'R', position: new Position(5, 0) },
+            { letter: 'I', position: new Position(5, 1) },
+            { letter: 'T', position: new Position(6, 0) },
+            { letter: 'K', position: new Position(7, 0) },
+            { letter: 'A', position: new Position(7, 1) },
+            { letter: 'N', position: new Position(7, 2) },
+            { letter: 'I', position: new Position(8, 0) },
+            { letter: 'I', position: new Position(8, 1) },
+            { letter: 'P', position: new Position(9, 0) },
+        ]);
+        const rack = [...'JQTPUER'];
+        expect(() => vP.chooseWords(rack)).not.to.throw();
     });
 });

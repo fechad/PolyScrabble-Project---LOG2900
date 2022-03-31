@@ -3,8 +3,8 @@ import { Position } from './classes/position';
 export const MIDDLE_INDEX = 7;
 export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
 export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
+export const PREVIOUS = -1;
 export const AI_ID = 'VP';
-export const AI_GAME_INDEX = 1;
 export const PROBABILITY = 10;
 export const BOARD_LENGTH = 15;
 export const DELAY_CHECK_TURN = 1000; // ms

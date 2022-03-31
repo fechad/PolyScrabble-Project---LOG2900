@@ -1,3 +1,4 @@
+import { ALPHABET } from '@app/alphabet-template';
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import * as cst from '@app/constants';
 import { Message } from '@app/message';
@@ -13,12 +14,17 @@ import { VirtualPlayer } from './virtual-player';
 import { WordGetter } from './word-getter';
 
 export type GameId = number;
-type Tile = string | undefined;
+type Tile = Letter | undefined;
 
 type PlayerInfo = {
     info: Player;
     score: number;
     rackCount: number;
+};
+
+type Letter = {
+    name: string;
+    score: number;
 };
 
 type GameState = {
@@ -69,14 +75,22 @@ export class Game {
         const state: GameState = {
             players: [this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id), this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id)],
             reserveCount: this.reserve.getCount(),
-            board: this.board.getState(),
+            board: this.board.getState().map((row) => row.map((tile) => (tile ? { name: tile, score: ALPHABET[tile].score } : undefined))),
             turn: this.room.getState() === State.Started ? this.getCurrentPlayer().id : undefined,
             state: this.room.getState(),
             winner: this.winner,
         };
         this.eventEmitter.emit('state', state);
-        this.eventEmitter.emit('rack', this.players[cst.MAIN_PLAYER].id, this.reserve.letterRacks[cst.MAIN_PLAYER]);
-        this.eventEmitter.emit('rack', this.players[cst.OTHER_PLAYER].id, this.reserve.letterRacks[cst.OTHER_PLAYER]);
+        this.eventEmitter.emit(
+            'rack',
+            this.players[cst.MAIN_PLAYER].id,
+            this.reserve.letterRacks[cst.MAIN_PLAYER].map((letter) => ({ name: letter, score: ALPHABET[letter].score })),
+        );
+        this.eventEmitter.emit(
+            'rack',
+            this.players[cst.OTHER_PLAYER].id,
+            this.reserve.letterRacks[cst.OTHER_PLAYER].map((letter) => ({ name: letter, score: ALPHABET[letter].score })),
+        );
     }
 
     getPlayerInfo(id: PlayerId): PlayerInfo {
@@ -98,6 +112,11 @@ export class Game {
 
     async placeLetters(playerId: PlayerId, letters: string[], pos: Position, isHorizontal?: boolean) {
         if (this.checkTurn(playerId)) {
+            console.log(
+                `User ${playerId} made placement of word ${letters} at position ${JSON.stringify(pos)} in direction ${
+                    isHorizontal ? 'horizontal' : 'vertical'
+                }`,
+            );
             const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const player = this.getCurrentPlayer();
             if (this.timeout !== undefined) clearTimeout(this.timeout);
@@ -107,6 +126,7 @@ export class Game {
                 isHorizontal ||= this.board.isInContact(pos, false);
                 const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
                 const words = this.wordGetter.getWords(triedPlacement);
+                console.log(words);
                 if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
                     throw new Error('Un des mots crees ne fait pas partie du dictionnaire');
 
@@ -178,11 +198,11 @@ export class Game {
                 'Indice:\n' +
                 options
                     .map(
-                        ([opt, _score], i) =>
+                        (opt, i) =>
                             ` ${i + 1}. ${Game.createCommand(
-                                opt.newLetters.map((letter) => letter.letter),
-                                opt.newLetters[0].position,
-                                opt.isHorizontal,
+                                opt.placement.newLetters.map((letter) => letter.letter),
+                                opt.placement.newLetters[0].position,
+                                opt.placement.isHorizontal,
                             )}`,
                     )
                     .join('\n') +

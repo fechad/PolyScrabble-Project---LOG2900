@@ -258,8 +258,9 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('rack', stub2);
         gameSocket.emit('change-letters', letters);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        expect(stub.args).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[0]]]);
-        expect(stub2.args).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[1]]]);
+        const transform = (args: { name: string; score: number }[][][]) => args.map((call) => call.map((arg) => arg.map((letter) => letter.name)));
+        expect(transform(stub.args)).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[0]]]);
+        expect(transform(stub2.args)).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[1]]]);
     });
 
     it('should place letters', async () => {

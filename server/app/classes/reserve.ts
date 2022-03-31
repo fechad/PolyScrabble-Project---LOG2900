@@ -3,6 +3,7 @@ import * as cst from '@app/constants';
 import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 
 export type Letter = string;
+export type ReserveContent = { [letter: string]: number };
 
 export class Reserve {
     letterRacks: [Letter[], Letter[]];
@@ -60,8 +61,8 @@ export class Reserve {
         return this.letterRacks[player].every((letter) => !letter);
     }
 
-    getContent() {
-        const reserveToShow: { [letter: string]: number } = Object.fromEntries(Object.keys(ALPHABET).map((letter) => [letter, 0]));
+    getContent(): ReserveContent {
+        const reserveToShow: ReserveContent = Object.fromEntries(Object.keys(ALPHABET).map((letter) => [letter, 0]));
         for (const letter of this.reserve) {
             reserveToShow[letter]++;
         }
