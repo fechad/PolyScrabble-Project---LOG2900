@@ -4,8 +4,8 @@
             <div><p>Débutant</p></div>
         </section>
         <section class="vp-names">
-            <div *ngFor="let player of beginnerList" class="new-player">
-                <div>
+            <div *ngFor="let player of beginnerList" [ngClass]="{new: !player.default, default: player.default}">
+                <div [ngClass]="{regular: !player.default, p: player.default}">
                     <p
                         contenteditable="!player.default"
                         #inputName
@@ -34,14 +34,13 @@
             <div><p>Expert</p></div>
         </section>
         <section class="vp-names">
-            <div class="new-player">
-                <div *ngFor="let player of expertList" class="new-player">
-                    <div>
+                <div *ngFor="let player of expertList" [ngClass]="{new: !player.default, default: player.default}">
+                    <div [ngClass]="{regular: !player.default, p: player.default}">
                         <p>{{player.name}}</p>
                     </div>
                     <button *ngIf="!player.default" class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
                 </div>
-            </div>
+          
         </section>
         <div class="feedback" *ngIf="errorExpert !== ''">
             <p>{{ errorExpert }}</p>
