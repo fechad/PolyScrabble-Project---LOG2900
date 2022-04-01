@@ -1,1 +1,9 @@
-<p>game-history works!</p>
+<ul>
+    <li *ngFor="let game of games">
+        <span>Partie: {{ game.firstPlayer }} vs {{ game.secondPlayer }} </span>
+        <span>Début: {{ game.startTime }} </span>
+        <span>Fin: {{ game.endTime }} </span>
+        <span>Durée: {{ game.length }} </span>
+        <span>Mode: {{ game.mode }} </span>
+    </li>
+</ul>

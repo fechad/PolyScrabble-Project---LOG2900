@@ -1,7 +1,7 @@
 export type PlayerGameInfo = { name: string; pointsScored: number };
 export enum GameMode {
-    Classic,
-    Log2990,
+    Classic = 'Classique',
+    Log2990 = 'LOG2990',
 }
 export interface GameHistory {
     startTime: Date;

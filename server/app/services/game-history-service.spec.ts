@@ -23,7 +23,7 @@ describe('Game History Service', () => {
     after(async () => dbman.stop());
     afterEach(async () => dbman.cleanup());
 
-    it('should add game to BD', async () => {
+    it('should add game to DB', async () => {
         const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
         const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
 
@@ -38,5 +38,21 @@ describe('Game History Service', () => {
         const gameCopy = { ...playedGame };
         await gameHistoryService.addGame(playedGame);
         expect(await collection.find({}).project({ _id: 0 }).toArray()).to.deep.equal([gameCopy]);
+    });
+    it('should get games from DB', async () => {
+        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
+        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
+
+        const playedGame: GameHistory = {
+            startTime: new Date(),
+            endTime: new Date(),
+            length: 5,
+            firstPlayer: secondPlayer,
+            secondPlayer: firstPlayer,
+            mode: GameMode.Classic,
+        };
+        const gameCopy = { ...playedGame };
+        await gameHistoryService.addGame(playedGame);
+        expect(await gameHistoryService.getHistory()).to.deep.equal([gameCopy]);
     });
 });
