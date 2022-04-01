@@ -11,7 +11,7 @@ export class HighScoresService {
     }
 
     async getScores(log2990: boolean): Promise<Score[]> {
-        if (this.collection === undefined) return cst.DEFAULT_USERS;
+        if (!this.collection) return cst.DEFAULT_USERS;
         let leaderboard = (await this.collection
             .aggregate([
                 { $match: { log2990 } },
@@ -36,7 +36,7 @@ export class HighScoresService {
     }
 
     async addScore(user: User) {
-        if (this.collection === undefined) return;
+        if (!this.collection) return;
         const current = await this.collection.findOne({ name: user.name, log2990: user.log2990 });
         if (!current) {
             await this.collection.insertOne(user);

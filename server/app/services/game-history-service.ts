@@ -12,12 +12,12 @@ export class GameHistoryService {
     }
 
     async getHistory(): Promise<GameHistory[]> {
-        if (this.collection === undefined) return [];
+        if (!this.collection) return [];
         else return this.collection.find({}).project({ _id: 0 }).toArray() as unknown as GameHistory[];
     }
 
     async addGame(gamePlayed: GameHistory) {
-        if (this.collection === undefined) return;
+        if (!this.collection) return;
         await this.collection.insertOne(gamePlayed);
     }
 }

@@ -25,6 +25,7 @@ export class DataBaseController {
     db: Db | null = null;
 
     async connect() {
+        if (this.db) return;
         try {
             const client = new MongoClient(DB_URL);
             await client.connect();
