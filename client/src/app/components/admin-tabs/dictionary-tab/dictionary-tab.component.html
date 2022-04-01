@@ -3,17 +3,17 @@
         <div class="dico-box" *ngFor="let dictionary of list">
             <div class="header">
                 <div class="title">
-                    <h4 [attr.contenteditable]="dictionary.title !== 'Français'" (keydown.enter)="$event.preventDefault()"> {{ dictionary.title }}</h4>
+                    <h4 [attr.contenteditable]="dictionary.title !== 'Mon dictionnaire'" (keydown.enter)="$event.preventDefault()"> {{ dictionary.title }}</h4>
                 </div>
-                <div class="label" *ngIf="dictionary.title === 'Français'">
+                <div class="label" *ngIf="dictionary.title === 'Mon dictionnaire'">
                     <span>defaut</span>
                 </div>
-                <div class="label" *ngIf="dictionary.title !== 'Français'">
+                <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
                     <button class="trash-can" (click)="deleteDictionary(dictionary.title)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
                 </div>
             </div>
             <div class="description">
-                <p [attr.contenteditable]="dictionary.title !== 'Français'">{{ dictionary.description }}</p>
+                <p [attr.contenteditable]="dictionary.title !== 'Mon dictionnaire'">{{ dictionary.description }}</p>
             </div>
         </div>
     </section>

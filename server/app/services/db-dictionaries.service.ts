@@ -61,5 +61,6 @@ export class DbDictionariesService {
     async deleteDictionary(name: string) {
         if (this.collection === undefined) return;
         await this.collection.deleteOne({ title: { $eq: name } });
+        // await this.collection.deleteMany({});
     }
 }
