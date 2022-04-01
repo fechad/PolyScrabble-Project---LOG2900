@@ -1,4 +1,4 @@
-/*import { DataBaseController } from '@app/controllers/db.controller';
+/* import { DataBaseController } from '@app/controllers/db.controller';
 import { expect } from 'chai';
 
 describe('Database Controller', () => {

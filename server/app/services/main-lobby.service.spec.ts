@@ -47,9 +47,12 @@ describe('MainLobby service tests', () => {
         parameters.dictionnary = 0;
         parameters.difficulty = Difficulty.Beginner;
         parameters.gameType = GameType.Solo;
+        const mathRandom = Math.random;
+        Math.random = () => 0;
         playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
         const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
         expectedRoom.addPlayer('VP', 'Anna', true, 'assets/icon-images/1.png');
+        Math.random = mathRandom;
         expectedRoom.start();
         expect(rooms.rooms).to.deep.equal([expectedRoom]);
         done();

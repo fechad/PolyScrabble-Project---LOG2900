@@ -17,6 +17,7 @@ describe('VirtualPlayer', () => {
     let vP: VirtualPlayer;
     let dictionnaryService: DictionnaryService;
     let parameters: Parameters;
+    let previousMathRandom: typeof Math.random;
 
     before(async () => {
         dictionnaryService = Container.get(DictionnaryService);
@@ -35,7 +36,13 @@ describe('VirtualPlayer', () => {
         room.addPlayer(cst.AI_ID, 'heo', true, 'a');
         game = new Game(room, dictionnaryService);
         vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
+        previousMathRandom = Math.random;
     });
+
+    afterEach(() => {
+        Math.random = previousMathRandom;
+    });
+
     it('playTurn should send a message v1', () => {
         Math.random = () => 0.0;
         vP['playTurn']();
@@ -62,9 +69,11 @@ describe('VirtualPlayer', () => {
     });
 
     it('should select a random bracket', () => {
-        sinon.stub(Math, 'random').onFirstCall().returns(0.2).onSecondCall().returns(0.5).onThirdCall().returns(0.9);
+        Math.random = () => 0.2;
         expect(vP['getRandomPointBracket']()).to.deep.equal(cst.LOWER_POINT_BRACKET);
+        Math.random = () => 0.5;
         expect(vP['getRandomPointBracket']()).to.deep.equal(cst.MIDDLE_POINT_BRACKET);
+        Math.random = () => 0.9;
         expect(vP['getRandomPointBracket']()).to.deep.equal(cst.HIGHER_POINT_BRACKET);
     });
 
