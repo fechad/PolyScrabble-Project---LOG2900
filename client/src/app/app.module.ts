@@ -18,6 +18,7 @@ import { GameHistoryTabComponent } from './components/admin-tabs/game-history-ta
 import { VirtualPlayersTabComponent } from './components/admin-tabs/virtual-players-tab/virtual-players-tab.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { ChronoContainerComponent } from './components/chrono-container/chrono-container.component';
+import { GameHistoryComponent } from './components/game-history/game-history.component';
 import { GameSetupDialogComponent } from './components/game-setup-dialog/game-setup-dialog.component';
 import { HighScoresComponent } from './components/high-scores/high-scores.component';
 import { InfosBoxComponent } from './components/infos-box/infos-box.component';
@@ -60,6 +61,7 @@ import { CommunicationService } from './services/communication.service';
         ModesPageComponent,
         SoloDialogComponent,
         HighScoresComponent,
+        GameHistoryComponent,
         ChronoContainerComponent,
         AdminPageComponent,
         GameHistoryTabComponent,
