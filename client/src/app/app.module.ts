@@ -15,7 +15,6 @@ import { IgxIconModule, IgxInputGroupModule, IgxTimePickerModule } from 'igniteu
 import { CountdownModule } from 'ngx-countdown';
 import { DictionaryTabComponent } from './components/admin-tabs/dictionary-tab/dictionary-tab.component';
 import { GameHistoryTabComponent } from './components/admin-tabs/game-history-tab/game-history-tab.component';
-import { ResetTabComponent } from './components/admin-tabs/reset-tab/reset-tab.component';
 import { VirtualPlayersTabComponent } from './components/admin-tabs/virtual-players-tab/virtual-players-tab.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { ChronoContainerComponent } from './components/chrono-container/chrono-container.component';
@@ -66,7 +65,6 @@ import { CommunicationService } from './services/communication.service';
         GameHistoryTabComponent,
         DictionaryTabComponent,
         VirtualPlayersTabComponent,
-        ResetTabComponent,
         ObjectivesComponent,
     ],
     imports: [

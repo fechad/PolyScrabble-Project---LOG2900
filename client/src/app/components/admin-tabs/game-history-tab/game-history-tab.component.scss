@@ -4,9 +4,20 @@
     align-items: center;
     width: 95%;
     height: 90%;
-    margin-top: 5%;
+    margin-top: 2.5%;
     overflow-y: auto;
 }
+
+.refresh {
+    position: sticky;
+    top: 1px;
+    left: 90%;
+    width: 4%;
+    min-height: 8%;
+    border-radius: 20%;
+    background-color: red;
+}
+
 .game-box {
     display: flex;
     flex-direction: column;
@@ -65,11 +76,11 @@
 }
 
 .trash-can {
+    color: red;
+    border: white;
     width: 80%;
     height: 100%;
-    border-radius: 100%;
-    background-color: #fa4e4e;
-    box-shadow: 2px 2px 2px;
+    background-color: white;
     margin-top: 2%;
 }
 

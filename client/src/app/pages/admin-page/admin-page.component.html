@@ -2,6 +2,7 @@
     <div class="header-container">
         <fa-icon [icon]="faHome" size="3x" class="faHome" [routerLink]="['/home']"></fa-icon>
         <h1>Bienvenue Administrateur!</h1>
+        <button class="refresh"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
     </div>
 </header>
 
@@ -11,7 +12,6 @@
             <button class="tab selected" id="history" (click)="changeSelection($event)">Historique des parties</button>
             <button class="tab" id="dictionnaries" (click)="changeSelection($event)">Dictionnaires</button>
             <button class="tab" id="VPs" (click)="changeSelection($event)">Joueurs Virtuels</button>
-            <button class="tab" id="reset" (click)="changeSelection($event)">Mode Réinitialisation</button>
         </div>
         <div class="tab-content">
             <div *ngIf="tabSelection === 'history'">
@@ -22,9 +22,6 @@
             </div>
             <div *ngIf="tabSelection === 'VPs'">
                 <app-virtual-players-tab></app-virtual-players-tab>
-            </div>
-            <div *ngIf="tabSelection === 'reset'">
-                <app-reset-tab></app-reset-tab>
             </div>
         </div>
     </section>
