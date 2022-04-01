@@ -70,7 +70,7 @@ export class DictionaryTabComponent implements OnInit {
 
     async updateDictionary() {
         const newTitle = this.dictionaryForm.value.title;
-        if (newTitle === '' || this.findDoubles(newTitle)) return;
+        if (newTitle.trim() === '' || this.findDoubles(newTitle)) return;
         const oldDict = this.list.find((d) => d.title === this.oldTitle);
         if (!oldDict) throw new Error();
         const newDict: DbDictionary = { title: newTitle, description: this.dictionaryForm.value.description };
