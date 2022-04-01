@@ -5,9 +5,9 @@
         </section>
         <section class="vp-names">
             <div *ngFor="let player of beginnerList" [ngClass]="{new: !player.default, default: player.default}">
-                <div [ngClass]="{regular: !player.default, p: player.default}">
+                <div [ngClass]="{regular: !player.default}">
                     <p
-                        contenteditable="!player.default"
+                        [attr.contenteditable]="!player.default"
                         #inputName
                         [(ngModel)]="nameInput"
                         ngDefaultControl
@@ -16,7 +16,7 @@
                         {{ player.name }}
                     </p>
                 </div>
-                <button *ngIf="!player.default" class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+                <button *ngIf="!player.default" class="trash-can-vp" (click)="deletePlayer(player.name)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
             </div>
         </section>
         <div class="feedback" *ngIf="error !== ''">
@@ -36,9 +36,14 @@
         <section class="vp-names">
                 <div *ngFor="let player of expertList" [ngClass]="{new: !player.default, default: player.default}">
                     <div [ngClass]="{regular: !player.default, p: player.default}">
-                        <p>{{player.name}}</p>
+                        <p
+                        [attr.contenteditable]="!player.default"
+                        #inputName
+                        [(ngModel)]="nameInput"
+                        ngDefaultControl
+                        (keydown.enter)="$event.preventDefault(); updatePlayer(player.name, inputName.innerText, true)">{{player.name}}</p>
                     </div>
-                    <button *ngIf="!player.default" class="trash-can-vp"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+                    <button *ngIf="!player.default" class="trash-can-vp" (click)="deletePlayer(player.name)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
                 </div>
           
         </section>
