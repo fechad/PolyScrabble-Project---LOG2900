@@ -10,7 +10,7 @@ export type VP = {
     name: string;
 };
 
-export type DbDictionary = { id: number; name: string; description: string; words: string[] };
+export type DbDictionary = { id: number; title: string; description: string; words: string[] };
 
 const DB_USERNAME = 'default-user';
 const DB_PASSWORD = 'Oh6Hj7L7aCXZQfAb';
@@ -38,17 +38,14 @@ export const DEFAULT_VPS: VP[] = [
     { default: true, beginner: false, name: 'Justin' },
     { default: true, beginner: false, name: 'Xavier' },
 ];
-export let DEFAULT_DICTIONARY: DbDictionary[] = [];
+export const DEFAULT_DICTIONARY: DbDictionary[] = [];
 new Promise(async (resolve) => {
     const fileBuffer = await promises.readFile('./assets/dictionnary.json');
     const readDicitonnary = JSON.parse(fileBuffer.toString());
     const description = 'Dictionnaire fourni par le département de génie informatique et logiciel. Soit le dictionnaire par défaut de ce jeu.';
-    const dictionary: DbDictionary[] = [{ id: 0, name: 'français', description: description, words: readDicitonnary.words }];
-    //console.log(dictionary);
+    const dictionary: DbDictionary[] = [{ id: 0, title: 'Français', description, words: readDicitonnary.words }];
     resolve(dictionary);
 }).then((words: DbDictionary[]) => {
-    //console.log(words);
-    //const dictionary: DbDictionary[] = [{ id: 0, name: 'français', description: words.description, words: readDicitonnary.words }];
     DEFAULT_DICTIONARY.push(words[0]);
     return words;
 });

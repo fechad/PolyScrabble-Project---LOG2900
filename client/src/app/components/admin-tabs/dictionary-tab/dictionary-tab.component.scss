@@ -67,11 +67,14 @@
     background-color: #f5e86f;
     border-radius: 0 0 10px 10px;
     margin-left: 27%;
+    display: flex;
     text-align: center;
+    flex-direction: row;
 }
 
 .title h4 {
     font-size: 15px;
+    padding-right: 5px;
 }
 .label {
     float: right;
@@ -149,4 +152,8 @@
 .dictionary-form form {
     display: flex;
     flex-direction: column;
+}
+
+.error{
+    color: red;
 }

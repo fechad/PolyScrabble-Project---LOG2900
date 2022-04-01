@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
-type DbDictionary = { name: string; description: string; words?: string[] };
+type DbDictionary = { title: string; description: string; words?: string[] };
 
 @Component({
     selector: 'app-dictionary-tab',
@@ -25,8 +25,8 @@ export class DictionaryTabComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.updateList();
         this.dictionaryForm = this.formBuilder.group({
-            name: new FormControl('', [Validators.required, Validators.pattern('^[A-zÀ-ù]*$')]),
-            description: new FormControl('', [Validators.required]),
+            title: new FormControl('', [Validators.pattern('^[A-zÀ-ù]*$')]),
+            description: new FormControl(''),
             file: new FormControl('', [Validators.required]),
         });
     }
@@ -34,6 +34,7 @@ export class DictionaryTabComponent implements OnInit {
     async updateList(): Promise<void> {
         this.list = [];
         this.list = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
+        console.log(this.list);
     }
 
     async transformToArrayList(e: Event) {
@@ -43,16 +44,16 @@ export class DictionaryTabComponent implements OnInit {
         reader.onload = () => {
             const content = reader.result as string;
             const obj = JSON.parse(content);
-            console.log(obj, typeof obj);
             this.newWords = obj.words;
-            console.log(this.newWords);
+            this.dictionaryForm.value.title = obj.title;
+            this.dictionaryForm.value.description = obj.description;
         };
         reader.readAsText(newFile);
     }
 
     async addDictionary() {
         const newDictionnary: DbDictionary = {
-            name: this.dictionaryForm.value.name,
+            title: this.dictionaryForm.value.title,
             description: this.dictionaryForm.value.description,
             words: this.newWords,
         };
@@ -66,7 +67,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     findDoubles(nameToFind: string): boolean {
-        if (this.list.find((dictionary) => dictionary.name.toLowerCase() === nameToFind.toLowerCase())) {
+        if (this.list.find((dictionary) => dictionary.title.toLowerCase() === nameToFind.toLowerCase())) {
             this.error = 'Un des dictionnaires détient déjà ce nom, veuillez en choisir un autre.';
             return true;
         }
@@ -82,6 +83,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     onSubmit() {
+        if (this.findDoubles(this.dictionaryForm.value.title)) return;
         for (const key of Object.keys(this.dictionaryForm.controls)) {
             if (!this.dictionaryForm.controls[key].valid) {
                 return;

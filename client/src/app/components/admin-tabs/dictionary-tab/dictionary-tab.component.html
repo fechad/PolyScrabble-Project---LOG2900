@@ -1,12 +1,19 @@
 <section class="container">
     <button class="refresh"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire {{ dictionary.name }}</h4>
+        <div class="dico-box" *ngFor="let dictionary of list">
+            <div class="header">
+                <div class="title">
+                    <h4 [attr.contenteditable]="dictionary.title !== 'Français'" (keydown.enter)="$event.preventDefault()"> {{ dictionary.title }}</h4>
+                </div>
+                <div class="label" *ngIf="dictionary.title === 'Français'">
+                    <span>defaut</span>
+                </div>
+                <div class="label" *ngIf="dictionary.title !== 'Français'">
+                    <button class="trash-can" (click)="deleteDictionary(dictionary.title)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+                </div>
             </div>
             <div class="description">
-                <p>{{ dictionary.description }}</p>
+                <p [attr.contenteditable]="dictionary.title !== 'Français'">{{ dictionary.description }}</p>
             </div>
         </div>
     </section>
@@ -19,21 +26,9 @@
         <mat-card-content>
             <div class="dictionary-form">
                 <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
-                    <div>
-                        <label>Nom du dictionnaire:</label>
-                        <input type="text" formControlName="name" class="form-control" placeholder="ex: Anglais" />
-                    </div>
-                    <div>
-                        <p>Description du dictionnaire:</p>
-                        <textarea
-                            class="form-control"
-                            formControlName="description"
-                            rows="10"
-                            type="text"
-                            placeholder="Entrez votre description du dictionnaire ici."
-                            maxlength="512"
-                        ></textarea>
-                    </div>
+                  
+                    <div class="error" *ngIf="error !== ''">{{error}}</div>
+                
                     <div>
                         <label>Téléverser un fichier JSON</label>
                         <input type="file" accept=".json" formControlName="file" class="form-control" (change)="transformToArrayList($event)" />

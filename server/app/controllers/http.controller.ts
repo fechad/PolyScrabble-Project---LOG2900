@@ -119,8 +119,8 @@ export class HttpController {
             res.json(names);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {
-            const names = await this.dbDictionaryService.updateDictionary(req.body);
-            res.json(names);
+            // const names = await this.dbDictionaryService.updateDictionary(req.body);
+            // res.json(names);
         });
         this.router.delete('/dictionaries/:name', async (req: Request, res: Response) => {
             const names = await this.dbDictionaryService.deleteDictionary(req.params.name);
