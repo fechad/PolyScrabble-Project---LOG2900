@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-game-history-tab',
@@ -8,4 +8,5 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 })
 export class GameHistoryTabComponent {
     faTrash = faTrashAlt;
+    faRefresh = faSync;
 }

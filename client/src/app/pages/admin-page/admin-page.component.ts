@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faSync } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-admin-page',
@@ -9,6 +9,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 export class AdminPageComponent {
     @ViewChild('tabs') tabsRef: ElementRef;
     faHome = faHome;
+    faRefresh = faSync;
     tabSelection: string = 'history';
 
     changeSelection(e: MouseEvent) {
