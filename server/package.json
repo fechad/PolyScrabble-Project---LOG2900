@@ -9,7 +9,8 @@
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
         "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' mocha --config=.mocharc.json --node-env=test",
-        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' nyc mocha --config=.mocharc.json --node-env=test --exit"
+        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' nyc mocha --config=.mocharc.json --node-env=test --exit",
+        "test-jv": "npm run build && node --inspect out/test-jv.js"
     },
     "nyc": {
         "check-coverage": true,
@@ -24,7 +25,8 @@
             "**/*.spec.ts",
             "app/index.ts",
             "app/server.ts",
-            "app/app.ts"
+            "app/app.ts",
+            "app/test-jv.ts"
         ],
         "require": [
             "ts-node/register",
@@ -71,6 +73,7 @@
         "@types/morgan": "~1.9.3",
         "@types/node": "^16.6.1",
         "@types/node-uuid": "0.0.29",
+        "@types/seedrandom": "^3.0.2",
         "@types/sinon": "^10.0.2",
         "@types/supertest": "^2.0.11",
         "@types/swagger-jsdoc": "^6.0.1",
@@ -93,6 +96,7 @@
         "nodemon": "^2.0.12",
         "nyc": "^15.1.0",
         "rimraf": "3.0.2",
+        "seedrandom": "^3.0.5",
         "sinon": "^11.1.2",
         "socket.io-client": "^4.4.1",
         "source-map-support": "^0.5.19",

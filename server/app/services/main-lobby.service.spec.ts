@@ -3,7 +3,7 @@ import { Room } from '@app/classes/room';
 import { assert, expect } from 'chai';
 import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
-import { DictionnaryTrieService } from './dictionnary-trie.service';
+import { Container } from 'typedi';
 import { DictionnaryService } from './dictionnary.service';
 import { MainLobbyService } from './main-lobby.service';
 import { RoomsService } from './rooms.service';
@@ -13,11 +13,15 @@ describe('MainLobby service tests', () => {
     let rooms: RoomsService;
     let playersSocket: EventEmitter[];
     let dictionnaryService: DictionnaryService;
-    let dictionnaryTrie: DictionnaryTrieService;
 
-    beforeEach(async () => {
+    before(async () => {
+        dictionnaryService = Container.get(DictionnaryService);
+        await dictionnaryService.init();
+    });
+
+    beforeEach(() => {
         rooms = new RoomsService();
-        service = new MainLobbyService(rooms, dictionnaryService, dictionnaryTrie);
+        service = new MainLobbyService(rooms, dictionnaryService);
 
         const player1 = new EventEmitter();
         service.connect(player1, 'DummyId');
@@ -43,9 +47,12 @@ describe('MainLobby service tests', () => {
         parameters.dictionnary = 0;
         parameters.difficulty = Difficulty.Beginner;
         parameters.gameType = GameType.Solo;
+        const mathRandom = Math.random;
+        Math.random = () => 0;
         playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
         const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
         expectedRoom.addPlayer('VP', 'Anna', true, 'assets/icon-images/1.png');
+        Math.random = mathRandom;
         expectedRoom.start();
         expect(rooms.rooms).to.deep.equal([expectedRoom]);
         done();

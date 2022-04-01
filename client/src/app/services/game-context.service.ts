@@ -5,7 +5,6 @@ import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { PlayerId, State } from '@app/classes/room';
 import * as cst from '@app/constants';
-import { ReserveLetter } from '@app/reserve-letter';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
@@ -13,6 +12,7 @@ import { Socket } from 'socket.io-client';
 export type Tile = Letter | null;
 export type Board = Tile[][];
 export type Objective = { text: string; score: number; isPublic: boolean; doneByPlayer?: PlayerId };
+export type ReserveContent = { [letter: string]: number };
 
 export enum MessageType {
     Normal,
@@ -71,8 +71,10 @@ export class GameContextService {
             this.rack.next(rack);
             this.allowSwitch(true);
         });
-        socket.on('reserve-content', (sortedReserve: ReserveLetter[]) => {
-            const message = sortedReserve.map((letter) => `${letter.name} : ${letter.qtyInReserve}`).join('\n');
+        socket.on('reserve-content', (sortedReserve: ReserveContent) => {
+            const message = Object.entries(sortedReserve)
+                .map(([letter, qty]) => `${letter} : ${qty}`)
+                .join('\n');
             this.addMessage(message, MessageType.Command);
         });
         socket.on('objectives', (objectives: Objective[]) => {
@@ -176,8 +178,11 @@ export class GameContextService {
         this.socket?.emit('reserve-content');
     }
 
-    showMyRack() {
-        this.socket?.emit('current-rack', this.rack.value);
+    syncRack() {
+        this.socket?.emit(
+            'current-rack',
+            this.rack.value.map((letter) => letter.name),
+        );
     }
 
     confirmForfeit() {

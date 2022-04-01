@@ -1,7 +1,7 @@
 import { Game } from '@app/classes/game';
+import { Position } from '@app/classes/position';
 import { PlayerId, Room, State } from '@app/classes/room';
 import * as cst from '@app/constants';
-import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { LoginsService } from '@app/services/logins.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
@@ -23,7 +23,6 @@ export class SocketManager {
         public roomsService: RoomsService,
         private logins: LoginsService,
         private dictionnaryService: DictionnaryService,
-        private trie: DictionnaryTrieService,
     ) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -36,7 +35,7 @@ export class SocketManager {
     }
 
     private initLobby(): void {
-        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService, this.trie);
+        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
             this.token = token;
@@ -172,9 +171,9 @@ export class SocketManager {
 
             socket.on('message', (message: string) => game.message({ text: message, emitter: id }));
             socket.on('confirm-forfeit', () => game.forfeit(id));
-            socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
+            socket.on('change-letters', (letters: string) => game.changeLetters([...letters], id));
             socket.on('place-letters', async (letters: string, row: number, col: number, isHorizontal?: boolean) =>
-                game.placeLetters(id, letters, row, col, isHorizontal),
+                game.placeLetters(id, [...letters], new Position(row, col), isHorizontal),
             );
             socket.on('switch-turn', () => game.skipTurn(id));
             socket.on('reserve-content', () => game.showReserveContent(id));

@@ -109,3 +109,7 @@ export const alphabet: Letter[] = [
         score: 0,
     },
 ];
+
+export const lookupLetter = (letter: string): Letter | undefined => {
+    return alphabet.find((l) => l.name === letter);
+};

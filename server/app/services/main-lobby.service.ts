@@ -5,7 +5,6 @@ import { VirtualPlayer } from '@app/classes/virtual-player';
 import { imgList, NUMBER_ICONS } from '@app/constants';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
-import { DictionnaryTrieService } from './dictionnary-trie.service';
 import { DictionnaryService } from './dictionnary.service';
 import { RoomsService } from './rooms.service';
 
@@ -13,7 +12,7 @@ import { RoomsService } from './rooms.service';
 export class MainLobbyService {
     private nextRoomId = 0;
 
-    constructor(private roomsService: RoomsService, private dictionnaryService: DictionnaryService, private trie: DictionnaryTrieService) {}
+    constructor(private roomsService: RoomsService, private readonly dictionnaryService: DictionnaryService) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
         const alreadyJoinedRoom = this.roomsService.rooms
@@ -48,8 +47,11 @@ export class MainLobbyService {
                 room.start();
                 const game = new Game(room, this.dictionnaryService);
                 this.roomsService.games.push(game);
-                const isBeginner = parameters.difficulty !== Difficulty.Expert;
-                const vP = new VirtualPlayer(isBeginner, game, this.dictionnaryService, this.trie);
+                const vP = new VirtualPlayer(
+                    parameters.difficulty || Difficulty.Beginner,
+                    game,
+                    this.dictionnaryService.dictionnaries[parameters.dictionnary].trie,
+                );
                 vP.waitForTurn();
             }
         });
