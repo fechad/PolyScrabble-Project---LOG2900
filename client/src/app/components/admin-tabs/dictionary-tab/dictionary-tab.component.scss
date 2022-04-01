@@ -1,9 +1,12 @@
-.dictionary-tab-content {
+.container {
     display: flex;
-    flex-direction: column;
+    flex-direction: flex-start;
     justify-content: center;
-    width: 100%;
+    align-items: center;
+    width: 95%;
     height: 100%;
+    margin-top: 2.5%;
+    overflow-y: auto;
 }
 
 .dictionary-container {
@@ -18,6 +21,16 @@
     margin-top: 5%;
     overflow-y: auto;
 }
+
+.big-box{
+    width: 95%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+}
+
 .dico-box {
     display: flex;
     flex-direction: column;
@@ -26,9 +39,9 @@
     background-color: white;
     border-radius: 15px;
     width: 50%;
-    height: 20%;
-    min-height: 20%;
+    height: 80%;
     margin: 0 0 5% 0;
+    overflow: visible;
 }
 
 .refresh {
@@ -55,7 +68,7 @@
 .header {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
     height: 25%;
@@ -63,12 +76,12 @@
 
 .title {
     height: 100%;
-    width: 90%;
+    width: 50%;
     background-color: #f5e86f;
     border-radius: 0 0 10px 10px;
-    margin-left: 27%;
     display: flex;
-    text-align: center;
+    align-items: flex-start;
+    justify-content: center;
     flex-direction: row;
 }
 
@@ -76,21 +89,25 @@
     font-size: 15px;
     padding-right: 5px;
 }
+
+.regular {
+    margin-left: 3.5%;
+}
 .label {
-    float: right;
     font-size: 11px;
-    margin-left: 15%;
-    width: 20%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1%;
 }
 
 .trash-can {
     color: red;
     border: white;
-    width: 80%;
-    height: 100%;
-    background-color: white;
-    margin-top: 2%;
+    width: 100%;
+    height: 20%;
+    background-color: #E1AC01;
+    margin: 0 0 0 20%;
 }
 
 .trash-can:hover {
@@ -99,6 +116,13 @@
 
 .trash-can:active {
     box-shadow: 0px 0px 0px;
+}
+
+.pencil, .download {
+    width: 100%;
+    background-color: #E1AC01;
+    border: none;
+    margin: 18% 0 0 20%;
 }
 
 .dictionary-container::-webkit-scrollbar {
@@ -119,6 +143,9 @@
     display: flex;
     justify-content: center;
     height: 10%;
+    width: 100%;
+    position: sticky;
+    bottom: 10%;
 }
 
 .upload {
@@ -166,3 +193,18 @@
     background-color: #eee9bd;
     margin-left: 18%;
 }
+
+.container::-webkit-scrollbar {
+    height: 1px;
+    width: 10px;
+    border-radius: 15px;
+    background-color: #b6b6b6c0;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: #3d3d3d;
+    height: 1px;
+    width: 10px;
+    border-radius: 15px;
+}
+

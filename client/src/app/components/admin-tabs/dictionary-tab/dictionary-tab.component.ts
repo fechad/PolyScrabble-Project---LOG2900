@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
 type DbDictionary = { title: string; description: string; words?: string[] };
@@ -15,6 +15,7 @@ export class DictionaryTabComponent implements OnInit {
     faTrash = faTrashAlt;
     faRefresh = faSync;
     faUpload = faUpload;
+    faDownload = faDownload;
     faPencil = faPencilAlt;
     list: DbDictionary[];
     uploading: boolean = false;
