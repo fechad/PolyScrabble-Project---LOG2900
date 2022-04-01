@@ -17,8 +17,6 @@ export class DbDictionariesService {
     async getDictionaries(): Promise<ClientDictionaryInterface[]> {
         if (this.collection === undefined) return cst.DEFAULT_DICTIONARY;
         const dictionaries = (await this.collection.aggregate().project({ title: 1, description: 1 }).toArray()) as ClientDictionaryInterface[];
-        this.syncDictionaries();
-        console.log(dictionaries);
         return dictionaries;
     }
 
@@ -29,6 +27,7 @@ export class DbDictionariesService {
         fs.writeFile(`./dictionaries/dictionary-${dictionary.title}.json`, jsonDictionary, (error: Error) => {
             if (error) throw error;
         });
+        this.syncDictionaries();
     }
 
     // async updateDictionary(vps: Object) {
@@ -36,8 +35,10 @@ export class DbDictionariesService {
     // }
 
     async syncDictionaries() {
-        const dictionaries = (await this.collection?.aggregate().toArray()) as ClientDictionaryInterface[];
-
+        const dictionaries = (await this.collection
+            ?.aggregate()
+            .project({ title: 1, description: 1, _id: 0 })
+            .toArray()) as ClientDictionaryInterface[];
         fs.readdir('./dictionaries/', (err, files) => {
             files.forEach((file) => {
                 const data = fs.readFileSync(`./dictionaries/${file}`);
@@ -49,18 +50,20 @@ export class DbDictionariesService {
     }
 
     findDictionary(file: cst.DbDictionary, dictionaries: ClientDictionaryInterface[]) {
+        const newArray = [];
         for (const dict of dictionaries) {
-            if (dict.title !== file.title) {
-                fs.unlink(`./dictionaries/dictionary-${file.title}.json`, (error) => {
-                    if (error) throw error;
-                });
-            }
+            newArray.push(dict.title);
+        }
+        if (!newArray.includes(file.title)) {
+            fs.unlink(`./dictionaries/dictionary-${file.title}.json`, (error) => {
+                if (error) throw error;
+            });
         }
     }
 
     async deleteDictionary(name: string) {
         if (this.collection === undefined) return;
         await this.collection.deleteOne({ title: { $eq: name } });
-        // await this.collection.deleteMany({});
+        this.syncDictionaries();
     }
 }
