@@ -1,5 +1,7 @@
 import { Position } from './classes/position';
 
+export type Braket = [number, number];
+
 export const MIDDLE_INDEX = 7;
 export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
 export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
@@ -47,9 +49,9 @@ export const PROBABILITY_OF_30 = 6;
 export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
-export const LOWER_POINT_BRACKET = [1, 6];
-export const MIDDLE_POINT_BRACKET = [7, 12];
-export const HIGHER_POINT_BRACKET = [13, 18];
+export const LOWER_POINT_BRACKET: Braket = [1, 6];
+export const MIDDLE_POINT_BRACKET: Braket = [7, 12];
+export const HIGHER_POINT_BRACKET: Braket = [13, 18];
 export const VOWELS = new Set<string>(['a', 'e', 'i', 'o', 'u', 'y']);
 export const BIG_POINTS = new Set<string>(['j', 'k', 'q', 'w', 'x', 'y', 'z']);
 export const MULT_WORDS_3 = [

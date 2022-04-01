@@ -17,7 +17,7 @@ type SearchHead = {
     rack: string[];
 };
 
-type PlacementScore = {
+export type PlacementScore = {
     placement: PlacementOption;
     score: number;
 };
@@ -58,7 +58,8 @@ export class VirtualPlayer {
             } else this.game.skipTurn(this.id);
         } else {
             // 80 % chance
-            const sortedWordOptions = this.chooseWords(rack);
+            const bracket = this.getRandomPointBracket();
+            const sortedWordOptions = this.chooseWords(rack, bracket);
             if (sortedWordOptions.length === 0) {
                 setTimeout(() => this.game.skipTurn(this.id), cst.DELAY_NO_PLACEMENT);
                 return;
@@ -70,14 +71,15 @@ export class VirtualPlayer {
         }
     }
 
-    chooseWords(freeLetters: string[]): PlacementScore[] {
-        const bracket = this.getRandomPointBracket();
+    chooseWords(freeLetters: string[], bracket?: cst.Braket): PlacementScore[] {
         return this.getPlayablePositions(freeLetters)
             .map((placement) => {
                 const score = this.wordGetter.getWords(placement).reduce((totalScore, word) => totalScore + word.score, 0);
                 return { placement, score };
             })
-            .filter((placement) => placement.score >= bracket[cst.LOWER_BOUND_INDEX] && placement.score <= bracket[cst.HIGHER_BOUND_INDEX])
+            .filter(
+                (placement) => !bracket || (placement.score >= bracket[cst.LOWER_BOUND_INDEX] && placement.score <= bracket[cst.HIGHER_BOUND_INDEX]),
+            )
             .sort((a, b) => b.score - a.score);
     }
 
@@ -108,7 +110,7 @@ export class VirtualPlayer {
         [...new Set(head.rack)]
             .flatMap((l): [string, boolean][] => {
                 if (l === '*') {
-                    return (prefix?.nextNodes.map((node) => node.letter) || cst.ALL_LETTERS).map((letter) => [letter, true]);
+                    return prefix.nextNodes.map((node) => [node.letter, true]);
                 } else {
                     return [[l, false]];
                 }
@@ -199,7 +201,7 @@ export class VirtualPlayer {
         return !hasAdjacentLetter && head.letters.length > 0 && head.contact && head.node.terminal;
     }
 
-    private getRandomPointBracket() {
+    private getRandomPointBracket(): [number, number] {
         const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
         if (randomOutOfTen < cst.PROBABILITY_OF_40) {
             // 40 % chance

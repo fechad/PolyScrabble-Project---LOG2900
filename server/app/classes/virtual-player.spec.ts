@@ -2,7 +2,7 @@
 
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { PlacementOption } from '@app/classes/placement-option';
-import { AI_ID } from '@app/constants';
+import * as cst from '@app/constants';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
@@ -32,7 +32,7 @@ describe('VirtualPlayer', () => {
         parameters.log2990 = false;
         const room = new Room(1, '1', 'Dummy', parameters);
         room.addPlayer('2', 'otherDummy', false, 'a');
-        room.addPlayer(AI_ID, 'heo', true, 'a');
+        room.addPlayer(cst.AI_ID, 'heo', true, 'a');
         game = new Game(room, dictionnaryService);
         vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
     });
@@ -61,61 +61,47 @@ describe('VirtualPlayer', () => {
         }, timeout);
     });
 
-    /* it('should get playable positions with valid crosswords', () => {
-        game.board.place([
-            { letter: 'a', position: new Position(0, 0) },
-            { letter: 's', position: new Position(0, 1) },
-        ]);
-
-        const expectedOptions: [PlacementOption, number][] = [
-            { row: 0, col: 2, isHorizontal: true, word: 'as       ', score: 0, command: '' },
-            { row: 0, col: 2, isHorizontal: false, word: 'A      ', score: 0, command: '' },
-            { row: 1, col: 0, isHorizontal: true, word: 'A', score: 0, command: '' },
-            { row: 1, col: 0, isHorizontal: false, word: 'a       ', score: 0, command: '' },
-            { row: 1, col: 1, isHorizontal: true, word: 'A      ', score: 0, command: '' },
-            { row: 1, col: 1, isHorizontal: false, word: 's       ', score: 0, command: '' },
-        ];
-        const result = vP.chooseWords([...'ARZW']);
-        expect(result).to.deep.equal(expectedOptions);
+    it('should select a random bracket', () => {
+        sinon.stub(Math, 'random').onFirstCall().returns(0.2).onSecondCall().returns(0.5).onThirdCall().returns(0.9);
+        expect(vP['getRandomPointBracket']()).to.deep.equal(cst.LOWER_POINT_BRACKET);
+        expect(vP['getRandomPointBracket']()).to.deep.equal(cst.MIDDLE_POINT_BRACKET);
+        expect(vP['getRandomPointBracket']()).to.deep.equal(cst.HIGHER_POINT_BRACKET);
     });
 
-    it('should validate explored options from tried placements', () => {
-        game.board.place([
-            { letter: 'a', position: new Position(0, 0) },
-            { letter: 's', position: new Position(0, 1) },
-        ]);
-        const letterA: Letter = { id: 0, name: 'A', score: 1, quantity: 1 };
-        const letterR: Letter = { id: 0, name: 'R', score: 1, quantity: 1 };
-        const letterZ: Letter = { id: 0, name: 'Z', score: 1, quantity: 1 };
-        game.reserve.letterRacks[1] = [letterA, letterR, letterZ];
-        const placementOptions = [
-            new PlacementOption(0, 2, true, 'as       '),
-            new PlacementOption(0, 2, false, '#      '),
-            new PlacementOption(1, 0, true, '##     '),
-            new PlacementOption(1, 0, false, 'a       '),
-            new PlacementOption(1, 1, true, '#      '),
-            new PlacementOption(1, 1, false, 's       '),
-        ];
-        const exploredOptions: PlacementOption[] = [new PlacementOption(7, 7, true, 'Z')];
+    const testPrefixSuffix = (position: Position, prefix: string, toTest: string, suffix: string): boolean => {
+        try {
+            game.board.place([...prefix].map((letter, i) => ({ letter, position: position.withOffset(false, i - prefix.length) })));
+            game.board.place([...suffix].map((letter, i) => ({ letter, position: position.withOffset(false, i + 1) })));
+        } catch {
+            /* Ignore if placement fails */
+        }
+        const node = vP['findPrefix'](position, false);
+        return vP['validSuffix'](node, toTest.toUpperCase(), position, false);
+    };
 
-        const expectedExploredOptions = [
-            new PlacementOption(7, 7, true, 'Z'),
-            new PlacementOption(0, 2, false, 'A'),
-            new PlacementOption(1, 0, true, 'A'),
-            new PlacementOption(1, 1, true, 'A'),
-        ];
-        const expectedValidOptions = [
-            new PlacementOption(0, 2, true, 'as       '),
-            new PlacementOption(0, 2, false, 'A      '),
-            new PlacementOption(1, 0, true, 'A'),
-            new PlacementOption(1, 0, false, 'a       '),
-            new PlacementOption(1, 1, true, 'A      '),
-            new PlacementOption(1, 1, false, 's       '),
-        ];
-        const result = vP['validateCrosswords'](placementOptions, exploredOptions);
-        expect(exploredOptions).to.deep.equal(expectedExploredOptions);
-        expect(result).to.deep.equal(expectedValidOptions);
-    });*/
+    it('should find prefixes/suffixes', () => {
+        expect(testPrefixSuffix(new Position(3, 3), 'att', 'e', 'ntion')).to.equal(true);
+    });
+
+    it('should not find prefixes/suffixes when not terminal', () => {
+        expect(testPrefixSuffix(new Position(3, 3), 'att', 'e', 'ntion')).to.equal(true);
+    });
+
+    it('should not find prefixes/suffixes when not valid word', () => {
+        expect(testPrefixSuffix(new Position(3, 3), 'att', 'e', 'ntib')).to.equal(false);
+    });
+
+    it('should not find prefixes/suffixes when not in bound', () => {
+        expect(testPrefixSuffix(new Position(14, 14), 'att', 'e', 'ntion')).to.equal(false);
+    });
+
+    it('should not find prefixes/suffixes when letter is impossible', () => {
+        expect(testPrefixSuffix(new Position(3, 3), 'att', 'd', 'ntion')).to.equal(false);
+    });
+
+    it('should throw if prefix is not a valid word', () => {
+        expect(() => testPrefixSuffix(new Position(3, 3), 'xxx', 'd', 'ntion')).to.throw();
+    });
 
     it('should find replacement from previous replacements', () => {
         game.board.place([

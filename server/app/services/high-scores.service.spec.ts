@@ -153,6 +153,8 @@ describe('High scores service', () => {
     });
 
     it('should return defaults when not connected to db', async () => {
+        // eslint-disable-next-line dot-notation
+        highScoresService['db'] = null;
         expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
         expect(async () => await highScoresService.addScore({ name: 'Dummy', score: 400, log2990: true })).not.to.throw();
     });

@@ -1,10 +1,14 @@
 // WARNING : Make sure to always import 'reflect-metadata' and 'module-alias/register' first
+import * as fs from 'fs';
 import 'module-alias/register';
 import 'reflect-metadata';
+import { isDeepStrictEqual } from 'util';
 import { Game } from './classes/game';
 import { Difficulty, Parameters } from './classes/parameters';
+import { PlacementOption } from './classes/placement-option';
+import { Position } from './classes/position';
 import { Room, State } from './classes/room';
-import { VirtualPlayer } from './classes/virtual-player';
+import { PlacementScore, VirtualPlayer } from './classes/virtual-player';
 import * as cst from './constants';
 import { DictionnaryService } from './services/dictionnary.service';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -41,7 +45,7 @@ const createTestCase = (idx: number, game: Game): string => {
     `;
 };
 
-const playGame = async (dictionnaryService: DictionnaryService) => {
+const playGame = async (dictionnaryService: DictionnaryService, fullTest: boolean) => {
     const params = new Parameters();
     params.difficulty = Difficulty.Expert;
 
@@ -70,10 +74,61 @@ const playGame = async (dictionnaryService: DictionnaryService) => {
         process.exit(1);
     });
     while (room.getState() !== State.Ended) {
+        if (fullTest) {
+            const found = vP.chooseWords(game.reserve.letterRacks[0]);
+            const dummyFound = dummyFind(game, dictionnaryService, game.reserve.letterRacks[0]);
+            if (!isDeepStrictEqual(found, dummyFound)) {
+                console.log('Not equal to dummy version');
+                await fs.promises.writeFile('found.json', JSON.stringify(found));
+                await fs.promises.writeFile('dummy.json', JSON.stringify(dummyFound));
+                process.exit(1);
+            }
+        }
         await vP.playTurn();
         await vP2.playTurn();
     }
     global.setTimeout = prevSetTimeout;
+};
+
+const genPermutations = (rack: string[], prefix: string[] = [], out: string[][] = []): string[][] => {
+    if (rack.length === 0) {
+        out.push(prefix);
+        return out;
+    }
+    rack.forEach((letter, i) => {
+        const newRack = rack.slice();
+        newRack.splice(i, 1);
+        genPermutations(newRack, [...prefix, letter], out);
+    });
+    return out;
+};
+
+const dummyFind = (game: Game, dictionnaryService: DictionnaryService, rack: string[]): PlacementScore[] => {
+    const validPlacements: PlacementScore[] = [];
+    console.time('HERE');
+    const permutations = genPermutations(rack);
+    console.timeEnd('HERE');
+    for (let row = 0; row < cst.BOARD_LENGTH; row++) {
+        for (let col = 0; col < cst.BOARD_LENGTH; col++) {
+            const pos = new Position(row, col);
+            for (const isHorizontal of [true, false]) {
+                for (const permutation of permutations) {
+                    console.time('THERE');
+                    try {
+                        const placement = PlacementOption.newPlacement(game.board, pos, isHorizontal, permutation);
+                        const words = game['wordGetter'].getWords(placement);
+                        if (!words.every((wordOption) => dictionnaryService.isValidWord(wordOption.word))) continue;
+                        const score = words.reduce((total, word) => word.score + total, 0);
+                        validPlacements.push({ score, placement });
+                    } catch {
+                        /* If fails, ignore */
+                    }
+                    console.timeEnd('THERE');
+                }
+            }
+        }
+    }
+    return validPlacements;
 };
 
 (async () => {
@@ -86,6 +141,6 @@ const playGame = async (dictionnaryService: DictionnaryService) => {
 
     for (let i = 0; ; i++) {
         console.log('Iteration ' + (i + 1));
-        await playGame(dictionnaryService);
+        await playGame(dictionnaryService, true);
     }
 })();

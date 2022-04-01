@@ -27,7 +27,7 @@ export class Board {
 
     place(newLetters: LetterPlacement[]) {
         for (const placement of newLetters) {
-            this.board[placement.position.row][placement.position.col].letter = placement.letter.toUpperCase();
+            this.get(placement.position).letter = placement.letter.toUpperCase();
         }
     }
 
