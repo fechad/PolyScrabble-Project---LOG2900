@@ -78,6 +78,7 @@ export class DictionaryTabComponent implements OnInit {
         for (const key of Object.keys(this.dictionaryForm.controls)) {
             this.dictionaryForm.controls[key].reset();
         }
+        this.newWords = [];
     }
 
     onSubmit() {
