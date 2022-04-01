@@ -14,16 +14,17 @@ export class DbDictionariesService {
     }
 
     async getDictionaries(): Promise<clientDictionaryInterface[]> {
-        //await this.collection?.insertOne(this.defaultDictionary[0]);
-        //console.log(this.defaultDictionary);
+        //await this.collection?.insertOne(cst.DEFAULT_DICTIONARY[0]);
+        //console.log(cst.DEFAULT_DICTIONARY);
         if (this.collection === undefined) return cst.DEFAULT_DICTIONARY;
         const dictionaries = (await this.collection.aggregate().project({ name: 1, description: 1 }).toArray()) as clientDictionaryInterface[];
-        console.log(dictionaries);
         return dictionaries;
     }
 
     async addDictionary(dictionary: cst.DbDictionary) {
         await this.collection?.insertOne(dictionary);
+        const dictionaries = (await this.collection?.aggregate().toArray()) as cst.DbDictionary[];
+        console.log(dictionaries);
     }
 
     async updateDictionary(vps: Object) {

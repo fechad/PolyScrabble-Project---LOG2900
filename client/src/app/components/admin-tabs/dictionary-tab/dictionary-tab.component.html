@@ -5,15 +5,45 @@
             <div class="title">
                 <h4>Dictionnaire {{ dictionary.name }}</h4>
             </div>
-            <div class="label" *ngIf="dictionary.id === 0">
-                <span>defaut</span>
-            </div>
-            <div class="label" *ngIf="dictionary.id !== 0">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+            <div class="description">
+                <p>{{ dictionary.description }}</p>
             </div>
         </div>
-        <div class="description">
-            <p>{{ dictionary.description }}</p>
-        </div>
+    </section>
+    <section *ngIf="uploading" class="dictionary-dialog">
+        <mat-card-header>
+            <mat-card-title>Téléversez votre dictionnaire!</mat-card-title>
+            <button (click)="emptyForm()">X</button>
+        </mat-card-header>
+
+        <mat-card-content>
+            <div class="dictionary-form">
+                <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
+                    <div>
+                        <label>Nom du dictionnaire:</label>
+                        <input type="text" formControlName="name" class="form-control" placeholder="ex: Anglais" />
+                    </div>
+                    <div>
+                        <p>Description du dictionnaire:</p>
+                        <textarea
+                            class="form-control"
+                            formControlName="description"
+                            rows="10"
+                            type="text"
+                            placeholder="Entrez votre description du dictionnaire ici."
+                            maxlength="512"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <label>Téléverser un fichier JSON</label>
+                        <input type="file" accept=".json" formControlName="file" class="form-control" (change)="transformToArrayList($event)" />
+                    </div>
+                    <button [disabled]="dictionaryForm.invalid" type="submit">Soumettre</button>
+                </form>
+            </div>
+        </mat-card-content>
+    </section>
+    <div class="upload-area">
+        <button class="upload" (click)="uploading = true"><fa-icon [icon]="faUpload" size="3x"></fa-icon></button>
     </div>
 </section>

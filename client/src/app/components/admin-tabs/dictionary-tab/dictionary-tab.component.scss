@@ -1,10 +1,21 @@
-.container {
+.dictionary-tab-content {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.dictionary-container {
+    display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     width: 95%;
     height: 90%;
     margin-top: 2.5%;
+    height: 80%;
+    margin-top: 5%;
     overflow-y: auto;
 }
 .dico-box {
@@ -87,16 +98,55 @@
     box-shadow: 0px 0px 0px;
 }
 
-.container::-webkit-scrollbar {
+.dictionary-container::-webkit-scrollbar {
     height: 1px;
     width: 10px;
     border-radius: 15px;
     background-color: #b6b6b6c0;
 }
 
-.container::-webkit-scrollbar-thumb {
+.dictionary-container::-webkit-scrollbar-thumb {
     background-color: #3d3d3d;
     height: 1px;
     width: 10px;
     border-radius: 15px;
+}
+
+.upload-area {
+    display: flex;
+    justify-content: center;
+    height: 10%;
+}
+
+.upload {
+    width: 20%;
+    background-color: #b3f8fd;
+    border-radius: 20px;
+    box-shadow: 4px 4px 4px;
+}
+
+.upload:hover {
+    cursor: pointer;
+}
+
+.upload:active {
+    box-shadow: 0 0 0;
+}
+
+.dictionary-dialog {
+    z-index: 2;
+    position: absolute;
+    justify-content: start;
+    align-items: center;
+    background-color: #eee9bd;
+    margin-left: 18%;
+}
+
+.dictionary-form {
+    background-color: #eee9bd;
+}
+
+.dictionary-form form {
+    display: flex;
+    flex-direction: column;
 }
