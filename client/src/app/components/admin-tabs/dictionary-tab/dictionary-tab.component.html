@@ -19,7 +19,6 @@
                 <p [attr.contenteditable]="dictionary.title !== 'Mon dictionnaire'">{{ dictionary.description }}</p>
             </div>
         </div>
-    </section>
     <section class="edit" *ngIf="editing">
         <button class="cancel" (click)="editing = false"  >X</button>
         <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
