@@ -5,9 +5,9 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { HighScoresService } from './high-scores.service';
 
 // List your collection names here
-const COLLECTIONS: string[] = ['col'];
+const COLLECTIONS: string[] = ['col', 'col2'];
 
-class DBManager {
+export class DBManager {
     db: Db;
     server: MongoMemoryServer = new MongoMemoryServer();
     connection: MongoClient;
@@ -37,7 +37,7 @@ describe('High scores service', () => {
 
     beforeEach(async () => {
         await dbman.start();
-        await dataBase.connect();
+        dataBase.db = dbman.db;
         highScoresService = new HighScoresService(dataBase);
         collection = dbman.db.collection(COLLECTIONS[0]);
         // eslint-disable-next-line dot-notation
