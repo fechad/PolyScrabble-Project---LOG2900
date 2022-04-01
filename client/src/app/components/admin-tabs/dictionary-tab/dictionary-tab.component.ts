@@ -70,7 +70,7 @@ export class DictionaryTabComponent implements OnInit {
 
     async updateDictionary() {
         const newTitle = this.dictionaryForm.value.title;
-        // if (newTitle === '') return;
+        if (newTitle === '' || this.findDoubles(newTitle)) return;
         const oldDict = this.list.find((d) => d.title === this.oldTitle);
         if (!oldDict) throw new Error();
         const newDict: DbDictionary = { title: newTitle, description: this.dictionaryForm.value.description };
@@ -93,15 +93,6 @@ export class DictionaryTabComponent implements OnInit {
             this.dictionaryForm.controls[key].reset();
         }
         this.newWords = [];
-    }
-
-    invalidName(name: string): boolean {
-        if (!name.match(/[A-zÀ-ù]/g)) {
-            this.error = 'Les caractères doivent être des lettres seulement.';
-
-            return true;
-        }
-        return false;
     }
 
     onSubmit() {

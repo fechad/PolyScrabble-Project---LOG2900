@@ -27,6 +27,7 @@
                 <label>Nom du dictionnaire:</label>
                 <input type="text" formControlName="title" class="form-control" placeholder="ex: Mon dictionnaire anglais" />
             </div>
+            <div class="error" *ngIf="error !== ''">{{error}}</div>
             <div>
                 <p>Description du dictionnaire:</p>
                 <textarea
