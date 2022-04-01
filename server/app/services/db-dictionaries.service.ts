@@ -3,6 +3,8 @@ import { DataBaseController } from '@app/controllers/db.controller';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
+export type clientDictionaryInterface = { name: string; description: string };
+
 @Service()
 export class DbDictionariesService {
     private collection: Collection | undefined = undefined;
@@ -11,11 +13,12 @@ export class DbDictionariesService {
         this.collection = this.dataBase.db?.collection(cst.DICTIONARY_COLLECTION);
     }
 
-    async getDictionaries(): Promise<cst.DbDictionary[]> {
+    async getDictionaries(): Promise<clientDictionaryInterface[]> {
         //await this.collection?.insertOne(this.defaultDictionary[0]);
         //console.log(this.defaultDictionary);
         if (this.collection === undefined) return cst.DEFAULT_DICTIONARY;
-        const dictionaries = (await this.collection.aggregate().toArray()) as cst.DbDictionary[];
+        const dictionaries = (await this.collection.aggregate().project({ name: 1, description: 1 }).toArray()) as clientDictionaryInterface[];
+        console.log(dictionaries);
         return dictionaries;
     }
 
