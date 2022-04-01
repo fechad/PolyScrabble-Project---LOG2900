@@ -11,11 +11,35 @@
                 <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
                     <button class="trash-can" (click)="deleteDictionary(dictionary.title)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
                 </div>
+                <div class="editing" *ngIf="dictionary.title !== 'Mon dictionnaire'">
+                    <button class="pencil" (click)="editing = true; ; oldTitle = dictionary.title"><fa-icon [icon]="faPencil" size="1x"></fa-icon></button>
+                </div>
             </div>
             <div class="description">
                 <p [attr.contenteditable]="dictionary.title !== 'Mon dictionnaire'">{{ dictionary.description }}</p>
             </div>
         </div>
+    </section>
+    <section class="edit" *ngIf="editing">
+        <button class="cancel" (click)="editing = false"  >X</button>
+        <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
+            <div>
+                <label>Nom du dictionnaire:</label>
+                <input type="text" formControlName="title" class="form-control" placeholder="ex: Mon dictionnaire anglais" />
+            </div>
+            <div>
+                <p>Description du dictionnaire:</p>
+                <textarea
+                    class="form-control"
+                    formControlName="description"
+                    rows="10"
+                    type="text"
+                    placeholder="Entrez votre description du dictionnaire ici."
+                    maxlength="512"
+                ></textarea>
+            </div>
+        </form>
+        <button class="cancel" (click)="updateDictionary()">Soumettre modification</button>
     </section>
     <section *ngIf="uploading" class="dictionary-dialog">
         <mat-card-header>

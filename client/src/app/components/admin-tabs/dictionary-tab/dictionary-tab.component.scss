@@ -157,3 +157,12 @@
 .error{
     color: red;
 }
+
+.edit{
+    z-index: 2;
+    position: absolute;
+    justify-content: start;
+    align-items: center;
+    background-color: #eee9bd;
+    margin-left: 18%;
+}

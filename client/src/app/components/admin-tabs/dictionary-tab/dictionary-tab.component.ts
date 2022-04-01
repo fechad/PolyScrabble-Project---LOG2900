@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
 type DbDictionary = { title: string; description: string; words?: string[] };
@@ -15,11 +15,14 @@ export class DictionaryTabComponent implements OnInit {
     faTrash = faTrashAlt;
     faRefresh = faSync;
     faUpload = faUpload;
+    faPencil = faPencilAlt;
     list: DbDictionary[];
     uploading: boolean = false;
+    editing: boolean = false;
     error: string = '';
     dictionaryForm: FormGroup;
     newWords: string[];
+    oldTitle: string;
     constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder) {}
 
     async ngOnInit(): Promise<void> {
@@ -34,7 +37,6 @@ export class DictionaryTabComponent implements OnInit {
     async updateList(): Promise<void> {
         this.list = [];
         this.list = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
-        console.log(this.list);
     }
 
     async transformToArrayList(e: Event) {
@@ -66,6 +68,17 @@ export class DictionaryTabComponent implements OnInit {
         this.updateList();
     }
 
+    async updateDictionary() {
+        const newTitle = this.dictionaryForm.value.title;
+        // if (newTitle === '') return;
+        const oldDict = this.list.find((d) => d.title === this.oldTitle);
+        if (!oldDict) throw new Error();
+        const newDict: DbDictionary = { title: newTitle, description: this.dictionaryForm.value.description };
+        await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDict, newDict }).toPromise();
+        this.updateList();
+        this.editing = false;
+    }
+
     findDoubles(nameToFind: string): boolean {
         if (this.list.find((dictionary) => dictionary.title.toLowerCase() === nameToFind.toLowerCase())) {
             this.error = 'Un des dictionnaires détient déjà ce nom, veuillez en choisir un autre.';
@@ -80,6 +93,15 @@ export class DictionaryTabComponent implements OnInit {
             this.dictionaryForm.controls[key].reset();
         }
         this.newWords = [];
+    }
+
+    invalidName(name: string): boolean {
+        if (!name.match(/[A-zÀ-ù]/g)) {
+            this.error = 'Les caractères doivent être des lettres seulement.';
+
+            return true;
+        }
+        return false;
     }
 
     onSubmit() {

@@ -1,5 +1,5 @@
 import * as cst from '@app/controllers/db.controller';
-import { DataBaseController } from '@app/controllers/db.controller';
+import { DataBaseController, DbDictionary, DICTIONARY_COLLECTION } from '@app/controllers/db.controller';
 import * as fs from 'fs';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
@@ -9,9 +9,8 @@ export type ClientDictionaryInterface = { title: string; description: string };
 @Service()
 export class DbDictionariesService {
     private collection: Collection | undefined = undefined;
-    // private defaultDictionary: cst.DbDictionary[] = cst.DEFAULT_DICTIONARY;
     constructor(private dataBase: DataBaseController) {
-        this.collection = this.dataBase.db?.collection(cst.DICTIONARY_COLLECTION);
+        this.collection = this.dataBase.db?.collection(DICTIONARY_COLLECTION);
     }
 
     async getDictionaries(): Promise<ClientDictionaryInterface[]> {
@@ -20,7 +19,7 @@ export class DbDictionariesService {
         return dictionaries;
     }
 
-    async addDictionary(dictionary: cst.DbDictionary) {
+    async addDictionary(dictionary: DbDictionary) {
         const filteredDictionary: ClientDictionaryInterface = { title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
         const jsonDictionary = JSON.stringify(dictionary);
@@ -30,9 +29,9 @@ export class DbDictionariesService {
         this.syncDictionaries();
     }
 
-    // async updateDictionary(vps: Object) {
-    //     await this.collection?.findOneAndReplace({ name: { $eq: vps.oldVp.name } }, vps.newVp);
-    // }
+    async updateDictionary(dictionary: { oldDict: DbDictionary; newDict: DbDictionary }) {
+        await this.collection?.findOneAndReplace({ title: { $eq: dictionary.oldDict.title } }, dictionary.newDict);
+    }
 
     async syncDictionaries() {
         const dictionaries = (await this.collection
@@ -49,7 +48,7 @@ export class DbDictionariesService {
         });
     }
 
-    findDictionary(file: cst.DbDictionary, dictionaries: ClientDictionaryInterface[]) {
+    findDictionary(file: DbDictionary, dictionaries: ClientDictionaryInterface[]) {
         const newArray = [];
         for (const dict of dictionaries) {
             newArray.push(dict.title);
