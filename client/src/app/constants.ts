@@ -20,7 +20,9 @@ export const DEFAULT_INNER_HEIGHT = 500;
 export const CENTER_TILE = 7;
 export const AJUST_Y = 16;
 export const AJUST_TILE_Y = 10;
-export const AJUST_TILE_X = 5;
+export const AJUST_TILE_X = 2.5;
+export const ADJUST_SCORE_X = 25;
+export const ADJUST_SCORE_Y = 10;
 export const AJUST_STAR_X = 4;
 export const AJUST_STAR_Y = 10;
 export const AJUST_BONUS = 10;
@@ -33,7 +35,8 @@ export const EXCEPTION_X = 11;
 export const EXCEPTION_Y = 0;
 export const AMOUNT_OF_NUMBER = 15;
 export const INITIAL_SIZE = 9;
-export const TILE_SIZE = 30;
+export const TILE_SIZE = 25;
+export const SCORE_SIZE = 10;
 export const BOARD_LENGTH = 15;
 export const FOURTH_SQUARE = 4;
 export const BOUNDS = BOARD_LENGTH / BOARD_LENGTH;
@@ -106,3 +109,7 @@ export enum Colors {
     Black = '#000000',
     White = '#FFFFFF',
 }
+
+export const imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-images/2.png', 'assets/icon-images/3.png', 'assets/icon-images/4.png'];
+export const LAST_IMG = 3;
+export const NUMBER_ICONS = 4;

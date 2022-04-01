@@ -12,6 +12,7 @@ import { Socket } from 'socket.io-client';
 
 export type Tile = Letter | null;
 export type Board = Tile[][];
+export type Objective = { text: string; score: number; isPublic: boolean; doneByPlayer?: PlayerId };
 
 export enum MessageType {
     Normal,
@@ -26,6 +27,7 @@ export class GameContextService {
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
+    readonly objectives: BehaviorSubject<Objective[]> = new BehaviorSubject([] as Objective[]);
     readonly state: BehaviorSubject<GameState>;
     skipTurnEnabled: boolean = true;
     tempRack: Letter[];
@@ -46,8 +48,8 @@ export class GameContextService {
         const state: GameState = {
             /* Dummy state */
             players: [
-                { id: '0', name: 'P1', connected: true, virtual: false },
-                { id: '1', name: 'P2', connected: true, virtual: false },
+                { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
+                { id: '1', avatar: 'b', name: 'P2', connected: true, virtual: false },
             ].map((info) => ({ info, score: 0, rackCount: cst.NORMAL_RACK_LENGTH })),
             reserveCount: cst.DEFAULT_RESERVE,
             board,
@@ -72,6 +74,9 @@ export class GameContextService {
         socket.on('reserve-content', (sortedReserve: ReserveLetter[]) => {
             const message = sortedReserve.map((letter) => `${letter.name} : ${letter.qtyInReserve}`).join('\n');
             this.addMessage(message, MessageType.Command);
+        });
+        socket.on('objectives', (objectives: Objective[]) => {
+            this.objectives.next(objectives);
         });
     }
 

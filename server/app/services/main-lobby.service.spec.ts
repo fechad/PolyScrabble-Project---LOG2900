@@ -45,7 +45,7 @@ describe('MainLobby service tests', () => {
         parameters.gameType = GameType.Solo;
         playersSocket[0].emit('create-room', 'Dummy', parameters, 'Anna');
         const expectedRoom = new Room(0, 'DummyId', 'Dummy', parameters);
-        expectedRoom.addPlayer('VP', 'Anna', true);
+        expectedRoom.addPlayer('VP', 'Anna', true, 'assets/icon-images/1.png');
         expectedRoom.start();
         expect(rooms.rooms).to.deep.equal([expectedRoom]);
         done();
@@ -60,20 +60,20 @@ describe('MainLobby service tests', () => {
 
         const stub = sinon.stub();
         playersSocket[1].on('join', stub);
-        playersSocket[1].emit('join-room', 0, 'NotDummy');
+        playersSocket[1].emit('join-room', 0, 'NotDummy', 'a');
 
         expect(stub.callCount).to.equal(1);
         assert(stub.calledWith(0));
 
         const expectedRoom2 = new Room(0, 'DummyId', 'Dummy', parameters);
-        expectedRoom2.addPlayer('NotDummyId', 'NotDummy', false);
+        expectedRoom2.addPlayer('NotDummyId', 'NotDummy', false, 'a');
         expect(rooms.rooms).to.deep.equal([expectedRoom2]);
         done();
     });
 
     it('should emit join if already joined room', (done) => {
         const room = new Room(0, 'DummyId', 'Dummy', new Parameters());
-        room.addPlayer('NotDummyId', 'NotDummy', false);
+        room.addPlayer('NotDummyId', 'NotDummy', false, 'a');
         room.start();
         rooms.rooms.push(room);
 

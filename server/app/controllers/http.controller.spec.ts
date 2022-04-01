@@ -82,7 +82,7 @@ describe('HttpController', () => {
     it('should not add high scores when not in room', async () => {
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.NOT_FOUND);
         const room2 = new Room(1, 'DummyId2', 'Dummy2', new Parameters());
-        room2.addPlayer('DummyId3', 'Dummy3', false);
+        room2.addPlayer('DummyId3', 'Dummy3', false, 'a');
         roomsService.rooms.push(new Room(0, 'DummyId', 'Dummy', new Parameters()), room2);
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.FORBIDDEN);
     });
@@ -94,7 +94,7 @@ describe('HttpController', () => {
 
     it('should not add score if virtual player', async () => {
         const room = new Room(0, ID + 1, 'Dummy', new Parameters());
-        room.addPlayer(ID, 'Not Dummy', true);
+        room.addPlayer(ID, 'Not Dummy', true, 'a');
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.FORBIDDEN);
@@ -102,7 +102,7 @@ describe('HttpController', () => {
 
     it('should add score for main player in normal mode', async () => {
         const room = new Room(0, ID, 'Dummy', new Parameters());
-        room.addPlayer(ID + 1, 'Not Dummy', false);
+        room.addPlayer(ID + 1, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
@@ -111,7 +111,7 @@ describe('HttpController', () => {
 
     it('should add score for other player in normal mode', async () => {
         const room = new Room(0, ID + 1, 'Dummy', new Parameters());
-        room.addPlayer(ID, 'Not Dummy', false);
+        room.addPlayer(ID, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
@@ -122,7 +122,7 @@ describe('HttpController', () => {
         const params = new Parameters();
         params.log2990 = true;
         const room = new Room(0, ID, 'Dummy', params);
-        room.addPlayer(ID + 1, 'Not Dummy', false);
+        room.addPlayer(ID + 1, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
@@ -133,7 +133,7 @@ describe('HttpController', () => {
         const params = new Parameters();
         params.log2990 = true;
         const room = new Room(0, ID + 1, 'Dummy', params);
-        room.addPlayer(ID, 'Not Dummy', false);
+        room.addPlayer(ID, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
         roomsService.games.push(new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService));
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);

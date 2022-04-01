@@ -1,5 +1,11 @@
+@import './colors.scss';
+
+.container{
+    text-align: center;
+}
+
 .icon-cancel {
-    padding: 5px;
+    font-size: 23px;
 }
 
 .requirement {
@@ -8,5 +14,86 @@
 .icon-cancel:hover {
     cursor: pointer;
     color: red;
+}
+
+.form-group{
+    width: 100%;
+}
+
+.col-md-10{
+    height: 70%;
+    margin: 2%;
+    font-size: 16px;
+}
+
+.avatar-input{
+    display: flex;
+    justify-content: center;
+    height: 20vh;
+}
+
+.left-arrow, .right-arrow{
+    border: 0;
+    background: none;
+}
+
+.left-arrow:hover:not(:active):not(:disabled),
+.right-arrow:hover:not(:active):not(:disabled){
+    cursor: pointer;
+
+}
+
+.row-end{
+    display:flex;
+    justify-content: center;
+}
+
+.success{
+    font-family: Signika Negative;
+    width: 80%;
+    height: 7.5vh;
+    font-size: 30px;
+    margin: 10px;
+    padding: 5px;
+    transition: all 0.1s ease-in-out;
+    background-color: white;
+    color: $bkg;
+    border: black solid 2px;
+    border-radius: 0.25em;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
+}
+
+.success:disabled{
+    box-shadow: none;
+    background-color: rgb(196, 194, 194);
+    border: grey solid 2px;
+    color: rgb(175, 174, 174);
+}
+
+.success:hover:not(:active):not(:disabled) {
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
+    transform: scale(1.01);
+}
+
+.cancel-btn {
+    float: right;
+}
+
+.input-area{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 22vw;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+}
+
+.mat-card-header{
+    display: flex;
+    flex-direction: column;
 }
 

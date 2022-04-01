@@ -15,6 +15,7 @@ describe('AppComponent', () => {
         parameters: new Parameters(),
         mainPlayer: {
             id: 'Gaals ID',
+            avatar: 'a',
             name: 'Gaal',
             connected: true,
             virtual: false,
@@ -74,7 +75,7 @@ describe('AppComponent', () => {
         router.navigate.calls.reset();
         communicationService.selectedRoom.next({
             ...ROOM,
-            otherPlayer: { id: 'Hari Seldons ID', name: 'Hari Seldon', connected: true, virtual: false },
+            otherPlayer: { id: 'Hari Seldons ID', avatar: 'a', name: 'Hari Seldon', connected: true, virtual: false },
         });
         expect(router.navigate).not.toHaveBeenCalled();
     });

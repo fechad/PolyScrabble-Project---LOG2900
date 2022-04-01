@@ -1,55 +1,60 @@
 <div class="container">
     <!--<app-sidebar></app-sidebar> -->
-    <div class="infosArea">
-        <app-infos-box id="infoBox"></app-infos-box>
+
+    <div class="infos-area">
+        <div id="settings">
+            <button
+                class="icon"
+                matTooltip="-- Commandes disponibles: -- &#13;
+                &#13;!placer [ligne][colonne][(h|v)] [lettres] : ajouter des lettres sur la grille en fonction de la ligne et de la colonne, et du sens désiré.
+                exemple: !placer 9gh ment
+                
+                !échanger [lettre] : échanger les lettres choisies par des nouvelles lettres durant votre tour.
+                exemple: !échanger abc
+                
+                !passer : passer votre tour
+
+                !réserve : afficher la quantité restante de chaque lettre dans la réserve (commande disponible en tout temps)
+
+                !indice : obtenir 3 choix de mots à placer (commande disponible en tout temps)
+                
+                !aide: obtenir une explication des commandes du jeu. (commande disponible en tout temps)
+
+                -- Manipulations du chevalet: --
+                1. Sélectionnez une tuile de votre chevalet soit à l'aide d'un clic gauche dessus ou en tappant sur votre clavier la lettre de celle-ci.
+                2. Utilisez les flèches de votre clavier ou la roulette de votre souris pour déplacer la tuile sélectionnée.
+                
+                Pour échanger un ou plusieurs tuiles, faites un clic droit sur celles-ci, puis appuyez sur le boutton 'échanger' qui apparait.
+                
+                -- Manipulations du plateau: --
+                1. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement en tapant les touches correspondantes du clavier,
+                2. Cliquez une seconde fois pour placer verticalement
+                
+                -- Utilisation des lettres blanches --
+
+                Les lettres blanches sont représentées par des * dans les tuiles du chevalet.
+                Pour faire un placement avec une lettre blanche: 
+                            Mettez une lettre en majuscule dans la commande de placement pour représenter la lettre blanche.
+                                ex: !placer h7h dormiR
+
+                Pour faire un échange d'une lettre blanche:
+                            Mettez directement le symbole * dans la commande d'échange ou faites un clic droit sur la tuile du chevalet.
+                                ex: !échanger ab*
+                "
+                matTooltipPosition="right"
+                matTooltipClass="tooltip"
+            >
+                <fa-icon id="help" [icon]="faQuestionCircle" size="2x"></fa-icon>
+            </button>
+        </div>
+        <div id="infos-area-content">
+            <app-infos-box id="infoBox"></app-infos-box>
+        </div>
     </div>
 
     <div class="game-container">
-        <div id="left-container">
-            <div class="params-buttons">
-                <button
-                    class="icon"
-                    matTooltip="-- Commandes disponibles: -- &#13;
-                    &#13;!placer [ligne][colonne][(h|v)] [lettres] : ajouter des lettres sur la grille en fonction de la ligne et de la colonne, et du sens désiré.
-                    exemple: !placer 9gh ment
-                    
-                    !échanger [lettre] : échanger les lettres choisies par des nouvelles lettres durant votre tour.
-                    exemple: !échanger abc
-                    
-                    !passer : passer votre tour
-
-                    !réserve : afficher la quantité restante de chaque lettre dans la réserve (commande disponible en tout temps)
-
-                    !indice : obtenir 3 choix de mots à placer (commande disponible en tout temps)
-                    
-                    !aide: obtenir une explication des commandes du jeu. (commande disponible en tout temps)
-
-                    -- Manipulations du chevalet: --
-                    1. Sélectionnez une tuile de votre chevalet soit à l'aide d'un clic gauche dessus ou en tappant sur votre clavier la lettre de celle-ci.
-                    2. Utilisez les flèches de votre clavier ou la roulette de votre souris pour déplacer la tuile sélectionnée.
-                    
-                    Pour échanger un ou plusieurs tuiles, faites un clic droit sur celles-ci, puis appuyez sur le boutton 'échanger' qui apparait.
-                    
-                    -- Manipulations du plateau: --
-                    1. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement en tapant les touches correspondantes du clavier,
-                    2. Cliquez une seconde fois pour placer verticalement
-                    
-                    -- Utilisation des lettres blanches --
-
-                    Les lettres blanches sont représentées par des * dans les tuiles du chevalet.
-                    Pour faire un placement avec une lettre blanche: 
-                                Mettez une lettre en majuscule dans la commande de placement pour représenter la lettre blanche.
-                                    ex: !placer h7h dormiR
-
-                    Pour faire un échange d'une lettre blanche:
-                                Mettez directement le symbole * dans la commande d'échange ou faites un clic droit sur la tuile du chevalet.
-                                    ex: !échanger ab*
-                    "
-                    matTooltipPosition="right"
-                    matTooltipClass="tooltip"
-                >
-                    <fa-icon id="help" [icon]="faQuestionCircle" size="2x"></fa-icon>
-                </button>
+        <div id="upper-game-container">
+            <div id="left-side">
                 <div class="size-container">
                     <button class="sizing" matTooltip="Taille minimale" matTooltipClass="tool">
                         <fa-icon id="reduce" [icon]="faFont" size="1x" (click)="changeSize(0.9)"></fa-icon>
@@ -61,63 +66,50 @@
                         <fa-icon id="increase" [icon]="faFont" size="3x" (click)="changeSize(1.1)"></fa-icon>
                     </button>
                 </div>
-            </div>
-            <div class="goals" *ngIf="false">
-                <div class="game-goals">
-                    <label for="easy-goal"> Objectif facile:</label>
-                    <progress id="easy-goal" value="10" max="100"></progress>
-                    <label for="hard-goal"> Objectif difficile:</label>
-                    <progress id="hard-goal" value="5" max="100"></progress>
-                </div>
-                <div class="game-goals">
-                    <label for="personal-goal"> Mon objectif:</label>
-                    <progress id="personal-goal" value="30" max="100"></progress>
+                <div id="objectives-container">
+                    <app-objectives [isPublic]="false"></app-objectives>
+                    <app-objectives id="public-objective" [isPublic]="true"></app-objectives>
                 </div>
             </div>
-            <div class="action-buttons">
+            <div id="middle">
+                <div class="play-area-container">
+                    <app-play-area class="play-area" tabindex="0" [sent]="sent"></app-play-area>
+                </div>
+            </div>
+            <div id="right-side">
+                <div class="chat-area">
+                    <app-chat-box></app-chat-box>
+                </div>
+            </div>
+        </div>
+        <div id="lower-game-container">
+            <div>
+                <div class="rackArea">
+                    <app-letter-rack class="letter-rack"></app-letter-rack>
+                </div>
                 <button
                     class="play"
                     matTooltip="Jouer les lettres placées"
                     matTooltipPosition="right"
                     matTooltipClass="tool"
-                    [disabled]="placingWords"
+                    [disabled]="gridService.letterForServer.length === 0"
                     (click)="send()"
                 >
                     <fa-icon [icon]="faPlay"></fa-icon>
                 </button>
-                <button
-                    class="skip-turn"
-                    matTooltip="Passer votre tour"
-                    matTooltipPosition="right"
-                    matTooltipClass="tool"
-                    [disabled]="(gameContextService.isMyTurn() | async) === false"
-                    (click)="skipMyTurn()"
-                >
-                    <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
-                </button>
-                <button
-                    id="quit-game"
-                    [matTooltip]="(this.gameContextService.isEnded() | async) ? 'Quitter la partie' : 'Abandonner la partie'"
-                    matTooltipPosition="right"
-                    matTooltipClass="tool"
-                    (click)="quitGame()"
-                >
-                    <fa-icon [icon]="faSignOutAlt"></fa-icon>
-                </button>
-            </div>
-        </div>
-        <div class="center">
-            <div class="play-area-container">
-                <app-play-area class="play-area" tabindex="0" [sent]="sent"></app-play-area>
-            </div>
-            <div id="bottom-area">
-                <div class="rackArea">
-                    <app-letter-rack class="letter-rack"></app-letter-rack>
+                <div id="quit-area">
+                    <button
+                        id="quit-game"
+                        [matTooltip]="(this.gameContextService.isEnded() | async) ? 'Quitter la partie' : 'Abandonner la partie'"
+                        matTooltipPosition="right"
+                        matTooltipClass="tool"
+                        (click)="quitGame()"
+                    >
+                        <fa-icon class="walk" [icon]="faWalking"></fa-icon>
+                        <fa-icon class="arrow-right" [icon]="faArrowRight" size="xs"></fa-icon>
+                    </button>
                 </div>
             </div>
-        </div>
-        <div class="chatArea">
-            <app-chat-box></app-chat-box>
         </div>
     </div>
 </div>
