@@ -15,7 +15,7 @@ describe('Game History Service', () => {
         await dbman.start();
         dataBase.db = dbman.db;
         gameHistoryService = new GameHistoryService(dataBase);
-        collection = dbman.db.collection('col2');
+        collection = dbman.db.collection('col');
         // eslint-disable-next-line dot-notation
         gameHistoryService['collection'] = collection;
     });

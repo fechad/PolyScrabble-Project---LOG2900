@@ -5,7 +5,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { HighScoresService } from './high-scores.service';
 
 // List your collection names here
-const COLLECTIONS: string[] = ['col', 'col2'];
+const COLLECTIONS: string[] = ['col'];
 
 export class DBManager {
     db: Db;
