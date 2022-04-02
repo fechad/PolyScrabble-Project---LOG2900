@@ -39,9 +39,9 @@
                         <p
                         [attr.contenteditable]="!player.default"
                         #inputName
-                        [(ngModel)]="nameInput"
+                        [(ngModel)]="nameInputExpert"
                         ngDefaultControl
-                        (keydown.enter)="$event.preventDefault(); updatePlayer(player.name, inputName.innerText, true)">{{player.name}}</p>
+                        (keydown.enter)="$event.preventDefault(); updatePlayer(player.name, inputName.innerText, false)">{{player.name}}</p>
                     </div>
                     <button *ngIf="!player.default" class="trash-can-vp" (click)="deletePlayer(player.name)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
                 </div>

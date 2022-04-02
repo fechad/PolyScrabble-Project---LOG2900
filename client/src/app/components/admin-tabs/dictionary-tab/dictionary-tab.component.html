@@ -4,11 +4,11 @@
             <div class="dico-box">
                 <div class="header">
                     <div class="title">
-                        <h4 [attr.contenteditable]="dictionary.title !== 'Mon dictionnaire'" (keydown.enter)="$event.preventDefault()"> {{ dictionary.title }}</h4>
+                        <h4> {{ dictionary.title }}</h4>
                     </div>
                 </div>
                 <div class="description">
-                    <p [attr.contenteditable]="dictionary.title !== 'Mon dictionnaire'">{{ dictionary.description }}</p>
+                    <p>{{ dictionary.description }}</p>
                 </div>
             </div>
             <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
