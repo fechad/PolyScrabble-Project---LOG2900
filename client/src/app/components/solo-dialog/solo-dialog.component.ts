@@ -42,8 +42,7 @@ export class SoloDialogComponent implements OnInit {
         if (this.communicationService.selectedRoom.value) {
             this.soloParametersForm.get('playerName')?.setValue(this.data.name);
             this.soloParametersForm.get('minutes')?.setValue(Math.floor(this.data.timer / cst.SEC_CONVERT));
-            if (this.data.timer / cst.SEC_CONVERT - Math.floor(this.data.timer / cst.SEC_CONVERT) === 0.5)
-                this.soloParametersForm.get('seconds')?.setValue(30);
+            if ((this.data.timer / cst.SEC_CONVERT) % 1 !== 0) this.soloParametersForm.get('seconds')?.setValue(cst.THIRTY_SECONDS);
             else this.soloParametersForm.get('seconds')?.setValue(0);
         }
     }
