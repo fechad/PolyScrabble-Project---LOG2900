@@ -5,6 +5,7 @@ import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
 export type ClientDictionaryInterface = { title: string; description: string };
+type DicoPair = { oldDico: DbDictionary; newDico: DbDictionary };
 
 @Service()
 export class DbDictionariesService {
@@ -29,8 +30,35 @@ export class DbDictionariesService {
         this.syncDictionaries();
     }
 
-    async updateDictionary(dictionary: { oldDict: DbDictionary; newDict: DbDictionary }) {
-        await this.collection?.findOneAndReplace({ title: { $eq: dictionary.oldDict.title } }, dictionary.newDict);
+    async updateDictionary(dictionary: DicoPair) {
+        await this.collection?.findOneAndReplace({ title: { $eq: dictionary.oldDico.title } }, dictionary.newDico);
+        this.editFile(dictionary);
+    }
+
+    editFile(files: DicoPair) {
+        const filename = files.oldDico.title;
+        const newName = files.newDico.title;
+        fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
+            if (error) throw new Error();
+            const result = data.toString().replace(filename, newName);
+
+            fs.writeFile(`./dictionaries/dictionary-${filename}.json`, result, (e) => {
+                if (e) throw new Error();
+            });
+        });
+
+        fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
+            if (error) console.log('read desc');
+            const result = data.toString().replace(files.oldDico.description, files.newDico.description);
+
+            fs.writeFile(`./dictionaries/dictionary-${filename}.json`, result, (e) => {
+                if (e) console.log('write desc');
+            });
+        });
+
+        // fs.rename(`./dictionaries/dictionary-${filename}.json`, `./dictionaries/dictionary-${newName}.json`, (e) => {
+        //     if (e) throw new Error();
+        // });
     }
 
     async syncDictionaries() {

@@ -72,10 +72,10 @@ export class DictionaryTabComponent implements OnInit {
     async updateDictionary() {
         const newTitle = this.dictionaryForm.value.title;
         if (newTitle.trim() === '' || this.findDoubles(newTitle)) return;
-        const oldDict = this.list.find((d) => d.title === this.oldTitle);
-        if (!oldDict) throw new Error();
-        const newDict: DbDictionary = { title: newTitle, description: this.dictionaryForm.value.description };
-        await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDict, newDict }).toPromise();
+        const oldDico = this.list.find((d) => d.title === this.oldTitle);
+        if (!oldDico) throw new Error();
+        const newDico: DbDictionary = { title: newTitle, description: this.dictionaryForm.value.description };
+        await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDico, newDico }).toPromise();
         this.updateList();
         this.editing = false;
     }
