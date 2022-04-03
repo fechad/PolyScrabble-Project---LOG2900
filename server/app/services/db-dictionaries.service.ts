@@ -4,7 +4,8 @@ import * as fs from 'fs';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
-export type ClientDictionaryInterface = { title: string; description: string };
+type WholeDictionary = { title: string; description: string; words: string[] };
+export type ClientDictionaryInterface = { id: number; title: string; description: string };
 type DicoPair = { oldDico: DbDictionary; newDico: DbDictionary };
 
 @Service()
@@ -15,19 +16,23 @@ export class DbDictionariesService {
     }
 
     async getDictionaries(): Promise<ClientDictionaryInterface[]> {
-        if (this.collection === undefined) return cst.DEFAULT_DICTIONARY;
-        const dictionaries = (await this.collection.aggregate().project({ title: 1, description: 1 }).toArray()) as ClientDictionaryInterface[];
+        if (!this.collection) return cst.DEFAULT_DICTIONARY;
+        const dictionaries = (await this.collection
+            .aggregate()
+            .project({ id: 1, title: 1, description: 1 })
+            .toArray()) as ClientDictionaryInterface[];
         return dictionaries;
     }
 
     async addDictionary(dictionary: DbDictionary) {
-        const filteredDictionary: ClientDictionaryInterface = { title: dictionary.title, description: dictionary.description };
+        const filteredDictionary: ClientDictionaryInterface = { id: dictionary.id, title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
-        const jsonDictionary = JSON.stringify(dictionary);
-        fs.writeFile(`./dictionaries/dictionary-${dictionary.title}.json`, jsonDictionary, (error: Error) => {
+        const fileToCreate: WholeDictionary = { title: dictionary.title, description: dictionary.description, words: dictionary.words };
+        const jsonDictionary = JSON.stringify(fileToCreate);
+        fs.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary, (error: Error) => {
             if (error) throw error;
         });
-        this.syncDictionaries();
+        // this.syncDictionaries();
     }
 
     async updateDictionary(dictionary: DicoPair) {
@@ -36,11 +41,11 @@ export class DbDictionariesService {
     }
 
     editFile(files: DicoPair) {
-        const filename = files.oldDico.title;
+        const filename = files.oldDico.id;
         const newName = files.newDico.title;
         fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
             if (error) throw new Error();
-            const result = data.toString().replace(filename, newName);
+            const result = data.toString().replace(files.oldDico.title, newName);
 
             fs.writeFile(`./dictionaries/dictionary-${filename}.json`, result, (e) => {
                 if (e) throw new Error();
@@ -48,49 +53,50 @@ export class DbDictionariesService {
         });
 
         fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
-            if (error) console.log('read desc');
+            if (error) throw new Error();
             const result = data.toString().replace(files.oldDico.description, files.newDico.description);
 
             fs.writeFile(`./dictionaries/dictionary-${filename}.json`, result, (e) => {
-                if (e) console.log('write desc');
-            });
-        });
-
-        // fs.rename(`./dictionaries/dictionary-${filename}.json`, `./dictionaries/dictionary-${newName}.json`, (e) => {
-        //     if (e) throw new Error();
-        // });
-    }
-
-    async syncDictionaries() {
-        const dictionaries = (await this.collection
-            ?.aggregate()
-            .project({ title: 1, description: 1, _id: 0 })
-            .toArray()) as ClientDictionaryInterface[];
-        fs.readdir('./dictionaries/', (err, files) => {
-            files.forEach((file) => {
-                const data = fs.readFileSync(`./dictionaries/${file}`);
-                const fileString = JSON.parse(data.toString());
-
-                this.findDictionary(fileString, dictionaries);
+                if (e) throw new Error();
             });
         });
     }
 
-    findDictionary(file: DbDictionary, dictionaries: ClientDictionaryInterface[]) {
-        const newArray = [];
-        for (const dict of dictionaries) {
-            newArray.push(dict.title);
-        }
-        if (!newArray.includes(file.title)) {
-            fs.unlink(`./dictionaries/dictionary-${file.title}.json`, (error) => {
-                if (error) throw error;
-            });
-        }
-    }
+    // async syncDictionaries() {
+    //     const dictionaries = (await this.collection
+    //         ?.aggregate()
+    //         .project({ id: 1, title: 1, description: 1, _id: 0 })
+    //         .toArray()) as ClientDictionaryInterface[];
+    //     fs.readdir('./dictionaries/', (err, files) => {
+    //         files.forEach((file) => {
+    //             const data = fs.readFileSync(`./dictionaries/${file}`);
+    //             const fileString = JSON.parse(data.toString());
 
-    async deleteDictionary(name: string) {
-        if (this.collection === undefined) return;
-        await this.collection.deleteOne({ title: { $eq: name } });
-        this.syncDictionaries();
+    //             this.findDictionary(fileString, dictionaries);
+    //         });
+    //     });
+    // }
+
+    // findDictionary(file: DbDictionary, dictionaries: ClientDictionaryInterface[]) {
+    //     const newArray = [];
+    //     for (const dict of dictionaries) {
+    //         newArray.push(dict.title);
+    //     }
+    //     console.log(newArray);
+    //     if (!newArray.includes(file.title)) {
+    //         const deletingFile = dictionaries.find((dico) => dico.title === file.title);
+    //         fs.unlink(`./dictionaries/dictionary-${deletingFile?.id}.json`, (error) => {
+    //             if (error) throw error;
+    //         });
+    //     }
+    // }
+
+    async deleteDictionary(id: string) {
+        if (!this.collection) return;
+        // await this.syncDictionaries();
+        await this.collection.deleteOne({ id: { $eq: Number(id) } });
+        fs.unlink(`./dictionaries/dictionary-${id}.json`, (error) => {
+            if (error) throw error;
+        });
     }
 }

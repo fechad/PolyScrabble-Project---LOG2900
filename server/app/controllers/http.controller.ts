@@ -110,21 +110,21 @@ export class HttpController {
         });
 
         this.router.get('/dictionaries', async (req: Request, res: Response) => {
-            const names = await this.dbDictionaryService.getDictionaries();
-            res.json(names);
+            const dictionaries = await this.dbDictionaryService.getDictionaries();
+            res.json(dictionaries);
         });
 
         this.router.post('/dictionaries', async (req: Request, res: Response) => {
-            const names = await this.dbDictionaryService.addDictionary(req.body);
-            res.json(names);
+            const dictionaries = await this.dbDictionaryService.addDictionary(req.body);
+            res.json(dictionaries);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.updateDictionary(req.body);
             res.json(dictionaries);
         });
-        this.router.delete('/dictionaries/:name', async (req: Request, res: Response) => {
-            const names = await this.dbDictionaryService.deleteDictionary(req.params.name);
-            res.json(names);
+        this.router.delete('/dictionaries/:id', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.deleteDictionary(req.params.id);
+            res.json(dictionaries);
         });
     }
 }

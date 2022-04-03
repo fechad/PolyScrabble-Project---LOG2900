@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
-                <button class="trash-can" (click)="deleteDictionary(dictionary.title)"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
+                <button class="trash-can" (click)="deleteDictionary(dictionary.id.toString())"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
                 <button class="pencil" (click)="editing = true; ; oldTitle = dictionary.title"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
                 <button class="download"><fa-icon [icon]="faDownload" size="lg"></fa-icon></button>
             </div>

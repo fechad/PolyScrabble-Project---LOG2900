@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
-type DbDictionary = { title: string; description: string; words?: string[] };
+type DbDictionary = { id: number; title: string; description: string; words?: string[] };
 
 @Component({
     selector: 'app-dictionary-tab',
@@ -29,6 +29,7 @@ export class DictionaryTabComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.updateList();
         this.dictionaryForm = this.formBuilder.group({
+            id: new FormControl(''),
             title: new FormControl('', [Validators.pattern('^[A-zÀ-ù]*$')]),
             description: new FormControl(''),
             file: new FormControl('', [Validators.required]),
@@ -55,7 +56,9 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async addDictionary() {
+        let lastDicoId = this.list[this.list.length - 1].id;
         const newDictionnary: DbDictionary = {
+            id: lastDicoId === 0 ? 1 : (lastDicoId += 1),
             title: this.dictionaryForm.value.title,
             description: this.dictionaryForm.value.description,
             words: this.newWords,
@@ -64,8 +67,8 @@ export class DictionaryTabComponent implements OnInit {
         this.updateList();
     }
 
-    async deleteDictionary(name: string) {
-        await this.httpClient.delete<DbDictionary>(`${environment.serverUrl}/dictionaries/${name}`).toPromise();
+    async deleteDictionary(id: string) {
+        await this.httpClient.delete<DbDictionary>(`${environment.serverUrl}/dictionaries/${id}`).toPromise();
         this.updateList();
     }
 
@@ -74,7 +77,7 @@ export class DictionaryTabComponent implements OnInit {
         if (newTitle.trim() === '' || this.findDoubles(newTitle)) return;
         const oldDico = this.list.find((d) => d.title === this.oldTitle);
         if (!oldDico) throw new Error();
-        const newDico: DbDictionary = { title: newTitle, description: this.dictionaryForm.value.description };
+        const newDico: DbDictionary = { id: oldDico.id, title: newTitle, description: this.dictionaryForm.value.description };
         await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDico, newDico }).toPromise();
         this.updateList();
         this.editing = false;

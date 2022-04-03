@@ -42,8 +42,10 @@ export const DEFAULT_DICTIONARY: DbDictionary[] = [];
 new Promise(async (resolve) => {
     const fileBuffer = await promises.readFile('./assets/dictionnary.json');
     const readDicitonnary = JSON.parse(fileBuffer.toString());
-    const description = 'Dictionnaire fourni par le département de génie informatique et logiciel. Soit le dictionnaire par défaut de ce jeu.';
-    const dictionary: DbDictionary[] = [{ id: 0, title: 'Français', description, words: readDicitonnary.words }];
+    // const description = 'Dictionnaire fourni par le département de génie informatique et logiciel. Soit le dictionnaire par défaut de ce jeu.';
+    const dictionary: DbDictionary[] = [
+        { id: 0, title: readDicitonnary.title, description: readDicitonnary.description, words: readDicitonnary.words },
+    ];
     resolve(dictionary);
 }).then((words: DbDictionary[]) => {
     DEFAULT_DICTIONARY.push(words[0]);
