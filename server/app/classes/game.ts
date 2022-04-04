@@ -1,6 +1,7 @@
 import { ALPHABET } from '@app/alphabet-template';
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import * as cst from '@app/constants';
+import { GameHistory, GameMode, PlayerGameInfo } from '@app/game-history';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
@@ -48,6 +49,7 @@ export class Game {
     private winner: PlayerId | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
     private readonly wordGetter;
+    private gameHistory: GameHistory;
 
     constructor(readonly room: Room, private readonly dictionnaryService: DictionnaryService) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
@@ -57,6 +59,16 @@ export class Game {
         this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
         this.wordGetter = new WordGetter(this.board);
+        const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined };
+        const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined };
+        this.gameHistory = {
+            startTime: new Date(),
+            endTime: undefined,
+            length: undefined,
+            firstPlayer: firstPlayerInfo,
+            secondPlayer: secondPlayerInfo,
+            mode: GameMode.Classic,
+        };
     }
 
     private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
@@ -238,6 +250,7 @@ export class Game {
 
     endGame() {
         EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
+        this.gameHistory.endTime = new Date();
         this.room.end(false);
         this.winner = this.getWinner();
         this.eventEmitter.emit('message', {
