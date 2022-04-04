@@ -32,7 +32,7 @@ export class DbDictionariesService {
         fs.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary, (error: Error) => {
             if (error) throw error;
         });
-        // this.syncDictionaries();
+        this.syncDictionaries();
     }
 
     async updateDictionary(dictionary: DicoPair) {
@@ -62,41 +62,36 @@ export class DbDictionariesService {
         });
     }
 
-    // async syncDictionaries() {
-    //     const dictionaries = (await this.collection
-    //         ?.aggregate()
-    //         .project({ id: 1, title: 1, description: 1, _id: 0 })
-    //         .toArray()) as ClientDictionaryInterface[];
-    //     fs.readdir('./dictionaries/', (err, files) => {
-    //         files.forEach((file) => {
-    //             const data = fs.readFileSync(`./dictionaries/${file}`);
-    //             const fileString = JSON.parse(data.toString());
+    syncDictionaries() {
+        fs.readdir('./dictionaries/', (err, files) => {
+            files.forEach(async (file) => {
+                const id = Number(file.split('-')[1][0]);
+                await this.removeDictionaryFile(id);
+            });
+        });
+    }
 
-    //             this.findDictionary(fileString, dictionaries);
-    //         });
-    //     });
-    // }
+    async removeDictionaryFile(fileId: number) {
+        const newList: number[] = [];
+        const dictionaries = (await this.collection
+            ?.aggregate()
+            .project({ id: 1, title: 1, description: 1, _id: 0 })
+            .toArray()) as ClientDictionaryInterface[];
 
-    // findDictionary(file: DbDictionary, dictionaries: ClientDictionaryInterface[]) {
-    //     const newArray = [];
-    //     for (const dict of dictionaries) {
-    //         newArray.push(dict.title);
-    //     }
-    //     console.log(newArray);
-    //     if (!newArray.includes(file.title)) {
-    //         const deletingFile = dictionaries.find((dico) => dico.title === file.title);
-    //         fs.unlink(`./dictionaries/dictionary-${deletingFile?.id}.json`, (error) => {
-    //             if (error) throw error;
-    //         });
-    //     }
-    // }
+        for (const dict of dictionaries) {
+            newList.push(dict.id);
+        }
+
+        if (!newList.includes(fileId)) {
+            fs.unlink(`./dictionaries/dictionary-${fileId}.json`, (error) => {
+                if (error) throw error;
+            });
+        }
+    }
 
     async deleteDictionary(id: string) {
         if (!this.collection) return;
-        // await this.syncDictionaries();
         await this.collection.deleteOne({ id: { $eq: Number(id) } });
-        fs.unlink(`./dictionaries/dictionary-${id}.json`, (error) => {
-            if (error) throw error;
-        });
+        this.syncDictionaries();
     }
 }
