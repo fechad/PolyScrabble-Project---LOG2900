@@ -45,18 +45,10 @@ export class DbDictionariesService {
         const newName = files.newDico.title;
         fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
             if (error) throw new Error();
-            const result = data.toString().replace(files.oldDico.title, newName);
-
-            fs.writeFile(`./dictionaries/dictionary-${filename}.json`, result, (e) => {
-                if (e) throw new Error();
-            });
-        });
-
-        fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
-            if (error) throw new Error();
-            const result = data.toString().replace(files.oldDico.description, files.newDico.description);
-
-            fs.writeFile(`./dictionaries/dictionary-${filename}.json`, result, (e) => {
+            const changeTitle = data.toString().replace(files.oldDico.title, newName);
+            const changeDesc = changeTitle.replace(files.oldDico.description, files.newDico.description);
+            console.log(changeDesc);
+            fs.writeFile(`./dictionaries/dictionary-${filename}.json`, changeDesc, (e) => {
                 if (e) throw new Error();
             });
         });
