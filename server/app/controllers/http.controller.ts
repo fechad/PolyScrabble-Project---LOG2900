@@ -25,20 +25,6 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
     },
 };
 
-// const NEW_VP_SCHEMA: ValidateFunction = {
-//     type: 'object',
-//     required: ['default', 'beginner', 'name'],
-//     properties: {
-//         default: {
-//             type: 'string',
-//             minLength: 1,
-//         },
-//         : {
-//             type: 'number',
-//         },
-//     },
-// };
-
 @Service()
 export class HttpController {
     router: Router;
@@ -63,7 +49,6 @@ export class HttpController {
         await this.dataBase.connect();
         this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
-
         this.dbDictionaryService = Container.get(DbDictionariesService);
     }
 
@@ -143,6 +128,13 @@ export class HttpController {
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
             // res.status(200).json(dictionary);
+        });
+
+        this.router.delete('/reset', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.deleteAll();
+            const names = await this.vpNamesService.deleteAll();
+            res.json(names);
+            res.json(dictionaries);
         });
     }
 }

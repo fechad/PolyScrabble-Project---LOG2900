@@ -30,4 +30,9 @@ export class VpNamesService {
         if (!this.vpCollection) return;
         await this.vpCollection.deleteOne({ name: { $eq: name } });
     }
+
+    async deleteAll() {
+        if (!this.vpCollection) return;
+        await this.vpCollection.deleteMany({ default: { $eq: false } });
+    }
 }

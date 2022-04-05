@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
-type DbDictionary = { id: number; title: string; description: string; words?: string[] };
+export type DbDictionary = { id: number; title: string; description: string; words?: string[] };
 
 type DbDictionary = { id: number; name: string; description: string; words: string[] };
 

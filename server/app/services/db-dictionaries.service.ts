@@ -88,4 +88,10 @@ export class DbDictionariesService {
         await this.collection.deleteOne({ id: { $eq: Number(id) } });
         this.syncDictionaries();
     }
+
+    async deleteAll() {
+        if (!this.collection) return;
+        await this.collection?.deleteMany({ id: { $ne: 0 } });
+        this.syncDictionaries();
+    }
 }
