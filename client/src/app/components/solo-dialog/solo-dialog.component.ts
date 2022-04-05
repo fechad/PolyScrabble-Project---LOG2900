@@ -23,7 +23,7 @@ export class SoloDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<SoloDialogComponent>,
         public communicationService: CommunicationService,
         public avatarSelectionService: AvatarSelectionService,
-        @Inject(MAT_DIALOG_DATA) public data: { room?: number; name?: string; dictionnary?: string; timer: number },
+        @Inject(MAT_DIALOG_DATA) public data: { name: string; dictionnary: string; timer: number },
     ) {}
 
     ngOnInit(): void {
