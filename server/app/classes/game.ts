@@ -4,6 +4,7 @@ import * as cst from '@app/constants';
 import { GameHistory, GameMode, PlayerGameInfo } from '@app/game-history';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
 import { Difficulty } from './parameters';
@@ -51,7 +52,11 @@ export class Game {
     private readonly wordGetter;
     private gameHistory: GameHistory;
 
-    constructor(readonly room: Room, private readonly dictionnaryService: DictionnaryService) {
+    constructor(
+        readonly room: Room,
+        private readonly dictionnaryService: DictionnaryService,
+        private readonly gameHistoryService: GameHistoryService,
+    ) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board();
@@ -61,13 +66,14 @@ export class Game {
         this.wordGetter = new WordGetter(this.board);
         const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined };
         const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined };
+        const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
         this.gameHistory = {
             startTime: new Date(),
             endTime: undefined,
             length: undefined,
             firstPlayer: firstPlayerInfo,
             secondPlayer: secondPlayerInfo,
-            mode: GameMode.Classic,
+            mode: gameMode,
         };
     }
 
@@ -250,8 +256,7 @@ export class Game {
 
     endGame() {
         EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
-        this.gameHistory.endTime = new Date();
-        this.room.end(false);
+        this.completeGameHistory();
         this.winner = this.getWinner();
         this.eventEmitter.emit('message', {
             text: EndGameCalculator.createGameSummaryMessage(
@@ -260,6 +265,17 @@ export class Game {
             ),
             emitter: 'local',
         } as Message);
+    }
+
+    private completeGameHistory() {
+        this.gameHistory.endTime = new Date();
+        const differenceInMs = this.gameHistory.startTime.getTime() - this.gameHistory.endTime.getTime();
+        const lengthInSeconds = differenceInMs % cst.MS_IN_MINUTE;
+        const lengthInMinutes = Math.floor(differenceInMs / cst.MS_IN_MINUTE);
+        this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' sec';
+        this.gameHistory.firstPlayer.pointsScored = this.scores[cst.MAIN_PLAYER];
+        this.gameHistory.secondPlayer.pointsScored = this.scores[cst.OTHER_PLAYER];
+        this.gameHistoryService.addGame(this.gameHistory);
     }
 
     private timeoutHandler() {
