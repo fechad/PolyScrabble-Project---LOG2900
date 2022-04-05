@@ -115,8 +115,8 @@ export class HttpController {
         });
 
         this.router.post('/dictionaries', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.addDictionary(req.body);
-            res.json(dictionaries);
+            const response = await this.dbDictionaryService.addDictionary(req.body);
+            res.status(200).json(response);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.updateDictionary(req.body);

@@ -3,6 +3,7 @@ import { DataBaseController, DbDictionary, DICTIONARY_COLLECTION } from '@app/co
 import * as fs from 'fs';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
+import EventEmitter = require('events');
 
 type WholeDictionary = { title: string; description: string; words: string[] };
 export type ClientDictionaryInterface = { id: number; title: string; description: string };
@@ -10,6 +11,7 @@ type DicoPair = { oldDico: DbDictionary; newDico: DbDictionary };
 
 @Service()
 export class DbDictionariesService {
+    readonly eventEmitter = new EventEmitter();
     private collection: Collection | undefined = undefined;
     constructor(private dataBase: DataBaseController) {
         this.collection = this.dataBase.db?.collection(DICTIONARY_COLLECTION);
@@ -24,15 +26,26 @@ export class DbDictionariesService {
         return dictionaries;
     }
 
-    async addDictionary(dictionary: DbDictionary) {
+    async addDictionary(dictionary: DbDictionary): Promise<string> {
+        let response = 'trying to upload';
         const filteredDictionary: ClientDictionaryInterface = { id: dictionary.id, title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
         const fileToCreate: WholeDictionary = { title: dictionary.title, description: dictionary.description, words: dictionary.words };
         const jsonDictionary = JSON.stringify(fileToCreate);
-        fs.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary, (error: Error) => {
-            if (error) throw error;
+        await new Promise((resolve, reject) => {
+            fs.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary, (error: Error) => {
+                if (error) {
+                    response = 'failed to upload';
+                    reject(response);
+                } else {
+                    response = 'success';
+                    resolve(response);
+                }
+            });
         });
         this.syncDictionaries();
+
+        return response;
     }
 
     async updateDictionary(dictionary: DicoPair) {

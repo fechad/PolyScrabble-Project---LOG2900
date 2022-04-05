@@ -21,6 +21,7 @@ export class DictionaryTabComponent implements OnInit {
     uploading: boolean = false;
     editing: boolean = false;
     error: string = '';
+    uploadStatus: string;
     dictionaryForm: FormGroup;
     newWords: string[];
     oldTitle: string;
@@ -73,9 +74,9 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     validateDictionary(title: string, description: string, words: string[]): boolean {
-        console.log(title !== '' && description !== '');
-        console.log(this.validateDictionaryWords(words));
-        return title !== '' && description !== '' && this.validateDictionaryWords(words);
+        const validTitle = title !== '' && title !== undefined;
+        const validDescription = description !== '' && description !== undefined;
+        return validTitle && validDescription && this.validateDictionaryWords(words);
     }
 
     validateDictionaryWords(words: string[]): boolean {
@@ -87,7 +88,8 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async addDictionary() {
-        await this.httpClient.post<DbDictionary>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
+        this.uploadStatus = '';
+        this.uploadStatus = await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
         this.updateList();
     }
 
@@ -108,6 +110,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     findDoubles(nameToFind: string): boolean {
+        console.log(this.list);
         if (this.list.find((dictionary) => dictionary.title.toLowerCase() === nameToFind.toLowerCase())) {
             this.error = 'Un des dictionnaires détient déjà ce nom, veuillez en choisir un autre.';
             return true;
