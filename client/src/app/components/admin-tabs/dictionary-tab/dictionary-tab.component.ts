@@ -43,13 +43,13 @@ export class DictionaryTabComponent implements OnInit {
         this.list = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
     }
 
-    createNewDbDictionary(title: string, description: string, words: string[]): DbDictionary {
+    createNewDbDictionary(): DbDictionary {
         let lastDicoId = this.list[this.list.length - 1].id;
         this.newDictionnary = {
             id: lastDicoId === 0 ? 1 : (lastDicoId += 1),
-            title: title,
-            description: description,
-            words: words,
+            title: this.dictionaryForm.value.title,
+            description: this.dictionaryForm.value.description,
+            words: this.newWords,
         };
         return this.newDictionnary;
     }
@@ -63,11 +63,14 @@ export class DictionaryTabComponent implements OnInit {
             try {
                 const obj = JSON.parse(content);
                 if (this.validateDictionary(obj.title, obj.description, obj.words)) {
-                    this.createNewDbDictionary(obj.title, obj.description, obj.words);
+                    this.newWords = obj.words;
+                    this.dictionaryForm.value.title = obj.title;
+                    this.dictionaryForm.value.description = obj.description;
+                    this.createNewDbDictionary();
                 } else throw new Error();
             } catch (error) {
                 this.error = 'Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.';
-                this.dictionaryForm.controls['file'].reset();
+                this.dictionaryForm.controls.file.reset();
             }
         };
         reader.readAsText(newFile);
@@ -110,7 +113,6 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     findDoubles(nameToFind: string): boolean {
-        console.log(this.list);
         if (this.list.find((dictionary) => dictionary.title.toLowerCase() === nameToFind.toLowerCase())) {
             this.error = 'Un des dictionnaires détient déjà ce nom, veuillez en choisir un autre.';
             return true;

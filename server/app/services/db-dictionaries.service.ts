@@ -3,7 +3,6 @@ import { DataBaseController, DbDictionary, DICTIONARY_COLLECTION } from '@app/co
 import * as fs from 'fs';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
-import EventEmitter = require('events');
 
 type WholeDictionary = { title: string; description: string; words: string[] };
 export type ClientDictionaryInterface = { id: number; title: string; description: string };
@@ -11,7 +10,6 @@ type DicoPair = { oldDico: DbDictionary; newDico: DbDictionary };
 
 @Service()
 export class DbDictionariesService {
-    readonly eventEmitter = new EventEmitter();
     private collection: Collection | undefined = undefined;
     constructor(private dataBase: DataBaseController) {
         this.collection = this.dataBase.db?.collection(DICTIONARY_COLLECTION);
