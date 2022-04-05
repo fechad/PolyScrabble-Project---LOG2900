@@ -7,7 +7,6 @@ import * as cst from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 @Component({
     selector: 'app-solo-dialog',
     templateUrl: './solo-dialog.component.html',
@@ -24,27 +23,21 @@ export class SoloDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<SoloDialogComponent>,
         public communicationService: CommunicationService,
         public avatarSelectionService: AvatarSelectionService,
-        @Inject(MAT_DIALOG_DATA) public data: { room: number; name: string; dictionnary: string; timer: number },
-    ) {
-        this.selectedRoom = this.communicationService.rooms.pipe(map((rooms) => rooms[this.data.room]));
-    }
+        @Inject(MAT_DIALOG_DATA) public data: { room?: number; name?: string; dictionnary?: string; timer: number },
+    ) {}
 
     ngOnInit(): void {
+        const minutesSelect = Math.floor(this.data.timer / cst.SEC_CONVERT);
+        const secondsSelect = this.data.timer % cst.SEC_CONVERT;
+
         this.soloParametersForm = this.formBuilder.group({
-            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            playerName: new FormControl(this.data.name || '', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
             difficulty: new FormControl(0, [Validators.required]),
-            minutes: new FormControl(1, [Validators.required]),
-            seconds: new FormControl(0, [Validators.required]),
+            minutes: new FormControl(!isNaN(Math.floor(minutesSelect)) ? minutesSelect : 1, [Validators.required]),
+            seconds: new FormControl(!isNaN(secondsSelect) && secondsSelect !== 0 ? cst.THIRTY_SECONDS : 0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
         this.opponentName = this.availableName[Math.floor(Math.random() * this.availableName.length)];
-
-        if (this.communicationService.selectedRoom.value) {
-            this.soloParametersForm.get('playerName')?.setValue(this.data.name);
-            this.soloParametersForm.get('minutes')?.setValue(Math.floor(this.data.timer / cst.SEC_CONVERT));
-            if (this.data.timer % cst.SEC_CONVERT !== 0) this.soloParametersForm.get('seconds')?.setValue(cst.THIRTY_SECONDS);
-            else this.soloParametersForm.get('seconds')?.setValue(0);
-        }
     }
 
     closeDialog(): void {
