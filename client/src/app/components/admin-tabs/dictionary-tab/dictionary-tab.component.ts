@@ -24,6 +24,7 @@ export class DictionaryTabComponent implements OnInit {
     dictionaryForm: FormGroup;
     newWords: string[];
     oldTitle: string;
+    newDictionnary: DbDictionary;
     constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder) {}
 
     async ngOnInit(): Promise<void> {
@@ -41,29 +42,52 @@ export class DictionaryTabComponent implements OnInit {
         this.list = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
     }
 
-    async transformToArrayList(e: Event) {
+    createNewDbDictionary(title: string, description: string, words: string[]): DbDictionary {
+        let lastDicoId = this.list[this.list.length - 1].id;
+        this.newDictionnary = {
+            id: lastDicoId === 0 ? 1 : (lastDicoId += 1),
+            title: title,
+            description: description,
+            words: words,
+        };
+        return this.newDictionnary;
+    }
+
+    getFileInfos(e: Event) {
         const target = e.target as HTMLInputElement;
         const newFile = (target.files as FileList)[0];
         const reader = new FileReader();
         reader.onload = () => {
             const content = reader.result as string;
-            const obj = JSON.parse(content);
-            this.newWords = obj.words;
-            this.dictionaryForm.value.title = obj.title;
-            this.dictionaryForm.value.description = obj.description;
+            try {
+                const obj = JSON.parse(content);
+                if (this.validateDictionary(obj.title, obj.description, obj.words)) {
+                    this.createNewDbDictionary(obj.title, obj.description, obj.words);
+                } else throw new Error();
+            } catch (error) {
+                this.error = 'Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.';
+                this.dictionaryForm.controls['file'].reset();
+            }
         };
         reader.readAsText(newFile);
     }
 
+    validateDictionary(title: string, description: string, words: string[]): boolean {
+        console.log(title !== '' && description !== '');
+        console.log(this.validateDictionaryWords(words));
+        return title !== '' && description !== '' && this.validateDictionaryWords(words);
+    }
+
+    validateDictionaryWords(words: string[]): boolean {
+        for (const word of words) {
+            if (word.includes(' ') || !word.match(/[A-zÀ-ù]/g)) return false;
+            if (word.length > 15) return false;
+        }
+        return true;
+    }
+
     async addDictionary() {
-        let lastDicoId = this.list[this.list.length - 1].id;
-        const newDictionnary: DbDictionary = {
-            id: lastDicoId === 0 ? 1 : (lastDicoId += 1),
-            title: this.dictionaryForm.value.title,
-            description: this.dictionaryForm.value.description,
-            words: this.newWords,
-        };
-        await this.httpClient.post<DbDictionary>(`${environment.serverUrl}/dictionaries`, newDictionnary).toPromise();
+        await this.httpClient.post<DbDictionary>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
         this.updateList();
     }
 
@@ -93,6 +117,7 @@ export class DictionaryTabComponent implements OnInit {
 
     emptyForm() {
         this.uploading = false;
+        this.error = '';
         for (const key of Object.keys(this.dictionaryForm.controls)) {
             this.dictionaryForm.controls[key].reset();
         }
