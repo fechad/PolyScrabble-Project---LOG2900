@@ -91,7 +91,7 @@ export class DbDictionariesService {
 
     async deleteAll() {
         if (!this.collection) return;
-        await this.collection?.deleteMany({ id: { $ne: 0 } });
+        await this.collection.deleteMany({ id: { $ne: 0 } });
         this.syncDictionaries();
     }
 }

@@ -136,5 +136,15 @@ export class HttpController {
             res.json(names);
             res.json(dictionaries);
         });
+
+        this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.deleteAll();
+            res.json(dictionaries);
+        });
+
+        this.router.delete('/vp-names-reset', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.deleteAll();
+            res.json(names);
+        });
     }
 }

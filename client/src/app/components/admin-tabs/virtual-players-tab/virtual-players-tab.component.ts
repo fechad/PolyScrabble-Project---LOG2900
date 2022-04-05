@@ -64,6 +64,11 @@ export class VirtualPlayersTabComponent implements OnInit {
         this.updateList();
     }
 
+    async deleteAll() {
+        await this.httpClient.delete(`${environment.serverUrl}/vp-names-reset`).toPromise();
+        this.updateList();
+    }
+
     invalidName(name: string, beginner: boolean): boolean {
         if (name.match(/[^A-zÀ-û]/g) || name.match(/[_]/g)) {
             this.error = [beginner, 'Les caractères doivent être des lettres seulement.'];

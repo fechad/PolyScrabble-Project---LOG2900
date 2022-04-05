@@ -106,6 +106,11 @@ export class DictionaryTabComponent implements OnInit {
         this.updateList();
     }
 
+    async deleteAll() {
+        await this.httpClient.delete(`${environment.serverUrl}/dictionaries-reset`).toPromise();
+        this.updateList();
+    }
+
     async updateDictionary() {
         const newTitle = this.dictionaryForm.value.title;
         if (newTitle.trim() === '' || this.findDoubles(newTitle)) return;
