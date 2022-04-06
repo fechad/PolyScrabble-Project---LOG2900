@@ -4,7 +4,7 @@ export enum GameMode {
     Log2990 = 'LOG2990',
 }
 export interface GameHistory {
-    startTime: Date;
+    startTime: string;
     length: string | undefined;
     firstPlayer: PlayerGameInfo;
     secondPlayer: PlayerGameInfo;
