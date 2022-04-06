@@ -43,6 +43,36 @@ export const BOUNDS = BOARD_LENGTH / BOARD_LENGTH;
 export const SQUARE_SIZE = DEFAULT_INNER_WIDTH / BOARD_LENGTH - BOUNDS;
 export const RADIUS = 7.5;
 export const Y_PLACEMENT = 16;
+export const STEP_MESSAGE = 10;
+export const STEP_HEADER = 33.5;
+export const TRIPLE_WORD_POS = ['00', '07', '014', '70', '714', '147', '140', '1414'];
+export const TRIPLE_LETTER_POS = ['15', '19', '51', '55', '59', '513', '91', '95', '99', '913', '135', '139'];
+export const DOUBLE_WORD_POS = ['11', '22', '33', '44', '1010', '1111', '1212', '1313', '113', '212', '311', '410', '131', '122', '113', '104'];
+export const DOUBLE_LETTER_POS = [
+    '03',
+    '011',
+    '30',
+    '314',
+    '37',
+    '26',
+    '28',
+    '62',
+    '66',
+    '68',
+    '612',
+    '73',
+    '711',
+    '82',
+    '86',
+    '88',
+    '812',
+    '117',
+    '1114',
+    '126',
+    '128',
+    '143',
+    '1411',
+];
 
 export const DEFAULT_RESERVE = 88;
 
