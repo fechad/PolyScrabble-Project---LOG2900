@@ -10,7 +10,9 @@ import { Position } from './classes/position';
 import { Room, State } from './classes/room';
 import { PlacementScore, VirtualPlayer } from './classes/virtual-player';
 import * as cst from './constants';
+import { DataBaseController } from './controllers/db.controller';
 import { DictionnaryService } from './services/dictionnary.service';
+import { GameHistoryService } from './services/game-history-service';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import seedrandom = require('seedrandom');
 
@@ -45,7 +47,7 @@ const createTestCase = (idx: number, game: Game): string => {
     `;
 };
 
-const playGame = async (dictionnaryService: DictionnaryService, fullTest: boolean) => {
+const playGame = async (dictionnaryService: DictionnaryService, gameHistoryService: GameHistoryService, fullTest: boolean) => {
     const params = new Parameters();
     params.difficulty = Difficulty.Expert;
 
@@ -53,7 +55,7 @@ const playGame = async (dictionnaryService: DictionnaryService, fullTest: boolea
     const room = new Room(0, ID_AI_2, 'BOBBY', params);
     room.addPlayer(cst.AI_ID, 'Étienne', true, 'a');
     room.start();
-    const game = new Game(room, dictionnaryService);
+    const game = new Game(room, dictionnaryService, gameHistoryService);
     game['timeoutHandler'] = () => {
         /* Handle turns manually */
     };
@@ -138,9 +140,10 @@ const dummyFind = (game: Game, dictionnaryService: DictionnaryService, rack: str
 
     const dictionnaryService = new DictionnaryService();
     await dictionnaryService.init();
+    const gameHistoryService = new GameHistoryService(new DataBaseController());
 
     for (let i = 0; ; i++) {
         console.log('Iteration ' + (i + 1));
-        await playGame(dictionnaryService, true);
+        await playGame(dictionnaryService, gameHistoryService, true);
     }
 })();

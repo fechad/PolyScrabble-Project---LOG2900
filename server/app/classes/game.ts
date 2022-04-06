@@ -245,6 +245,7 @@ export class Game {
         if (this.room.getState() !== State.Started) return;
         this.room.end(true);
         this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
+        this.completeGameHistory();
         this.sendState();
     }
 

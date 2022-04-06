@@ -7,8 +7,7 @@ import { RoomsService } from '@app/services/rooms.service';
 import { Request, Response, Router } from 'express';
 import { ValidateFunction, Validator } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
-import { Container, Service } from 'typedi';
-import { DataBaseController } from './db.controller';
+import { Service } from 'typedi';
 
 const NEW_SCORE_SCHEMA: ValidateFunction = {
     type: 'object',
@@ -30,15 +29,14 @@ export class HttpController {
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
-        private readonly dataBase: DataBaseController,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
         private readonly highScoreService: HighScoresService,
         private readonly gameHistoryService: GameHistoryService,
     ) {
         this.dictionnaryService.init();
-        this.dataBase.connect();
-        this.highScoreService = Container.get(HighScoresService);
+        this.gameHistoryService.connect();
+        this.highScoreService.connect();
         this.configureRouter();
     }
 
