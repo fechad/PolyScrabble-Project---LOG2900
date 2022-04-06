@@ -5,7 +5,6 @@ export enum GameMode {
 }
 export interface GameHistory {
     startTime: Date;
-    endTime: Date | undefined;
     length: string | undefined;
     firstPlayer: PlayerGameInfo;
     secondPlayer: PlayerGameInfo;

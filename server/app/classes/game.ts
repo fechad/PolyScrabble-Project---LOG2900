@@ -69,7 +69,6 @@ export class Game {
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
         this.gameHistory = {
             startTime: new Date(),
-            endTime: undefined,
             length: undefined,
             firstPlayer: firstPlayerInfo,
             secondPlayer: secondPlayerInfo,
@@ -269,9 +268,8 @@ export class Game {
     }
 
     private completeGameHistory() {
-        this.gameHistory.endTime = new Date();
-        const differenceInMs = this.gameHistory.startTime.getTime() - this.gameHistory.endTime.getTime();
-        const lengthInSeconds = differenceInMs % cst.MS_IN_MINUTE;
+        const differenceInMs = new Date().getTime() - this.gameHistory.startTime.getTime();
+        const lengthInSeconds = Math.ceil((differenceInMs % cst.MS_IN_MINUTE) / cst.MS_IN_SECOND);
         const lengthInMinutes = Math.floor(differenceInMs / cst.MS_IN_MINUTE);
         this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' sec';
         this.gameHistory.firstPlayer.pointsScored = this.scores[cst.MAIN_PLAYER];

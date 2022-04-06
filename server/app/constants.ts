@@ -50,6 +50,7 @@ export const PROBABILITY_OF_30 = 6;
 export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
 export const MS_IN_MINUTE = 60000;
+export const MS_IN_SECOND = 1000;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
 export const LOWER_POINT_BRACKET: Braket = [1, 6];
 export const MIDDLE_POINT_BRACKET: Braket = [7, 12];
