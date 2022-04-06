@@ -2,6 +2,7 @@ import { Position } from './classes/position';
 
 export type Braket = [number, number];
 
+export const RACK_LENGTH = 7;
 export const MIDDLE_INDEX = 7;
 export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
 export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
@@ -34,7 +35,6 @@ export const MAIN_PLAYER = 0;
 export const OTHER_PLAYER = 1;
 export const PLAYER_0_TURN_PROBABILITY = 0.5;
 export const MAX_SKIP_IN_A_ROW = 6;
-export const MINIMUM_EXCHANGE_RESERVE_COUNT = 7;
 export const SEC_TO_MS = 1000;
 export const ASCII_LOWERCASE_A = 97;
 export const HINT_NUMBER_OPTIONS = 3;

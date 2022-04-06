@@ -39,8 +39,8 @@
                     <div class="col-md-10">
                         <label>Profil de l'adversaire: </label>
                         <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control">
-                            <option [ngValue]="difficulties.id" [disabled]="difficulties.id === 1" *ngFor="let difficulties of difficulty">
-                                {{ difficulties.name }}
+                            <option [ngValue]="difficulty.id" *ngFor="let difficulty of difficulties">
+                                {{ difficulty.name }}
                             </option>
                         </select>
                     </div>

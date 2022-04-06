@@ -290,12 +290,13 @@ describe('Game', () => {
         assert(endGame.called);
     });
 
-    it('Reserve of less than 7 shouldnt allow letter exchanges', async () => {
+    it('Reserve of less than 7 should allow letter exchanges', async () => {
         const remainingLettersInReserve = 4;
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
         game.reserve.letterRacks[MAIN_PLAYER] = ['A', 'L', 'L', 'O'];
         game.changeLetters([...'allo'], game.players[MAIN_PLAYER].id);
-        assert(stubError.called);
+        expect(game.reserve['reserve']).to.not.deep.equal([...'allo'])
+        assert(stubError.notCalled);
     });
 
     it('should calculate the final scores when the mainPlayer rack is empty', () => {
