@@ -33,10 +33,10 @@ export class DbDictionariesService {
         await new Promise((resolve, reject) => {
             fs.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary, (error: Error) => {
                 if (error) {
-                    response = 'failed to upload';
+                    response = 'échec de téléversement';
                     reject(response);
                 } else {
-                    response = 'success';
+                    response = 'succès';
                     resolve(response);
                 }
             });
@@ -72,6 +72,20 @@ export class DbDictionariesService {
                 await this.removeDictionaryFile(id);
             });
         });
+    }
+
+    async downloadDictionary(id: string): Promise<string> {
+        // const fileBuffer = await fs.promises.readFile(`./dictionaries/dictionary-${id}.json`);
+        // const readDicitonnary = JSON.parse(fileBuffer.toString());
+        // const dictionary: DbDictionary = {
+        //     id: Number(id),
+        //     title: readDicitonnary.title,
+        //     description: readDicitonnary.description,
+        //     words: readDicitonnary.words,
+        // };
+        // const url = URL.createObjectURL(new Blob([`./dictionaries/dictionary-${id}.json`], { type: 'application/json' }));
+
+        return `./dictionaries/dictionary-${id}.json`;
     }
 
     async removeDictionaryFile(fileId: number) {

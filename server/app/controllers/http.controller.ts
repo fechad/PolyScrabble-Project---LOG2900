@@ -126,5 +126,11 @@ export class HttpController {
             const dictionaries = await this.dbDictionaryService.deleteDictionary(req.params.id);
             res.json(dictionaries);
         });
+
+        this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
+            const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
+            res.download(dictionary);
+            // res.status(200).json(dictionary);
+        });
     }
 }

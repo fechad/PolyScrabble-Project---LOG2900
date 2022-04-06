@@ -28,7 +28,7 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 3%;
 }
 
@@ -119,12 +119,14 @@
     box-shadow: 0px 0px 0px;
 }
 
-.pencil, .download {
+.pencil {
     width: 100%;
     background-color: #E1AC01;
     border: none;
     margin: 18% 0 0 20%;
 }
+
+
 
 .dictionary-container::-webkit-scrollbar {
     height: 1px;

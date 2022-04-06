@@ -15,10 +15,8 @@
         <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
             <button class="trash-can" (click)="deleteDictionary(dictionary.id.toString())"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
             <button class="pencil" (click)="editing = true; oldTitle = dictionary.title"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
-            <a href="../../../../../../server/dictionaries/dictionary-1.json" download>
-                <button class="download"><fa-icon [icon]="faDownload" size="lg"></fa-icon></button>
-            </a>
         </div>
+        <a href="{{environment.serverUrl}}/dictionaries/download/{{dictionary.id}}" download class="download" (click)="downloadDictionary(dictionary.id.toString())"><fa-icon [icon]="faDownload" size="lg"></fa-icon></a>
     </div>
     <section class="edit" *ngIf="editing">
         <button class="cancel" (click)="editing = false">X</button>

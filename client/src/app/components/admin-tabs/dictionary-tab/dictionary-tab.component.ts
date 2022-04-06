@@ -26,6 +26,9 @@ export class DictionaryTabComponent implements OnInit {
     newWords: string[];
     oldTitle: string;
     newDictionnary: DbDictionary;
+    fileDownloaded: string;
+    environment = environment;
+
     constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder) {}
 
     async ngOnInit(): Promise<void> {
@@ -110,6 +113,13 @@ export class DictionaryTabComponent implements OnInit {
         await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDico, newDico }).toPromise();
         this.updateList();
         this.editing = false;
+    }
+
+    async downloadDictionary(id: string) {
+        await this.httpClient.get(`${environment.serverUrl}/dictionaries/download/${id}`).toPromise();
+        // const b = response as JSON;
+        // const blob = new Blob([JSON.stringify(response)], { type: 'text/plain' });
+        // this.fileDownloaded = window.URL.createObjectURL(blob);
     }
 
     findDoubles(nameToFind: string): boolean {
