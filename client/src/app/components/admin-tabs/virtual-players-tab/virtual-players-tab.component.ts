@@ -66,7 +66,7 @@ export class VirtualPlayersTabComponent implements OnInit {
     }
 
     invalidName(name: string, beginner: boolean): boolean {
-        if (!name.match(/[A-zÀ-ù]/g)) {
+        if (name.match(/[^A-zÀ-û]/g) || name.match(/[_]/g)) {
             if (beginner) this.error = 'Les caractères doivent être des lettres seulement.';
             else this.errorExpert = 'Les caractères doivent être des lettres seulement.';
             return true;
