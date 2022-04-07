@@ -45,29 +45,39 @@ export class VirtualPlayer {
     }
 
     async playTurn() {
+        let played = false;
+        setTimeout(() => {
+            if (!played) this.game.skipTurn(this.id);
+            played = true;
+        }, cst.DELAY_NO_PLACEMENT);
+        const minTimeout = new Promise<void>((resolve) => setTimeout(() => resolve(), cst.BOARD_PLACEMENT_DELAY));
+        const changeLetters = async (length: number) => {
+            await minTimeout;
+            if (!played) this.game.changeLetters(rack.slice(0, Math.min(this.game.reserve.getCount(), length)), this.id);
+            played = true;
+        };
+        const play = async (chosenWord: PlacementOption) => {
+            const letters = chosenWord.newLetters.map((l) => l.letter);
+            if (!played) await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
+            played = true;
+        };
         const rack = this.game.reserve.letterRacks[this.game.players[cst.MAIN_PLAYER].id === this.id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER];
         const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
-        if (this.difficulty === Difficulty.Beginner && randomOutOfTen === 0) {
-            // 10 % chance
-            this.game.skipTurn(this.id);
-        } else if (this.difficulty === Difficulty.Beginner && randomOutOfTen === 1) {
-            // 10 % chance
-            if (this.game.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
-                const sliceIndex = Math.floor(Math.random() * rack.length);
-                this.game.changeLetters(rack.slice(sliceIndex), this.id);
-            } else this.game.skipTurn(this.id);
-        } else {
+        if (this.difficulty === Difficulty.Expert) {
+            const sortedWordOptions = this.chooseWords(rack);
+            if (sortedWordOptions.length > 0) await play(sortedWordOptions[0].placement);
+            else if (this.game.reserve.getCount() > 0) await changeLetters(cst.RACK_LENGTH);
+        } else if (randomOutOfTen > 1) {
             // 80 % chance
             const bracket = this.getRandomPointBracket();
             const sortedWordOptions = this.chooseWords(rack, bracket);
-            if (sortedWordOptions.length === 0) {
-                setTimeout(() => this.game.skipTurn(this.id), cst.DELAY_NO_PLACEMENT);
-                return;
-            }
+            if (sortedWordOptions.length === 0) return;
             const randomIndex = Math.floor(Math.random() * sortedWordOptions.length);
-            const chosenWord = sortedWordOptions[randomIndex];
-            const letters = chosenWord.placement.newLetters.map((l) => l.letter);
-            await this.game.placeLetters(this.id, letters, chosenWord.placement.newLetters[0].position, chosenWord.placement.isHorizontal);
+            await play(sortedWordOptions[randomIndex].placement);
+        } else if (randomOutOfTen === 1 && this.game.reserve.getCount() >= cst.RACK_LENGTH) {
+            // 10 % chance
+            const sliceIndex = Math.floor(Math.random() * rack.length);
+            await changeLetters(sliceIndex);
         }
     }
 

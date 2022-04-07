@@ -2,6 +2,7 @@ import { Position } from './classes/position';
 
 export type Braket = [number, number];
 
+export const RACK_LENGTH = 7;
 export const MIDDLE_INDEX = 7;
 export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
 export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));

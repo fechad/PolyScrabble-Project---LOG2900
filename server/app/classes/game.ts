@@ -171,7 +171,10 @@ export class Game {
 
     changeLetters(letters: string[], playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            if (this.reserve.getCount() >= cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
+            if (
+                this.reserve.getCount() >= letters.length &&
+                (this.getCurrentPlayer().virtual || this.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT)
+            ) {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
                 let validMessage = 'Vous avez échangé les lettres:  ' + letters;
                 this.eventEmitter.emit('valid-exchange', playerId, validMessage);

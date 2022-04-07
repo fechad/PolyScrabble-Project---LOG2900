@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { difficulties, Difficulty, GameType, Parameters } from '@app/classes/parameters';
+import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
@@ -14,7 +14,10 @@ import { Observable } from 'rxjs';
 })
 export class SoloDialogComponent implements OnInit {
     soloParametersForm: FormGroup;
-    difficulty = difficulties;
+    difficulties = [
+        { id: Difficulty.Beginner, name: 'débutant' },
+        { id: Difficulty.Expert, name: 'expert' },
+    ];
     availableName = ['Francois', 'Etienne', 'Anna'];
     opponentName: string;
     selectedRoom: Observable<Room>;
@@ -32,7 +35,7 @@ export class SoloDialogComponent implements OnInit {
 
         this.soloParametersForm = this.formBuilder.group({
             playerName: new FormControl(this.data.name || '', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
-            difficulty: new FormControl(0, [Validators.required]),
+            difficulty: new FormControl(Difficulty.Beginner, [Validators.required]),
             minutes: new FormControl(!isNaN(Math.floor(minutesSelect)) ? minutesSelect : 1, [Validators.required]),
             seconds: new FormControl(!isNaN(secondsSelect) && secondsSelect !== 0 ? cst.THIRTY_SECONDS : 0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
@@ -64,7 +67,7 @@ export class SoloDialogComponent implements OnInit {
         parameters.avatar = this.avatarSelectionService.imgChosen;
         parameters.timer = this.soloParametersForm.value.minutes * cst.SEC_CONVERT + this.soloParametersForm.value.seconds;
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
-        parameters.difficulty = Difficulty.Beginner;
+        parameters.difficulty = this.soloParametersForm.value.difficulty;
         parameters.gameType = GameType.Solo;
         await this.communicationService.createRoom(this.soloParametersForm.value.playerName, parameters, this.opponentName);
         this.closeDialog();
