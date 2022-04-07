@@ -11,7 +11,7 @@ import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.com
     styleUrls: ['./modes-page.component.scss'],
 })
 export class ModesPageComponent {
-    mode: string;
+    log2990: boolean;
     buttons: Button[] = [
         { promptsDialog: true, route: '', toolTip: '', text: 'Solo', disabled: false },
         { promptsDialog: true, route: '', toolTip: '', text: 'Multijoueur', disabled: false },
@@ -19,14 +19,14 @@ export class ModesPageComponent {
         { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', text: 'Retour', disabled: false },
     ];
     constructor(public matDialog: MatDialog, public route: ActivatedRoute) {
-        this.mode = this.route.snapshot.url[0].toString();
+        this.log2990 = this.route.snapshot.url[0].toString() === '2990';
     }
 
     openDialog() {
-        this.matDialog.open(GameSetupDialogComponent, { data: { mode: this.mode } });
+        this.matDialog.open(GameSetupDialogComponent, { data: { log2990: this.log2990 } });
     }
 
     openSoloDialog() {
-        this.matDialog.open(SoloDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
+        this.matDialog.open(SoloDialogComponent, { data: { log2990: this.log2990 } });
     }
 }

@@ -26,7 +26,7 @@ export class SoloDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<SoloDialogComponent>,
         public communicationService: CommunicationService,
         public avatarSelectionService: AvatarSelectionService,
-        @Inject(MAT_DIALOG_DATA) public data: { name: string; dictionnary: string; timer: number },
+        @Inject(MAT_DIALOG_DATA) public data: { name: string; dictionnary: string; timer: number, log2990: boolean },
     ) {}
 
     ngOnInit(): void {
@@ -69,6 +69,7 @@ export class SoloDialogComponent implements OnInit {
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
         parameters.difficulty = this.soloParametersForm.value.difficulty;
         parameters.gameType = GameType.Solo;
+        parameters.log2990 = this.data.log2990;
         await this.communicationService.createRoom(this.soloParametersForm.value.playerName, parameters, this.opponentName);
         this.closeDialog();
     }
