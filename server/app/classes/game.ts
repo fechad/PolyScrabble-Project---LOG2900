@@ -280,7 +280,7 @@ export class Game {
     }
 
     private replaceByVirtualPlayer(idxPlayerToReplace: number) {
-        const listOfNames = ['name1', 'name2', 'name3', 'name4']; // prendre les vrais eventuellement
+        const listOfNames = ['name1', 'name2', 'name3', 'name4']; // TODO: prendre les vrais eventuellement
         let idxName = Math.floor(Math.random() * listOfNames.length);
         if (this.players.every((player, idx) => idx !== idxPlayerToReplace && listOfNames[idxName] === player.name)) {
             idxName = (idxName + 1) % listOfNames.length;
