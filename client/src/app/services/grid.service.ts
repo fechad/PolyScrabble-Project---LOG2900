@@ -155,15 +155,8 @@ export class GridService {
                     score: alphabet.find((j) => j.name.toLowerCase() === lettersToAdd[pos])?.score || 0,
                 } as Letter;
                 temporaryBoard[verticalIndex][i] = isHorizontalPlacement ? letter : temporaryBoard[verticalIndex][i];
-                temporaryBoard[i][horizontalIndex] = !isHorizontalPlacement ? temporaryBoard[i][horizontalIndex] : letter;
+                temporaryBoard[i][horizontalIndex] = isHorizontalPlacement ? temporaryBoard[i][horizontalIndex] : letter;
                 this.letterPosition.push(isHorizontalPlacement ? [verticalIndex, i] : [i, horizontalIndex]);
-                // if (isHorizontalPlacement) {
-                //     temporaryBoard[verticalIndex][i] = letter;
-                //     this.letterPosition.push([verticalIndex, i]);
-                // } else {
-                //     temporaryBoard[i][horizontalIndex] = letter;
-                //     this.letterPosition.push([i, horizontalIndex]);
-                // }
                 pos++;
             }
         }
