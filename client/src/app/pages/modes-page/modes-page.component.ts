@@ -16,16 +16,16 @@ export class ModesPageComponent {
 
     constructor(public matDialog: MatDialog, route: ActivatedRoute) {
         this.log2990 = route.snapshot.url[0].toString() === '2990';
-    }
-
-    openDialog() {
-        this.matDialog.open(GameSetupDialogComponent, { data: { log2990: this.log2990 } });
         this.buttons = [
             { promptsDialog: true, route: '', toolTip: '', text: 'Solo', disabled: false },
             { promptsDialog: true, route: '', toolTip: '', text: 'Multijoueur', disabled: false },
             { promptsDialog: false, route: '/joining-room', toolTip: '', text: 'Rejoindre une partie', disabled: false },
             { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', text: 'Retour', disabled: false },
         ];
+    }
+
+    openDialog() {
+        this.matDialog.open(GameSetupDialogComponent, { data: { log2990: this.log2990 } });
     }
 
     openSoloDialog() {
