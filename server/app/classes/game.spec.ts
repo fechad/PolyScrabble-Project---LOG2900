@@ -368,4 +368,25 @@ describe('Game', () => {
         expect(prevTurn).to.not.equal(game.getCurrentPlayer().id);
         expect(stub.callCount).to.equal(1);
     });
+
+    it('should replace a player by a virtual player', () => {
+        // name: 'notBob', id: '1', connected: true, virtual: false
+        let idxToReplace = 1;
+        let oldName = game.players[idxToReplace].name;
+        assert(!game.players[idxToReplace].virtual);
+        game['replaceByVirtualPlayer'](idxToReplace);
+        expect(game.players[idxToReplace].name !== oldName);
+        expect(game.players[idxToReplace].avatar === 'b');
+        expect(game.players[idxToReplace].virtual === true);
+        expect((game.players[idxToReplace].id = 'VP'));
+
+        idxToReplace = 0;
+        oldName = game.players[idxToReplace].name;
+        assert(!game.players[idxToReplace].virtual);
+        game['replaceByVirtualPlayer'](idxToReplace);
+        expect(game.players[idxToReplace].name !== oldName);
+        expect(game.players[idxToReplace].avatar === 'b');
+        expect(game.players[idxToReplace].virtual === true);
+        expect((game.players[idxToReplace].id = 'VP'));
+    });
 });

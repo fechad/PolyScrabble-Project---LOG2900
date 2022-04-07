@@ -225,8 +225,17 @@ export class Game {
 
     forfeit(idLoser: PlayerId) {
         if (this.room.getState() !== State.Started) return;
-        this.room.end(true);
-        this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
+        if (this.players.every((player) => player.id !== idLoser)) return;
+        if (this.players.some((player) => player.virtual)) {
+            this.room.end(true);
+            this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
+        } else {
+            const idxPlayerToReplace = idLoser === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
+            const oldName = this.players[idxPlayerToReplace].name;
+            this.replaceByVirtualPlayer(idxPlayerToReplace);
+            const message = `Votre adversaire ${oldName} a abandonné et sera remplacé par ${this.players[idxPlayerToReplace].name}`;
+            this.eventEmitter.emit('message', { text: message, emitter: 'command' } as Message);
+        }
         this.sendState();
     }
 
@@ -268,6 +277,19 @@ export class Game {
         } else {
             this.timeout = undefined;
         }
+    }
+
+    private replaceByVirtualPlayer(idxPlayerToReplace: number) {
+        const listOfNames = ['name1', 'name2', 'name3', 'name4']; // prendre les vrais eventuellement
+        let idxName = Math.floor(Math.random() * listOfNames.length);
+        if (this.players.every((player, idx) => idx !== idxPlayerToReplace && listOfNames[idxName] === player.name)) {
+            idxName = (idxName + 1) % listOfNames.length;
+        }
+        this.players[idxPlayerToReplace].name = listOfNames[idxName];
+        this.players[idxPlayerToReplace].virtual = true;
+        this.players[idxPlayerToReplace].id = 'VP';
+        const vP = new VirtualPlayer(Difficulty.Beginner, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
+        vP.waitForTurn();
     }
 
     private getPlayerId(isActivePlayer: boolean) {
