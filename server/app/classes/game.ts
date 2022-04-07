@@ -77,7 +77,7 @@ export class Game {
     }
 
     private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId): Objectives {
-        const players = [undefined, undefined, playerOne, playerOne, playerTwo, playerTwo];
+        const players = [undefined, undefined, playerOne, playerTwo];
         return this.shuffleArray(OBJECTIVE_TYPES.slice())
             .slice(0, players.length)
             .map((objectiveType, i) => ({ objective: new objectiveType(), player: players[i] }));
@@ -236,21 +236,22 @@ export class Game {
             const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
             const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const options = virtual.chooseWords(this.reserve.letterRacks[player]).slice(0, 3);
-            const warning =
-                options.length === 0 ? 'Aucun placement possible' : options.length < cst.HINT_NUMBER_OPTIONS ? 'Moins de 3 placements possible' : '';
-            const hintMessage =
-                'Indice:\n' +
-                options
-                    .map(
-                        (opt, i) =>
-                            ` ${i + 1}. ${Game.createCommand(
-                                opt.placement.newLetters.map((letter) => letter.letter),
-                                opt.placement.newLetters[0].position,
-                                opt.placement.isHorizontal,
-                            )}`,
-                    )
-                    .join('\n') +
-                warning;
+            let hintMessage =
+                options.length === 0
+                    ? 'Aucun placement possible'
+                    : options.length < cst.HINT_NUMBER_OPTIONS
+                    ? 'Indices (moins de 3 placements possibles):\n'
+                    : 'Indices:\n';
+            hintMessage += options
+                .map(
+                    (opt, i) =>
+                        ` ${i + 1}. ${Game.createCommand(
+                            opt.placement.newLetters.map((letter) => letter.letter),
+                            opt.placement.newLetters[0].position,
+                            opt.placement.isHorizontal,
+                        )}`,
+                )
+                .join('\n');
             this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
         }
     }

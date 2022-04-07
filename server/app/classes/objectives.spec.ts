@@ -8,7 +8,7 @@ import {
     ObjectiveAnagram,
     ObjectiveCornerPlacement,
     ObjectiveOnlyVowels,
-    ObjectivePalindrome
+    ObjectivePalindrome,
 } from './objectives';
 import { PlacementOption } from './placement-option';
 import { Position } from './position';

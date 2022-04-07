@@ -14,9 +14,11 @@ export class WaitingRoomPageComponent {
     canControl: boolean;
     isMainPlayer: boolean;
     otherPlayerName: string | undefined;
-    dictionnaries: Dictionnary[] | undefined = undefined;
+    dictionnaries: Dictionnary[] | undefined;
+    log2990: boolean;
 
-    constructor(public communicationService: CommunicationService, public matDialog: MatDialog, public route: ActivatedRoute) {
+    constructor(public communicationService: CommunicationService, public matDialog: MatDialog, route: ActivatedRoute) {
+        this.log2990 = route.snapshot.url[0].toString() === '2990';
         this.communicationService.selectedRoom.subscribe(async (room) => {
             this.isMainPlayer = this.communicationService.getId()?.value === room?.mainPlayer.id;
             this.otherPlayerName = room?.otherPlayer?.name;
@@ -39,10 +41,11 @@ export class WaitingRoomPageComponent {
                         ? this.dictionnaries[this.communicationService.selectedRoom.value.parameters?.dictionnary || 0]?.name
                         : '…',
                     timer: this.communicationService.selectedRoom.value.parameters.timer,
+                    log2990: this.log2990,
                 },
             });
         } else {
-            this.matDialog.open(SoloDialogComponent, { data: { mode: this.route.snapshot.url[0] } });
+            this.matDialog.open(SoloDialogComponent, { data: { log2990: this.log2990 } });
         }
     }
 }
