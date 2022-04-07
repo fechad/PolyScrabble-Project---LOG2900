@@ -1,6 +1,7 @@
 import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { Container } from 'typedi';
@@ -23,12 +24,15 @@ describe('Game', () => {
     let game: Game;
     let stubError: sinon.SinonStub;
     let dictionnary: DictionnaryService;
+    let gameHistory: GameHistoryService;
     let stubSetTimeout: sinon.SinonStub;
     let stubClearTimeout: sinon.SinonStub;
 
     before(async () => {
         dictionnary = Container.get(DictionnaryService);
         await dictionnary.init();
+        gameHistory = Container.get(GameHistoryService);
+        await gameHistory.connect();
     });
 
     beforeEach(() => {
@@ -41,7 +45,7 @@ describe('Game', () => {
         room.addPlayer(players[1].id, players[1].name, false, 'a');
         stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
         stubClearTimeout = sinon.stub(global, 'clearTimeout');
-        game = new Game(room, dictionnary);
+        game = new Game(room, dictionnary, gameHistory);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
         game['isPlayer0Turn'] = true;
@@ -53,7 +57,7 @@ describe('Game', () => {
 
     it('should exit with error if trying to create game with only one player', () => {
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        expect(() => new Game(room, dictionnary)).to.throw();
+        expect(() => new Game(room, dictionnary, gameHistory)).to.throw();
     });
 
     it('should get a message and broadcast it', (done) => {

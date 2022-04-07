@@ -16,6 +16,6 @@ export class GameHistoryTabComponent implements OnInit {
     constructor(readonly httpClient: HttpClient) {}
 
     async ngOnInit(): Promise<void> {
-        this.games = await this.httpClient.get<GameHistory[]>(`${environment.serverUrl}/game-history`).toPromise();
+        this.games = (await this.httpClient.get<GameHistory[]>(`${environment.serverUrl}/game-history`).toPromise()).reverse();
     }
 }

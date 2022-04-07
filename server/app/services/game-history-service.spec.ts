@@ -28,9 +28,8 @@ describe('Game History Service', () => {
         const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
 
         const playedGame: GameHistory = {
-            startTime: new Date(),
-            endTime: new Date(),
-            length: 5,
+            startTime: new Date().toLocaleString(),
+            length: '0 min 3 sec',
             firstPlayer: secondPlayer,
             secondPlayer: firstPlayer,
             mode: GameMode.Classic,
@@ -44,9 +43,8 @@ describe('Game History Service', () => {
         const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
 
         const playedGame: GameHistory = {
-            startTime: new Date(),
-            endTime: new Date(),
-            length: 5,
+            startTime: new Date().toLocaleString(),
+            length: '0 min 3 sec',
             firstPlayer: secondPlayer,
             secondPlayer: firstPlayer,
             mode: GameMode.Classic,

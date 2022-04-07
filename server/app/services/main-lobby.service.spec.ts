@@ -5,6 +5,7 @@ import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
 import { Container } from 'typedi';
 import { DictionnaryService } from './dictionnary.service';
+import { GameHistoryService } from './game-history-service';
 import { MainLobbyService } from './main-lobby.service';
 import { RoomsService } from './rooms.service';
 
@@ -13,15 +14,18 @@ describe('MainLobby service tests', () => {
     let rooms: RoomsService;
     let playersSocket: EventEmitter[];
     let dictionnaryService: DictionnaryService;
+    let gameHistory: GameHistoryService;
 
     before(async () => {
         dictionnaryService = Container.get(DictionnaryService);
         await dictionnaryService.init();
+        gameHistory = Container.get(GameHistoryService);
+        await gameHistory.connect();
     });
 
     beforeEach(() => {
         rooms = new RoomsService();
-        service = new MainLobbyService(rooms, dictionnaryService);
+        service = new MainLobbyService(rooms, dictionnaryService, gameHistory);
 
         const player1 = new EventEmitter();
         service.connect(player1, 'DummyId');
