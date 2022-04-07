@@ -19,30 +19,22 @@ export class DbDictionariesService {
         if (!this.collection) return cst.DEFAULT_DICTIONARY;
         const dictionaries = (await this.collection
             .aggregate()
-            .project({ id: 1, title: 1, description: 1 })
+            .project({ _id: 0, id: 1, title: 1, description: 1 })
             .toArray()) as ClientDictionaryInterface[];
         return dictionaries;
     }
 
     async addDictionary(dictionary: DbDictionary): Promise<string> {
-        let response = 'trying to upload';
+        let response = 'trying to upload new dictionary';
         const filteredDictionary: ClientDictionaryInterface = { id: dictionary.id, title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
         const fileToCreate: WholeDictionary = { title: dictionary.title, description: dictionary.description, words: dictionary.words };
         const jsonDictionary = JSON.stringify(fileToCreate);
-        await new Promise((resolve, reject) => {
-            fs.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary, (error: Error) => {
-                if (error) {
-                    response = 'échec de téléversement';
-                    reject(response);
-                } else {
-                    response = 'succès';
-                    resolve(response);
-                }
-            });
-        });
+        await fs.promises
+            .writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary)
+            .then(() => (response = 'succès'))
+            .catch(() => (response = 'échec de téléversement du dictionnaire dans le serveur'));
         this.syncDictionaries();
-
         return response;
     }
 
@@ -58,7 +50,6 @@ export class DbDictionariesService {
             if (error) throw new Error();
             const changeTitle = data.toString().replace(files.oldDico.title, newName);
             const changeDesc = changeTitle.replace(files.oldDico.description, files.newDico.description);
-            console.log(changeDesc);
             fs.writeFile(`./dictionaries/dictionary-${filename}.json`, changeDesc, (e) => {
                 if (e) throw new Error();
             });
@@ -66,7 +57,8 @@ export class DbDictionariesService {
     }
 
     syncDictionaries() {
-        fs.readdir('./dictionaries/', (err, files) => {
+        fs.readdir('./dictionaries/', (error, files) => {
+            if (error) return;
             files.forEach(async (file) => {
                 const id = Number(file.split('-')[1][0]);
                 await this.removeDictionaryFile(id);
@@ -75,31 +67,23 @@ export class DbDictionariesService {
     }
 
     async downloadDictionary(id: string): Promise<string> {
-        // const fileBuffer = await fs.promises.readFile(`./dictionaries/dictionary-${id}.json`);
-        // const readDicitonnary = JSON.parse(fileBuffer.toString());
-        // const dictionary: DbDictionary = {
-        //     id: Number(id),
-        //     title: readDicitonnary.title,
-        //     description: readDicitonnary.description,
-        //     words: readDicitonnary.words,
-        // };
-        // const url = URL.createObjectURL(new Blob([`./dictionaries/dictionary-${id}.json`], { type: 'application/json' }));
-
-        return `./dictionaries/dictionary-${id}.json`;
+        let result = '';
+        await fs.promises
+            .access(`./dictionaries/dictionary-${id}.json`, fs.constants.F_OK)
+            .then(() => (result = `./dictionaries/dictionary-${id}.json`))
+            .catch(() => (result = "Couldn't read this directory"));
+        return result;
     }
 
     async removeDictionaryFile(fileId: number) {
-        const newList: number[] = [];
         const dictionaries = (await this.collection
             ?.aggregate()
             .project({ id: 1, title: 1, description: 1, _id: 0 })
             .toArray()) as ClientDictionaryInterface[];
 
-        for (const dict of dictionaries) {
-            newList.push(dict.id);
-        }
+        const idList = dictionaries.map((dictionary) => dictionary.id);
 
-        if (!newList.includes(fileId)) {
+        if (!idList.includes(fileId)) {
             fs.unlink(`./dictionaries/dictionary-${fileId}.json`, (error) => {
                 if (error) throw error;
             });
