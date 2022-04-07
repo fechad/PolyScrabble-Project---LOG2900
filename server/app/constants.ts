@@ -16,6 +16,7 @@ export const HALF_PROBABILITY = 0.5;
 export const ROW_CONTACT = 0;
 export const COL_CONTACT = 1;
 export const LETTER_PLACE_CONTACT = 2;
+export const DATE_STRING_UNWANTED_CHARS_QTY = 5;
 export const OBJECTIVE_PALINDORME = 35;
 export const OBJECTIVE_ALREADY_ON_BOARD = 25;
 export const OBJECTIVE_3_VOWELS = 15;

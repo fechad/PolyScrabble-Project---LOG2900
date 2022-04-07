@@ -70,7 +70,7 @@ export class Game {
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
         this.startTime = new Date();
         this.gameHistory = {
-            startTime: this.startTime.toISOString().split('T')[0],
+            startTime: this.startTime.toLocaleString(),
             length: undefined,
             firstPlayer: firstPlayerInfo,
             secondPlayer: secondPlayerInfo,
@@ -273,7 +273,7 @@ export class Game {
         const differenceInMs = new Date().getTime() - this.startTime.getTime();
         const lengthInSeconds = Math.ceil((differenceInMs % cst.MS_IN_MINUTE) / cst.MS_IN_SECOND);
         const lengthInMinutes = Math.floor(differenceInMs / cst.MS_IN_MINUTE);
-        this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' sec';
+        this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' s';
         this.gameHistory.firstPlayer.pointsScored = this.scores[cst.MAIN_PLAYER];
         this.gameHistory.secondPlayer.pointsScored = this.scores[cst.OTHER_PLAYER];
         this.gameHistoryService.addGame(this.gameHistory);
