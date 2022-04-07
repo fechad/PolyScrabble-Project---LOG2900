@@ -3,6 +3,8 @@ import { DataBaseController, VP } from '@app/controllers/db.controller';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
+export type VpPair = { oldVp: VP; newVp: VP };
+
 @Service()
 export class VpNamesService {
     private vpCollection: Collection | undefined = undefined;
@@ -11,8 +13,8 @@ export class VpNamesService {
     }
 
     async getNames(): Promise<VP[]> {
-        if (this.vpCollection === undefined) return cst.DEFAULT_VPS;
-        const vpNames = (await this.vpCollection.aggregate().toArray()) as VP[];
+        if (!this.vpCollection) return cst.DEFAULT_VPS;
+        const vpNames = (await this.vpCollection.aggregate().project({ _id: 0 }).toArray()) as VP[];
         return vpNames;
     }
 
@@ -20,12 +22,12 @@ export class VpNamesService {
         await this.vpCollection?.insertOne(vp);
     }
 
-    async updateVP(vps: Object) {
-        await this.vpCollection?.findOneAndReplace({ name: { $eq: vps['oldVp'].name } }, vps['newVp']);
+    async updateVP(vps: VpPair) {
+        await this.vpCollection?.findOneAndReplace({ name: { $eq: vps.oldVp.name } }, vps.newVp);
     }
 
     async deleteVP(name: string) {
-        if (this.vpCollection === undefined) return;
+        if (!this.vpCollection) return;
         await this.vpCollection.deleteOne({ name: { $eq: name } });
     }
 }

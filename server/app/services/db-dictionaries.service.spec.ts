@@ -40,6 +40,7 @@ describe('DbDictionariesService', () => {
         await dataBase.connect();
         dbDictionariesService = new DbDictionariesService(dataBase);
         collection = dataBaseManager.db.collection(COLLECTIONS[0]);
+        // pour pouvoir accéder à l'atribut private
         // eslint-disable-next-line dot-notation
         dbDictionariesService['collection'] = collection;
         await collection.insertOne({ id: 0, title: 'dummy', description: 'abc', words: ['a', 'b', 'c'] });

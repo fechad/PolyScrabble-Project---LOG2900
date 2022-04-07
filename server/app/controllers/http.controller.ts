@@ -9,7 +9,7 @@ import { VpNamesService } from '@app/services/vp-names.service';
 import { Request, Response, Router } from 'express';
 import { ValidateFunction, Validator } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 
 const NEW_SCORE_SCHEMA: ValidateFunction = {
     type: 'object',
@@ -116,7 +116,7 @@ export class HttpController {
 
         this.router.post('/dictionaries', async (req: Request, res: Response) => {
             const response = await this.dbDictionaryService.addDictionary(req.body);
-            res.status(200).json(response);
+            res.status(StatusCodes.OK).json(response);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.updateDictionary(req.body);
