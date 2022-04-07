@@ -34,11 +34,11 @@ describe('Game', () => {
     beforeEach(() => {
         players = [
             { avatar: 'a', name: 'Bob', id: '0', connected: true, virtual: false },
-            { avatar: 'b', name: 'notBob', id: '1', connected: true, virtual: false },
+            { avatar: 'b', name: 'notBob', id: '1', connected: true, virtual: true },
         ];
         parameters = new Parameters();
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        room.addPlayer(players[1].id, players[1].name, false, 'a');
+        room.addPlayer(players[1].id, players[1].name, players[1].virtual, players[1].avatar);
         stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
         stubClearTimeout = sinon.stub(global, 'clearTimeout');
         game = new Game(room, dictionnary);
@@ -290,13 +290,23 @@ describe('Game', () => {
         assert(endGame.called);
     });
 
-    it('Reserve of less than 7 should allow letter exchanges', async () => {
+    it('Reserve of less than 7 shouldnt allow letter exchanges', async () => {
         const remainingLettersInReserve = 4;
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
         game.reserve.letterRacks[MAIN_PLAYER] = ['A', 'L', 'L', 'O'];
         game.changeLetters([...'allo'], game.players[MAIN_PLAYER].id);
-        expect(game.reserve['reserve']).to.not.deep.equal([...'allo'])
-        assert(stubError.notCalled);
+        expect(game.reserve['reserve']).to.not.deep.equal([...'ALLO']);
+        assert(stubError.called);
+    });
+
+    it('Reserve of less than 7 should allow letter exchanges for virtual player', async () => {
+        const remainingLettersInReserve = 4;
+        game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
+        game.reserve.letterRacks[OTHER_PLAYER] = ['A', 'L', 'L', 'O'];
+        game['isPlayer0Turn'] = false;
+        game.changeLetters([...'allo'], game.players[OTHER_PLAYER].id);
+        expect(game.reserve['reserve']).to.not.deep.equal([...'ALLO']);
+        expect(stubError.args).to.deep.equal([]);
     });
 
     it('should calculate the final scores when the mainPlayer rack is empty', () => {
