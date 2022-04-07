@@ -23,7 +23,8 @@
                 <div class="input-area">
                     <div class="col-md-10">
                         <label>Votre nom: </label>
-                        <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" />
+                        <input cdkFocusInitial type="text" formControlName="playerName" class="form-control"/> 
+                        
                     </div>
 
                     <div class="requirement" *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''">
@@ -38,8 +39,8 @@
                     <div class="col-md-10">
                         <label>Profil de l'adversaire: </label>
                         <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control">
-                            <option [ngValue]="difficulties.id" [disabled]="difficulties.id === 1" *ngFor="let difficulties of difficulty">
-                                {{ difficulties.name }}
+                            <option [ngValue]="difficulty.id" *ngFor="let difficulty of difficulties">
+                                {{ difficulty.name }}
                             </option>
                         </select>
                     </div>

@@ -24,6 +24,7 @@ export const DEFAULT_USERS: Score[] = [
 export class DataBaseController {
     db: Db | null = null;
 
+    /* istanbul ignore next */
     async connect() {
         if (this.db) return;
         try {

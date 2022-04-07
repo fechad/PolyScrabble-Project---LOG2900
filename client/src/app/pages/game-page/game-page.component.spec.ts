@@ -70,6 +70,7 @@ describe('GamePageComponent', () => {
                 state: State.Started,
             } as GameState),
             rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+            objectives: new BehaviorSubject(undefined),
         });
         gameContext.isMyTurn.and.callFake(() => of(true));
 

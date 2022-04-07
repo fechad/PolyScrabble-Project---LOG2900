@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
+import { GameContextService, Objective } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleLeft, faAngleRight, faArrowRight, faFont, faPlay, faSignOutAlt, faWalking } from '@fortawesome/free-solid-svg-icons';
@@ -24,11 +24,15 @@ export class GamePageComponent implements AfterViewChecked {
     faArrowRight = faArrowRight;
     faAngleLeft = faAngleLeft;
     faAngleRight = faAngleRight;
+
     resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
     placingWords = true;
     publicObjectivesShown: boolean = true;
     privateObjectivesShown: boolean = true;
     readonly sent: Subject<void> = new Subject<void>();
+    publicObjectives: Objective[];
+    privateObjectives: Objective[];
+
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
@@ -43,6 +47,10 @@ export class GamePageComponent implements AfterViewChecked {
                 await this.communicationService.saveScore();
             }
             ended = state.state !== State.Started;
+        });
+        this.gameContextService.objectives.subscribe((objectives) => {
+            this.publicObjectives = objectives ? objectives.filter((objective) => objective.isPublic) : [];
+            this.privateObjectives = objectives ? objectives.filter((objective) => !objective.isPublic) : [];
         });
     }
 

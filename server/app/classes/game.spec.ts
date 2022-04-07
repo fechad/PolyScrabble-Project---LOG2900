@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 import { Container } from 'typedi';
 import { EndGameCalculator } from './end-game-calculator';
 import { Game } from './game';
+import { Objective2BigLetters, Objective3Vowels, ObjectiveAnagram } from './objectives';
 import { Parameters } from './parameters';
 import { Position } from './position';
 import { Letter } from './reserve';
@@ -34,11 +35,11 @@ describe('Game', () => {
     beforeEach(() => {
         players = [
             { avatar: 'a', name: 'Bob', id: '0', connected: true, virtual: false },
-            { avatar: 'b', name: 'notBob', id: '1', connected: true, virtual: false },
+            { avatar: 'b', name: 'notBob', id: '1', connected: true, virtual: true },
         ];
         parameters = new Parameters();
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        room.addPlayer(players[1].id, players[1].name, false, 'a');
+        room.addPlayer(players[1].id, players[1].name, players[1].virtual, players[1].avatar);
         stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
         stubClearTimeout = sinon.stub(global, 'clearTimeout');
         game = new Game(room, dictionnary);
@@ -295,7 +296,18 @@ describe('Game', () => {
         game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
         game.reserve.letterRacks[MAIN_PLAYER] = ['A', 'L', 'L', 'O'];
         game.changeLetters([...'allo'], game.players[MAIN_PLAYER].id);
+        expect(game.reserve['reserve']).to.not.deep.equal([...'ALLO']);
         assert(stubError.called);
+    });
+
+    it('Reserve of less than 7 should allow letter exchanges for virtual player', async () => {
+        const remainingLettersInReserve = 4;
+        game.reserve.drawLetters(game.reserve['reserve'].length - remainingLettersInReserve);
+        game.reserve.letterRacks[OTHER_PLAYER] = ['A', 'L', 'L', 'O'];
+        game['isPlayer0Turn'] = false;
+        game.changeLetters([...'allo'], game.players[OTHER_PLAYER].id);
+        expect(game.reserve['reserve']).to.not.deep.equal([...'ALLO']);
+        expect(stubError.args).to.deep.equal([]);
     });
 
     it('should calculate the final scores when the mainPlayer rack is empty', () => {
@@ -369,24 +381,49 @@ describe('Game', () => {
         expect(stub.callCount).to.equal(1);
     });
 
-    it('should replace a player by a virtual player', () => {
-        // name: 'notBob', id: '1', connected: true, virtual: false
-        let idxToReplace = 1;
-        let oldName = game.players[idxToReplace].name;
-        assert(!game.players[idxToReplace].virtual);
-        game['replaceByVirtualPlayer'](idxToReplace);
-        expect(game.players[idxToReplace].name !== oldName);
-        expect(game.players[idxToReplace].avatar === 'b');
-        expect(game.players[idxToReplace].virtual === true);
-        expect((game.players[idxToReplace].id = 'VP'));
+    it('should send an hint when requested', () => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('valid-exchange', stub);
+        game.reserve.letterRacks[0] = ['A', 'A'];
+        game['isPlayer0Turn'] = true;
+        const mathRandom = Math.random;
+        Math.random = () => 0;
+        game.hint(players[0].id);
+        Math.random = mathRandom;
+        expect(stub.args).to.deep.equal([[players[0].id, 'Indices (moins de 3 placements possibles):\n 1. !placer h8v aa']]);
+        assert(stubError.notCalled);
+    });
 
-        idxToReplace = 0;
-        oldName = game.players[idxToReplace].name;
-        assert(!game.players[idxToReplace].virtual);
-        game['replaceByVirtualPlayer'](idxToReplace);
-        expect(game.players[idxToReplace].name !== oldName);
-        expect(game.players[idxToReplace].avatar === 'b');
-        expect(game.players[idxToReplace].virtual === true);
-        expect((game.players[idxToReplace].id = 'VP'));
+    it('should send correct objective info', () => {
+        game['objectives'] = undefined;
+        expect(game['objectivesInfo'](players[0].id)).to.deep.equal([]);
+        game['objectives'] = [
+            { objective: new ObjectiveAnagram(), player: players[0].id },
+            { objective: new Objective2BigLetters(), player: undefined, doneByPlayer: players[0].id },
+            { objective: new Objective3Vowels(), player: undefined },
+        ];
+        expect(game['objectivesInfo'](players[0].id)).to.deep.equal([
+            {
+                available: true,
+                isPublic: false,
+                mine: false,
+                score: 20,
+                text: new ObjectiveAnagram().description,
+            },
+            {
+                available: false,
+                isPublic: true,
+                mine: true,
+                score: 50,
+                text: new Objective2BigLetters().description,
+            },
+            {
+                available: true,
+                isPublic: true,
+                mine: false,
+                score: 15,
+                text: new Objective3Vowels().description,
+            },
+        ]);
     });
 });

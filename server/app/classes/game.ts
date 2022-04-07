@@ -5,6 +5,7 @@ import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
+import { Objective, OBJECTIVE_TYPES } from './objectives';
 import { Difficulty } from './parameters';
 import { PlacementOption } from './placement-option';
 import { Position } from './position';
@@ -12,6 +13,8 @@ import { Reserve } from './reserve';
 import { Player, PlayerId, Room, State } from './room';
 import { VirtualPlayer } from './virtual-player';
 import { WordGetter } from './word-getter';
+
+/* eslint-disable max-lines */
 
 export type GameId = number;
 type Tile = Letter | undefined;
@@ -36,6 +39,9 @@ type GameState = {
     winner?: PlayerId;
 };
 
+type ObjectiveInfo = { text: string; score: number; isPublic: boolean; available: boolean; mine: boolean };
+type Objectives = { objective: Objective; player?: PlayerId; doneByPlayer?: PlayerId }[];
+
 export class Game {
     readonly eventEmitter = new EventEmitter();
     readonly reserve = new Reserve();
@@ -48,6 +54,7 @@ export class Game {
     private winner: PlayerId | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
     private readonly wordGetter;
+    private objectives?: Objectives;
 
     constructor(readonly room: Room, private readonly dictionnaryService: DictionnaryService) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
@@ -57,6 +64,25 @@ export class Game {
         this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
         this.wordGetter = new WordGetter(this.board);
+        if (room.parameters.log2990) {
+            this.objectives = Game.genRandomObjectives(this.players[cst.MAIN_PLAYER].id, this.players[cst.OTHER_PLAYER].id);
+        }
+    }
+
+    // Taken from https://stackoverflow.com/a/12646864/4950659
+    private static shuffleArray<T>(array: T[]): T[] {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId): Objectives {
+        const players = [undefined, undefined, playerOne, playerTwo];
+        return this.shuffleArray(OBJECTIVE_TYPES.slice())
+            .slice(0, players.length)
+            .map((objectiveType, i) => ({ objective: new objectiveType(), player: players[i] }));
     }
 
     private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
@@ -81,6 +107,8 @@ export class Game {
             winner: this.winner,
         };
         this.eventEmitter.emit('state', state);
+        this.eventEmitter.emit('objectives', this.players[cst.MAIN_PLAYER].id, this.objectivesInfo(this.players[cst.MAIN_PLAYER].id));
+        this.eventEmitter.emit('objectives', this.players[cst.OTHER_PLAYER].id, this.objectivesInfo(this.players[cst.OTHER_PLAYER].id));
         this.eventEmitter.emit(
             'rack',
             this.players[cst.MAIN_PLAYER].id,
@@ -139,6 +167,22 @@ export class Game {
 
                 this.scores[playerIndex] += words.reduce((sum, word) => (sum += word.score), 0);
                 if (letters.length === cst.WORD_LENGTH_BONUS) this.scores[playerIndex] += cst.BONUS_POINTS;
+                if (this.objectives) {
+                    const accomplishedObjectives = this.objectives
+                        .filter((objective) => !objective.player || objective.player === playerId)
+                        .filter((objective) => !objective.doneByPlayer)
+                        .filter((objective) =>
+                            objective.objective.isAccomplished(
+                                triedPlacement,
+                                words.map((word) => word.word),
+                            ),
+                        );
+                    for (const objective of accomplishedObjectives) {
+                        console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
+                        this.scores[playerIndex] += objective.objective.points;
+                        objective.doneByPlayer = playerId;
+                    }
+                }
 
                 this.board.place(triedPlacement.newLetters);
 
@@ -171,7 +215,10 @@ export class Game {
 
     changeLetters(letters: string[], playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            if (this.reserve.getCount() >= cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
+            if (
+                this.reserve.getCount() >= letters.length &&
+                (this.getCurrentPlayer().virtual || this.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT)
+            ) {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
                 let validMessage = 'Vous avez échangé les lettres:  ' + letters;
                 this.eventEmitter.emit('valid-exchange', playerId, validMessage);
@@ -191,21 +238,22 @@ export class Game {
             const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
             const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const options = virtual.chooseWords(this.reserve.letterRacks[player]).slice(0, 3);
-            const warning =
-                options.length === 0 ? 'Aucun placement possible' : options.length < cst.HINT_NUMBER_OPTIONS ? 'Moins de 3 placements possible' : '';
-            const hintMessage =
-                'Indice:\n' +
-                options
-                    .map(
-                        (opt, i) =>
-                            ` ${i + 1}. ${Game.createCommand(
-                                opt.placement.newLetters.map((letter) => letter.letter),
-                                opt.placement.newLetters[0].position,
-                                opt.placement.isHorizontal,
-                            )}`,
-                    )
-                    .join('\n') +
-                warning;
+            let hintMessage =
+                options.length === 0
+                    ? 'Aucun placement possible'
+                    : options.length < cst.HINT_NUMBER_OPTIONS
+                    ? 'Indices (moins de 3 placements possibles):\n'
+                    : 'Indices:\n';
+            hintMessage += options
+                .map(
+                    (opt, i) =>
+                        ` ${i + 1}. ${Game.createCommand(
+                            opt.placement.newLetters.map((letter) => letter.letter),
+                            opt.placement.newLetters[0].position,
+                            opt.placement.isHorizontal,
+                        )}`,
+                )
+                .join('\n');
             this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
         }
     }
@@ -256,6 +304,20 @@ export class Game {
             ),
             emitter: 'local',
         } as Message);
+    }
+
+    private objectivesInfo(id: PlayerId): ObjectiveInfo[] {
+        return this.objectives
+            ? this.objectives
+                  .filter((objective) => !objective.player || objective.player === id || objective.doneByPlayer)
+                  .map((objective) => ({
+                      text: objective.objective.description,
+                      score: objective.objective.points,
+                      isPublic: !objective.player,
+                      available: !objective.doneByPlayer,
+                      mine: objective.doneByPlayer === id,
+                  }))
+            : [];
     }
 
     private timeoutHandler() {

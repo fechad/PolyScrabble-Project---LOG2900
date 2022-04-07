@@ -1,15 +1,4 @@
-import {
-    NO_POINTS,
-    OBJECTIVE_2_BIG_LETTERS,
-    OBJECTIVE_3_VOWELS,
-    OBJECTIVE_7_LETTERS_OR_MORE,
-    OBJECTIVE_ALREADY_ON_BOARD,
-    OBJECTIVE_ANAGRAM,
-    OBJECTIVE_CORNER_PLACEMENT,
-    OBJECTIVE_ONLY_VOWELS,
-    OBJECTIVE_PALINDORME,
-} from '@app/constants';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import {
     Objective,
     Objective2BigLetters,
@@ -33,7 +22,6 @@ describe('Objectives', () => {
     let objective: Objective;
 
     beforeEach(() => {
-        Objective.playedWords = new Set<string>();
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(7, 7) },
             { letter: 'e', position: new Position(7, 8) },
@@ -42,140 +30,119 @@ describe('Objectives', () => {
         ]);
     });
 
-    it('should not let an objective be taken more than once', () => {
-        objective = new ObjectiveAlreadyOnBoard();
-
-        objective.getObjectivePoints(placement, ['test']);
-        assert(objective['isAvailable']);
-        let points = objective.getObjectivePoints(placement, ['test']);
-        assert(!objective['isAvailable']);
-        expect(points).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
-        points = objective.getObjectivePoints(placement, ['test']);
-        assert(!objective['isAvailable']);
-        expect(points).to.equal(NO_POINTS);
-    });
-
     it('should give points for a palindrome', () => {
         objective = new ObjectivePalindrome();
 
-        let result = objective.getObjectivePoints(placement, ['laval']);
-        expect(result).to.equal(OBJECTIVE_PALINDORME);
+        let result = objective.isAccomplished(placement, ['laval']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['elle']);
-        expect(result).to.equal(OBJECTIVE_PALINDORME);
+        result = objective.isAccomplished(placement, ['elle']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['ete']);
-        expect(result).to.equal(OBJECTIVE_PALINDORME);
+        result = objective.isAccomplished(placement, ['ete']);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for no palindrome', () => {
         objective = new ObjectivePalindrome();
 
-        let result = objective.getObjectivePoints(placement, ['lavel']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['lavel']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['aa']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['aa']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['etre']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['etre']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for a word already on board', () => {
         objective = new ObjectiveAlreadyOnBoard();
         const otherObjective = new ObjectivePalindrome();
 
-        objective.getObjectivePoints(placement, ['premiertest']);
-        objective.getObjectivePoints(placement, ['secondtest']);
-        otherObjective.getObjectivePoints(placement, ['troisiemetest']);
+        objective.isAccomplished(placement, ['premiertest']);
+        objective.isAccomplished(placement, ['secondtest']);
+        otherObjective.isAccomplished(placement, ['troisiemetest']);
 
-        let result = objective.getObjectivePoints(placement, ['premiertest']);
-        expect(result).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
+        let result = objective.isAccomplished(placement, ['premiertest']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['secondtest']);
-        expect(result).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
+        result = objective.isAccomplished(placement, ['secondtest']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['troisiemetest']);
-        expect(result).to.equal(OBJECTIVE_ALREADY_ON_BOARD);
+        result = objective.isAccomplished(placement, ['troisiemetest']);
+        expect(result).to.equal(false);
     });
 
     it('should not give points for not already on board', () => {
         objective = new ObjectiveAlreadyOnBoard();
 
-        let result = objective.getObjectivePoints(placement, ['premiertest']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['premiertest']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['secondtest']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['secondtest']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['troisiemetest']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['troisiemetest']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for a 3 or more vowels word', () => {
         objective = new Objective3Vowels();
 
-        let result = objective.getObjectivePoints(placement, ['eau']);
-        expect(result).to.equal(OBJECTIVE_3_VOWELS);
+        let result = objective.isAccomplished(placement, ['eau']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['automobile']);
-        expect(result).to.equal(OBJECTIVE_3_VOWELS);
+        result = objective.isAccomplished(placement, ['automobile']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['auto']);
-        expect(result).to.equal(OBJECTIVE_3_VOWELS);
+        result = objective.isAccomplished(placement, ['auto']);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for less than 3 vowels', () => {
         objective = new Objective3Vowels();
 
-        let result = objective.getObjectivePoints(placement, ['laval']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['laval']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['aa']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['aa']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['etre']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['etre']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for an anagram of a word already on board', () => {
         objective = new ObjectiveAnagram();
         const otherObjective = new ObjectivePalindrome();
 
-        objective.getObjectivePoints(placement, ['premiertest']);
-        objective.getObjectivePoints(placement, ['secondtest']);
-        otherObjective.getObjectivePoints(placement, ['troisiemetest']);
+        objective.isAccomplished(placement, ['premiertest']);
+        objective.isAccomplished(placement, ['secondtest']);
+        otherObjective.isAccomplished(placement, ['troisiemetest']);
 
-        let result = objective.getObjectivePoints(placement, ['testpremier']);
-        expect(result).to.equal(OBJECTIVE_ANAGRAM);
+        let result = objective.isAccomplished(placement, ['testpremier']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['tesecondst']);
-        expect(result).to.equal(OBJECTIVE_ANAGRAM);
+        result = objective.isAccomplished(placement, ['tesecondst']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['testtroisieme']);
-        expect(result).to.equal(OBJECTIVE_ANAGRAM);
+        result = objective.isAccomplished(placement, ['testtroisieme']);
+        expect(result).to.equal(false);
     });
 
     it('should not give points for no anagram', () => {
         objective = new ObjectiveAnagram();
-        objective.getObjectivePoints(placement, ['premiertttt']);
+        objective.isAccomplished(placement, ['premiertttt']);
 
-        let result = objective.getObjectivePoints(placement, ['premiertest']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['premiertest']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['secondtest']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['secondtest']);
+        expect(result).to.equal(false);
 
-        result = objective.getObjectivePoints(placement, ['troisiemetest']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['troisiemetest']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for only placing vowels', () => {
@@ -185,23 +152,21 @@ describe('Objectives', () => {
             { letter: 'a', position: new Position(7, 7) },
             { letter: 'a', position: new Position(7, 10) },
         ]);
-        let result = objective.getObjectivePoints(placement, ['premiertest']);
-        expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
+        let result = objective.isAccomplished(placement, ['premiertest']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 'a', position: new Position(7, 7) },
             { letter: 'u', position: new Position(7, 8) },
             { letter: 'o', position: new Position(7, 10) },
             { letter: 'i', position: new Position(7, 11) },
         ]);
-        result = objective.getObjectivePoints(placement, ['automobile']);
-        expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
+        result = objective.isAccomplished(placement, ['automobile']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [{ letter: 'o', position: new Position(7, 10) }]);
-        result = objective.getObjectivePoints(placement, ['auto']);
-        expect(result).to.equal(OBJECTIVE_ONLY_VOWELS);
+        result = objective.isAccomplished(placement, ['auto']);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for placing not all vowels', () => {
@@ -212,82 +177,72 @@ describe('Objectives', () => {
             { letter: 'v', position: new Position(7, 8) },
             { letter: 'a', position: new Position(7, 9) },
         ]);
-        let result = objective.getObjectivePoints(placement, ['laval']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['laval']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 'a', position: new Position(7, 7) },
             { letter: 'a', position: new Position(7, 8) },
             { letter: 's', position: new Position(7, 10) },
         ]);
-        result = objective.getObjectivePoints(placement, ['aas']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['aas']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [{ letter: 't', position: new Position(7, 7) }]);
-        result = objective.getObjectivePoints(placement, ['etre']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['etre']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for a word with 2 or more big letters', () => {
         objective = new Objective2BigLetters();
 
-        let result = objective.getObjectivePoints(placement, ['kiwi']);
-        expect(result).to.equal(OBJECTIVE_2_BIG_LETTERS);
+        let result = objective.isAccomplished(placement, ['kiwi']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['xqz']);
-        expect(result).to.equal(OBJECTIVE_2_BIG_LETTERS);
+        result = objective.isAccomplished(placement, ['xqz']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['yak']);
-        expect(result).to.equal(OBJECTIVE_2_BIG_LETTERS);
+        result = objective.isAccomplished(placement, ['yak']);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for less than 2 big letters', () => {
         objective = new Objective2BigLetters();
 
-        let result = objective.getObjectivePoints(placement, ['premiertest']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['premiertest']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['quoi']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['quoi']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['yeah']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['yeah']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for a word more than 7 letters', () => {
         objective = new Objective7LettersOrMore();
 
-        let result = objective.getObjectivePoints(placement, ['premiertest']);
-        expect(result).to.equal(OBJECTIVE_7_LETTERS_OR_MORE);
+        let result = objective.isAccomplished(placement, ['premiertest']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['collines']);
-        expect(result).to.equal(OBJECTIVE_7_LETTERS_OR_MORE);
+        result = objective.isAccomplished(placement, ['collines']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['anticonstitutionnellement']);
-        expect(result).to.equal(OBJECTIVE_7_LETTERS_OR_MORE);
+        result = objective.isAccomplished(placement, ['anticonstitutionnellement']);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for words with 7 letters or less', () => {
         objective = new Objective7LettersOrMore();
 
-        let result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['colline']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['colline']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
-        result = objective.getObjectivePoints(placement, ['justice']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['justice']);
+        expect(result).to.equal(false);
     });
 
     it('should give points for a word with a letter in the corner', () => {
@@ -299,10 +254,9 @@ describe('Objectives', () => {
             { letter: 's', position: new Position(0, 2) },
             { letter: 't', position: new Position(0, 3) },
         ]);
-        let result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
+        let result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 'c', position: new Position(0, 7) },
             { letter: 'o', position: new Position(0, 8) },
@@ -313,10 +267,9 @@ describe('Objectives', () => {
             { letter: 'e', position: new Position(0, 13) },
             { letter: 's', position: new Position(0, 14) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 'c', position: new Position(14, 7) },
             { letter: 'o', position: new Position(14, 8) },
@@ -327,18 +280,17 @@ describe('Objectives', () => {
             { letter: 'e', position: new Position(14, 13) },
             { letter: 's', position: new Position(14, 14) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(true);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(14, 0) },
             { letter: 'e', position: new Position(14, 1) },
             { letter: 's', position: new Position(14, 2) },
             { letter: 't', position: new Position(14, 3) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(OBJECTIVE_CORNER_PLACEMENT);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for words with no letters in the corner', () => {
@@ -350,11 +302,9 @@ describe('Objectives', () => {
             { letter: 's', position: new Position(0, 3) },
             { letter: 't', position: new Position(0, 4) },
         ]);
-        let result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        let result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 'c', position: new Position(0, 7) },
             { letter: 'o', position: new Position(0, 8) },
@@ -364,10 +314,9 @@ describe('Objectives', () => {
             { letter: 'n', position: new Position(0, 12) },
             { letter: 'e', position: new Position(0, 13) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 'c', position: new Position(14, 7) },
             { letter: 'o', position: new Position(14, 8) },
@@ -377,8 +326,8 @@ describe('Objectives', () => {
             { letter: 'n', position: new Position(14, 12) },
             { letter: 'e', position: new Position(14, 13) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
 
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(14, 1) },
@@ -386,8 +335,8 @@ describe('Objectives', () => {
             { letter: 's', position: new Position(14, 3) },
             { letter: 't', position: new Position(14, 4) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
 
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(13, 0) },
@@ -395,17 +344,16 @@ describe('Objectives', () => {
             { letter: 's', position: new Position(13, 2) },
             { letter: 't', position: new Position(13, 3) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
 
-        objective['isAvailable'] = true;
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(7, 7) },
             { letter: 'e', position: new Position(7, 8) },
             { letter: 's', position: new Position(7, 9) },
             { letter: 't', position: new Position(7, 10) },
         ]);
-        result = objective.getObjectivePoints(placement, ['test']);
-        expect(result).to.equal(NO_POINTS);
+        result = objective.isAccomplished(placement, ['test']);
+        expect(result).to.equal(false);
     });
 });
