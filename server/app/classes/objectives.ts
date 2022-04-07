@@ -4,17 +4,16 @@ import * as cst from '../constants';
 import { PlacementOption } from './placement-option';
 
 export abstract class Objective {
-    static playedWords: Set<string> = new Set<string>();
-    protected points: number;
-    protected isAvailable: boolean = true;
+    playedWords: Set<string> = new Set<string>();
+    readonly points: number;
+    readonly description: string;
 
-    getObjectivePoints(wordPlacement: PlacementOption, newWords: string[]): number {
-        if (!this.isAvailable) return cst.NO_POINTS;
+    isAccomplished(wordPlacement: PlacementOption, newWords: string[]): boolean {
         const accomplished = this.isObjectiveAccomplished(wordPlacement, newWords);
-        for (const newWord of newWords) Objective.playedWords.add(newWord);
-        if (accomplished) this.isAvailable = false;
-        return accomplished ? this.points : cst.NO_POINTS;
+        for (const newWord of newWords) this.playedWords.add(newWord);
+        return accomplished;
     }
+
     protected abstract isObjectiveAccomplished(wordPlacement: PlacementOption, newWords: string[]): boolean;
 }
 
@@ -34,6 +33,7 @@ export abstract class ObjectiveFormed extends Objective {
 
 export class ObjectivePalindrome extends ObjectiveFormed {
     points = cst.OBJECTIVE_PALINDORME;
+    description = 'Former un palindrome';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
         if (word.length < 3) return false;
@@ -43,14 +43,16 @@ export class ObjectivePalindrome extends ObjectiveFormed {
 
 export class ObjectiveAlreadyOnBoard extends ObjectiveFormed {
     points = cst.OBJECTIVE_ALREADY_ON_BOARD;
+    description = 'Former un mot déjà présent sur le plateau';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        return Objective.playedWords.has(word);
+        return this.playedWords.has(word);
     }
 }
 
 export class Objective3Vowels extends ObjectiveFormed {
     points = cst.OBJECTIVE_3_VOWELS;
+    description = 'Former un mot avec 3 voyelles';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
         const vowelCount = [...word].filter((letter) => cst.VOWELS.has(letter)).length;
@@ -60,9 +62,10 @@ export class Objective3Vowels extends ObjectiveFormed {
 
 export class ObjectiveAnagram extends ObjectiveFormed {
     points = cst.OBJECTIVE_ANAGRAM;
+    description = "Former un anagramme d'un mot déja présent";
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        return [...Objective.playedWords].some((playedWord) => this.isAnagram(word, playedWord));
+        return [...this.playedWords].some((playedWord) => this.isAnagram(word, playedWord));
     }
 
     private isAnagram(triedWord: string, word2: string): boolean {
@@ -77,14 +80,16 @@ export class ObjectiveAnagram extends ObjectiveFormed {
 
 export class ObjectiveOnlyVowels extends ObjectivePlacement {
     points = cst.OBJECTIVE_ONLY_VOWELS;
+    description = 'Former un mot sans ajouter de consonne';
 
     isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean {
-        return wordPlacement.newLetters.every((letter) => cst.VOWELS.has(letter.letter));
+        return wordPlacement.newLetters.every((letter) => cst.VOWELS.has(letter.letter.toLowerCase()));
     }
 }
 
 export class Objective2BigLetters extends ObjectiveFormed {
     points = cst.OBJECTIVE_2_BIG_LETTERS;
+    description = 'Former un mot avec 2 lettres de plus de 5 points';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
         const count = [...word].filter((letter) => cst.BIG_POINTS.has(letter)).length;
@@ -94,6 +99,7 @@ export class Objective2BigLetters extends ObjectiveFormed {
 
 export class Objective7LettersOrMore extends ObjectiveFormed {
     points = cst.OBJECTIVE_7_LETTERS_OR_MORE;
+    description = 'Former un mot de plus de 7 lettres';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
         return word.length > cst.OBJECTIVE_NUMBER_OF_LETTER;
@@ -102,6 +108,7 @@ export class Objective7LettersOrMore extends ObjectiveFormed {
 
 export class ObjectiveCornerPlacement extends ObjectivePlacement {
     points = cst.OBJECTIVE_CORNER_PLACEMENT;
+    description = 'Placer une lettre dans un coin';
 
     isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean {
         return wordPlacement.newLetters.some(
@@ -111,3 +118,14 @@ export class ObjectiveCornerPlacement extends ObjectivePlacement {
         );
     }
 }
+
+export const OBJECTIVE_TYPES: (typeof ObjectivePalindrome | typeof ObjectiveOnlyVowels)[] = [
+    ObjectivePalindrome,
+    ObjectiveAlreadyOnBoard,
+    Objective3Vowels,
+    ObjectiveAnagram,
+    ObjectiveOnlyVowels,
+    Objective2BigLetters,
+    Objective7LettersOrMore,
+    ObjectiveCornerPlacement,
+];

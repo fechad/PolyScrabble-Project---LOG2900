@@ -26,18 +26,18 @@ export class SoloDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<SoloDialogComponent>,
         public communicationService: CommunicationService,
         public avatarSelectionService: AvatarSelectionService,
-        @Inject(MAT_DIALOG_DATA) public data: { name: string; dictionnary: string; timer: number },
+        @Inject(MAT_DIALOG_DATA) public data: { name?: string; dictionnary?: string; timer?: number; log2990: boolean },
     ) {}
 
     ngOnInit(): void {
-        const minutesSelect = Math.floor(this.data.timer / cst.SEC_CONVERT);
-        const secondsSelect = this.data.timer % cst.SEC_CONVERT;
+        const minutesSelect = this.data.timer ? Math.floor(this.data.timer / cst.SEC_CONVERT) : 1;
+        const secondsSelect = this.data.timer ? this.data.timer % cst.SEC_CONVERT : 0;
 
         this.soloParametersForm = this.formBuilder.group({
             playerName: new FormControl(this.data.name || '', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
             difficulty: new FormControl(Difficulty.Beginner, [Validators.required]),
-            minutes: new FormControl(!isNaN(Math.floor(minutesSelect)) ? minutesSelect : 1, [Validators.required]),
-            seconds: new FormControl(!isNaN(secondsSelect) && secondsSelect !== 0 ? cst.THIRTY_SECONDS : 0, [Validators.required]),
+            minutes: new FormControl(minutesSelect, [Validators.required]),
+            seconds: new FormControl(secondsSelect, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
         this.opponentName = this.availableName[Math.floor(Math.random() * this.availableName.length)];
@@ -69,6 +69,7 @@ export class SoloDialogComponent implements OnInit {
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
         parameters.difficulty = this.soloParametersForm.value.difficulty;
         parameters.gameType = GameType.Solo;
+        parameters.log2990 = this.data.log2990;
         await this.communicationService.createRoom(this.soloParametersForm.value.playerName, parameters, this.opponentName);
         this.closeDialog();
     }

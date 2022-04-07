@@ -19,7 +19,7 @@ export class GameSetupDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<GameSetupDialogComponent>,
         public communicationService: CommunicationService,
         public avatarSelectionService: AvatarSelectionService,
-        @Inject(MAT_DIALOG_DATA) public data: unknown,
+        @Inject(MAT_DIALOG_DATA) public data: { log2990: boolean },
     ) {}
 
     closeDialog() {
@@ -46,6 +46,7 @@ export class GameSetupDialogComponent implements OnInit {
         parameters.avatar = this.avatarSelectionService.imgChosen;
         parameters.timer = this.gameParametersForm.value.minutes * cst.SEC_CONVERT + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
+        parameters.log2990 = this.data.log2990;
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters, undefined);
         this.dialogRef.close();
     }

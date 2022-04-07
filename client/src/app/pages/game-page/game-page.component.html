@@ -67,8 +67,8 @@
                     </button>
                 </div>
                 <div id="objectives-container">
-                    <app-objectives [isPublic]="false"></app-objectives>
-                    <app-objectives id="public-objective" [isPublic]="true"></app-objectives>
+                    <app-objectives [objectives]="privateObjectives" headerName="Objectifs privés"></app-objectives>
+                    <app-objectives [objectives]="publicObjectives" id="public-objective" headerName="Objectifs publiques"></app-objectives>
                 </div>
             </div>
             <div id="middle">

@@ -11,7 +11,7 @@ import { Socket } from 'socket.io-client';
 
 export type Tile = Letter | null;
 export type Board = Tile[][];
-export type Objective = { text: string; score: number; isPublic: boolean; doneByPlayer?: PlayerId };
+export type Objective = { text: string; score: number; isPublic: boolean; available: boolean; mine: boolean };
 export type ReserveContent = { [letter: string]: number };
 
 export enum MessageType {

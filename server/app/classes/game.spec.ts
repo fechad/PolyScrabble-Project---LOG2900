@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 import { Container } from 'typedi';
 import { EndGameCalculator } from './end-game-calculator';
 import { Game } from './game';
+import { Objective2BigLetters, Objective3Vowels, ObjectiveAnagram } from './objectives';
 import { Parameters } from './parameters';
 import { Position } from './position';
 import { Letter } from './reserve';
@@ -378,5 +379,51 @@ describe('Game', () => {
         callback();
         expect(prevTurn).to.not.equal(game.getCurrentPlayer().id);
         expect(stub.callCount).to.equal(1);
+    });
+
+    it('should send an hint when requested', () => {
+        const stub = sinon.stub();
+        game.eventEmitter.on('valid-exchange', stub);
+        game.reserve.letterRacks[0] = ['A', 'A'];
+        game['isPlayer0Turn'] = true;
+        const mathRandom = Math.random;
+        Math.random = () => 0;
+        game.hint(players[0].id);
+        Math.random = mathRandom;
+        expect(stub.args).to.deep.equal([[players[0].id, 'Indices (moins de 3 placements possibles):\n 1. !placer h8v aa']]);
+        assert(stubError.notCalled);
+    });
+
+    it('should send correct objective info', () => {
+        game['objectives'] = undefined;
+        expect(game['objectivesInfo'](players[0].id)).to.deep.equal([]);
+        game['objectives'] = [
+            { objective: new ObjectiveAnagram(), player: players[0].id },
+            { objective: new Objective2BigLetters(), player: undefined, doneByPlayer: players[0].id },
+            { objective: new Objective3Vowels(), player: undefined },
+        ];
+        expect(game['objectivesInfo'](players[0].id)).to.deep.equal([
+            {
+                available: true,
+                isPublic: false,
+                mine: false,
+                score: 20,
+                text: new ObjectiveAnagram().description,
+            },
+            {
+                available: false,
+                isPublic: true,
+                mine: true,
+                score: 50,
+                text: new Objective2BigLetters().description,
+            },
+            {
+                available: true,
+                isPublic: true,
+                mine: false,
+                score: 15,
+                text: new Objective3Vowels().description,
+            },
+        ]);
     });
 });
