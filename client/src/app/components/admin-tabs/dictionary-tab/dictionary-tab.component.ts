@@ -107,19 +107,16 @@ export class DictionaryTabComponent implements OnInit {
     async updateDictionary() {
         const newTitle = this.dictionaryForm.value.title;
         if (newTitle.trim() === '' || this.findDoubles(newTitle)) return;
-        const oldDico = this.list.find((d) => d.title === this.oldTitle);
-        if (!oldDico) throw new Error();
-        const newDico: DbDictionary = { id: oldDico.id, title: newTitle, description: this.dictionaryForm.value.description };
-        await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDico, newDico }).toPromise();
+        const oldDictionary = this.list.find((d) => d.title === this.oldTitle);
+        if (!oldDictionary) throw new Error();
+        const newDictionary: DbDictionary = { id: oldDictionary.id, title: newTitle, description: this.dictionaryForm.value.description };
+        await this.httpClient.patch<DbDictionary>(`${environment.serverUrl}/dictionaries`, { oldDictionary, newDictionary }).toPromise();
         this.updateList();
         this.editing = false;
     }
 
     async downloadDictionary(id: string) {
         await this.httpClient.get(`${environment.serverUrl}/dictionaries/download/${id}`).toPromise();
-        // const b = response as JSON;
-        // const blob = new Blob([JSON.stringify(response)], { type: 'text/plain' });
-        // this.fileDownloaded = window.URL.createObjectURL(blob);
     }
 
     findDoubles(nameToFind: string): boolean {

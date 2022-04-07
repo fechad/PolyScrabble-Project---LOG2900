@@ -6,7 +6,7 @@ import { Service } from 'typedi';
 
 type WholeDictionary = { title: string; description: string; words: string[] };
 export type ClientDictionaryInterface = { id: number; title: string; description: string };
-type DicoPair = { oldDico: DbDictionary; newDico: DbDictionary };
+export type DictPair = { oldDictionary: DbDictionary; newDictionary: DbDictionary };
 
 @Service()
 export class DbDictionariesService {
@@ -38,32 +38,27 @@ export class DbDictionariesService {
         return response;
     }
 
-    async updateDictionary(dictionary: DicoPair) {
-        await this.collection?.findOneAndReplace({ title: { $eq: dictionary.oldDico.title } }, dictionary.newDico);
+    async updateDictionary(dictionary: DictPair) {
+        await this.collection?.findOneAndReplace({ title: { $eq: dictionary.oldDictionary.title } }, dictionary.newDictionary);
         this.editFile(dictionary);
     }
 
-    editFile(files: DicoPair) {
-        const filename = files.oldDico.id;
-        const newName = files.newDico.title;
-        fs.readFile(`./dictionaries/dictionary-${filename}.json`, (error, data) => {
-            if (error) throw new Error();
-            const changeTitle = data.toString().replace(files.oldDico.title, newName);
-            const changeDesc = changeTitle.replace(files.oldDico.description, files.newDico.description);
-            fs.writeFile(`./dictionaries/dictionary-${filename}.json`, changeDesc, (e) => {
-                if (e) throw new Error();
-            });
-        });
+    async editFile(files: DictPair) {
+        const filename = files.oldDictionary.id;
+        const newName = files.newDictionary.title;
+        const data = await fs.promises.readFile(`./dictionaries/dictionary-${filename}.json`);
+
+        const changeTitle = data.toString().replace(files.oldDictionary.title, newName);
+        const changeDesc = changeTitle.replace(files.oldDictionary.description, files.newDictionary.description);
+        await fs.promises.writeFile(`./dictionaries/dictionary-${filename}.json`, changeDesc);
     }
 
-    syncDictionaries() {
-        fs.readdir('./dictionaries/', (error, files) => {
-            if (error) return;
-            files.forEach(async (file) => {
-                const id = Number(file.split('-')[1][0]);
-                await this.removeDictionaryFile(id);
-            });
-        });
+    async syncDictionaries() {
+        const files = await fs.promises.readdir('./dictionaries/');
+        for (const file of files) {
+            const id = Number(file.split('-')[1][0]);
+            await this.removeDictionaryFile(id);
+        }
     }
 
     async downloadDictionary(id: string): Promise<string> {
@@ -84,9 +79,7 @@ export class DbDictionariesService {
         const idList = dictionaries.map((dictionary) => dictionary.id);
 
         if (!idList.includes(fileId)) {
-            fs.unlink(`./dictionaries/dictionary-${fileId}.json`, (error) => {
-                if (error) throw error;
-            });
+            await fs.promises.unlink(`./dictionaries/dictionary-${fileId}.json`);
         }
     }
 
