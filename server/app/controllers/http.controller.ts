@@ -89,6 +89,11 @@ export class HttpController {
             res.json(games);
         });
 
+        this.router.delete('/game-history', async (req: Request, res: Response) => {
+            await this.gameHistoryService.clearHistory();
+            return res.sendStatus(StatusCodes.ACCEPTED);
+        });
+
         this.router.get('/vp-names', async (req: Request, res: Response) => {
             const names = await this.vpNamesService.getNames();
             res.json(names);

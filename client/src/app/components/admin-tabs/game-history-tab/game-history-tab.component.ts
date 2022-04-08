@@ -18,4 +18,9 @@ export class GameHistoryTabComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.games = (await this.httpClient.get<GameHistory[]>(`${environment.serverUrl}/game-history`).toPromise()).reverse();
     }
+
+    async clearHistory() {
+        await this.httpClient.delete(`${environment.serverUrl}/game-history`).toPromise();
+        await this.ngOnInit();
+    }
 }
