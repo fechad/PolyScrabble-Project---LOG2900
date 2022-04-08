@@ -53,4 +53,24 @@ describe('Game History Service', () => {
         await gameHistoryService.addGame(playedGame);
         expect(await gameHistoryService.getHistory()).to.deep.equal([gameCopy]);
     });
+
+    it('should clear games from DB', async () => {
+        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
+        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
+
+        const playedGame: GameHistory = {
+            startTime: new Date(),
+            length: '0 min 3 sec',
+            firstPlayer: secondPlayer,
+            secondPlayer: firstPlayer,
+            mode: GameMode.Classic,
+        };
+        const gameCopy = { ...playedGame };
+        await gameHistoryService.addGame(playedGame);
+        expect(await gameHistoryService.getHistory()).to.deep.equal([gameCopy]);
+        await gameHistoryService.clearHistory();
+        expect(await gameHistoryService.getHistory()).to.deep.equal([]);
+        await gameHistoryService.addGame(playedGame);
+        expect(await gameHistoryService.getHistory()).to.deep.equal([gameCopy]);
+    });
 });
