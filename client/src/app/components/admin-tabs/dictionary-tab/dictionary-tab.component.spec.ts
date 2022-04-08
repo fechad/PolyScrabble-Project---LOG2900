@@ -5,17 +5,17 @@ import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { DbDictionary, DictionaryTabComponent } from './dictionary-tab.component';
 
-const setHTML = () => {
-    const div = document.createElement('div');
-    div.classList.add('box');
-    const input = document.createElement('input');
-    input.id = 'upload';
-    input.type = 'file';
-    input.accept = '.json';
-    input.classList.add('form-control');
-    div.appendChild(input);
-    document.body.appendChild(div);
-};
+// const setHTML = () => {
+//     const div = document.createElement('div');
+//     div.classList.add('box');
+//     const input = document.createElement('input');
+//     input.id = 'upload';
+//     input.type = 'file';
+//     input.accept = '.json';
+//     input.classList.add('form-control');
+//     div.appendChild(input);
+//     document.body.appendChild(div);
+// };
 
 // const TIME_OUT = 100;
 
