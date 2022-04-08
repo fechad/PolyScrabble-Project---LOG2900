@@ -10,20 +10,20 @@ p {
     width: 0%;
 }
 
-.available p {
+p.available {
     color: black;
     font-size: 15px;
 }
 
-:not(.available) p {
+p:not(.available) {
     text-decoration: line-through;
 }
 
-.isMine p {
-    color: greenyellow;
+p.isMine {
+    color: darkolivegreen;
 }
 
-:not(.available, .isMine) p {
+p:not(.available, .isMine) {
     color: red;
 }
 

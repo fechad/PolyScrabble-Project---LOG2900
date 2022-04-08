@@ -7,6 +7,7 @@ import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
+import { Objective, OBJECTIVE_TYPES } from './objectives';
 import { Difficulty } from './parameters';
 import { PlacementOption } from './placement-option';
 import { Position } from './position';
@@ -14,6 +15,8 @@ import { Reserve } from './reserve';
 import { Player, PlayerId, Room, State } from './room';
 import { VirtualPlayer } from './virtual-player';
 import { WordGetter } from './word-getter';
+
+/* eslint-disable max-lines */
 
 export type GameId = number;
 type Tile = Letter | undefined;
@@ -38,6 +41,9 @@ type GameState = {
     winner?: PlayerId;
 };
 
+type ObjectiveInfo = { text: string; score: number; isPublic: boolean; available: boolean; mine: boolean };
+type Objectives = { objective: Objective; player?: PlayerId; doneByPlayer?: PlayerId }[];
+
 export class Game {
     readonly eventEmitter = new EventEmitter();
     readonly reserve = new Reserve();
@@ -52,6 +58,7 @@ export class Game {
     private readonly wordGetter;
     private gameHistory: GameHistory;
     private startTime: Date;
+    private objectives?: Objectives;
 
     constructor(
         readonly room: Room,
@@ -76,6 +83,25 @@ export class Game {
             secondPlayer: secondPlayerInfo,
             mode: gameMode,
         };
+        if (room.parameters.log2990) {
+            this.objectives = Game.genRandomObjectives(this.players[cst.MAIN_PLAYER].id, this.players[cst.OTHER_PLAYER].id);
+        }
+    }
+
+    // Taken from https://stackoverflow.com/a/12646864/4950659
+    private static shuffleArray<T>(array: T[]): T[] {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId): Objectives {
+        const players = [undefined, undefined, playerOne, playerTwo];
+        return this.shuffleArray(OBJECTIVE_TYPES.slice())
+            .slice(0, players.length)
+            .map((objectiveType, i) => ({ objective: new objectiveType(), player: players[i] }));
     }
 
     private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
@@ -100,6 +126,8 @@ export class Game {
             winner: this.winner,
         };
         this.eventEmitter.emit('state', state);
+        this.eventEmitter.emit('objectives', this.players[cst.MAIN_PLAYER].id, this.objectivesInfo(this.players[cst.MAIN_PLAYER].id));
+        this.eventEmitter.emit('objectives', this.players[cst.OTHER_PLAYER].id, this.objectivesInfo(this.players[cst.OTHER_PLAYER].id));
         this.eventEmitter.emit(
             'rack',
             this.players[cst.MAIN_PLAYER].id,
@@ -158,6 +186,22 @@ export class Game {
 
                 this.scores[playerIndex] += words.reduce((sum, word) => (sum += word.score), 0);
                 if (letters.length === cst.WORD_LENGTH_BONUS) this.scores[playerIndex] += cst.BONUS_POINTS;
+                if (this.objectives) {
+                    const accomplishedObjectives = this.objectives
+                        .filter((objective) => !objective.player || objective.player === playerId)
+                        .filter((objective) => !objective.doneByPlayer)
+                        .filter((objective) =>
+                            objective.objective.isAccomplished(
+                                triedPlacement,
+                                words.map((word) => word.word),
+                            ),
+                        );
+                    for (const objective of accomplishedObjectives) {
+                        console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
+                        this.scores[playerIndex] += objective.objective.points;
+                        objective.doneByPlayer = playerId;
+                    }
+                }
 
                 this.board.place(triedPlacement.newLetters);
 
@@ -190,7 +234,10 @@ export class Game {
 
     changeLetters(letters: string[], playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            if (this.reserve.getCount() >= cst.MINIMUM_EXCHANGE_RESERVE_COUNT) {
+            if (
+                this.reserve.getCount() >= letters.length &&
+                (this.getCurrentPlayer().virtual || this.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT)
+            ) {
                 this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
                 let validMessage = 'Vous avez échangé les lettres:  ' + letters;
                 this.eventEmitter.emit('valid-exchange', playerId, validMessage);
@@ -210,21 +257,22 @@ export class Game {
             const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
             const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const options = virtual.chooseWords(this.reserve.letterRacks[player]).slice(0, 3);
-            const warning =
-                options.length === 0 ? 'Aucun placement possible' : options.length < cst.HINT_NUMBER_OPTIONS ? 'Moins de 3 placements possible' : '';
-            const hintMessage =
-                'Indice:\n' +
-                options
-                    .map(
-                        (opt, i) =>
-                            ` ${i + 1}. ${Game.createCommand(
-                                opt.placement.newLetters.map((letter) => letter.letter),
-                                opt.placement.newLetters[0].position,
-                                opt.placement.isHorizontal,
-                            )}`,
-                    )
-                    .join('\n') +
-                warning;
+            let hintMessage =
+                options.length === 0
+                    ? 'Aucun placement possible'
+                    : options.length < cst.HINT_NUMBER_OPTIONS
+                    ? 'Indices (moins de 3 placements possibles):\n'
+                    : 'Indices:\n';
+            hintMessage += options
+                .map(
+                    (opt, i) =>
+                        ` ${i + 1}. ${Game.createCommand(
+                            opt.placement.newLetters.map((letter) => letter.letter),
+                            opt.placement.newLetters[0].position,
+                            opt.placement.isHorizontal,
+                        )}`,
+                )
+                .join('\n');
             this.eventEmitter.emit('valid-exchange', playerId, hintMessage);
         }
     }
@@ -244,9 +292,18 @@ export class Game {
 
     forfeit(idLoser: PlayerId) {
         if (this.room.getState() !== State.Started) return;
-        this.room.end(true);
-        this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
-        this.completeGameHistory();
+        if (this.players.every((player) => player.id !== idLoser)) return;
+        if (this.players.some((player) => player.virtual)) {
+            this.room.end(true);
+            this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
+            this.completeGameHistory();
+        } else {
+            const idxPlayerToReplace = idLoser === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
+            const oldName = this.players[idxPlayerToReplace].name;
+            this.replaceByVirtualPlayer(idxPlayerToReplace);
+            const message = `Votre adversaire ${oldName} a abandonné et sera remplacé par ${this.players[idxPlayerToReplace].name}`;
+            this.eventEmitter.emit('message', { text: message, emitter: 'command' } as Message);
+        }
         this.sendState();
     }
 
@@ -279,6 +336,20 @@ export class Game {
         this.gameHistoryService.addGame(this.gameHistory);
     }
 
+    private objectivesInfo(id: PlayerId): ObjectiveInfo[] {
+        return this.objectives
+            ? this.objectives
+                  .filter((objective) => !objective.player || objective.player === id || objective.doneByPlayer)
+                  .map((objective) => ({
+                      text: objective.objective.description,
+                      score: objective.objective.points,
+                      isPublic: !objective.player,
+                      available: !objective.doneByPlayer,
+                      mine: objective.doneByPlayer === id,
+                  }))
+            : [];
+    }
+
     private timeoutHandler() {
         this.nextTurn(true);
         this.sendState();
@@ -298,6 +369,19 @@ export class Game {
         } else {
             this.timeout = undefined;
         }
+    }
+
+    private replaceByVirtualPlayer(idxPlayerToReplace: number) {
+        const listOfNames = ['name1', 'name2', 'name3', 'name4']; // TODO: prendre les vrais eventuellement
+        let idxName = Math.floor(Math.random() * listOfNames.length);
+        if (this.players.every((player, idx) => idx !== idxPlayerToReplace && listOfNames[idxName] === player.name)) {
+            idxName = (idxName + 1) % listOfNames.length;
+        }
+        this.players[idxPlayerToReplace].name = listOfNames[idxName];
+        this.players[idxPlayerToReplace].virtual = true;
+        this.players[idxPlayerToReplace].id = 'VP';
+        const vP = new VirtualPlayer(Difficulty.Beginner, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
+        vP.waitForTurn();
     }
 
     private getPlayerId(isActivePlayer: boolean) {

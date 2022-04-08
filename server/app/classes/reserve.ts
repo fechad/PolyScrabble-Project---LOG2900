@@ -21,7 +21,7 @@ export class Reserve {
 
     drawLetters(quantity: number): Letter[] {
         const lettersToSend: Letter[] = [];
-        const pullableQuantity = this.reserve.length > quantity ? quantity : this.reserve.length;
+        const pullableQuantity = Math.min(quantity, this.reserve.length);
         for (let i = 0; i < pullableQuantity; i++) {
             const index: number = Math.floor(Math.random() * this.reserve.length); // random number from array
             lettersToSend.push(this.reserve[index]);
@@ -70,7 +70,7 @@ export class Reserve {
     }
 
     private setRacks() {
-        const rackLength = 7;
+        const rackLength = cst.RACK_LENGTH;
         const rack1: string[] = [];
         const rack2: string[] = [];
         for (let i = 0; i < rackLength; i++) {

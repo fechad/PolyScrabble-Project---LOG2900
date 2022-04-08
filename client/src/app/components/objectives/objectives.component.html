@@ -4,7 +4,7 @@
             <h1>{{ headerName }}</h1>
         </div>
         <div *ngFor="let objective of objectives">
-            <p [ngClass]="{ available: !objective.doneByPlayer, isMine: objective.doneByPlayer === gameContext.myId }">
+            <p [ngClass]="{ available: objective.available, isMine: objective.mine }">
                 {{ objective.text }}: {{ objective.score }}pts
             </p>
         </div>

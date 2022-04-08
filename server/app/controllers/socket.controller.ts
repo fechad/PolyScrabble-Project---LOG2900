@@ -160,7 +160,7 @@ export class SocketManager {
 
             const events: string[] = ['message', 'state'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
-            const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange', 'reserve-content'];
+            const specificPlayerEvents = ['objectives', 'rack', 'game-error', 'valid-exchange', 'reserve-content'];
             for (const event of specificPlayerEvents) {
                 handlers.push([
                     event,

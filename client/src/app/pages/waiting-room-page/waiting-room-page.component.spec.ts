@@ -64,7 +64,7 @@ describe('WaitingRoomPageComponent', () => {
             providers: [
                 { provide: CommunicationService, useValue: service },
                 { provide: MatDialog, useValue: dialogMock },
-                { provide: ActivatedRoute, useValue: {} },
+                { provide: ActivatedRoute, useValue: { snapshot: { url: [''] } } },
             ],
         })
             .overrideComponent(WaitingRoomPageComponent, { set: { changeDetection: ChangeDetectionStrategy.Default } })
