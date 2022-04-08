@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { BOARD_SIZE } from '@app/constants';
 import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
@@ -46,18 +47,19 @@ export class DictionaryTabComponent implements OnInit {
         this.list = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
     }
 
-    createNewDbDictionary(): DbDictionary {
+    createNewDbDictionary(title: string, description: string, words: string[]): DbDictionary {
         let lastDicoId = this.list[this.list.length - 1].id;
         this.newDictionnary = {
             id: lastDicoId === 0 ? 1 : (lastDicoId += 1),
-            title: this.dictionaryForm.value.title,
-            description: this.dictionaryForm.value.description,
-            words: this.newWords,
+            title,
+            description,
+            words,
         };
+
         return this.newDictionnary;
     }
 
-    getFileInfos(e: Event) {
+    async getFileInfos(e: Event) {
         const target = e.target as HTMLInputElement;
         const newFile = (target.files as FileList)[0];
         const reader = new FileReader();
@@ -66,10 +68,7 @@ export class DictionaryTabComponent implements OnInit {
             try {
                 const obj = JSON.parse(content);
                 if (this.validateDictionary(obj.title, obj.description, obj.words)) {
-                    this.newWords = obj.words;
-                    this.dictionaryForm.value.title = obj.title;
-                    this.dictionaryForm.value.description = obj.description;
-                    this.createNewDbDictionary();
+                    this.createNewDbDictionary(obj.title, obj.description, obj.words);
                 } else throw new Error();
             } catch (error) {
                 this.error = 'Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.';
@@ -88,7 +87,7 @@ export class DictionaryTabComponent implements OnInit {
     validateDictionaryWords(words: string[]): boolean {
         for (const word of words) {
             if (word.includes(' ') || !word.match(/[A-zÀ-ù]/g)) return false;
-            if (word.length > 15) return false;
+            if (word.length > BOARD_SIZE) return false;
         }
         return true;
     }
@@ -101,11 +100,6 @@ export class DictionaryTabComponent implements OnInit {
 
     async deleteDictionary(id: string) {
         await this.httpClient.delete<DbDictionary>(`${environment.serverUrl}/dictionaries/${id}`).toPromise();
-        this.updateList();
-    }
-
-    async deleteAll() {
-        await this.httpClient.delete(`${environment.serverUrl}/dictionaries-reset`).toPromise();
         this.updateList();
     }
 
@@ -150,5 +144,10 @@ export class DictionaryTabComponent implements OnInit {
         }
         this.addDictionary();
         this.emptyForm();
+    }
+
+    async deleteAll() {
+        await this.httpClient.delete(`${environment.serverUrl}/dictionaries-reset`).toPromise();
+        this.updateList();
     }
 }
