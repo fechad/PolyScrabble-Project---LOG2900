@@ -105,4 +105,12 @@ describe('VpNamesService', () => {
             { default: true, beginer: false, name: 'Dummer' },
         ]);
     });
+
+    it('should delete all virtual player names except default ones', async () => {
+        vpNamesService.deleteAll();
+        expect(await vpNamesService.getNames()).to.deep.equal([
+            { default: true, beginer: true, name: 'Dummy' },
+            { default: true, beginer: false, name: 'Dummer' },
+        ]);
+    });
 });
