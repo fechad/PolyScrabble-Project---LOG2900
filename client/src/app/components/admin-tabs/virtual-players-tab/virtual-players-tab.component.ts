@@ -33,12 +33,15 @@ export class VirtualPlayersTabComponent implements OnInit {
     async updateList(): Promise<void> {
         this.beginnerList = [];
         this.expertList = [];
+        console.log('entered');
         this.list = await this.httpClient.get<VP[]>(`${environment.serverUrl}/vp-names`).toPromise();
+
         for (const vp of this.list) {
             if (vp.beginner) {
                 this.beginnerList.push(vp);
             } else this.expertList.push(vp);
         }
+        console.log('entered', this.beginnerList);
     }
 
     async addPlayer(name: string, beginner: boolean) {
