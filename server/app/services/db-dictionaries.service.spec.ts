@@ -40,11 +40,7 @@ describe('DbDictionariesService', () => {
         await dataBase.connect();
         dbDictionariesService = new DbDictionariesService(dataBase);
         collection = dataBaseManager.db.collection(COLLECTIONS[0]);
-<<<<<<< HEAD
-        // pour pouvoir accéder à l'atribut private
-=======
         // in order to access private attribute
->>>>>>> cec839d... test for deleteAll dictionary service server
         // eslint-disable-next-line dot-notation
         dbDictionariesService['collection'] = collection;
         await collection.insertOne({ id: 0, title: 'dummy', description: 'abc', words: ['a', 'b', 'c'] });
@@ -140,13 +136,10 @@ describe('DbDictionariesService', () => {
         await dbDictionariesService.editFile(newUpdate);
         expect(file).to.deep.equal(['def', 'dumdum']);
     });
-<<<<<<< HEAD
-=======
 
     it('should delete all dictionaries except default one', async () => {
         sinon.stub(dbDictionariesService, 'syncDictionaries').returns(Promise.resolve());
         dbDictionariesService.deleteAll();
         expect(await dbDictionariesService.getDictionaries()).to.have.lengthOf(1);
     });
->>>>>>> cec839d... test for deleteAll dictionary service server
 });

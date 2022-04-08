@@ -39,7 +39,6 @@ export class VirtualPlayersTabComponent implements OnInit {
                 this.beginnerList.push(vp);
             } else this.expertList.push(vp);
         }
-        console.log('entered', this.beginnerList);
     }
 
     async addPlayer(name: string, beginner: boolean) {

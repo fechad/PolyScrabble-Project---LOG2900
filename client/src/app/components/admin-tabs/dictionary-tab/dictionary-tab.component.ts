@@ -6,8 +6,6 @@ import { environment } from 'src/environments/environment';
 
 export type DbDictionary = { id: number; title: string; description: string; words?: string[] };
 
-type DbDictionary = { id: number; name: string; description: string; words: string[] };
-
 @Component({
     selector: 'app-dictionary-tab',
     templateUrl: './dictionary-tab.component.html',
