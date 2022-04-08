@@ -82,12 +82,7 @@ export class GameContextService {
             this.objectives.next(objectives);
         });
         socket.on('disconnect', () => {
-            swal.fire({
-                title: 'Oh non!',
-                text: "Vous n'êtes pas connecté au server actuellement",
-                showCloseButton: true,
-                confirmButtonText: 'Compris!',
-            });
+            this.serverDownAlert();
         });
     }
 
