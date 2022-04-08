@@ -188,7 +188,7 @@ export class CommunicationService {
     private serverDownAlert() {
         swal.fire({
             title: 'Oh non!',
-            text: "Vous n'êtes pas connecté au server actuellement",
+            text: "Vous n'êtes pas connecté au serveur actuellement",
             showCloseButton: true,
             confirmButtonText: 'Compris!',
         });
