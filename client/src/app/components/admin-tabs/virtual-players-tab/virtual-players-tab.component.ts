@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
-type VP = {
+export type VP = {
     default: boolean;
     beginner: boolean;
     name: string;
@@ -16,15 +16,13 @@ type VP = {
 export class VirtualPlayersTabComponent implements OnInit {
     faTrash = faTrashAlt;
     faRefresh = faSync;
-    list: VP[];
+    list: VP[] = [];
     beginnerList: VP[];
     expertList: VP[];
-    clicked: boolean = false;
-    clickedExpert: boolean = false;
+    clicked: boolean[] = [false, false];
     nameInput: string = '';
     nameInputExpert: string = '';
-    error: string = '';
-    errorExpert: string = '';
+    error: [boolean, string] = [true, ''];
 
     constructor(readonly httpClient: HttpClient) {}
 
@@ -67,8 +65,7 @@ export class VirtualPlayersTabComponent implements OnInit {
 
     invalidName(name: string, beginner: boolean): boolean {
         if (name.match(/[^A-zÀ-û]/g) || name.match(/[_]/g)) {
-            if (beginner) this.error = 'Les caractères doivent être des lettres seulement.';
-            else this.errorExpert = 'Les caractères doivent être des lettres seulement.';
+            this.error = [beginner, 'Les caractères doivent être des lettres seulement.'];
             return true;
         }
         return false;
@@ -76,8 +73,7 @@ export class VirtualPlayersTabComponent implements OnInit {
 
     findDoubles(nameToFind: string, beginner: boolean): boolean {
         if (this.list.find((vp) => vp.name.toLowerCase() === nameToFind.toLowerCase())) {
-            if (beginner) this.error = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
-            else this.errorExpert = 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.';
+            this.error = [beginner, 'Un des joueurs virtuels détient déjà ce nom, veuillez en choisir un autre.'];
             return true;
         }
         return false;
@@ -85,13 +81,12 @@ export class VirtualPlayersTabComponent implements OnInit {
 
     hideInput(beginner: boolean) {
         if (beginner) {
+            this.clicked[0] = false;
             this.nameInput = '';
-            this.error = '';
-            this.clicked = false;
         } else {
+            this.clicked[1] = false;
             this.nameInputExpert = '';
-            this.errorExpert = '';
-            this.clickedExpert = false;
         }
+        this.error = [beginner, ''];
     }
 }
