@@ -8,7 +8,7 @@ import {
     ObjectiveAnagram,
     ObjectiveCornerPlacement,
     ObjectiveOnlyVowels,
-    ObjectivePalindrome,
+    ObjectivePalindrome
 } from './objectives';
 import { PlacementOption } from './placement-option';
 import { Position } from './position';
@@ -18,10 +18,12 @@ import { Position } from './position';
 /* eslint-disable max-lines */
 
 describe('Objectives', () => {
+    let playedWords: Set<string>;
     let placement: PlacementOption;
     let objective: Objective;
 
     beforeEach(() => {
+        playedWords = new Set<string>();
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(7, 7) },
             { letter: 'e', position: new Position(7, 8) },
@@ -31,7 +33,7 @@ describe('Objectives', () => {
     });
 
     it('should give points for a palindrome', () => {
-        objective = new ObjectivePalindrome();
+        objective = new ObjectivePalindrome(playedWords);
 
         let result = objective.isAccomplished(placement, ['laval']);
         expect(result).to.equal(true);
@@ -44,7 +46,7 @@ describe('Objectives', () => {
     });
 
     it('should not give points for no palindrome', () => {
-        objective = new ObjectivePalindrome();
+        objective = new ObjectivePalindrome(playedWords);
 
         let result = objective.isAccomplished(placement, ['lavel']);
         expect(result).to.equal(false);
@@ -57,8 +59,8 @@ describe('Objectives', () => {
     });
 
     it('should give points for a word already on board', () => {
-        objective = new ObjectiveAlreadyOnBoard();
-        const otherObjective = new ObjectivePalindrome();
+        objective = new ObjectiveAlreadyOnBoard(playedWords);
+        const otherObjective = new ObjectivePalindrome(playedWords);
 
         objective.isAccomplished(placement, ['premiertest']);
         objective.isAccomplished(placement, ['secondtest']);
@@ -71,11 +73,11 @@ describe('Objectives', () => {
         expect(result).to.equal(true);
 
         result = objective.isAccomplished(placement, ['troisiemetest']);
-        expect(result).to.equal(false);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for not already on board', () => {
-        objective = new ObjectiveAlreadyOnBoard();
+        objective = new ObjectiveAlreadyOnBoard(playedWords);
 
         let result = objective.isAccomplished(placement, ['premiertest']);
         expect(result).to.equal(false);
@@ -88,7 +90,7 @@ describe('Objectives', () => {
     });
 
     it('should give points for a 3 or more vowels word', () => {
-        objective = new Objective3Vowels();
+        objective = new Objective3Vowels(playedWords);
 
         let result = objective.isAccomplished(placement, ['eau']);
         expect(result).to.equal(true);
@@ -101,7 +103,7 @@ describe('Objectives', () => {
     });
 
     it('should not give points for less than 3 vowels', () => {
-        objective = new Objective3Vowels();
+        objective = new Objective3Vowels(playedWords);
 
         let result = objective.isAccomplished(placement, ['laval']);
         expect(result).to.equal(false);
@@ -114,8 +116,8 @@ describe('Objectives', () => {
     });
 
     it('should give points for an anagram of a word already on board', () => {
-        objective = new ObjectiveAnagram();
-        const otherObjective = new ObjectivePalindrome();
+        objective = new ObjectiveAnagram(playedWords);
+        const otherObjective = new ObjectivePalindrome(playedWords);
 
         objective.isAccomplished(placement, ['premiertest']);
         objective.isAccomplished(placement, ['secondtest']);
@@ -128,11 +130,11 @@ describe('Objectives', () => {
         expect(result).to.equal(true);
 
         result = objective.isAccomplished(placement, ['testtroisieme']);
-        expect(result).to.equal(false);
+        expect(result).to.equal(true);
     });
 
     it('should not give points for no anagram', () => {
-        objective = new ObjectiveAnagram();
+        objective = new ObjectiveAnagram(playedWords);
         objective.isAccomplished(placement, ['premiertttt']);
 
         let result = objective.isAccomplished(placement, ['premiertest']);
@@ -141,12 +143,12 @@ describe('Objectives', () => {
         result = objective.isAccomplished(placement, ['secondtest']);
         expect(result).to.equal(false);
 
-        result = objective.isAccomplished(placement, ['troisiemetest']);
+        result = objective.isAccomplished(placement, ['secondtest']);
         expect(result).to.equal(false);
     });
 
     it('should give points for only placing vowels', () => {
-        objective = new ObjectiveOnlyVowels();
+        objective = new ObjectiveOnlyVowels(playedWords);
 
         placement = new PlacementOption(true, [
             { letter: 'a', position: new Position(7, 7) },
@@ -170,7 +172,7 @@ describe('Objectives', () => {
     });
 
     it('should not give points for placing not all vowels', () => {
-        objective = new ObjectiveOnlyVowels();
+        objective = new ObjectiveOnlyVowels(playedWords);
 
         placement = new PlacementOption(true, [
             { letter: 'a', position: new Position(7, 7) },
@@ -194,7 +196,7 @@ describe('Objectives', () => {
     });
 
     it('should give points for a word with 2 or more big letters', () => {
-        objective = new Objective2BigLetters();
+        objective = new Objective2BigLetters(playedWords);
 
         let result = objective.isAccomplished(placement, ['kiwi']);
         expect(result).to.equal(true);
@@ -207,7 +209,7 @@ describe('Objectives', () => {
     });
 
     it('should not give points for less than 2 big letters', () => {
-        objective = new Objective2BigLetters();
+        objective = new Objective2BigLetters(playedWords);
 
         let result = objective.isAccomplished(placement, ['premiertest']);
         expect(result).to.equal(false);
@@ -220,7 +222,7 @@ describe('Objectives', () => {
     });
 
     it('should give points for a word more than 7 letters', () => {
-        objective = new Objective7LettersOrMore();
+        objective = new Objective7LettersOrMore(playedWords);
 
         let result = objective.isAccomplished(placement, ['premiertest']);
         expect(result).to.equal(true);
@@ -233,7 +235,7 @@ describe('Objectives', () => {
     });
 
     it('should not give points for words with 7 letters or less', () => {
-        objective = new Objective7LettersOrMore();
+        objective = new Objective7LettersOrMore(playedWords);
 
         let result = objective.isAccomplished(placement, ['test']);
         expect(result).to.equal(false);
@@ -246,7 +248,7 @@ describe('Objectives', () => {
     });
 
     it('should give points for a word with a letter in the corner', () => {
-        objective = new ObjectiveCornerPlacement();
+        objective = new ObjectiveCornerPlacement(playedWords);
 
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(0, 0) },
@@ -294,7 +296,7 @@ describe('Objectives', () => {
     });
 
     it('should not give points for words with no letters in the corner', () => {
-        objective = new ObjectiveCornerPlacement();
+        objective = new ObjectiveCornerPlacement(playedWords);
 
         placement = new PlacementOption(true, [
             { letter: 't', position: new Position(0, 1) },
