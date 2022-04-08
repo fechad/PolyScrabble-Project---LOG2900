@@ -31,7 +31,6 @@ export class HttpController {
     router: Router;
     private vpNamesService: VpNamesService;
     private dbDictionaryService: DbDictionariesService;
-    private highScoreService: HighScoresService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
@@ -39,16 +38,17 @@ export class HttpController {
         private readonly roomsService: RoomsService,
         private readonly dataBase: DataBaseController,
         private gameHistoryService: GameHistoryService,
+        private highScoreService: HighScoresService,
     ) {
         this.dictionnaryService.init();
+        this.gameHistoryService.connect();
+        this.highScoreService.connect();
         this.init();
         this.configureRouter();
     }
 
     private async init() {
         await this.dataBase.connect();
-        this.gameHistoryService = Container.get(GameHistoryService);
-        this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
         this.dbDictionaryService = Container.get(DbDictionariesService);
     }
