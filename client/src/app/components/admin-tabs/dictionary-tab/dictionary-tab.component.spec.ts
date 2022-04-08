@@ -83,27 +83,27 @@ describe('DictionaryTabComponent', () => {
         expect(result).toEqual(newDictionary);
     });
 
-    it('should get file infos ', async () => {
-        setHTML();
-        component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
-        component.uploading = true;
-        const dataTransfer = new DataTransfer();
-        const expected: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
-        const dictionaryFile = new File([JSON.stringify({ title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] })], 'dict-1.json', {
-            type: 'application/json',
-        });
-        dataTransfer.items.add(dictionaryFile);
-        const inputCollection = document.getElementsByClassName('form-control');
-        const input = inputCollection.item(0) as HTMLInputElement;
-        input.files = dataTransfer.files;
+    // it('should get file infos ', async () => {
+    //     setHTML();
+    //     component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+    //     component.uploading = true;
+    //     const dataTransfer = new DataTransfer();
+    //     const expected: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
+    //     const dictionaryFile = new File([JSON.stringify({ title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] })], 'dict-1.json', {
+    //         type: 'application/json',
+    //     });
+    //     dataTransfer.items.add(dictionaryFile);
+    //     const inputCollection = document.getElementsByClassName('form-control');
+    //     const input = inputCollection.item(0) as HTMLInputElement;
+    //     input.files = dataTransfer.files;
 
-        input.addEventListener('change', async (event: Event) => await component.getFileInfos(event));
-        input.dispatchEvent(new InputEvent('change'));
-        await new Promise<void>((resolve) => {
-            setTimeout(() => resolve(), TIME_OUT);
-        });
+    //     input.addEventListener('change', async (event: Event) => await component.getFileInfos(event));
+    //     input.dispatchEvent(new InputEvent('change'));
+    //     await new Promise<void>((resolve) => {
+    //         setTimeout(() => resolve(), TIME_OUT);
+    //     });
 
-        expect(component.newDictionnary).toEqual(expected);
-        fixture.detectChanges();
-    });
+    //     expect(component.newDictionnary).toEqual(expected);
+    //     fixture.detectChanges();
+    // });
 });
