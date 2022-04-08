@@ -11,7 +11,6 @@ export class AdminPageComponent {
     faHome = faHome;
     faRefresh = faSync;
     tabSelection: string = 'history';
-    constructor() {}
 
     changeSelection(e: MouseEvent) {
         const selection = e.target as HTMLElement;
