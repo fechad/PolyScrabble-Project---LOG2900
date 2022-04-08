@@ -4,6 +4,7 @@ import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import { EndGameCalculator } from './end-game-calculator';
 import { Game } from './game';
@@ -25,15 +26,15 @@ describe('Game', () => {
     let game: Game;
     let stubError: sinon.SinonStub;
     let dictionnary: DictionnaryService;
-    let gameHistory: GameHistoryService;
+    let gameHistoryService: SinonStubbedInstance<GameHistoryService>;
     let stubSetTimeout: sinon.SinonStub;
     let stubClearTimeout: sinon.SinonStub;
 
     before(async () => {
         dictionnary = Container.get(DictionnaryService);
         await dictionnary.init();
-        gameHistory = Container.get(GameHistoryService);
-        await gameHistory.connect();
+        gameHistoryService = createStubInstance(GameHistoryService);
+        await gameHistoryService.connect();
     });
 
     beforeEach(() => {
@@ -46,7 +47,7 @@ describe('Game', () => {
         room.addPlayer(players[1].id, players[1].name, players[1].virtual, players[1].avatar);
         stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
         stubClearTimeout = sinon.stub(global, 'clearTimeout');
-        game = new Game(room, dictionnary, gameHistory);
+        game = new Game(room, dictionnary, gameHistoryService as unknown as GameHistoryService);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
         game['isPlayer0Turn'] = true;
@@ -58,7 +59,7 @@ describe('Game', () => {
 
     it('should exit with error if trying to create game with only one player', () => {
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        expect(() => new Game(room, dictionnary, gameHistory)).to.throw();
+        expect(() => new Game(room, dictionnary, gameHistoryService as unknown as GameHistoryService)).to.throw();
     });
 
     it('should get a message and broadcast it', (done) => {
