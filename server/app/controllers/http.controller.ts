@@ -32,13 +32,13 @@ export class HttpController {
     private vpNamesService: VpNamesService;
     private dbDictionaryService: DbDictionariesService;
     private highScoreService: HighScoresService;
+    private gameHistoryService: GameHistoryService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
         private readonly dataBase: DataBaseController,
-        private gameHistoryService: GameHistoryService,
     ) {
         this.init();
         this.configureRouter();
