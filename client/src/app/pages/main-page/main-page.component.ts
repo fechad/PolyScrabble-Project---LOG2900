@@ -12,13 +12,13 @@ export class MainPageComponent {
     buttonsMainPage: Button[] = [
         {
             route: '/classic',
-            toolTip: 'Une partie de Scrabble avec les règles standards',
+            toolTip: 'Une partie de Scrabble avec les règles classiques',
             text: 'Mode Classique',
             disabled: false,
             promptsDialog: false,
         },
         {
-            route: '/2990',
+            route: '/log2990',
             toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
             text: 'Mode LOG2990',
             disabled: false,

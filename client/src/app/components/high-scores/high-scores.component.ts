@@ -20,7 +20,7 @@ export class HighScoresComponent implements OnInit {
         const normal = await this.httpClient.get<Score[]>(`${environment.serverUrl}/high-scores`).toPromise();
         const log2990 = await this.httpClient.get<Score[]>(`${environment.serverUrl}/high-scores/log2990`).toPromise();
         this.pages = [
-            { scores: normal, name: 'Mode standard' },
+            { scores: normal, name: 'Mode classique' },
             { scores: log2990, name: 'Mode LOG2990' },
         ];
     }
