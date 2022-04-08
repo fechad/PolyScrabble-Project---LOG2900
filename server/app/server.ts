@@ -24,7 +24,7 @@ export class Server {
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
-        const port: number = typeof val === 'string' ? parseInt(val, cst.BASE_TEN) : val;
+        const port: number = typeof val === 'string' ? parseInt(val, cst.DECIMAL_BASE) : val;
         if (isNaN(port)) {
             return val;
         } else if (port >= 0) {
