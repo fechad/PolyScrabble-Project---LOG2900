@@ -21,21 +21,22 @@ export class DbDictionariesService {
             .aggregate()
             .project({ _id: 0, id: 1, title: 1, description: 1 })
             .toArray()) as ClientDictionaryInterface[];
+        console.log(dictionaries);
         return dictionaries;
     }
 
     async addDictionary(dictionary: DbDictionary): Promise<string> {
-        let response = 'trying to upload new dictionary';
         const filteredDictionary: ClientDictionaryInterface = { id: dictionary.id, title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
         const fileToCreate: WholeDictionary = { title: dictionary.title, description: dictionary.description, words: dictionary.words };
         const jsonDictionary = JSON.stringify(fileToCreate);
-        await fs.promises
-            .writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary)
-            .then(() => (response = 'succès'))
-            .catch(() => (response = 'échec de téléversement du dictionnaire dans le serveur'));
-        this.syncDictionaries();
-        return response;
+        try {
+            await fs.promises.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary);
+            await this.syncDictionaries();
+            return 'succès';
+        } catch (e) {
+            return 'échec de téléversement du dictionnaire dans le serveur';
+        }
     }
 
     async updateDictionary(dictionary: DictPair) {

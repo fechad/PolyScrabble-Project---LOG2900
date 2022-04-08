@@ -93,8 +93,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async addDictionary() {
-        this.uploadStatus = '';
-        this.uploadStatus = await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
+        await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
         this.updateList();
     }
 
@@ -115,7 +114,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async downloadDictionary(id: string) {
-        await this.httpClient.get(`${environment.serverUrl}/dictionaries/download/${id}`).toPromise();
+        await this.httpClient.get(`${environment.serverUrl}/dictionaries/${id}`).toPromise();
     }
 
     findDoubles(nameToFind: string): boolean {

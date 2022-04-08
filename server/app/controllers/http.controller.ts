@@ -128,14 +128,11 @@ export class HttpController {
         this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
-            // res.status(200).json(dictionary);
         });
 
-        this.router.delete('/reset', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.deleteAll();
-            const names = await this.vpNamesService.deleteAll();
-            res.json(names);
-            res.json(dictionaries);
+        this.router.delete('/reset', async () => {
+            await this.dbDictionaryService.deleteAll();
+            await this.vpNamesService.deleteAll();
         });
 
         this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {

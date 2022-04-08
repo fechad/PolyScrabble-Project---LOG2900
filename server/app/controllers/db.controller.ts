@@ -43,10 +43,8 @@ export const DEFAULT_DICTIONARY: DbDictionary[] = [];
 // eslint-disable-next-line no-async-promise-executor
 new Promise(async (resolve) => {
     const fileBuffer = await promises.readFile('./assets/dictionnary.json');
-    const readDicitonnary = JSON.parse(fileBuffer.toString());
-    const dictionary: DbDictionary[] = [
-        { id: 0, title: readDicitonnary.title, description: readDicitonnary.description, words: readDicitonnary.words },
-    ];
+    const readDictionary = JSON.parse(fileBuffer.toString());
+    const dictionary: DbDictionary[] = [{ id: 0, title: readDictionary.title, description: readDictionary.description, words: readDictionary.words }];
     resolve(dictionary);
 }).then((words: DbDictionary[]) => {
     DEFAULT_DICTIONARY.push(words[0]);
@@ -56,8 +54,9 @@ new Promise(async (resolve) => {
 @Service()
 export class DataBaseController {
     db: Db | null = null;
-
+    /* istanbul ignore next */
     async connect() {
+        if (this.db) return;
         try {
             const client = new MongoClient(DB_URL);
             await client.connect();
