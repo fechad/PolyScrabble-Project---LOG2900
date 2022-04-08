@@ -57,7 +57,6 @@ export class Game {
     private timeout: NodeJS.Timeout | undefined = undefined;
     private readonly wordGetter;
     private gameHistory: GameHistory;
-    private startTime: Date;
     private objectives: Objectives | undefined;
 
     constructor(
@@ -75,9 +74,8 @@ export class Game {
         const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined };
         const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined };
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
-        this.startTime = new Date();
         this.gameHistory = {
-            startTime: this.startTime.toLocaleString(),
+            startTime: new Date(),
             length: undefined,
             firstPlayer: firstPlayerInfo,
             secondPlayer: secondPlayerInfo,
@@ -315,6 +313,7 @@ export class Game {
 
     endGame() {
         EndGameCalculator.calculateFinalScores(this.scores, this.reserve);
+        this.room.end(false);
         this.completeGameHistory();
         this.winner = this.getWinner();
         this.eventEmitter.emit('message', {
@@ -327,7 +326,7 @@ export class Game {
     }
 
     private completeGameHistory() {
-        const differenceInMs = new Date().getTime() - this.startTime.getTime();
+        const differenceInMs = new Date().getTime() - this.gameHistory.startTime.getTime();
         const lengthInSeconds = Math.ceil((differenceInMs % cst.MS_IN_MINUTE) / cst.MS_IN_SECOND);
         const lengthInMinutes = Math.floor(differenceInMs / cst.MS_IN_MINUTE);
         this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' s';
