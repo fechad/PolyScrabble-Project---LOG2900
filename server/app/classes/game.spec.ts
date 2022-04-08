@@ -42,7 +42,7 @@ describe('Game', () => {
         room.addPlayer(players[1].id, players[1].name, players[1].virtual, players[1].avatar);
         stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
         stubClearTimeout = sinon.stub(global, 'clearTimeout');
-        game = new Game(room, dictionnary);
+        game = new Game(room, dictionnary.dictionnaries[0]);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
         game['isPlayer0Turn'] = true;
@@ -54,7 +54,7 @@ describe('Game', () => {
 
     it('should exit with error if trying to create game with only one player', () => {
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        expect(() => new Game(room, dictionnary)).to.throw();
+        expect(() => new Game(room, dictionnary.dictionnaries[0])).to.throw();
     });
 
     it('should get a message and broadcast it', (done) => {
