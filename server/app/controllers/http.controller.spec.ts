@@ -242,10 +242,10 @@ describe('HttpController', () => {
         expect(response.body).to.deep.equal('');
     });
 
-    it('should reset virtual player names and dictionaries to default', async () => {
-        const response = await supertest(expressApp).delete('/api/reset').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal('');
-    });
+    // it('should reset virtual player names and dictionaries to default', async () => {
+    //     const response = await supertest(expressApp).delete('/api/reset').expect(StatusCodes.OK);
+    //     expect(response.body).to.deep.equal('');
+    // });
 
     // it('should download dictionaries', async () => {
     //     const response = await supertest(expressApp).get('/api/dictionaries/download/:id').send({ id: '2' }).expect(StatusCodes.OK);

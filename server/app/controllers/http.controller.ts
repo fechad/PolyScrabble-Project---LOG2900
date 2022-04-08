@@ -40,7 +40,6 @@ export class HttpController {
         private readonly dataBase: DataBaseController,
         private gameHistoryService: GameHistoryService,
     ) {
-        this.dictionnaryService.init();
         this.init();
         this.configureRouter();
     }
