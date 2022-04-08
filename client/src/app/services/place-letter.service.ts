@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Letter } from '@app/classes/letter';
+import { Vec2 } from '@app/classes/vec2';
 import * as constants from '@app/constants';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
@@ -17,13 +18,13 @@ export class PlaceLetterService {
             this.gameContextService.addTempRack(letter);
         }
         for (const position of this.gridService.letterPosition) {
-            this.gameContextService.state.value.board[position[0]][position[1]] = null;
+            this.gameContextService.state.value.board[position.x][position.y] = null;
         }
         this.clear();
     }
 
     sendPlacedLetters() {
-        for (const position of this.gridService.letterPosition) this.gameContextService.state.value.board[position[0]][position[1]] = null;
+        for (const position of this.gridService.letterPosition) this.gameContextService.state.value.board[position.x][position.y] = null;
         this.gameContextService.place(
             this.gridService.letterForServer,
             this.gridService.firstLetter[1],
@@ -55,16 +56,16 @@ export class PlaceLetterService {
         if (!letter) throw new Error('tried to remove a letter when word is empty');
         this.gridService.rack.push(letter);
         this.gameContextService.addTempRack(letter);
-        this.gameContextService.state.value.board[letterRemoved[0]][letterRemoved[1]] = null;
+        this.gameContextService.state.value.board[letterRemoved.x][letterRemoved.y] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
-        this.gridService.letterWritten -= 1;
+        this.gridService.letterWritten--;
     }
 
     placeWordOnCanvas(word: string) {
         const asterisk: Letter = { name: '*', score: 0 };
         this.gameContextService.attemptTempRackUpdate(word);
-        this.gridService.letterWritten += 1;
+        this.gridService.letterWritten++;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
         this.gridService.letters.push(item || asterisk);
         this.gridService.letterForServer += word;
@@ -87,23 +88,23 @@ export class PlaceLetterService {
     nextPosExist() {
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         return (
-            (this.getShift(lastLetter) + lastLetter[1] < constants.POS_AND_SHIFT && this.mouseDetectService.isHorizontal) ||
-            (this.getShift(lastLetter) + lastLetter[0] < constants.POS_AND_SHIFT && !this.mouseDetectService.isHorizontal)
+            (this.getShift(lastLetter) + lastLetter.y < constants.POS_AND_SHIFT && this.mouseDetectService.isHorizontal) ||
+            (this.getShift(lastLetter) + lastLetter.x < constants.POS_AND_SHIFT && !this.mouseDetectService.isHorizontal)
         );
     }
 
-    drawShiftedArrow(pos: number[], shift: number) {
+    drawShiftedArrow(pos: Vec2, shift: number) {
         if (this.mouseDetectService.isHorizontal)
-            this.gridService.drawArrow((pos[1] + shift) * constants.CANVAS_SQUARE_SIZE, this.mouseDetectService.mousePosition.y, true);
-        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, (pos[0] + shift) * constants.CANVAS_SQUARE_SIZE, false);
+            this.gridService.drawArrow((pos.y + shift) * constants.CANVAS_SQUARE_SIZE, this.mouseDetectService.mousePosition.y, true);
+        else this.gridService.drawArrow(this.mouseDetectService.mousePosition.x, (pos.x + shift) * constants.CANVAS_SQUARE_SIZE, false);
     }
 
-    getShift(pos: number[]): number {
+    getShift(pos: Vec2): number {
         const board = this.gameContextService.state.value.board;
         let shift = 2;
         const horizontal = this.mouseDetectService.isHorizontal;
-        let y = horizontal ? pos[0] : pos[0] + 1;
-        let x = horizontal ? pos[1] + 1 : pos[1];
+        let y = horizontal ? pos.x : pos.x + 1;
+        let x = horizontal ? pos.y + 1 : pos.y;
         while (y !== constants.BOARD_SIZE && board[y][x]) {
             if (horizontal) x++;
             else y++;
