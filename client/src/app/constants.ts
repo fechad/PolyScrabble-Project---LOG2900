@@ -47,6 +47,7 @@ export const Y_PLACEMENT = 16;
 export const DEFAULT_RESERVE = 88;
 
 export const SEC_CONVERT = 60;
+export const SEC_TO_MS = 1000;
 
 export const NORMAL_RACK_LENGTH = 7;
 

@@ -8,6 +8,7 @@ import * as cst from '@app/constants';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
+import swal from 'sweetalert2';
 
 export type Tile = Letter | null;
 export type Board = Tile[][];
@@ -80,6 +81,14 @@ export class GameContextService {
         socket.on('objectives', (objectives: Objective[]) => {
             this.objectives.next(objectives);
         });
+        socket.on('disconnect', () => {
+            swal.fire({
+                title: 'Oh non!',
+                text: "Vous n'êtes pas connecté au server actuellement",
+                showCloseButton: true,
+                confirmButtonText: 'Compris!',
+            });
+        });
     }
 
     close() {
@@ -130,6 +139,7 @@ export class GameContextService {
                 this.messages.next([...this.messages.value, { text: message, emitter: 'command' }]);
                 break;
             default:
+                if (this.socket?.disconnected) return this.serverDownAlert();
                 this.socket?.emit('message', message);
                 this.tempMessages.next([...this.tempMessages.value, message]);
                 break;
@@ -157,35 +167,58 @@ export class GameContextService {
     }
 
     switchTurn(timerRequest: boolean) {
-        this.socket?.emit('switch-turn', timerRequest);
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else this.socket?.emit('switch-turn', timerRequest);
     }
 
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
+        if (this.socket?.disconnected) {
+            setTimeout(() => {
+                this.serverDownAlert();
+            }, cst.SEC_TO_MS);
+        }
+        if (this.socket === undefined || this.socket?.disconnected) {
+            return;
+        }
         this.tempUpdateRack();
         this.allowSwitch(false);
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
 
     exchange(letters: string) {
-        this.socket?.emit('change-letters', letters);
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else this.socket?.emit('change-letters', letters);
     }
 
     hint() {
-        this.socket?.emit('hint');
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else this.socket?.emit('hint');
     }
 
     getReserve() {
-        this.socket?.emit('reserve-content');
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else this.socket?.emit('reserve-content');
     }
 
     syncRack() {
-        this.socket?.emit(
-            'current-rack',
-            this.rack.value.map((letter) => letter.name),
-        );
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else
+            this.socket?.emit(
+                'current-rack',
+                this.rack.value.map((letter) => letter.name),
+            );
     }
 
     confirmForfeit() {
         this.socket?.emit('confirm-forfeit');
+    }
+
+    private serverDownAlert() {
+        swal.fire({
+            title: 'Oh non!',
+            text: "Vous n'êtes pas connecté au server actuellement",
+            showCloseButton: true,
+            confirmButtonText: 'Compris!',
+        });
     }
 }
