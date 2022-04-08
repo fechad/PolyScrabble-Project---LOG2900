@@ -17,7 +17,7 @@ export class GridService {
     rack: Letter[] = [];
     letterForServer = '';
     letterWritten = 0;
-    letterPosition: number[][] = [];
+    letterPosition: Vec2[] = [];
     firstLetter = [0, 0];
     private canvasSize: Vec2 = { x: constants.DEFAULT_INNER_WIDTH, y: constants.DEFAULT_INNER_HEIGHT };
 
@@ -71,7 +71,7 @@ export class GridService {
 
     drawWhiteSquare(posX: number, posY: number) {
         for (const elem of this.letterPosition) {
-            if (elem[1] === posX && elem[0] === posY && this.gameContext.state.value.board[posY][posX]) {
+            if (elem.y === posX && elem.x === posY && this.gameContext.state.value.board[posY][posX]) {
                 this.gridContext.strokeStyle = constants.Colors.White;
                 this.gridContext.lineWidth = 2.5;
                 this.gridContext.stroke();
@@ -131,7 +131,12 @@ export class GridService {
             this.gridContext.lineWidth = 0.5;
             this.gridContext.stroke();
             this.drawMessage(tile.name, canvasX + constants.AJUST_TILE_X, canvasY + constants.AJUST_TILE_Y, constants.TILE_SIZE);
-            this.drawMessage(tile.score.toString(), canvasX + constants.ADJUST_SCORE_X, canvasY + constants.ADJUST_SCORE_Y, constants.SCORE_SIZE);
+            this.drawMessage(
+                tile.score.toString(),
+                canvasX + (tile.score < constants.HIGH_VALUE_TILE_SCORE ? constants.ADJUST_SCORE_X : constants.HIGH_VALUE_ADJUST),
+                canvasY + constants.ADJUST_SCORE_Y,
+                constants.SCORE_SIZE,
+            );
         }
     }
 
@@ -156,7 +161,7 @@ export class GridService {
                 } as Letter;
                 temporaryBoard[verticalIndex][i] = isHorizontalPlacement ? letter : temporaryBoard[verticalIndex][i];
                 temporaryBoard[i][horizontalIndex] = isHorizontalPlacement ? temporaryBoard[i][horizontalIndex] : letter;
-                this.letterPosition.push(isHorizontalPlacement ? [verticalIndex, i] : [i, horizontalIndex]);
+                this.letterPosition.push(isHorizontalPlacement ? { x: verticalIndex, y: i } : { x: i, y: horizontalIndex });
                 pos++;
             }
         }
