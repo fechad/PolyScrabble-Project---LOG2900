@@ -395,12 +395,13 @@ describe('Game', () => {
     });
 
     it('should send correct objective info', () => {
+        const playedWords: Set<string> = new Set<string>();
         game['objectives'] = undefined;
         expect(game['objectivesInfo'](players[0].id)).to.deep.equal([]);
         game['objectives'] = [
-            { objective: new ObjectiveAnagram(), player: players[0].id },
-            { objective: new Objective2BigLetters(), player: undefined, doneByPlayer: players[0].id },
-            { objective: new Objective3Vowels(), player: undefined },
+            { objective: new ObjectiveAnagram(playedWords), player: players[0].id },
+            { objective: new Objective2BigLetters(playedWords), player: undefined, doneByPlayer: players[0].id },
+            { objective: new Objective3Vowels(playedWords), player: undefined },
         ];
         expect(game['objectivesInfo'](players[0].id)).to.deep.equal([
             {
@@ -408,21 +409,21 @@ describe('Game', () => {
                 isPublic: false,
                 mine: false,
                 score: 20,
-                text: new ObjectiveAnagram().description,
+                text: new ObjectiveAnagram(playedWords).description,
             },
             {
                 available: false,
                 isPublic: true,
                 mine: true,
                 score: 50,
-                text: new Objective2BigLetters().description,
+                text: new Objective2BigLetters(playedWords).description,
             },
             {
                 available: true,
                 isPublic: true,
                 mine: false,
                 score: 15,
-                text: new Objective3Vowels().description,
+                text: new Objective3Vowels(playedWords).description,
             },
         ]);
     });
