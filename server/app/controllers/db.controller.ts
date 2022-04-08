@@ -39,6 +39,8 @@ export const DEFAULT_VPS: VP[] = [
     { default: true, beginner: false, name: 'Xavier' },
 ];
 export const DEFAULT_DICTIONARY: DbDictionary[] = [];
+// need to wait for file reading
+// eslint-disable-next-line no-async-promise-executor
 new Promise(async (resolve) => {
     const fileBuffer = await promises.readFile('./assets/dictionnary.json');
     const readDicitonnary = JSON.parse(fileBuffer.toString());

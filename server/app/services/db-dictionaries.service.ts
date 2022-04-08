@@ -21,6 +21,7 @@ export class DbDictionariesService {
             .aggregate()
             .project({ _id: 0, id: 1, title: 1, description: 1 })
             .toArray()) as ClientDictionaryInterface[];
+        console.log(dictionaries);
         return dictionaries;
     }
 
@@ -71,11 +72,12 @@ export class DbDictionariesService {
     }
 
     async removeDictionaryFile(fileId: number) {
+        console.log(this.collection);
         const dictionaries = (await this.collection
             ?.aggregate()
             .project({ id: 1, title: 1, description: 1, _id: 0 })
             .toArray()) as ClientDictionaryInterface[];
-
+        console.log(dictionaries);
         const idList = dictionaries.map((dictionary) => dictionary.id);
 
         if (!idList.includes(fileId)) {

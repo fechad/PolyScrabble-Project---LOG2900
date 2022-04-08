@@ -17,7 +17,7 @@ import { VirtualPlayersTabComponent, VP } from './virtual-players-tab.component'
 //     }
 // }
 
-fdescribe('VirtualPlayersTabComponent', () => {
+describe('VirtualPlayersTabComponent', () => {
     let component: VirtualPlayersTabComponent;
     let fixture: ComponentFixture<VirtualPlayersTabComponent>;
     let httpMock: HttpTestingController;
