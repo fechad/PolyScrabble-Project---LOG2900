@@ -17,7 +17,7 @@ const setHTML = () => {
     document.body.appendChild(div);
 };
 
-const TIME_OUT = 10;
+const TIME_OUT = 100;
 
 describe('DictionaryTabComponent', () => {
     let component: DictionaryTabComponent;
