@@ -25,16 +25,10 @@ export class MouseService {
             x: this.calculateAxis(event.offsetX, true),
             y: this.calculateAxis(event.offsetY, false),
         };
-
         const y = Math.ceil(this.mousePosition.y / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
         const x = Math.ceil(this.mousePosition.x / cst.SQUARE_SIZE) - cst.ADJUSTMENT;
-
-        if (board[y][x] !== null) return;
-        if (prevPos.x === this.mousePosition.x && prevPos.y === this.mousePosition.y) {
-            this.isHorizontal = !this.isHorizontal;
-        } else {
-            this.isHorizontal = true;
-        }
+        if (board[y][x]) return;
+        this.isHorizontal = !this.areEqual(prevPos, this.mousePosition) || !this.isHorizontal;
         this.gridService.drawGrid();
         this.gridService.drawArrow(this.mousePosition.x, this.mousePosition.y, this.isHorizontal);
     }
@@ -57,5 +51,9 @@ export class MouseService {
         let axis = Math.floor((converted - cst.GRID_ORIGIN) / cst.TILE);
         if (axis < 0) axis = 0;
         return (sqrSize + cst.OFFSET) * axis + cst.GRID_ORIGIN + cst.CANVAS_ADJUSTMENT;
+    }
+
+    areEqual(vecA: Vec2, vecB: Vec2) {
+        return vecA.x === vecB.x && vecA.y === vecB.y;
     }
 }
