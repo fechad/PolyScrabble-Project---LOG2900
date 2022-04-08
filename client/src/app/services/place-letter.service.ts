@@ -103,9 +103,9 @@ export class PlaceLetterService {
         const board = this.gameContextService.state.value.board;
         let shift = 2;
         const horizontal = this.mouseDetectService.isHorizontal;
-        let y = horizontal ? pos.x : pos.x + 1;
-        let x = horizontal ? pos.y + 1 : pos.y;
-        while (y !== constants.BOARD_SIZE && board[y][x]) {
+        let x = horizontal ? pos.x : pos.x + 1;
+        let y = horizontal ? pos.y + 1 : pos.y;
+        while (y !== constants.BOARD_SIZE && board[x][y]) {
             if (horizontal) x++;
             else y++;
             shift++;
