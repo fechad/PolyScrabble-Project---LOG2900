@@ -18,7 +18,8 @@ export class JoiningRoomPageComponent {
 
     constructor(public dialog: MatDialog, communicationService: CommunicationService, location: ActivatedRoute) {
         this.log2990 = location.snapshot.url[0].toString() === 'joining-room-log2990';
-        communicationService.rooms?.subscribe((rooms) => (this.rooms = rooms.filter(room => room.parameters.log2990 === this.log2990)));
+        this.rooms = [];
+        communicationService.rooms?.subscribe((rooms) => (this.rooms = rooms.filter((room) => room.parameters.log2990 === this.log2990)));
         communicationService.dictionnaries.then((dictionnaries) => {
             this.dictionnaries = dictionnaries;
         });

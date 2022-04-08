@@ -19,7 +19,13 @@ export class ModesPageComponent {
         this.buttons = [
             { promptsDialog: true, route: '', toolTip: '', text: 'Solo', disabled: false },
             { promptsDialog: true, route: '', toolTip: '', text: 'Multijoueur', disabled: false },
-            { promptsDialog: false, route: `/joining-room${this.log2990 ? '-log2990' : ''}`, toolTip: '', text: 'Rejoindre une partie', disabled: false },
+            {
+                promptsDialog: false,
+                route: `/joining-room${this.log2990 ? '-log2990' : ''}`,
+                toolTip: '',
+                text: 'Rejoindre une partie',
+                disabled: false,
+            },
             { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', text: 'Retour', disabled: false },
         ];
     }
