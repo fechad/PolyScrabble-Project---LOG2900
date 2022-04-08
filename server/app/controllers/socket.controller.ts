@@ -108,7 +108,7 @@ export class SocketManager {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => {
                     room.start();
-                    const game = new Game(room, this.dictionnaryService);
+                    const game = new Game(room, this.dictionnaryService.dictionnaries[room.parameters.dictionnary]);
                     this.roomsService.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.id);
                 });
