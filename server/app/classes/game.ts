@@ -327,8 +327,8 @@ export class Game {
 
     private completeGameHistory() {
         const differenceInMs = new Date().getTime() - this.gameHistory.startTime.getTime();
-        const lengthInSeconds = Math.ceil((differenceInMs % cst.MS_IN_MINUTE) / cst.MS_IN_SECOND);
-        const lengthInMinutes = Math.floor(differenceInMs / cst.MS_IN_MINUTE);
+        const lengthInSeconds = Math.ceil((differenceInMs % cst.MIN_TO_MS) / cst.SEC_TO_MS);
+        const lengthInMinutes = Math.floor(differenceInMs / cst.MIN_TO_MS);
         this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' s';
         this.gameHistory.firstPlayer.pointsScored = this.scores[cst.MAIN_PLAYER];
         this.gameHistory.secondPlayer.pointsScored = this.scores[cst.OTHER_PLAYER];
