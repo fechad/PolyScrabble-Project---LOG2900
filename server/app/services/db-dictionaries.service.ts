@@ -21,7 +21,6 @@ export class DbDictionariesService {
             .aggregate()
             .project({ _id: 0, id: 1, title: 1, description: 1 })
             .toArray()) as ClientDictionaryInterface[];
-        console.log(dictionaries);
         return dictionaries;
     }
 
