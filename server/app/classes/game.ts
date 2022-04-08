@@ -58,7 +58,7 @@ export class Game {
     private readonly wordGetter;
     private gameHistory: GameHistory;
     private startTime: Date;
-    private objectives?: Objectives;
+    private objectives: Objectives | undefined;
 
     constructor(
         readonly room: Room,
