@@ -1,8 +1,8 @@
 import { ALPHABET } from '@app/alphabet-template';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import * as cst from '@app/constants';
 import { Message } from '@app/message';
-import { DictionnaryService } from '@app/services/dictionnary.service';
 import { EventEmitter } from 'events';
 import { Board } from './board';
 import { Objective, OBJECTIVE_TYPES } from './objectives';
@@ -56,7 +56,7 @@ export class Game {
     private readonly wordGetter;
     private objectives?: Objectives;
 
-    constructor(readonly room: Room, private readonly dictionnaryService: DictionnaryService) {
+    constructor(readonly room: Room, private readonly dictionnary: Dictionnary) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board();
@@ -155,7 +155,7 @@ export class Game {
                 isHorizontal ??= this.board.isInContact(pos, false);
                 const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
                 const words = this.wordGetter.getWords(triedPlacement);
-                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
+                if (!words.every((wordOption) => this.dictionnary.isValidWord(wordOption.word)))
                     throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
 
                 await new Promise((resolve) => {
@@ -236,7 +236,7 @@ export class Game {
 
     hint(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
-            const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
+            const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnary.trie);
             const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const options = virtual.chooseWords(this.reserve.letterRacks[player]).slice(0, 3);
             let hintMessage =
@@ -351,7 +351,7 @@ export class Game {
         this.players[idxPlayerToReplace].name = listOfNames[idxName];
         this.players[idxPlayerToReplace].virtual = true;
         this.players[idxPlayerToReplace].id = 'VP';
-        const vP = new VirtualPlayer(Difficulty.Beginner, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
+        const vP = new VirtualPlayer(Difficulty.Beginner, this, this.dictionnary.trie);
         vP.waitForTurn();
     }
 
