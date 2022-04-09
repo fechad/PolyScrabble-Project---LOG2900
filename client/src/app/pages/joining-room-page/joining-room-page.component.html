@@ -1,26 +1,26 @@
 <header class="header">
     <div id="icon-container">
-        <i class="material-icons" routerLink="/classic">arrow_back_ios</i>
+        <i class="material-icons" [routerLink]="log2990 ? '/log2990' : '/classic'">arrow_back_ios</i>
     </div>
     <div class="title-container">
-        <h1 id="title">Joignez une partie mode classique</h1>
+        <h1 id="title">Joignez une partie mode {{ log2990 ? 'LOG2990' : 'classique' }}</h1>
     </div>
     <div id="icon-container">
-        <button mat-raised-button class="button" *ngIf="nbOfRooms > 0" [disabled]="nbOfRooms <= 1" (click)="getRandomRoom()">Choix aléatoire</button>
+        <button mat-raised-button class="button" *ngIf="rooms.length > 0" [disabled]="rooms.length <= 1" (click)="getRandomRoom()">Choix aléatoire</button>
     </div>
 </header>
 
-<div id="games-list" *ngFor="let game of communicationService.rooms | async">
-    <mat-card matRipple class="clickable" (click)="openDialog(game)">
+<div id="games-list" *ngFor="let room of rooms">
+    <mat-card matRipple class="clickable" (click)="openDialog(room)">
         <mat-card-content>
             <div class="container">
                 <span class="params">
-                    <p id="firstPlayer">{{ game.name }}</p>
-                    <p id="timer">Temps limite par tour: {{ game.parameters.timer }} secondes</p>
-                    <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[game.parameters.dictionnary].name : '…' }}</p>
+                    <p id="firstPlayer">{{ room.name }}</p>
+                    <p id="timer">Temps limite par tour: {{ room.parameters.timer }} secondes</p>
+                    <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[room.parameters.dictionnary].name : '…' }}</p>
                 </span>
             </div>
-            <img class="avatar" [src]="game.parameters.avatar" />
+            <img class="avatar" [src]="room.parameters.avatar" />
         </mat-card-content>
     </mat-card>
 </div>

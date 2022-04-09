@@ -50,7 +50,7 @@ export class MainLobbyService {
             if (virtualPlayer) {
                 room.addPlayer('VP', virtualPlayer, true, imgList[Math.floor(Math.random() * NUMBER_ICONS)]);
                 room.start();
-                const game = new Game(room, this.dictionnaryService, this.gameHistoyService);
+                const game = new Game(room, this.dictionnaryService.dictionnaries[room.parameters.dictionnary]);
                 this.roomsService.games.push(game);
                 const vP = new VirtualPlayer(
                     parameters.difficulty || Difficulty.Beginner,

@@ -4,9 +4,9 @@ import * as cst from '../constants';
 import { PlacementOption } from './placement-option';
 
 export abstract class Objective {
-    playedWords: Set<string> = new Set<string>();
     readonly points: number;
     readonly description: string;
+    constructor(protected playedWords: Set<string>) {}
 
     isAccomplished(wordPlacement: PlacementOption, newWords: string[]): boolean {
         const accomplished = this.isObjectiveAccomplished(wordPlacement, newWords);
@@ -65,7 +65,7 @@ export class ObjectiveAnagram extends ObjectiveFormed {
     description = "Former un anagramme d'un mot déja présent";
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        return [...this.playedWords].some((playedWord) => this.isAnagram(word, playedWord));
+        return [...this.playedWords].some((playedWord) => this.isAnagram(word, playedWord) && word !== playedWord);
     }
 
     private isAnagram(triedWord: string, word2: string): boolean {
