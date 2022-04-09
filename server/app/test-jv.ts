@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import 'module-alias/register';
 import 'reflect-metadata';
 import { isDeepStrictEqual } from 'util';
-import { Dictionnary } from './classes/dictionnary';
 import { Game } from './classes/game';
 import { Difficulty, Parameters } from './classes/parameters';
 import { PlacementOption } from './classes/placement-option';
@@ -48,7 +47,7 @@ const createTestCase = (idx: number, game: Game): string => {
     `;
 };
 
-const playGame = async (dictionnary: Dictionnary, fullTest: boolean) => {
+const playGame = async (dictionnaryService: DictionnaryService, gameHistoryService: GameHistoryService, fullTest: boolean) => {
     const params = new Parameters();
     params.difficulty = Difficulty.Expert;
 
@@ -56,14 +55,14 @@ const playGame = async (dictionnary: Dictionnary, fullTest: boolean) => {
     const room = new Room(0, ID_AI_2, 'BOBBY', params);
     room.addPlayer(cst.AI_ID, 'Étienne', true, 'a');
     room.start();
-    const game = new Game(room, dictionnary);
+    const game = new Game(room, dictionnaryService, gameHistoryService);
     game['timeoutHandler'] = () => {
         /* Handle turns manually */
     };
     const prevSetTimeout = global.setTimeout;
     global.setTimeout = ((fct: () => void) => fct()) as unknown as typeof global.setTimeout;
-    const vP = new VirtualPlayer(Difficulty.Expert, game, dictionnary.trie);
-    const vP2 = new VirtualPlayer(Difficulty.Expert, game, dictionnary.trie);
+    const vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
+    const vP2 = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
     vP.id = ID_AI_2;
     game['isPlayer0Turn'] = true;
     // game.eventEmitter.addListener('message', (message) => console.log(message));
@@ -79,7 +78,7 @@ const playGame = async (dictionnary: Dictionnary, fullTest: boolean) => {
     while (room.getState() !== State.Ended) {
         if (fullTest) {
             const found = vP.chooseWords(game.reserve.letterRacks[0]);
-            const dummyFound = dummyFind(game, dictionnary, game.reserve.letterRacks[0]);
+            const dummyFound = dummyFind(game, dictionnaryService, game.reserve.letterRacks[0]);
             if (!isDeepStrictEqual(found, dummyFound)) {
                 console.log('Not equal to dummy version');
                 await fs.promises.writeFile('found.json', JSON.stringify(found));
@@ -106,7 +105,7 @@ const genPermutations = (rack: string[], prefix: string[] = [], out: string[][] 
     return out;
 };
 
-const dummyFind = (game: Game, dictionnary: Dictionnary, rack: string[]): PlacementScore[] => {
+const dummyFind = (game: Game, dictionnaryService: DictionnaryService, rack: string[]): PlacementScore[] => {
     const validPlacements: PlacementScore[] = [];
     console.time('HERE');
     const permutations = genPermutations(rack);
@@ -120,7 +119,7 @@ const dummyFind = (game: Game, dictionnary: Dictionnary, rack: string[]): Placem
                     try {
                         const placement = PlacementOption.newPlacement(game.board, pos, isHorizontal, permutation);
                         const words = game['wordGetter'].getWords(placement);
-                        if (!words.every((wordOption) => dictionnary.isValidWord(wordOption.word))) continue;
+                        if (!words.every((wordOption) => dictionnaryService.isValidWord(wordOption.word))) continue;
                         const score = words.reduce((total, word) => word.score + total, 0);
                         validPlacements.push({ score, placement });
                     } catch {
@@ -145,6 +144,6 @@ const dummyFind = (game: Game, dictionnary: Dictionnary, rack: string[]): Placem
 
     for (let i = 0; ; i++) {
         console.log('Iteration ' + (i + 1));
-        await playGame(dictionnaryService.dictionnaries[0], true);
+        await playGame(dictionnaryService, gameHistoryService, true);
     }
 })();

@@ -11,11 +11,10 @@ export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'classic', component: ModesPageComponent },
-    { path: 'log2990', component: ModesPageComponent },
+    { path: '2990', component: ModesPageComponent },
     { path: 'game', component: GamePageComponent },
     { path: 'waiting-room', component: WaitingRoomPageComponent },
     { path: 'joining-room', component: JoiningRoomPageComponent },
-    { path: 'joining-room-log2990', component: JoiningRoomPageComponent },
     { path: 'admin', component: AdminPageComponent },
     { path: '**', redirectTo: '/home' },
 ];

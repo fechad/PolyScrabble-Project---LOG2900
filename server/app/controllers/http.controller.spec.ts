@@ -1,5 +1,4 @@
 import { Application } from '@app/app';
-import { Dictionnary } from '@app/classes/dictionnary';
 import { Game } from '@app/classes/game';
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
@@ -17,7 +16,7 @@ import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
 describe('HttpController', () => {
-    const DICTIONNARIES: Dictionnary[] = [new Dictionnary(0, 'français', [])];
+    const DICTIONNARIES = [{ id: 0, name: 'français', words: ['a', 'b', 'c'] }] as DictionnaryInfo[];
     const HIGH_SCORES_LOG2990 = [
         { score: 34, names: ['Bob', 'Bob1'] },
         { score: 33, names: ['Bo', 'B'] },
@@ -48,7 +47,7 @@ describe('HttpController', () => {
 
     before(async () => {
         dictionnaryService = createStubInstance(DictionnaryService);
-        dictionnaryService.getDictionnaries.returns(DICTIONNARIES.map((dict) => dict.getInfo()));
+        dictionnaryService.getDictionnaries.returns(DICTIONNARIES);
         highScoreService = createStubInstance(HighScoresService);
         await highScoreService.connect();
         highScoreService.getScores.callsFake(async (log2990) => (log2990 ? HIGH_SCORES_LOG2990 : HIGH_SCORES_NORMAL));
@@ -81,7 +80,7 @@ describe('HttpController', () => {
 
     it('should return dictionnaries on request to /dictionnaries', async () => {
         const response = await supertest(expressApp).get('/api/dictionnaries').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal(DICTIONNARIES.map((dict) => dict.getInfo()));
+        expect(response.body).to.deep.equal(DICTIONNARIES);
     });
 
     it('should return normal high scores', async () => {
@@ -125,7 +124,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID + 1, 'Dummy', new Parameters());
         room.addPlayer(ID, 'Not Dummy', true, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.FORBIDDEN);
     });
 
@@ -133,7 +134,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID, 'Dummy', new Parameters());
         room.addPlayer(ID + 1, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Dummy', score: 0, log2990: false }]]);
     });
@@ -142,7 +145,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID + 1, 'Dummy', new Parameters());
         room.addPlayer(ID, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: false }]]);
     });
@@ -153,7 +158,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID, 'Dummy', params);
         room.addPlayer(ID + 1, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Dummy', score: 0, log2990: true }]]);
     });
@@ -164,7 +171,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID + 1, 'Dummy', params);
         room.addPlayer(ID, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: true }]]);
     });
