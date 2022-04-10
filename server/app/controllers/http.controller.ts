@@ -128,12 +128,6 @@ export class HttpController {
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
         });
-
-        this.router.delete('/reset', async () => {
-            await this.dbDictionaryService.deleteAll();
-            await this.vpNamesService.deleteAll();
-        });
-
         this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.deleteAll();
             res.json(dictionaries);

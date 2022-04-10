@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="requirement" *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''">
-                        Rentrez un nom contenant seulement des lettres.
+                        Rentrez un nom de maximum 15 caractères contenant seulement des lettres.
                     </div>
 
                     <div class="col-md-10">
@@ -38,7 +38,7 @@
 
                     <div class="col-md-10">
                         <label>Profil de l'adversaire: </label>
-                        <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control">
+                        <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control" (change)="chooseOpponent()">
                             <option [ngValue]="difficulty.id" *ngFor="let difficulty of difficulties">
                                 {{ difficulty.name }}
                             </option>

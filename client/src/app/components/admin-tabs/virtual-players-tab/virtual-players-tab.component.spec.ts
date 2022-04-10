@@ -1,8 +1,9 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { VP } from '@app/classes/virtual-player';
 import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { VirtualPlayersTabComponent, VP } from './virtual-players-tab.component';
+import { VirtualPlayersTabComponent } from './virtual-players-tab.component';
 
 describe('VirtualPlayersTabComponent', () => {
     let component: VirtualPlayersTabComponent;

@@ -32,7 +32,7 @@
                         class="requirement"
                         *ngIf="joiningRoomForm.controls['secondPlayerName'].errors && joiningRoomForm.value.secondPlayerName !== ''"
                     >
-                        Rentrez un nom contenant seulement des lettres.
+                        Rentrez un nom de maximum 15 caractères contenant seulement des lettres.
                     </div>
                     <div class="col-md-10">
                         <label>Nom de l'adversaire: {{ data.name }}</label>

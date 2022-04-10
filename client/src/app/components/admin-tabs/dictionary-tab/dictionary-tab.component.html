@@ -14,7 +14,7 @@
         </div>
         <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
             <button class="trash-can" (click)="deleteDictionary(dictionary.id.toString())"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
-            <button class="pencil" (click)="editing = true; oldTitle = dictionary.title"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
+            <button class="pencil" (click)="editing = true; oldTitle = dictionary.title; oldDescription = dictionary.description"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
         </div>
         <a href="{{environment.serverUrl}}/dictionaries/download/{{dictionary.id}}" download class="download" (click)="downloadDictionary(dictionary.id.toString())"><fa-icon [icon]="faDownload" size="lg"></fa-icon></a>
     </div>
@@ -23,7 +23,7 @@
         <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
             <div>
                 <label>Nom du dictionnaire:</label>
-                <input type="text" formControlName="title" class="form-control" placeholder="ex: Mon dictionnaire anglais" />
+                <input type="text" formControlName="title" class="form-control" [ngModel]="oldTitle" />
             </div>
             <div class="error" *ngIf="error !== ''">{{ error }}</div>
             <div>
@@ -33,8 +33,8 @@
                     formControlName="description"
                     rows="10"
                     type="text"
-                    placeholder="Entrez votre description du dictionnaire ici."
                     maxlength="512"
+                    [ngModel]="oldDescription"
                 ></textarea>
             </div>
         </form>

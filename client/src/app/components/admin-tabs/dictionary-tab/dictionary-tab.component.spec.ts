@@ -5,19 +5,19 @@ import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { DbDictionary, DictionaryTabComponent } from './dictionary-tab.component';
 
-// const setHTML = () => {
-//     const div = document.createElement('div');
-//     div.classList.add('box');
-//     const input = document.createElement('input');
-//     input.id = 'upload';
-//     input.type = 'file';
-//     input.accept = '.json';
-//     input.classList.add('form-control');
-//     div.appendChild(input);
-//     document.body.appendChild(div);
-// };
+const setHTML = () => {
+    const div = document.createElement('div');
+    div.classList.add('box');
+    const input = document.createElement('input');
+    input.id = 'upload';
+    input.type = 'file';
+    input.accept = '.json';
+    input.classList.add('form-control');
+    div.appendChild(input);
+    document.body.appendChild(div);
+};
 
-// const TIME_OUT = 100;
+const TIME_OUT = 100;
 
 describe('DictionaryTabComponent', () => {
     let component: DictionaryTabComponent;
@@ -37,7 +37,7 @@ describe('DictionaryTabComponent', () => {
         fixture = TestBed.createComponent(DictionaryTabComponent);
         component = fixture.componentInstance;
         component.dictionaryForm = new FormGroup({
-            id: new FormControl(''),
+            id: new FormControl(0),
             title: new FormControl('', [Validators.pattern('^[A-zÀ-ù]*$')]),
             description: new FormControl(''),
             file: new FormControl('', [Validators.required]),
@@ -77,33 +77,39 @@ describe('DictionaryTabComponent', () => {
     }));
 
     it('should create new dictionary', () => {
+        component.dictionaryForm.value.id = 1;
+        component.dictionaryForm.value.title = 'dict-1';
+        component.dictionaryForm.value.description = 'test-1';
+        component.dictionaryForm.value.words = ['a', 'b', 'c'];
+        component.newWords = ['a', 'b', 'c'];
         component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+
         const newDictionary: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
-        const result: DbDictionary = component.createNewDbDictionary('dict-1', 'test-1', ['a', 'b', 'c']);
+        const result: DbDictionary = component.createNewDbDictionary();
         expect(result).toEqual(newDictionary);
     });
 
-    // it('should get file infos ', async () => {
-    //     setHTML();
-    //     component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
-    //     component.uploading = true;
-    //     const dataTransfer = new DataTransfer();
-    //     const expected: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
-    //     const dictionaryFile = new File([JSON.stringify({ title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] })], 'dict-1.json', {
-    //         type: 'application/json',
-    //     });
-    //     dataTransfer.items.add(dictionaryFile);
-    //     const inputCollection = document.getElementsByClassName('form-control');
-    //     const input = inputCollection.item(0) as HTMLInputElement;
-    //     input.files = dataTransfer.files;
+    it('should get file infos ', async () => {
+        setHTML();
+        component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        component.uploading = true;
+        const dataTransfer = new DataTransfer();
+        const expected: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
+        const dictionaryFile = new File([JSON.stringify({ title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] })], 'dict-1.json', {
+            type: 'application/json',
+        });
+        dataTransfer.items.add(dictionaryFile);
+        const inputCollection = document.getElementsByClassName('form-control');
+        const input = inputCollection.item(0) as HTMLInputElement;
+        input.files = dataTransfer.files;
 
-    //     input.addEventListener('change', async (event: Event) => await component.getFileInfos(event));
-    //     input.dispatchEvent(new InputEvent('change'));
-    //     await new Promise<void>((resolve) => {
-    //         setTimeout(() => resolve(), TIME_OUT);
-    //     });
+        input.addEventListener('change', async (event: Event) => await component.getFileInfos(event));
+        input.dispatchEvent(new InputEvent('change'));
+        await new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), TIME_OUT);
+        });
 
-    //     expect(component.newDictionnary).toEqual(expected);
-    //     fixture.detectChanges();
-    // });
+        expect(component.newDictionnary).toEqual(expected);
+        fixture.detectChanges();
+    });
 });
