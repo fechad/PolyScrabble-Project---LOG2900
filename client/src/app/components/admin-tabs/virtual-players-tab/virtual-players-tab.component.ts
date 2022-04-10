@@ -1,13 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { VP } from '@app/classes/virtual-player';
 import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
-export type VP = {
-    default: boolean;
-    beginner: boolean;
-    name: string;
-};
 @Component({
     selector: 'app-virtual-players-tab',
     templateUrl: './virtual-players-tab.component.html',

@@ -4,12 +4,13 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
-import * as cst from '@app/constants';
+import { VP } from '@app/classes/virtual-player';
+import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { VP } from '../admin-tabs/virtual-players-tab/virtual-players-tab.component';
+
 @Component({
     selector: 'app-solo-dialog',
     templateUrl: './solo-dialog.component.html',
@@ -36,14 +37,14 @@ export class SoloDialogComponent implements OnInit {
     ) {}
 
     async ngOnInit(): Promise<void> {
-        const minutesSelect = this.data.timer ? Math.floor(this.data.timer / cst.SEC_CONVERT) : 1;
-        const secondsSelect = this.data.timer ? this.data.timer % cst.SEC_CONVERT : 0;
+        const minutesSelect = this.data.timer ? Math.floor(this.data.timer / constants.SEC_CONVERT) : 1;
+        const secondsSelect = this.data.timer ? this.data.timer % constants.SEC_CONVERT : 0;
 
         this.soloParametersForm = this.formBuilder.group({
             playerName: new FormControl(this.data.name || '', [
                 Validators.required,
                 Validators.pattern('^[a-zA-ZÀ-ùç]*$'),
-                Validators.maxLength(cst.MAX_NAME_CHARACTERS),
+                Validators.maxLength(constants.MAX_NAME_CHARACTERS),
             ]),
             difficulty: new FormControl(Difficulty.Beginner, [Validators.required]),
             minutes: new FormControl(minutesSelect, [Validators.required]),
@@ -93,7 +94,7 @@ export class SoloDialogComponent implements OnInit {
         if (this.communicationService.selectedRoom.value) this.communicationService.leave();
         const parameters = new Parameters();
         parameters.avatar = this.avatarSelectionService.imgChosen;
-        parameters.timer = this.soloParametersForm.value.minutes * cst.SEC_CONVERT + this.soloParametersForm.value.seconds;
+        parameters.timer = this.soloParametersForm.value.minutes * constants.SEC_CONVERT + this.soloParametersForm.value.seconds;
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
         parameters.difficulty = this.soloParametersForm.value.difficulty;
         parameters.gameType = GameType.Solo;
