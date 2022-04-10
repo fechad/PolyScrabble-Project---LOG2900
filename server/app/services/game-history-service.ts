@@ -25,7 +25,6 @@ export class GameHistoryService {
     }
 
     async clearHistory() {
-        await this.collection?.drop();
-        this.collection = this.dataBase.db?.collection(cst.GAMES_COLLECTION);
+        await this.collection?.deleteMany({});
     }
 }

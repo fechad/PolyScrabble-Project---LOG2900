@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 export class GameHistoryTabComponent implements OnInit {
     faTrash = faTrashAlt;
     faRefresh = faSync;
-    games: GameHistory[];
+    games: GameHistory[] = [];
     constructor(readonly httpClient: HttpClient) {}
 
     async ngOnInit(): Promise<void> {
@@ -21,6 +21,6 @@ export class GameHistoryTabComponent implements OnInit {
 
     async clearHistory() {
         await this.httpClient.delete(`${environment.serverUrl}/game-history`).toPromise();
-        await this.ngOnInit();
+        this.games = [];
     }
 }

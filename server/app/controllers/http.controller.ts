@@ -90,8 +90,8 @@ export class HttpController {
         });
 
         this.router.delete('/game-history', async (req: Request, res: Response) => {
-            await this.gameHistoryService.clearHistory();
-            return res.sendStatus(StatusCodes.ACCEPTED);
+            const history = await this.gameHistoryService.clearHistory();
+            res.json(history);
         });
 
         this.router.get('/vp-names', async (req: Request, res: Response) => {

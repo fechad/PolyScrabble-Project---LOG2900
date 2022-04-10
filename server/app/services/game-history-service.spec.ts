@@ -39,8 +39,8 @@ describe('Game History Service', () => {
         expect(await collection.find({}).project({ _id: 0 }).toArray()).to.deep.equal([gameCopy]);
     });
     it('should get games from DB', async () => {
-        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
-        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
+        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67, replacedBy: undefined };
+        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109, replacedBy: undefined };
 
         const playedGame: GameHistory = {
             startTime: new Date(),
@@ -55,8 +55,8 @@ describe('Game History Service', () => {
     });
 
     it('should clear games from DB', async () => {
-        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
-        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
+        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67, replacedBy: undefined };
+        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109, replacedBy: undefined };
 
         const playedGame: GameHistory = {
             startTime: new Date(),
