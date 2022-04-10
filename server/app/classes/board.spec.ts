@@ -1,7 +1,7 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { expect } from 'chai';
 import { assert } from 'console';
-import { Container } from 'typedi';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Board } from './board';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers, dot-notation, max-lines */
@@ -10,11 +10,13 @@ const BOARD_LENGTH = 15;
 
 describe('Board', () => {
     let board: Board;
-    let dictionnary: DictionnaryService;
+    let dictionnary: SinonStubbedInstance<DictionnaryService>;
 
     before(async () => {
-        dictionnary = Container.get(DictionnaryService);
-        await dictionnary.init();
+        //dictionnary= Container.get(DictionnaryService);
+        dictionnary = createStubInstance(DictionnaryService);
+
+        dictionnary.init.callsFake(() => Promise.resolve());
     });
 
     beforeEach(() => {

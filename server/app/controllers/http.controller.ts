@@ -50,14 +50,15 @@ export class HttpController {
         this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
         this.dbDictionaryService = Container.get(DbDictionariesService);
-        await this.dbDictionaryService.syncDictionaries();
     }
 
     private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
-        this.router.get('/dictionnaries', (req: Request, res: Response) => {
-            const dictionnaries = this.dictionnaryService.getDictionnaries();
+        this.router.get('/dictionnaries', async (req: Request, res: Response) => {
+            await this.dbDictionaryService.syncDictionaries();
+            await this.dictionnaryService.copyDictionaries();
+            const dictionnaries = await this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
         this.router.get('/high-scores', async (req: Request, res: Response) => {

@@ -48,6 +48,7 @@ describe('HttpController', () => {
     before(async () => {
         dictionnaryService = createStubInstance(DictionnaryService);
         dictionnaryService.getDictionnaries.returns(DICTIONNARIES);
+        dictionnaryService.init.callsFake(() => Promise.resolve());
         highScoreService = createStubInstance(HighScoresService);
         await highScoreService.connect();
         highScoreService.getScores.callsFake(async (log2990) => (log2990 ? HIGH_SCORES_LOG2990 : HIGH_SCORES_NORMAL));

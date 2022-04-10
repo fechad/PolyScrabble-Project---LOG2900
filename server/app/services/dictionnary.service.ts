@@ -23,22 +23,36 @@ export class DictionnaryService {
     }
 
     async init() {
+        if (this.dictionnaries.length !== 0) return;
+        const fileBuffer = await promises.readFile('./assets/dictionnary.json');
+        const readDictionary = JSON.parse(fileBuffer.toString());
+        this.dictionnaries.push({
+            id: 0,
+            name: 'français',
+            words: readDictionary.words,
+            trie: DictionnaryService.generateTrie(readDictionary.words),
+        });
+    }
+    async copyDictionaries() {
         const files = await fs.promises.readdir('./dictionaries/');
         for (const file of files) {
             const id = Number(file.split('-')[1][0]);
-            const fileBuffer = await promises.readFile(`./dictionaries/dictionary-${id}.json`);
-            const readDictionary = JSON.parse(fileBuffer.toString());
-            this.dictionnaries.push({
-                id,
-                name: readDictionary.title,
-                words: readDictionary.words,
-                trie: DictionnaryService.generateTrie(readDictionary.words),
-            });
+            if (id !== 0) {
+                const fileBuffer = await promises.readFile(`./dictionaries/dictionary-${id}.json`);
+                const readDictionary = JSON.parse(fileBuffer.toString());
+                this.dictionnaries.push({
+                    id,
+                    name: readDictionary.title,
+                    words: readDictionary.words,
+                    trie: DictionnaryService.generateTrie(readDictionary.words),
+                });
+            }
         }
     }
 
-    getDictionnaries() {
-        return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
+    getDictionnaries(): DictionnaryInfo[] {
+        const dict = this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
+        return dict;
     }
 
     isValidWord(id: number, playedWord: string) {

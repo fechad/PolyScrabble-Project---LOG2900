@@ -13,8 +13,9 @@ describe('Dictionnary service', () => {
         assert(dictionnaryService !== undefined);
         done();
     });
-    it('should have dictionnaries', (done) => {
-        assert(dictionnaryService.getDictionnaries().length > 0);
+    it('should have dictionnaries', async (done) => {
+        const dictionary = dictionnaryService.getDictionnaries();
+        assert(dictionary.length > 0);
         done();
     });
     it('should validate correct words', (done) => {

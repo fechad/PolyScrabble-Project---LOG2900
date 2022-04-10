@@ -6,6 +6,7 @@ import { RoomsService } from '@app/services/rooms.service';
 import { Server } from 'app/server';
 import { assert, expect } from 'chai';
 import { Router } from 'express';
+import * as fs from 'fs';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
@@ -26,6 +27,7 @@ describe('SocketManager service tests', () => {
     let server: Server;
     let playersSocket: Socket[];
     let broadcastSocket: Socket;
+    let sandbox: sinon.SinonSandbox;
     const identifiers: { id: PlayerId; token: number }[] = [];
 
     const urlString = 'http://localhost:3000';
@@ -54,6 +56,11 @@ describe('SocketManager service tests', () => {
                 });
             }
         }
+        sandbox = sinon.createSandbox();
+
+        sandbox.stub(fs.promises, 'readdir').callsFake(async () => {
+            return [];
+        });
     });
 
     afterEach(() => {
@@ -62,6 +69,7 @@ describe('SocketManager service tests', () => {
         // eslint-disable-next-line dot-notation
         service['io'].close();
         sinon.restore();
+        sandbox.restore();
     });
 
     it('should broadcast available rooms on connect', async () => {
