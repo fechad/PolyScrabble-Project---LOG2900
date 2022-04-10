@@ -26,6 +26,7 @@ export class DictionaryTabComponent implements OnInit {
     dictionaryForm: FormGroup;
     newWords: string[];
     oldTitle: string;
+    oldDescription: string;
     newDictionnary: DbDictionary;
     fileDownloaded: string;
     environment = environment;
@@ -121,8 +122,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     findDoubles(nameToFind: string): boolean {
-        console.log('name', nameToFind);
-        console.log('list', this.list);
+        if (this.oldTitle === nameToFind) return false;
         if (this.list.find((dictionary) => dictionary.title.toLowerCase() === nameToFind.toLowerCase())) {
             this.error = 'Un des dictionnaires détient déjà ce nom, veuillez en choisir un autre.';
             return true;
