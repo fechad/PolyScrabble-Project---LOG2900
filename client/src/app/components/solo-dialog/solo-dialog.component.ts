@@ -40,7 +40,25 @@ export class SoloDialogComponent implements OnInit {
             seconds: new FormControl(secondsSelect, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
-        this.opponentName = this.availableName[Math.floor(Math.random() * this.availableName.length)];
+        this.databaseNames = await this.httpClient.get<VP[]>(`${environment.serverUrl}/vp-names`).toPromise();
+        await this.chooseOpponent();
+    }
+
+    async chooseOpponent() {
+        const names = await this.getPlayers();
+        this.opponentName = names[Math.floor(Math.random() * names.length)];
+    }
+
+    async getPlayers(): Promise<string[]> {
+        this.list = this.databaseNames
+            .filter((player) => {
+                if (player.beginner !== Boolean(this.soloParametersForm.value.difficulty)) {
+                    return player;
+                } else return;
+            })
+            .map((vp) => vp.name);
+
+        return this.list;
     }
 
     closeDialog(): void {
