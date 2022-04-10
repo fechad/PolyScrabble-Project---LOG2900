@@ -142,4 +142,17 @@ describe('SoloDialogComponent', () => {
         await component.onSubmit();
         expect(closeDialogSpy).not.toHaveBeenCalled();
     });
+
+    it('should call getPlayers when chooseOpponent is used', fakeAsync(() => {
+        const getPlayersSpy = spyOn(component, 'getPlayers').and.callThrough();
+        component.databaseNames = [
+            { default: true, beginner: true, name: 'Antoine' },
+            { default: false, beginner: true, name: 'Jean' },
+            { default: true, beginner: false, name: 'Simone' },
+            { default: false, beginner: false, name: 'Alexandra' },
+        ];
+        component.chooseOpponent();
+        tick();
+        expect(getPlayersSpy).toHaveBeenCalled();
+    }));
 });

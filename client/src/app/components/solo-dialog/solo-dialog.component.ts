@@ -21,6 +21,8 @@ export class SoloDialogComponent implements OnInit {
     availableName = ['Francois', 'Etienne', 'Anna'];
     opponentName: string;
     selectedRoom: Observable<Room>;
+    databaseNames: VP[];
+    list: string[] = [];
     constructor(
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<SoloDialogComponent>,
@@ -57,7 +59,6 @@ export class SoloDialogComponent implements OnInit {
                 } else return;
             })
             .map((vp) => vp.name);
-
         return this.list;
     }
 
