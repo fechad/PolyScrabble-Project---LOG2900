@@ -1,6 +1,8 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DbDictionary } from '@app/classes/dictionnary';
 import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -29,7 +31,7 @@ describe('DictionaryTabComponent', () => {
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule, ReactiveFormsModule],
             declarations: [DictionaryTabComponent],
-            providers: [FormBuilder],
+            providers: [FormBuilder, MatSnackBar, Overlay],
         }).compileComponents();
         httpMock = TestBed.inject(HttpTestingController);
     });
