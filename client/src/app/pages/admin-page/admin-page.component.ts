@@ -23,4 +23,9 @@ export class AdminPageComponent {
             } else elem.classList.remove('selected');
         });
     }
+
+    async resetAll() {
+        // await this.httpClient.delete(`${environment.serverUrl}/reset`).toPromise();
+        // window.location.reload();
+    }
 }

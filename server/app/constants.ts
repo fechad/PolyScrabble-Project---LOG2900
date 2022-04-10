@@ -8,6 +8,7 @@ export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
 export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
 export const PREVIOUS = -1;
 export const AI_ID = 'VP';
+export const DECIMAL_BASE = 10;
 export const PROBABILITY = 10;
 export const BOARD_LENGTH = 15;
 export const DELAY_CHECK_TURN = 1000; // ms
@@ -16,6 +17,7 @@ export const HALF_PROBABILITY = 0.5;
 export const ROW_CONTACT = 0;
 export const COL_CONTACT = 1;
 export const LETTER_PLACE_CONTACT = 2;
+export const DATE_STRING_UNWANTED_CHARS_QTY = 5;
 export const OBJECTIVE_PALINDORME = 35;
 export const OBJECTIVE_ALREADY_ON_BOARD = 25;
 export const OBJECTIVE_3_VOWELS = 15;
@@ -49,6 +51,7 @@ export const PROBABILITY_OF_40 = 3;
 export const PROBABILITY_OF_30 = 6;
 export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
+export const MIN_TO_MS = 60000;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
 export const LOWER_POINT_BRACKET: Braket = [1, 6];
 export const MIDDLE_POINT_BRACKET: Braket = [7, 12];

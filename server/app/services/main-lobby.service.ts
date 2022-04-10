@@ -6,13 +6,18 @@ import { imgList, NUMBER_ICONS } from '@app/constants';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { DictionnaryService } from './dictionnary.service';
+import { GameHistoryService } from './game-history-service';
 import { RoomsService } from './rooms.service';
 
 @Service()
 export class MainLobbyService {
     private nextRoomId = 0;
 
-    constructor(private roomsService: RoomsService, private readonly dictionnaryService: DictionnaryService) {}
+    constructor(
+        private roomsService: RoomsService,
+        private readonly dictionnaryService: DictionnaryService,
+        private readonly gameHistoyService: GameHistoryService,
+    ) {}
 
     connect(socket: EventEmitter, id: PlayerId) {
         const alreadyJoinedRoom = this.roomsService.rooms
@@ -45,7 +50,7 @@ export class MainLobbyService {
             if (virtualPlayer) {
                 room.addPlayer('VP', virtualPlayer, true, imgList[Math.floor(Math.random() * NUMBER_ICONS)]);
                 room.start();
-                const game = new Game(room, this.dictionnaryService.dictionnaries[room.parameters.dictionnary]);
+                const game = new Game(room, this.dictionnaryService, this.gameHistoyService);
                 this.roomsService.games.push(game);
                 const vP = new VirtualPlayer(
                     parameters.difficulty || Difficulty.Beginner,

@@ -18,7 +18,7 @@ export class WaitingRoomPageComponent {
     log2990: boolean;
 
     constructor(public communicationService: CommunicationService, public matDialog: MatDialog, route: ActivatedRoute) {
-        this.log2990 = route.snapshot.url[0].toString() === 'log2990';
+        this.log2990 = route.snapshot.url[0].toString() === '2990';
         this.communicationService.selectedRoom.subscribe(async (room) => {
             this.isMainPlayer = this.communicationService.getId()?.value === room?.mainPlayer.id;
             this.otherPlayerName = room?.otherPlayer?.name;

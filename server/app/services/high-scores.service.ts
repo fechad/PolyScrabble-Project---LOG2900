@@ -6,7 +6,10 @@ import { Service } from 'typedi';
 @Service()
 export class HighScoresService {
     private collection: Collection | undefined = undefined;
-    constructor(private dataBase: DataBaseController) {
+    constructor(private dataBase: DataBaseController) {}
+
+    async connect() {
+        await this.dataBase.connect();
         this.collection = this.dataBase.db?.collection(cst.SCORES_COLLECTION);
     }
 
