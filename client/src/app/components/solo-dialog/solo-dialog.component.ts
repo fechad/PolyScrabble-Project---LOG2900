@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -7,6 +8,8 @@ import * as cst from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { VP } from '../admin-tabs/virtual-players-tab/virtual-players-tab.component';
 @Component({
     selector: 'app-solo-dialog',
     templateUrl: './solo-dialog.component.html',
@@ -18,10 +21,13 @@ export class SoloDialogComponent implements OnInit {
         { id: Difficulty.Beginner, name: 'débutant' },
         { id: Difficulty.Expert, name: 'expert' },
     ];
-    availableName = ['Francois', 'Etienne', 'Anna'];
+
     opponentName: string;
     selectedRoom: Observable<Room>;
+    databaseNames: VP[];
+    list: string[];
     constructor(
+        private httpClient: HttpClient,
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<SoloDialogComponent>,
         public communicationService: CommunicationService,
@@ -29,18 +35,40 @@ export class SoloDialogComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: { name?: string; dictionnary?: string; timer?: number; log2990: boolean },
     ) {}
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         const minutesSelect = this.data.timer ? Math.floor(this.data.timer / cst.SEC_CONVERT) : 1;
         const secondsSelect = this.data.timer ? this.data.timer % cst.SEC_CONVERT : 0;
 
         this.soloParametersForm = this.formBuilder.group({
-            playerName: new FormControl(this.data.name || '', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            playerName: new FormControl(this.data.name || '', [
+                Validators.required,
+                Validators.pattern('^[a-zA-ZÀ-ùç]*$'),
+                Validators.maxLength(cst.MAX_NAME_CHARACTERS),
+            ]),
             difficulty: new FormControl(Difficulty.Beginner, [Validators.required]),
             minutes: new FormControl(minutesSelect, [Validators.required]),
             seconds: new FormControl(secondsSelect, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
-        this.opponentName = this.availableName[Math.floor(Math.random() * this.availableName.length)];
+        this.databaseNames = await this.httpClient.get<VP[]>(`${environment.serverUrl}/vp-names`).toPromise();
+        await this.chooseOpponent();
+    }
+
+    async chooseOpponent() {
+        const names = await this.getPlayers();
+        this.opponentName = names[Math.floor(Math.random() * names.length)];
+    }
+
+    async getPlayers(): Promise<string[]> {
+        this.list = this.databaseNames
+            .filter((player) => {
+                if (player.beginner !== Boolean(this.soloParametersForm.value.difficulty)) {
+                    return player;
+                } else return;
+            })
+            .map((vp) => vp.name);
+
+        return this.list;
     }
 
     closeDialog(): void {
@@ -48,10 +76,10 @@ export class SoloDialogComponent implements OnInit {
     }
 
     switchName(name: string): string {
-        this.availableName = ['Francois', 'Etienne', 'Anna'];
+        const availableName = this.list.map((vp) => vp);
         if (this.soloParametersForm.value.playerName === name) {
-            this.availableName.splice(this.availableName.indexOf(name), 1);
-            this.opponentName = this.availableName[Math.floor(Math.random() * this.availableName.length)];
+            availableName.splice(availableName.indexOf(name), 1);
+            this.opponentName = availableName[Math.floor(Math.random() * availableName.length)];
         }
         return this.opponentName;
     }

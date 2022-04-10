@@ -28,7 +28,11 @@ export class GameSetupDialogComponent implements OnInit {
 
     ngOnInit() {
         this.gameParametersForm = this.formBuilder.group({
-            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            playerName: new FormControl('', [
+                Validators.required,
+                Validators.pattern('^[a-zA-ZÀ-ùç]*$'),
+                Validators.maxLength(cst.MAX_NAME_CHARACTERS),
+            ]),
             minutes: new FormControl(1, [Validators.required]),
             seconds: new FormControl(0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),

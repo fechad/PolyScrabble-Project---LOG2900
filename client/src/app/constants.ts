@@ -113,3 +113,4 @@ export enum Colors {
 export const imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-images/2.png', 'assets/icon-images/3.png', 'assets/icon-images/4.png'];
 export const LAST_IMG = 3;
 export const NUMBER_ICONS = 4;
+export const MAX_NAME_CHARACTERS = 15;
