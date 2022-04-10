@@ -1,9 +1,10 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DbDictionary } from '@app/classes/dictionnary';
 import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { DbDictionary, DictionaryTabComponent } from './dictionary-tab.component';
+import { DictionaryTabComponent } from './dictionary-tab.component';
 
 const setHTML = () => {
     const div = document.createElement('div');

@@ -50,6 +50,7 @@ export class HttpController {
         this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
         this.dbDictionaryService = Container.get(DbDictionariesService);
+        await this.dbDictionaryService.syncDictionaries();
     }
 
     private configureRouter() {

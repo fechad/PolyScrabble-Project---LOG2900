@@ -1,4 +1,5 @@
 import { LetterNode } from '@app/classes/letter-node';
+import * as fs from 'fs';
 import { promises } from 'fs';
 import { Service } from 'typedi';
 
@@ -22,30 +23,33 @@ export class DictionnaryService {
     }
 
     async init() {
-        if (this.dictionnaries.length !== 0) return;
-        const fileBuffer = await promises.readFile('./assets/dictionnary.json');
-        const readDictionary = JSON.parse(fileBuffer.toString());
-        this.dictionnaries.push({
-            id: 0,
-            name: 'français',
-            words: readDictionary.words,
-            trie: DictionnaryService.generateTrie(readDictionary.words),
-        });
+        const files = await fs.promises.readdir('./dictionaries/');
+        for (const file of files) {
+            const id = Number(file.split('-')[1][0]);
+            const fileBuffer = await promises.readFile(`./dictionaries/dictionary-${id}.json`);
+            const readDictionary = JSON.parse(fileBuffer.toString());
+            this.dictionnaries.push({
+                id,
+                name: readDictionary.title,
+                words: readDictionary.words,
+                trie: DictionnaryService.generateTrie(readDictionary.words),
+            });
+        }
     }
 
     getDictionnaries() {
         return this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
     }
 
-    isValidWord(playedWord: string) {
+    isValidWord(id: number, playedWord: string) {
         if (!this.isWord(playedWord)) {
             return false;
         }
-        return this.dictionnaries[0].words.includes(playedWord.toLowerCase());
+        return this.dictionnaries[id].words.includes(playedWord.toLowerCase());
     }
 
-    validateWords(wordList: string[]): boolean {
-        return wordList.map((word) => word.split(';')).every((words) => this.isValidWord(words[words.length - 1]));
+    validateWords(id: number, wordList: string[]): boolean {
+        return wordList.map((word) => word.split(';')).every((words) => this.isValidWord(id, words[words.length - 1]));
     }
 
     private isWord(expression: string): boolean {

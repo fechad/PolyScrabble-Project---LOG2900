@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DbDictionary } from '@app/classes/dictionnary';
 import { BOARD_SIZE } from '@app/constants';
 import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
-
-export type DbDictionary = { id: number; title: string; description: string; words?: string[] };
 
 @Component({
     selector: 'app-dictionary-tab',
@@ -31,7 +31,7 @@ export class DictionaryTabComponent implements OnInit {
     fileDownloaded: string;
     environment = environment;
 
-    constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder) {}
+    constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder, private snackbar: MatSnackBar) {}
 
     async ngOnInit(): Promise<void> {
         this.updateList();
@@ -97,7 +97,9 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async addDictionary() {
-        await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
+        this.uploadStatus = '';
+        this.uploadStatus = await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
+        this.snackbar.open(this.uploadStatus, 'OK', { duration: 2000, panelClass: ['snackbar'] });
         this.updateList();
     }
 

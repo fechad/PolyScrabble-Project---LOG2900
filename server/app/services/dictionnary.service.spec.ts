@@ -18,40 +18,40 @@ describe('Dictionnary service', () => {
         done();
     });
     it('should validate correct words', (done) => {
-        assert(dictionnaryService.isValidWord('zythums'));
-        assert(dictionnaryService.isValidWord('bonjour'));
-        assert(dictionnaryService.isValidWord('passant'));
+        assert(dictionnaryService.isValidWord(0, 'zythums'));
+        assert(dictionnaryService.isValidWord(0, 'bonjour'));
+        assert(dictionnaryService.isValidWord(0, 'passant'));
         done();
     });
 
     it('should accept upper case correct words', (done) => {
-        assert(dictionnaryService.isValidWord('Zythums'));
-        assert(dictionnaryService.isValidWord('zyTHUMs'));
-        assert(dictionnaryService.isValidWord('ZYTHUMS'));
+        assert(dictionnaryService.isValidWord(0, 'Zythums'));
+        assert(dictionnaryService.isValidWord(0, 'zyTHUMs'));
+        assert(dictionnaryService.isValidWord(0, 'ZYTHUMS'));
         done();
     });
 
     it('should invalidate incorrect words', (done) => {
-        assert(!dictionnaryService.isValidWord('eyeneeks'));
-        assert(!dictionnaryService.isValidWord('jdjd'));
-        assert(!dictionnaryService.isValidWord('kklkam'));
+        assert(!dictionnaryService.isValidWord(0, 'eyeneeks'));
+        assert(!dictionnaryService.isValidWord(0, 'jdjd'));
+        assert(!dictionnaryService.isValidWord(0, 'kklkam'));
         done();
     });
     it('should invalidate incorrect expressions', (done) => {
-        assert(!dictionnaryService.isValidWord('//'));
-        assert(!dictionnaryService.isValidWord('(90ms)'));
-        assert(!dictionnaryService.isValidWord('*@$^'));
+        assert(!dictionnaryService.isValidWord(0, '//'));
+        assert(!dictionnaryService.isValidWord(0, '(90ms)'));
+        assert(!dictionnaryService.isValidWord(0, '*@$^'));
         done();
     });
     it('should validate a list of words', (done) => {
         const wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zythums'];
-        const result = dictionnaryService.validateWords(wordList);
+        const result = dictionnaryService.validateWords(0, wordList);
         assert(result);
         done();
     });
     it('should invalidate a list of wrong words', (done) => {
         const wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zynnjsdc'];
-        const result = dictionnaryService.validateWords(wordList);
+        const result = dictionnaryService.validateWords(0, wordList);
         assert(!result);
         done();
     });
