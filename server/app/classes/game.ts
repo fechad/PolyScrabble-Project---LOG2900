@@ -72,8 +72,8 @@ export class Game {
         this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
         this.wordGetter = new WordGetter(this.board);
-        const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined, replacedBy: undefined };
-        const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined, replacedBy: undefined };
+        const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined, replacedBy: null };
+        const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined, replacedBy: null };
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
         this.startTime = new Date();
         this.gameHistory = {

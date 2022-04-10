@@ -22,4 +22,8 @@ describe('GameHistoryTabComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+    it('should clear history', () => {
+        component.clearHistory();
+        expect(component.games).toEqual([]);
+    });
 });

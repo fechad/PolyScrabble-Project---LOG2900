@@ -1,4 +1,4 @@
-export type PlayerGameInfo = { name: string; pointsScored: number; replacedBy: string | undefined };
+export type PlayerGameInfo = { name: string; pointsScored: number; replacedBy: string | null };
 export enum GameMode {
     Classic = 'Classique',
     Log2990 = 'LOG2990',
