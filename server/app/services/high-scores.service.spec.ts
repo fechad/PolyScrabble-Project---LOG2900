@@ -138,6 +138,18 @@ describe('High scores service', () => {
         ]);
     });
 
+    it('should reset scores', async () => {
+        await collection.insertMany([
+            { name: 'Bob1', score: 2.2, log2990: true },
+            { name: 'Bob2', score: 1.9, log2990: true },
+            { name: 'Bob3', score: -32, log2990: true },
+            { name: 'Bob4', score: -31, log2990: true },
+            { name: 'Bob5', score: -30, log2990: true },
+        ]);
+        await highScoresService.resetScores();
+        expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
+    });
+
     it('should merge scores with defaults', async () => {
         await collection.insertMany([
             { name: 'Bob1', score: 2, log2990: false },

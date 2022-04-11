@@ -13,6 +13,10 @@ export class HighScoresService {
         this.collection = this.dataBase.db?.collection(cst.SCORES_COLLECTION);
     }
 
+    async resetScores() {
+        await this?.collection?.deleteMany({});
+    }
+
     async getScores(log2990: boolean): Promise<Score[]> {
         if (!this.collection) return cst.DEFAULT_USERS;
         let leaderboard = (await this.collection
