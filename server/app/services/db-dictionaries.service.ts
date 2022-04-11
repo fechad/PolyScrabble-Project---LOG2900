@@ -25,17 +25,17 @@ export class DbDictionariesService {
     }
 
     async addDictionary(dictionary: DbDictionary): Promise<string> {
-        let response = 'trying to upload new dictionary';
         const filteredDictionary: ClientDictionaryInterface = { id: dictionary.id, title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
         const fileToCreate: WholeDictionary = { title: dictionary.title, description: dictionary.description, words: dictionary.words };
         const jsonDictionary = JSON.stringify(fileToCreate);
-        await fs.promises
-            .writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary)
-            .then(() => (response = 'succès'))
-            .catch(() => (response = 'échec de téléversement du dictionnaire dans le serveur'));
-        this.syncDictionaries();
-        return response;
+        try {
+            await fs.promises.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary);
+            await this.syncDictionaries();
+            return 'Succès du téléversement du dictionnaire';
+        } catch (e) {
+            return 'Échec de téléversement du dictionnaire dans le serveur';
+        }
     }
 
     async updateDictionary(dictionary: DictPair) {
@@ -75,6 +75,7 @@ export class DbDictionariesService {
             ?.aggregate()
             .project({ id: 1, title: 1, description: 1, _id: 0 })
             .toArray()) as ClientDictionaryInterface[];
+
         const idList = dictionaries.map((dictionary) => dictionary.id);
 
         if (!idList.includes(fileId)) {

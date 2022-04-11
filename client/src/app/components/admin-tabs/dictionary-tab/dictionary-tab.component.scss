@@ -211,3 +211,6 @@
     border-radius: 15px;
 }
 
+::ng-deep .snackbar .mat-simple-snackbar-action {
+    color: rgb(108, 226, 108);
+}

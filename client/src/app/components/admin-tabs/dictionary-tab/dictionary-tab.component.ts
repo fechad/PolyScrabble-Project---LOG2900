@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DbDictionary } from '@app/classes/dictionnary';
 import { BOARD_SIZE } from '@app/constants';
 import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
-
-export type DbDictionary = { id: number; title: string; description: string; words?: string[] };
 
 @Component({
     selector: 'app-dictionary-tab',
@@ -26,11 +26,12 @@ export class DictionaryTabComponent implements OnInit {
     dictionaryForm: FormGroup;
     newWords: string[];
     oldTitle: string;
+    oldDescription: string;
     newDictionnary: DbDictionary;
     fileDownloaded: string;
     environment = environment;
 
-    constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder) {}
+    constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder, private snackbar: MatSnackBar) {}
 
     async ngOnInit(): Promise<void> {
         this.updateList();
@@ -47,13 +48,13 @@ export class DictionaryTabComponent implements OnInit {
         this.list = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
     }
 
-    createNewDbDictionary(title: string, description: string, words: string[]): DbDictionary {
+    createNewDbDictionary(): DbDictionary {
         let lastDicoId = this.list[this.list.length - 1].id;
         this.newDictionnary = {
             id: lastDicoId === 0 ? 1 : (lastDicoId += 1),
-            title,
-            description,
-            words,
+            title: this.dictionaryForm.value.title,
+            description: this.dictionaryForm.value.description,
+            words: this.newWords,
         };
 
         return this.newDictionnary;
@@ -68,7 +69,10 @@ export class DictionaryTabComponent implements OnInit {
             try {
                 const obj = JSON.parse(content);
                 if (this.validateDictionary(obj.title, obj.description, obj.words)) {
-                    this.createNewDbDictionary(obj.title, obj.description, obj.words);
+                    this.newWords = obj.words;
+                    this.dictionaryForm.value.title = obj.title;
+                    this.dictionaryForm.value.description = obj.description;
+                    this.createNewDbDictionary();
                 } else throw new Error();
             } catch (error) {
                 this.error = 'Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.';
@@ -95,6 +99,7 @@ export class DictionaryTabComponent implements OnInit {
     async addDictionary() {
         this.uploadStatus = '';
         this.uploadStatus = await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
+        this.snackbar.open(this.uploadStatus, 'OK', { duration: 2000, panelClass: ['snackbar'] });
         this.updateList();
     }
 
@@ -115,10 +120,11 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async downloadDictionary(id: string) {
-        await this.httpClient.get(`${environment.serverUrl}/dictionaries/download/${id}`).toPromise();
+        await this.httpClient.get(`${environment.serverUrl}/dictionaries/${id}`).toPromise();
     }
 
     findDoubles(nameToFind: string): boolean {
+        if (this.oldTitle === nameToFind) return false;
         if (this.list.find((dictionary) => dictionary.title.toLowerCase() === nameToFind.toLowerCase())) {
             this.error = 'Un des dictionnaires détient déjà ce nom, veuillez en choisir un autre.';
             return true;

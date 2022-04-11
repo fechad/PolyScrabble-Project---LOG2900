@@ -260,7 +260,7 @@ describe('VirtualPlayer', () => {
         for (const option of options) {
             const words = wordGetter.getWords(option.placement);
             for (const word of words) {
-                expect(dictionnaryService.isValidWord(word.word)).to.equal(true, `${word} is not a valid word`);
+                expect(dictionnaryService.isValidWord(0, word.word)).to.equal(true, `${word} is not a valid word`);
             }
         }
     });

@@ -48,6 +48,7 @@ describe('HttpController', () => {
     before(async () => {
         dictionnaryService = createStubInstance(DictionnaryService);
         dictionnaryService.getDictionnaries.returns(DICTIONNARIES);
+        dictionnaryService.init.callsFake(async () => Promise.resolve());
         highScoreService = createStubInstance(HighScoresService);
         await highScoreService.connect();
         highScoreService.getScores.callsFake(async (log2990) => (log2990 ? HIGH_SCORES_LOG2990 : HIGH_SCORES_NORMAL));
@@ -242,10 +243,10 @@ describe('HttpController', () => {
         expect(response.body).to.deep.equal('');
     });
 
-    it('should reset virtual player names and dictionaries to default', async () => {
-        const response = await supertest(expressApp).delete('/api/reset').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal('');
-    });
+    // it('should reset virtual player names and dictionaries to default', async () => {
+    //     const response = await supertest(expressApp).delete('/api/reset').expect(StatusCodes.OK);
+    //     expect(response.body).to.deep.equal('');
+    // });
 
     // it('should download dictionaries', async () => {
     //     const response = await supertest(expressApp).get('/api/dictionaries/download/:id').send({ id: '2' }).expect(StatusCodes.OK);

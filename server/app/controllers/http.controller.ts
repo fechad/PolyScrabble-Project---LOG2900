@@ -37,12 +37,9 @@ export class HttpController {
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
         private readonly dataBase: DataBaseController,
-        private gameHistoryService: GameHistoryService,
-        private highScoreService: HighScoresService,
+        private readonly highScoreService: HighScoresService,
+        private readonly gameHistoryService: GameHistoryService,
     ) {
-        this.dictionnaryService.init();
-        this.gameHistoryService.connect();
-        this.highScoreService.connect();
         this.init();
         this.configureRouter();
     }
@@ -51,12 +48,16 @@ export class HttpController {
         await this.dataBase.connect();
         this.vpNamesService = Container.get(VpNamesService);
         this.dbDictionaryService = Container.get(DbDictionariesService);
+        await this.highScoreService.connect();
+        await this.gameHistoryService.connect();
     }
 
     private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
-        this.router.get('/dictionnaries', (req: Request, res: Response) => {
+        this.router.get('/dictionnaries', async (req: Request, res: Response) => {
+            await this.dbDictionaryService.syncDictionaries();
+            await this.dictionnaryService.copyDictionaries();
             const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
@@ -133,16 +134,7 @@ export class HttpController {
         this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
-            // res.status(200).json(dictionary);
         });
-
-        this.router.delete('/reset', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.deleteAll();
-            const names = await this.vpNamesService.deleteAll();
-            res.json(names);
-            res.json(dictionaries);
-        });
-
         this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.deleteAll();
             res.json(dictionaries);

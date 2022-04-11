@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Parameters } from '@app/classes/parameters';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 
@@ -28,7 +28,11 @@ export class GameSetupDialogComponent implements OnInit {
 
     ngOnInit() {
         this.gameParametersForm = this.formBuilder.group({
-            playerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            playerName: new FormControl('', [
+                Validators.required,
+                Validators.pattern('^[a-zA-ZÀ-ùç]*$'),
+                Validators.maxLength(constants.MAX_NAME_CHARACTERS),
+            ]),
             minutes: new FormControl(1, [Validators.required]),
             seconds: new FormControl(0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
@@ -44,7 +48,7 @@ export class GameSetupDialogComponent implements OnInit {
 
         const parameters = new Parameters();
         parameters.avatar = this.avatarSelectionService.imgChosen;
-        parameters.timer = this.gameParametersForm.value.minutes * cst.SEC_CONVERT + this.gameParametersForm.value.seconds;
+        parameters.timer = this.gameParametersForm.value.minutes * constants.SEC_CONVERT + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
         parameters.log2990 = this.data.log2990;
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters, undefined);
