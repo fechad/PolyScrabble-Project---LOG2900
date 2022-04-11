@@ -31,14 +31,14 @@ export class HttpController {
     router: Router;
     private vpNamesService: VpNamesService;
     private dbDictionaryService: DbDictionariesService;
-    private highScoreService: HighScoresService;
-    private gameHistoryService: GameHistoryService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
         private readonly dataBase: DataBaseController,
+        private readonly highScoreService: HighScoresService,
+        private readonly gameHistoryService: GameHistoryService,
     ) {
         this.init();
         this.configureRouter();
@@ -46,10 +46,10 @@ export class HttpController {
 
     private async init() {
         await this.dataBase.connect();
-        this.gameHistoryService = Container.get(GameHistoryService);
-        this.highScoreService = Container.get(HighScoresService);
         this.vpNamesService = Container.get(VpNamesService);
         this.dbDictionaryService = Container.get(DbDictionariesService);
+        await this.highScoreService.connect();
+        await this.gameHistoryService.connect();
     }
 
     private configureRouter() {
@@ -88,6 +88,11 @@ export class HttpController {
         this.router.get('/game-history', async (req: Request, res: Response) => {
             const games = await this.gameHistoryService.getHistory();
             res.json(games);
+        });
+
+        this.router.delete('/game-history', async (req: Request, res: Response) => {
+            const history = await this.gameHistoryService.clearHistory();
+            res.json(history);
         });
 
         this.router.get('/vp-names', async (req: Request, res: Response) => {

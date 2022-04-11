@@ -58,6 +58,7 @@ export class Game {
     private readonly wordGetter;
     private gameHistory: GameHistory;
     private objectives: Objectives | undefined;
+    private startTime: Date;
 
     constructor(
         readonly room: Room,
@@ -71,11 +72,12 @@ export class Game {
         this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
         this.wordGetter = new WordGetter(this.board);
-        const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined };
-        const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined };
+        const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined, replacedBy: null };
+        const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined, replacedBy: null };
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
+        this.startTime = new Date();
         this.gameHistory = {
-            startTime: new Date(),
+            startTime: this.startTime.toLocaleString(),
             length: undefined,
             firstPlayer: firstPlayerInfo,
             secondPlayer: secondPlayerInfo,
@@ -296,10 +298,14 @@ export class Game {
             this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
             this.completeGameHistory();
         } else {
-            const idxPlayerToReplace = idLoser === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
+            const loserIsMainPlayer = idLoser === this.players[cst.MAIN_PLAYER].id;
+            const playerReplaced = loserIsMainPlayer ? this.gameHistory.firstPlayer : this.gameHistory.secondPlayer;
+            const idxPlayerToReplace = loserIsMainPlayer ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const oldName = this.players[idxPlayerToReplace].name;
             this.replaceByVirtualPlayer(idxPlayerToReplace);
-            const message = `Votre adversaire ${oldName} a abandonné et sera remplacé par ${this.players[idxPlayerToReplace].name}`;
+            const replacementPlayer = this.players[idxPlayerToReplace].name;
+            playerReplaced.replacedBy = replacementPlayer;
+            const message = `Votre adversaire ${oldName} a abandonné et sera remplacé par ${replacementPlayer}`;
             this.eventEmitter.emit('message', { text: message, emitter: 'command' } as Message);
         }
         this.sendState();
@@ -326,7 +332,7 @@ export class Game {
     }
 
     private completeGameHistory() {
-        const differenceInMs = new Date().getTime() - this.gameHistory.startTime.getTime();
+        const differenceInMs = new Date().getTime() - this.startTime.getTime();
         const lengthInSeconds = Math.ceil((differenceInMs % cst.MIN_TO_MS) / cst.SEC_TO_MS);
         const lengthInMinutes = Math.floor(differenceInMs / cst.MIN_TO_MS);
         this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' s';

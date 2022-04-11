@@ -10,7 +10,20 @@ describe('Game History Service', () => {
     const dataBase = new DataBaseController();
     const dbman: DBManager = new DBManager();
     let collection: Collection;
+    let playedGame: GameHistory;
 
+    before(() => {
+        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67, replacedBy: null };
+        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109, replacedBy: null };
+
+        playedGame = {
+            startTime: new Date().toLocaleString(),
+            length: '0 min 3 sec',
+            firstPlayer: secondPlayer,
+            secondPlayer: firstPlayer,
+            mode: GameMode.Classic,
+        };
+    });
     beforeEach(async () => {
         await dbman.start();
         dataBase.db = dbman.db;
@@ -24,33 +37,20 @@ describe('Game History Service', () => {
     afterEach(async () => dbman.cleanup());
 
     it('should add game to DB', async () => {
-        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
-        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
-
-        const playedGame: GameHistory = {
-            startTime: new Date(),
-            length: '0 min 3 sec',
-            firstPlayer: secondPlayer,
-            secondPlayer: firstPlayer,
-            mode: GameMode.Classic,
-        };
-        const gameCopy = { ...playedGame };
-        await gameHistoryService.addGame(playedGame);
-        expect(await collection.find({}).project({ _id: 0 }).toArray()).to.deep.equal([gameCopy]);
+        await gameHistoryService.addGame({ ...playedGame });
+        expect(await collection.find({}).project({ _id: 0 }).toArray()).to.deep.equal([{ ...playedGame }]);
     });
     it('should get games from DB', async () => {
-        const firstPlayer: PlayerGameInfo = { name: 'justin', pointsScored: 67 };
-        const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109 };
+        await gameHistoryService.addGame({ ...playedGame });
+        expect(await gameHistoryService.getHistory()).to.deep.equal([{ ...playedGame }]);
+    });
 
-        const playedGame: GameHistory = {
-            startTime: new Date(),
-            length: '0 min 3 sec',
-            firstPlayer: secondPlayer,
-            secondPlayer: firstPlayer,
-            mode: GameMode.Classic,
-        };
-        const gameCopy = { ...playedGame };
-        await gameHistoryService.addGame(playedGame);
-        expect(await gameHistoryService.getHistory()).to.deep.equal([gameCopy]);
+    it('should clear games from DB', async () => {
+        await gameHistoryService.addGame({ ...playedGame });
+        expect(await gameHistoryService.getHistory()).to.deep.equal([{ ...playedGame }]);
+        await gameHistoryService.clearHistory();
+        expect(await gameHistoryService.getHistory()).to.deep.equal([]);
+        await gameHistoryService.addGame({ ...playedGame });
+        expect(await gameHistoryService.getHistory()).to.deep.equal([{ ...playedGame }]);
     });
 });

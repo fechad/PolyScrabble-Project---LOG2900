@@ -23,4 +23,8 @@ export class GameHistoryService {
         if (!this.collection) return;
         await this.collection.insertOne(gamePlayed);
     }
+
+    async clearHistory() {
+        await this.collection?.deleteMany({});
+    }
 }
