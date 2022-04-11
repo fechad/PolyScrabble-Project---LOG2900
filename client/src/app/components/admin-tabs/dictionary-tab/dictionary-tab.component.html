@@ -1,70 +1,72 @@
 <section class="container">
-    <button class="refresh"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Francais</h4>
+    <button class="refresh" (click)="deleteAll()"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
+    <div class="big-box" [ngClass]="{ regular: dictionary.title !== 'Mon dictionnaire' }" *ngFor="let dictionary of list">
+        <div class="dico-box">
+            <div class="header">
+                <div class="title">
+                    <h4>{{ dictionary.title }}</h4>
+                </div>
             </div>
-            <div class="label"></div>
+            <div class="description">
+                <p>{{ dictionary.description }}</p>
+            </div>
         </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
+        <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
+            <button class="trash-can" (click)="deleteDictionary(dictionary.id.toString())"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
+            <button class="pencil" (click)="editing = true; oldTitle = dictionary.title; oldDescription = dictionary.description"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
         </div>
+        <a href="{{environment.serverUrl}}/dictionaries/download/{{dictionary.id}}" download class="download" (click)="downloadDictionary(dictionary.id.toString())"><fa-icon [icon]="faDownload" size="lg"></fa-icon></a>
     </div>
+    <section class="edit" *ngIf="editing">
+        <button class="cancel" (click)="editing = false">X</button>
+        <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
+            <div>
+                <label>Nom du dictionnaire:</label>
+                <input type="text" formControlName="title" class="form-control" [ngModel]="oldTitle" />
+            </div>
+            <div class="error" *ngIf="error !== ''">{{ error }}</div>
+            <div>
+                <p>Description du dictionnaire:</p>
+                <textarea
+                    class="form-control"
+                    formControlName="description"
+                    rows="10"
+                    type="text"
+                    maxlength="512"
+                    [ngModel]="oldDescription"
+                ></textarea>
+            </div>
+        </form>
+        <button class="cancel" (click)="updateDictionary()">Soumettre modification</button>
+    </section>
+    <section *ngIf="uploading" class="dictionary-dialog">
+        <mat-card-header>
+            <mat-card-title>Téléversez votre dictionnaire!</mat-card-title>
+            <button (click)="emptyForm()">X</button>
+        </mat-card-header>
 
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Anglais</h4>
-            </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
+        <mat-card-content>
+            <div class="dictionary-form">
+                <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
+                    <div class="error" *ngIf="error !== ''">{{ error }}</div>
 
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Tests</h4>
+                    <div>
+                        <label>Téléverser un fichier JSON</label>
+                        <input
+                            type="file"
+                            accept=".json"
+                            formControlName="file"
+                            class="form-control"
+                            (click)="error = ''"
+                            (change)="getFileInfos($event)"
+                        />
+                    </div>
+                    <button [disabled]="dictionaryForm.invalid" type="submit">Soumettre</button>
+                </form>
             </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
-
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Tests</h4>
-            </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
-    </div>
-
-    <div class="dico-box">
-        <div class="header">
-            <div class="title">
-                <h4>Dictionnaire Tests</h4>
-            </div>
-            <div class="label">
-                <button class="trash-can"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
-            </div>
-        </div>
-        <div class="description">
-            <p>Dictionnaire offert par le département GIGL de Polytechnique de Montréal</p>
-        </div>
+        </mat-card-content>
+    </section>
+    <div class="upload-area">
+        <button class="upload" (click)="uploading = true"><fa-icon [icon]="faUpload" size="3x"></fa-icon></button>
     </div>
 </section>

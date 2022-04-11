@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Room } from '@app/classes/room';
+import { MAX_NAME_CHARACTERS } from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { Observable } from 'rxjs';
@@ -28,7 +29,11 @@ export class JoinSetupDialogComponent implements OnInit {
 
     ngOnInit(): void {
         this.joiningRoomForm = this.formBuilder.group({
-            secondPlayerName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z]*$')]),
+            secondPlayerName: new FormControl('', [
+                Validators.required,
+                Validators.pattern('^[a-zA-ZÀ-ùç]*$'),
+                Validators.maxLength(MAX_NAME_CHARACTERS),
+            ]),
         });
     }
 

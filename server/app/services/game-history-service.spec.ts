@@ -29,8 +29,7 @@ describe('Game History Service', () => {
 
         const playedGame: GameHistory = {
             startTime: new Date(),
-            endTime: new Date(),
-            length: 5,
+            length: '0 min 3 sec',
             firstPlayer: secondPlayer,
             secondPlayer: firstPlayer,
             mode: GameMode.Classic,
@@ -45,8 +44,7 @@ describe('Game History Service', () => {
 
         const playedGame: GameHistory = {
             startTime: new Date(),
-            endTime: new Date(),
-            length: 5,
+            length: '0 min 3 sec',
             firstPlayer: secondPlayer,
             secondPlayer: firstPlayer,
             mode: GameMode.Classic,

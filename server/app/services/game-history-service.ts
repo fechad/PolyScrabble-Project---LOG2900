@@ -7,7 +7,10 @@ import { Service } from 'typedi';
 @Service()
 export class GameHistoryService {
     private collection: Collection | undefined = undefined;
-    constructor(private dataBase: DataBaseController) {
+    constructor(private dataBase: DataBaseController) {}
+
+    async connect() {
+        await this.dataBase.connect();
         this.collection = this.dataBase.db?.collection(cst.GAMES_COLLECTION);
     }
 

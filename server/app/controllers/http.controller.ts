@@ -1,9 +1,11 @@
 import { State } from '@app/classes/room';
+import { DbDictionariesService } from '@app/services/db-dictionaries.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
 import { RoomsService } from '@app/services/rooms.service';
+import { VpNamesService } from '@app/services/vp-names.service';
 import { Request, Response, Router } from 'express';
 import { ValidateFunction, Validator } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
@@ -27,25 +29,35 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
 @Service()
 export class HttpController {
     router: Router;
+    private vpNamesService: VpNamesService;
+    private dbDictionaryService: DbDictionariesService;
+    private highScoreService: HighScoresService;
+    private gameHistoryService: GameHistoryService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
-        private readonly dataBase: DataBaseController,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
-        private readonly highScoreService: HighScoresService,
-        private readonly gameHistoryService: GameHistoryService,
+        private readonly dataBase: DataBaseController,
     ) {
-        this.dictionnaryService.init();
-        this.dataBase.connect();
-        this.highScoreService = Container.get(HighScoresService);
+        this.init();
         this.configureRouter();
+    }
+
+    private async init() {
+        await this.dataBase.connect();
+        this.gameHistoryService = Container.get(GameHistoryService);
+        this.highScoreService = Container.get(HighScoresService);
+        this.vpNamesService = Container.get(VpNamesService);
+        this.dbDictionaryService = Container.get(DbDictionariesService);
     }
 
     private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
-        this.router.get('/dictionnaries', (req: Request, res: Response) => {
+        this.router.get('/dictionnaries', async (req: Request, res: Response) => {
+            await this.dbDictionaryService.syncDictionaries();
+            await this.dictionnaryService.copyDictionaries();
             const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
@@ -76,6 +88,56 @@ export class HttpController {
         this.router.get('/game-history', async (req: Request, res: Response) => {
             const games = await this.gameHistoryService.getHistory();
             res.json(games);
+        });
+
+        this.router.get('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.getNames();
+            res.json(names);
+        });
+
+        this.router.post('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.addVP(req.body);
+            res.json(names);
+        });
+        this.router.patch('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.updateVP(req.body);
+            res.json(names);
+        });
+        this.router.delete('/vp-names/:name', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.deleteVP(req.params.name);
+            res.json(names);
+        });
+
+        this.router.get('/dictionaries', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.getDictionaries();
+            res.json(dictionaries);
+        });
+
+        this.router.post('/dictionaries', async (req: Request, res: Response) => {
+            const response = await this.dbDictionaryService.addDictionary(req.body);
+            res.status(StatusCodes.OK).json(response);
+        });
+        this.router.patch('/dictionaries', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.updateDictionary(req.body);
+            res.json(dictionaries);
+        });
+        this.router.delete('/dictionaries/:id', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.deleteDictionary(req.params.id);
+            res.json(dictionaries);
+        });
+
+        this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
+            const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
+            res.download(dictionary);
+        });
+        this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
+            const dictionaries = await this.dbDictionaryService.deleteAll();
+            res.json(dictionaries);
+        });
+
+        this.router.delete('/vp-names-reset', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.deleteAll();
+            res.json(names);
         });
     }
 }

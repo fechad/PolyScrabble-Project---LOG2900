@@ -1,5 +1,6 @@
 .container {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     width: 95%;
@@ -7,6 +8,30 @@
     margin-top: 2.5%;
     overflow-y: auto;
 }
+
+.dictionary-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 95%;
+    height: 90%;
+    margin-top: 2.5%;
+    height: 80%;
+    margin-top: 5%;
+    overflow-y: auto;
+}
+
+.big-box{
+    width: 95%;
+    height: 20%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3%;
+}
+
 .dico-box {
     display: flex;
     flex-direction: column;
@@ -15,9 +40,9 @@
     background-color: white;
     border-radius: 15px;
     width: 50%;
-    height: 20%;
-    min-height: 20%;
+    height: 100%;
     margin: 0 0 5% 0;
+    overflow: visible;
 }
 
 .refresh {
@@ -44,7 +69,7 @@
 .header {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
     height: 25%;
@@ -52,31 +77,38 @@
 
 .title {
     height: 100%;
-    width: 90%;
+    width: 50%;
     background-color: #f5e86f;
     border-radius: 0 0 10px 10px;
-    margin-left: 27%;
-    text-align: center;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: row;
 }
 
 .title h4 {
     font-size: 15px;
+    padding-right: 5px;
+}
+
+.regular {
+    margin-left: 3.5%;
 }
 .label {
-    float: right;
     font-size: 11px;
-    margin-left: 15%;
-    width: 20%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1%;
 }
 
 .trash-can {
     color: red;
     border: white;
-    width: 80%;
-    height: 100%;
-    background-color: white;
-    margin-top: 2%;
+    width: 100%;
+    height: 20%;
+    background-color: #E1AC01;
+    margin: 0 0 0 20%;
 }
 
 .trash-can:hover {
@@ -85,6 +117,84 @@
 
 .trash-can:active {
     box-shadow: 0px 0px 0px;
+}
+
+.pencil {
+    width: 100%;
+    background-color: #E1AC01;
+    border: none;
+    margin: 18% 0 0 20%;
+}
+
+
+
+.dictionary-container::-webkit-scrollbar {
+    height: 1px;
+    width: 10px;
+    border-radius: 15px;
+    background-color: #b6b6b6c0;
+}
+
+.dictionary-container::-webkit-scrollbar-thumb {
+    background-color: #3d3d3d;
+    height: 1px;
+    width: 10px;
+    border-radius: 15px;
+}
+
+.upload-area {
+    display: flex;
+    justify-content: center;
+    height: 10%;
+    width: 100%;
+    position: sticky;
+    bottom: 1px;
+}
+
+.upload {
+    width: 20%;
+    background-color: #b3f8fd;
+    border-radius: 20px;
+    box-shadow: 4px 4px 4px;
+}
+
+.upload:hover {
+    cursor: pointer;
+}
+
+.upload:active {
+    box-shadow: 0 0 0;
+}
+
+.dictionary-dialog {
+    z-index: 2;
+    position: absolute;
+    justify-content: start;
+    align-items: center;
+    background-color: #eee9bd;
+    margin-left: 18%;
+}
+
+.dictionary-form {
+    background-color: #eee9bd;
+}
+
+.dictionary-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.error{
+    color: red;
+}
+
+.edit{
+    z-index: 2;
+    position: absolute;
+    justify-content: start;
+    align-items: center;
+    background-color: #eee9bd;
+    margin-left: 18%;
 }
 
 .container::-webkit-scrollbar {
@@ -99,4 +209,8 @@
     height: 1px;
     width: 10px;
     border-radius: 15px;
+}
+
+::ng-deep .snackbar .mat-simple-snackbar-action {
+    color: rgb(108, 226, 108);
 }

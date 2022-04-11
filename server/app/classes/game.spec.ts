@@ -1,8 +1,10 @@
 import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import { EndGameCalculator } from './end-game-calculator';
 import { Game } from './game';
@@ -24,12 +26,15 @@ describe('Game', () => {
     let game: Game;
     let stubError: sinon.SinonStub;
     let dictionnary: DictionnaryService;
+    let gameHistoryService: SinonStubbedInstance<GameHistoryService>;
     let stubSetTimeout: sinon.SinonStub;
     let stubClearTimeout: sinon.SinonStub;
 
     before(async () => {
         dictionnary = Container.get(DictionnaryService);
         await dictionnary.init();
+        gameHistoryService = createStubInstance(GameHistoryService);
+        await gameHistoryService.connect();
     });
 
     beforeEach(() => {
@@ -42,7 +47,7 @@ describe('Game', () => {
         room.addPlayer(players[1].id, players[1].name, players[1].virtual, players[1].avatar);
         stubSetTimeout = sinon.stub(global, 'setTimeout').returns(0 as unknown as NodeJS.Timeout);
         stubClearTimeout = sinon.stub(global, 'clearTimeout');
-        game = new Game(room, dictionnary.dictionnaries[0]);
+        game = new Game(room, dictionnary, gameHistoryService as unknown as GameHistoryService);
         stubError = sinon.stub();
         game.eventEmitter.on('game-error', stubError);
         game['isPlayer0Turn'] = true;
@@ -54,7 +59,7 @@ describe('Game', () => {
 
     it('should exit with error if trying to create game with only one player', () => {
         const room = new Room(0, players[0].id, players[0].name, parameters);
-        expect(() => new Game(room, dictionnary.dictionnaries[0])).to.throw();
+        expect(() => new Game(room, dictionnary, gameHistoryService as unknown as GameHistoryService)).to.throw();
     });
 
     it('should get a message and broadcast it', (done) => {
@@ -395,13 +400,12 @@ describe('Game', () => {
     });
 
     it('should send correct objective info', () => {
-        const playedWords: Set<string> = new Set<string>();
         game['objectives'] = undefined;
         expect(game['objectivesInfo'](players[0].id)).to.deep.equal([]);
         game['objectives'] = [
-            { objective: new ObjectiveAnagram(playedWords), player: players[0].id },
-            { objective: new Objective2BigLetters(playedWords), player: undefined, doneByPlayer: players[0].id },
-            { objective: new Objective3Vowels(playedWords), player: undefined },
+            { objective: new ObjectiveAnagram(), player: players[0].id },
+            { objective: new Objective2BigLetters(), player: undefined, doneByPlayer: players[0].id },
+            { objective: new Objective3Vowels(), player: undefined },
         ];
         expect(game['objectivesInfo'](players[0].id)).to.deep.equal([
             {
@@ -409,21 +413,21 @@ describe('Game', () => {
                 isPublic: false,
                 mine: false,
                 score: 20,
-                text: new ObjectiveAnagram(playedWords).description,
+                text: new ObjectiveAnagram().description,
             },
             {
                 available: false,
                 isPublic: true,
                 mine: true,
                 score: 50,
-                text: new Objective2BigLetters(playedWords).description,
+                text: new Objective2BigLetters().description,
             },
             {
                 available: true,
                 isPublic: true,
                 mine: false,
                 score: 15,
-                text: new Objective3Vowels(playedWords).description,
+                text: new Objective3Vowels().description,
             },
         ]);
     });

@@ -1,12 +1,14 @@
 import { Application } from '@app/app';
-import { Dictionnary } from '@app/classes/dictionnary';
 import { Game } from '@app/classes/game';
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
-import { DictionnaryService } from '@app/services/dictionnary.service';
+import { DbDictionariesService } from '@app/services/db-dictionaries.service';
+import { DictionnaryInfo, DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
 import { RoomsService } from '@app/services/rooms.service';
+import { VpNamesService } from '@app/services/vp-names.service';
 import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -14,7 +16,7 @@ import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
 describe('HttpController', () => {
-    const DICTIONNARIES: Dictionnary[] = [new Dictionnary(0, 'français', [])];
+    const DICTIONNARIES = [{ id: 0, name: 'français', words: ['a', 'b', 'c'] }] as DictionnaryInfo[];
     const HIGH_SCORES_LOG2990 = [
         { score: 34, names: ['Bob', 'Bob1'] },
         { score: 33, names: ['Bo', 'B'] },
@@ -26,20 +28,40 @@ describe('HttpController', () => {
     const ID = 'Bob';
     const TOKEN = 42;
 
+    // const DEFAULT_VPS = [
+    //     { default: true, beginner: true, name: 'François' },
+    //     { default: true, beginner: true, name: 'Etienne' },
+    //     { default: true, beginner: true, name: 'Anna' },
+    //     { default: true, beginner: false, name: 'Fedwin' },
+    //     { default: true, beginner: false, name: 'Justin' },
+    //     { default: true, beginner: false, name: 'Xavier' },
+    // ];
+
     let highScoreService: SinonStubbedInstance<HighScoresService>;
     let dictionnaryService: SinonStubbedInstance<DictionnaryService>;
+    let gameHistoryService: SinonStubbedInstance<GameHistoryService>;
+    let vpNamesService: SinonStubbedInstance<VpNamesService>;
+    let dbDictionaryService: SinonStubbedInstance<DbDictionariesService>;
     let roomsService: RoomsService;
     let expressApp: Express.Application;
 
     before(async () => {
         dictionnaryService = createStubInstance(DictionnaryService);
-        dictionnaryService.getDictionnaries.returns(DICTIONNARIES.map((dict) => dict.getInfo()));
+        dictionnaryService.getDictionnaries.returns(DICTIONNARIES);
+        dictionnaryService.init.callsFake(async () => Promise.resolve());
         highScoreService = createStubInstance(HighScoresService);
+        await highScoreService.connect();
         highScoreService.getScores.callsFake(async (log2990) => (log2990 ? HIGH_SCORES_LOG2990 : HIGH_SCORES_NORMAL));
+        gameHistoryService = createStubInstance(GameHistoryService);
+        vpNamesService = createStubInstance(VpNamesService);
+        dbDictionaryService = createStubInstance(DbDictionariesService);
+        await gameHistoryService.connect();
         const loginsService = createStubInstance(LoginsService);
         loginsService.verify.callsFake((id, token) => id === ID && token === TOKEN);
         roomsService = new RoomsService();
         Container.set(DictionnaryService, dictionnaryService);
+        Container.set(VpNamesService, vpNamesService);
+        Container.set(DbDictionariesService, dbDictionaryService);
         Container.set(HighScoresService, highScoreService);
         Container.set(LoginsService, loginsService);
         Container.set(RoomsService, roomsService);
@@ -59,7 +81,7 @@ describe('HttpController', () => {
 
     it('should return dictionnaries on request to /dictionnaries', async () => {
         const response = await supertest(expressApp).get('/api/dictionnaries').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal(DICTIONNARIES.map((dict) => dict.getInfo()));
+        expect(response.body).to.deep.equal(DICTIONNARIES);
     });
 
     it('should return normal high scores', async () => {
@@ -103,7 +125,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID + 1, 'Dummy', new Parameters());
         room.addPlayer(ID, 'Not Dummy', true, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.FORBIDDEN);
     });
 
@@ -111,7 +135,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID, 'Dummy', new Parameters());
         room.addPlayer(ID + 1, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Dummy', score: 0, log2990: false }]]);
     });
@@ -120,7 +146,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID + 1, 'Dummy', new Parameters());
         room.addPlayer(ID, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: false }]]);
     });
@@ -131,7 +159,9 @@ describe('HttpController', () => {
         const room = new Room(0, ID, 'Dummy', params);
         room.addPlayer(ID + 1, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Dummy', score: 0, log2990: true }]]);
     });
@@ -142,8 +172,84 @@ describe('HttpController', () => {
         const room = new Room(0, ID + 1, 'Dummy', params);
         room.addPlayer(ID, 'Not Dummy', false, 'a');
         roomsService.rooms.push(room);
-        roomsService.games.push(new Game(roomsService.rooms[0], DICTIONNARIES[0]));
+        roomsService.games.push(
+            new Game(roomsService.rooms[0], dictionnaryService as unknown as DictionnaryService, gameHistoryService as unknown as GameHistoryService),
+        );
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, token: TOKEN, room: 0 }).expect(StatusCodes.ACCEPTED);
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: true }]]);
     });
+
+    // TODO DO REAL TESTS FOR HTTP CONTROLLER
+
+    it('should return default virtual player names on request to /vp-names', async () => {
+        const response = await supertest(expressApp).get('/api/vp-names').expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should add virtual player', async () => {
+        const response = await supertest(expressApp)
+            .post('/api/vp-names')
+            .send({ default: false, beginner: true, name: 'Test' })
+            .expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should update virtual player', async () => {
+        const response = await supertest(expressApp)
+            .patch('/api/vp-names')
+            .send({ default: false, beginner: true, name: 'Hi' })
+            .expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should delete virtual player', async () => {
+        const response = await supertest(expressApp).delete('/api/vp-names/:name').send({ name: 'Hi' }).expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should return default dictionary on request to /dictionaries', async () => {
+        const response = await supertest(expressApp).get('/api/dictionaries').expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should add dictionary', async () => {
+        const response = await supertest(expressApp)
+            .post('/api/dictionaries')
+            .send({ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] })
+            .expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should update dictionaries', async () => {
+        const response = await supertest(expressApp)
+            .patch('/api/dictionaries')
+            .send({ id: 20, title: 'Modif', description: 'Testing', words: ['a', 'b'] })
+            .expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should delete dictionaries', async () => {
+        const response = await supertest(expressApp).delete('/api/dictionaries/:id').send({ id: '3' }).expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should reset dictionaries', async () => {
+        const response = await supertest(expressApp).delete('/api/dictionaries-reset').expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    it('should reset virtual player names to default', async () => {
+        const response = await supertest(expressApp).delete('/api/vp-names-reset').expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
+    // it('should reset virtual player names and dictionaries to default', async () => {
+    //     const response = await supertest(expressApp).delete('/api/reset').expect(StatusCodes.OK);
+    //     expect(response.body).to.deep.equal('');
+    // });
+
+    // it('should download dictionaries', async () => {
+    //     const response = await supertest(expressApp).get('/api/dictionaries/download/:id').send({ id: '2' }).expect(StatusCodes.OK);
+    //     expect(response.body).to.deep.equal('');
+    // });
 });
