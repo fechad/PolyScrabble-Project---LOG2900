@@ -94,6 +94,11 @@ describe('HttpController', () => {
         expect(response.body).to.deep.equal(HIGH_SCORES_LOG2990);
     });
 
+    it('should reset high scores', async () => {
+        const response = await supertest(expressApp).delete('/api/high-scores').expect(StatusCodes.OK);
+        expect(response.body).to.deep.equal('');
+    });
+
     it('should not add high scores when the input format is not respected', async () => {
         await supertest(expressApp).post('/api/high-scores').expect(StatusCodes.BAD_REQUEST);
         await supertest(expressApp).post('/api/high-scores').send({ id: ID, room: 0 }).expect(StatusCodes.BAD_REQUEST);
