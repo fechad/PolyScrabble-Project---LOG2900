@@ -1,8 +1,8 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert } from 'chai';
 import * as fs from 'fs';
+import * as sinon from 'sinon';
 import { Container } from 'typedi';
-import sinon = require('sinon');
 
 describe('Dictionnary service', () => {
     let dictionnaryService: DictionnaryService;
