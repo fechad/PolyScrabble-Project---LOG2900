@@ -13,10 +13,8 @@ describe('Board', () => {
     let dictionnary: SinonStubbedInstance<DictionnaryService>;
 
     before(async () => {
-        //dictionnary= Container.get(DictionnaryService);
         dictionnary = createStubInstance(DictionnaryService);
-
-        dictionnary.init.callsFake(() => Promise.resolve());
+        dictionnary.init.callsFake(async () => Promise.resolve());
     });
 
     beforeEach(() => {

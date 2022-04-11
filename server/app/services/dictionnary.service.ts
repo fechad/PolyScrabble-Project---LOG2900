@@ -48,11 +48,12 @@ export class DictionnaryService {
                 });
             }
         }
+        console.log(this.dictionnaries);
     }
 
     getDictionnaries(): DictionnaryInfo[] {
-        const dict = this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
-        return dict;
+        const dictionaryList = this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
+        return dictionaryList;
     }
 
     isValidWord(id: number, playedWord: string) {

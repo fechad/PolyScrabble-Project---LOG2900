@@ -58,7 +58,7 @@ export class HttpController {
         this.router.get('/dictionnaries', async (req: Request, res: Response) => {
             await this.dbDictionaryService.syncDictionaries();
             await this.dictionnaryService.copyDictionaries();
-            const dictionnaries = await this.dictionnaryService.getDictionnaries();
+            const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
         this.router.get('/high-scores', async (req: Request, res: Response) => {
