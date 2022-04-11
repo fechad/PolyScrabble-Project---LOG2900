@@ -119,7 +119,7 @@ const dummyFind = (game: Game, dictionnaryService: DictionnaryService, rack: str
                     try {
                         const placement = PlacementOption.newPlacement(game.board, pos, isHorizontal, permutation);
                         const words = game['wordGetter'].getWords(placement);
-                        if (!words.every((wordOption) => dictionnaryService.isValidWord(wordOption.word))) continue;
+                        if (!words.every((wordOption) => dictionnaryService.isValidWord(0, wordOption.word))) continue;
                         const score = words.reduce((total, word) => word.score + total, 0);
                         validPlacements.push({ score, placement });
                     } catch {

@@ -32,9 +32,9 @@ export class DbDictionariesService {
         try {
             await fs.promises.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary);
             await this.syncDictionaries();
-            return 'succès';
+            return 'Succès du téléversement du dictionnaire';
         } catch (e) {
-            return 'échec de téléversement du dictionnaire dans le serveur';
+            return 'Échec de téléversement du dictionnaire dans le serveur';
         }
     }
 
@@ -75,6 +75,7 @@ export class DbDictionariesService {
             ?.aggregate()
             .project({ id: 1, title: 1, description: 1, _id: 0 })
             .toArray()) as ClientDictionaryInterface[];
+
         const idList = dictionaries.map((dictionary) => dictionary.id);
 
         if (!idList.includes(fileId)) {

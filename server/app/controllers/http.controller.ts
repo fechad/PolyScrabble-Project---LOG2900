@@ -55,7 +55,9 @@ export class HttpController {
     private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
-        this.router.get('/dictionnaries', (req: Request, res: Response) => {
+        this.router.get('/dictionnaries', async (req: Request, res: Response) => {
+            await this.dbDictionaryService.syncDictionaries();
+            await this.dictionnaryService.copyDictionaries();
             const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });

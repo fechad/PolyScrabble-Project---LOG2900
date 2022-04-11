@@ -171,7 +171,7 @@ export class Game {
                 isHorizontal ??= this.board.isInContact(pos, false);
                 const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
                 const words = this.wordGetter.getWords(triedPlacement);
-                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(wordOption.word)))
+                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(this.room.parameters.dictionnary, wordOption.word)))
                     throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
 
                 await new Promise((resolve) => {
