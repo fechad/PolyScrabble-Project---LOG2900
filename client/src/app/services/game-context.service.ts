@@ -172,9 +172,6 @@ export class GameContextService {
                 this.serverDownAlert();
             }, cst.SEC_TO_MS);
         }
-        if (this.socket === undefined || this.socket?.disconnected) {
-            return;
-        }
         this.tempUpdateRack();
         this.allowSwitch(false);
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);

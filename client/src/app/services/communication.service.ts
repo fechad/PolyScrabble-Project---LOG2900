@@ -117,7 +117,7 @@ export class CommunicationService {
 
     async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-        if (!this.mainSocket?.connected) return this.serverDownAlert();
+        if (this.mainSocket?.disconnected) return this.serverDownAlert();
         this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
     }
