@@ -1,6 +1,8 @@
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { assert } from 'chai';
+import * as fs from 'fs';
 import { Container } from 'typedi';
+import sinon = require('sinon');
 
 describe('Dictionnary service', () => {
     let dictionnaryService: DictionnaryService;
@@ -54,6 +56,19 @@ describe('Dictionnary service', () => {
         const wordList = ['v;6;5;test', 'h;12;8;valide', 'v;2;10;zynnjsdc'];
         const result = dictionnaryService.validateWords(0, wordList);
         assert(!result);
+        done();
+    });
+
+    it('should copy dictionary in file', (done) => {
+        const sandbox = sinon.createSandbox();
+        sandbox.stub(fs.promises, 'readdir').returns(
+            new Promise((resolve) => {
+                const file = ['aaa-1'] as unknown as fs.Dirent[];
+                resolve(file);
+            }),
+        );
+        const result = dictionnaryService.copyDictionaries();
+        assert(result);
         done();
     });
 });
