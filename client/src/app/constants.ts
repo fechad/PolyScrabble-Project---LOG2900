@@ -79,6 +79,7 @@ export const DOUBLE_LETTER_POS = [
 export const DEFAULT_RESERVE = 88;
 
 export const SEC_CONVERT = 60;
+export const SEC_TO_MS = 1000;
 
 export const NORMAL_RACK_LENGTH = 7;
 
