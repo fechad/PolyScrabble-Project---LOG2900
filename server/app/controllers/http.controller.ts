@@ -62,8 +62,8 @@ export class HttpController {
             res.json(dictionnaries);
         });
         this.router.delete('/high-scores', async (req: Request, res: Response) => {
-            await this.highScoreService.resetScores();
-            res.json();
+            const response = await this.highScoreService.resetScores();
+            res.status(StatusCodes.OK).json(response);
         });
         this.router.get('/high-scores', async (req: Request, res: Response) => {
             const scores = await this.highScoreService.getScores(false);

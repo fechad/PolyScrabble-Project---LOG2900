@@ -9,20 +9,7 @@
     overflow-y: auto;
 }
 
-.dictionary-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    width: 95%;
-    height: 90%;
-    margin-top: 2.5%;
-    height: 80%;
-    margin-top: 5%;
-    overflow-y: auto;
-}
-
-.big-box{
+.big-box {
     width: 95%;
     height: 20%;
     display: flex;
@@ -107,7 +94,7 @@
     border: white;
     width: 100%;
     height: 20%;
-    background-color: #E1AC01;
+    background-color: #e1ac01;
     margin: 0 0 0 20%;
 }
 
@@ -121,25 +108,9 @@
 
 .pencil {
     width: 100%;
-    background-color: #E1AC01;
+    background-color: #e1ac01;
     border: none;
     margin: 18% 0 0 20%;
-}
-
-
-
-.dictionary-container::-webkit-scrollbar {
-    height: 1px;
-    width: 10px;
-    border-radius: 15px;
-    background-color: #b6b6b6c0;
-}
-
-.dictionary-container::-webkit-scrollbar-thumb {
-    background-color: #3d3d3d;
-    height: 1px;
-    width: 10px;
-    border-radius: 15px;
 }
 
 .upload-area {
@@ -184,11 +155,11 @@
     flex-direction: column;
 }
 
-.error{
+.error {
     color: red;
 }
 
-.edit{
+.edit {
     z-index: 2;
     position: absolute;
     justify-content: start;

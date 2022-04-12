@@ -1,28 +1,30 @@
-<ul class="container">
-    <button class="refresh" (click)="clearHistory()"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
+<section class="tab-container">
+    <section class="reset-buttons">
+        <button class="reset-scores" (click)="clearHighScores()"><p>Réinitialiser les meilleurs scores</p></button>
+        <button class="refresh" (click)="clearHistory()"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
+    </section>
 
     <li *ngFor="let game of games" class="game-box">
         <div class="header">
             <div class="title">
                 <h4>{{ game.startTime.toLocaleString() }}</h4>
             </div>
-            <div class="label"></div>
-        </div>
-        <div class="description">
-            <div class="players">
-                <p>
-                    Joueur 1: {{ game.firstPlayer.name }} ({{ game.firstPlayer.pointsScored }} points)
-                    <span *ngIf="game.firstPlayer.replacedBy">remplacé par {{ game.firstPlayer.replacedBy }}</span>
-                </p>
-                <p>
-                    Joueur 2: {{ game.secondPlayer.name }} ({{ game.secondPlayer.pointsScored }} points)
-                    <span *ngIf="game.secondPlayer.replacedBy">remplacé par {{ game.secondPlayer.replacedBy }}</span>
-                </p>
+            <div class="description">
+                <div class="players">
+                    <p>
+                        Joueur 1: {{ game.firstPlayer.name }} ({{ game.firstPlayer.pointsScored }} points)
+                        <span *ngIf="game.firstPlayer.replacedBy">remplacé par {{ game.firstPlayer.replacedBy }}</span>
+                    </p>
+                    <p>
+                        Joueur 2: {{ game.secondPlayer.name }} ({{ game.secondPlayer.pointsScored }} points)
+                        <span *ngIf="game.secondPlayer.replacedBy">remplacé par {{ game.secondPlayer.replacedBy }}</span>
+                    </p>
+                </div>
+                <div class="infos">
+                    <p>Mode: {{ game.mode }}</p>
+                    <p>Durée: {{ game.length }}</p>
+                </div>
             </div>
-            <div class="infos">
-                <p>Mode: {{ game.mode }}</p>
-                <p>Durée: {{ game.length }}</p>
-            </div>
-        </div>
-    </li>
-</ul>
+        </section>
+    </section>
+</section>

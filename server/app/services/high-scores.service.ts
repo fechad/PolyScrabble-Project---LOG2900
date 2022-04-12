@@ -13,8 +13,13 @@ export class HighScoresService {
         this.collection = this.dataBase.db?.collection(cst.SCORES_COLLECTION);
     }
 
-    async resetScores() {
-        await this?.collection?.deleteMany({});
+    async resetScores(): Promise<string> {
+        try {
+            await this?.collection?.deleteMany({});
+            return 'Succès: Réinitialisation des meilleurs scores';
+        } catch (e) {
+            return 'Échec: Meilleurs scores non réinitialisés';
+        }
     }
 
     async getScores(log2990: boolean): Promise<Score[]> {

@@ -1,5 +1,7 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameHistoryTabComponent } from './game-history-tab.component';
 
 describe('GameHistoryTabComponent', () => {
@@ -10,6 +12,7 @@ describe('GameHistoryTabComponent', () => {
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [GameHistoryTabComponent],
+            providers: [MatSnackBar, Overlay],
         }).compileComponents();
     });
 
