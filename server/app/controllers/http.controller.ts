@@ -123,7 +123,9 @@ export class HttpController {
         });
 
         this.router.post('/dictionaries', async (req: Request, res: Response) => {
+            console.log(req.body);
             const response = await this.dbDictionaryService.addDictionary(req.body);
+            console.log(response);
             res.status(StatusCodes.OK).json(response);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {

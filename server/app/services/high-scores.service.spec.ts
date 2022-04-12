@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { HighScoresService } from './high-scores.service';
+import Sinon = require('sinon');
 
 // List your collection names here
 const COLLECTIONS: string[] = ['col'];
@@ -169,5 +170,12 @@ describe('High scores service', () => {
         highScoresService['db'] = null;
         expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
         expect(async () => await highScoresService.addScore({ name: 'Dummy', score: 400, log2990: true })).not.to.throw();
+    });
+
+    it('should create collection on connect', async () => {
+        // eslint-disable-next-line dot-notation
+        Sinon.stub(highScoresService['dataBase']).connect();
+        highScoresService.connect();
+        expect(await highScoresService['collection']).not.undefined;
     });
 });
