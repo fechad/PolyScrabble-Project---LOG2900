@@ -1,6 +1,6 @@
 @import './colors.scss';
 
-.container{
+.container {
     text-align: center;
 }
 
@@ -16,39 +16,39 @@
     color: red;
 }
 
-.form-group{
+.form-group {
     width: 100%;
 }
 
-.col-md-10{
+.col-md-10 {
     height: 70%;
     margin: 2%;
     font-size: 16px;
 }
 
-.avatar-input{
+.avatar-input {
     display: flex;
     justify-content: center;
     height: 20vh;
 }
 
-.left-arrow, .right-arrow{
+.left-arrow,
+.right-arrow {
     border: 0;
     background: none;
 }
 
 .left-arrow:hover:not(:active):not(:disabled),
-.right-arrow:hover:not(:active):not(:disabled){
+.right-arrow:hover:not(:active):not(:disabled) {
     cursor: pointer;
-
 }
 
-.row-end{
-    display:flex;
+.row-end {
+    display: flex;
     justify-content: center;
 }
 
-.success{
+.success {
     font-family: Signika Negative;
     width: 80%;
     height: 7.5vh;
@@ -63,7 +63,7 @@
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
 }
 
-.success:disabled{
+.success:disabled {
     box-shadow: none;
     background-color: rgb(196, 194, 194);
     border: grey solid 2px;
@@ -80,7 +80,7 @@
     float: right;
 }
 
-.input-area{
+.input-area {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -92,8 +92,7 @@
     justify-content: center;
 }
 
-.mat-card-header{
+.mat-card-header {
     display: flex;
     flex-direction: column;
 }
-

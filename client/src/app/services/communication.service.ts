@@ -64,9 +64,20 @@ export class CommunicationService {
         return this.selectedRoom.value !== undefined && this.selectedRoom.value.mainPlayer.id === this.myId.value;
     }
 
+    isServerDown(): boolean {
+        if (!this.mainSocket?.connected) {
+            this.serverDownAlert();
+            return true;
+        } else if (!this.mainSocket?.connected && !this.roomSocket?.connected) {
+            this.serverDownAlert();
+            return true;
+        }
+        return false;
+    }
+
     kick() {
+        if (this.isServerDown()) return;
         if (this.isMainPlayer()) {
-            if (!this.roomSocket?.connected) return this.serverDownAlert();
             this.roomSocket?.emit('kick');
         } else {
             throw new Error('Tried to kick when not room creator');
@@ -82,8 +93,8 @@ export class CommunicationService {
     }
 
     start() {
+        if (this.isServerDown()) return;
         if (this.isMainPlayer()) {
-            if (!this.roomSocket?.connected) return this.serverDownAlert();
             this.roomSocket?.emit('start');
         } else {
             throw new Error('Tried to start when not room creator');
@@ -102,7 +113,7 @@ export class CommunicationService {
     async joinRoom(avatar: string, playerName: string, roomId: RoomId) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
 
-        if (!this.mainSocket?.connected) return this.serverDownAlert();
+        if (this.isServerDown()) return;
         this.mainSocket.emit('join-room', roomId, playerName, avatar);
         await this.waitForRoom();
     }
@@ -117,7 +128,7 @@ export class CommunicationService {
 
     async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
         if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
-        if (this.mainSocket?.disconnected) return this.serverDownAlert();
+        if (this.isServerDown()) return;
         this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
     }
@@ -186,11 +197,13 @@ export class CommunicationService {
     }
 
     private serverDownAlert() {
+        console.log('entered');
         swal.fire({
             title: 'Oh non!',
             text: "Vous n'êtes pas connecté au serveur actuellement",
             showCloseButton: true,
             confirmButtonText: 'Compris!',
+            heightAuto: false,
         });
     }
 }
