@@ -33,6 +33,7 @@ export class DictionnaryService {
             trie: DictionnaryService.generateTrie(readDictionary.words),
         });
     }
+
     async copyDictionaries() {
         const files = await fs.promises.readdir('./dictionaries/');
         for (const file of files) {
@@ -57,9 +58,7 @@ export class DictionnaryService {
     }
 
     isValidWord(id: number, playedWord: string) {
-        if (!this.isWord(playedWord)) {
-            return false;
-        }
+        if (!this.isWord(playedWord)) return false;
         return this.dictionnaries[id].words.includes(playedWord.toLowerCase());
     }
 

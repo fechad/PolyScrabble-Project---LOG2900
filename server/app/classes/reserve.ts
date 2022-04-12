@@ -63,9 +63,7 @@ export class Reserve {
 
     getContent(): ReserveContent {
         const reserveToShow: ReserveContent = Object.fromEntries(Object.keys(ALPHABET).map((letter) => [letter, 0]));
-        for (const letter of this.reserve) {
-            reserveToShow[letter]++;
-        }
+        for (const letter of this.reserve) reserveToShow[letter]++;
         return reserveToShow;
     }
 

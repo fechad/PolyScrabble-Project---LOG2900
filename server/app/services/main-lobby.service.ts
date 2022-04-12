@@ -23,22 +23,14 @@ export class MainLobbyService {
         const alreadyJoinedRoom = this.roomsService.rooms
             .filter((r) => r.getState() === State.Started)
             .find((r) => r.mainPlayer.id === id || r.getOtherPlayer()?.id === id);
-        if (alreadyJoinedRoom) {
-            socket.emit('join', alreadyJoinedRoom.id);
-        }
+        if (alreadyJoinedRoom) socket.emit('join', alreadyJoinedRoom.id);
 
         socket.on('join-room', (roomId: RoomId, playerName: string, avatar: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);
-            if (!room) {
-                socket.emit('error', 'Room is no longer available');
-                return;
-            }
+            if (!room) return socket.emit('error', 'Room is no longer available');
             const error = room.addPlayer(id, playerName, false, avatar);
-            if (error) {
-                socket.emit('error', error.message);
-                return;
-            }
-            socket.emit('join', roomId);
+            if (error) return socket.emit('error', error.message);
+            return socket.emit('join', roomId);
         });
 
         socket.on('create-room', (playerName: string, parameters: Parameters, virtualPlayer?: string) => {
