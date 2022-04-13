@@ -304,7 +304,7 @@ export class Game {
         else if (this.scores[cst.MAIN_PLAYER] < this.scores[cst.OTHER_PLAYER]) return this.players[cst.OTHER_PLAYER].id;
         return undefined;
     }
-    
+
     getPlayerIndex(playerId: PlayerId) {
         return this.players[cst.MAIN_PLAYER].id === playerId ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
     }
