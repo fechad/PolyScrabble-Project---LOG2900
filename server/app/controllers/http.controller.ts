@@ -118,14 +118,13 @@ export class HttpController {
         });
 
         this.router.get('/dictionaries', async (req: Request, res: Response) => {
+            console.log('get dictionaries');
             const dictionaries = await this.dbDictionaryService.getDictionaries();
             res.json(dictionaries);
         });
 
         this.router.post('/dictionaries', async (req: Request, res: Response) => {
-            console.log(req.body);
             const response = await this.dbDictionaryService.addDictionary(req.body);
-            console.log(response);
             res.status(StatusCodes.OK).json(response);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {
@@ -137,10 +136,12 @@ export class HttpController {
             res.json(dictionaries);
         });
 
-        this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
+        this.router.get('/dictionaries/:id', async (req: Request, res: Response) => {
+            console.log('entered downlaod');
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
         });
+
         this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.deleteAll();
             res.json(dictionaries);

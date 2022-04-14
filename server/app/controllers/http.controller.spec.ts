@@ -17,7 +17,7 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { DataBaseController } from './db.controller';
-//import Sinon = require('sinon');
+// import Sinon = require('sinon');
 
 class DBManager {
     db: Db;
@@ -90,6 +90,7 @@ describe('HttpController', () => {
         dbDictionaryService = createStubInstance(DbDictionariesService);
         dbDictionaryService.getDictionaries.returns(Promise.resolve(DICTIONARY));
         dbDictionaryService.syncDictionaries.returns(Promise.resolve());
+        dbDictionaryService.downloadDictionary.returns(Promise.resolve('/dictionaries/dictionary-test.json'));
         await gameHistoryService.connect();
         const loginsService = createStubInstance(LoginsService);
         loginsService.verify.callsFake((id, token) => id === ID && token === TOKEN);
@@ -224,8 +225,6 @@ describe('HttpController', () => {
         expect(highScoreService.addScore.args).to.deep.equal([[{ name: 'Not Dummy', score: 0, log2990: true }]]);
     });
 
-    // TODO DO REAL TESTS FOR HTTP CONTROLLER
-
     it('should return default virtual player names on request to /vp-names', async () => {
         const response = await supertest(expressApp).get('/api/vp-names').expect(StatusCodes.OK);
         expect(response.body).to.deep.equal(DEFAULT_VPS);
@@ -249,12 +248,11 @@ describe('HttpController', () => {
     });
 
     it('should add dictionary', async () => {
-        // TODO: vérifier que le message de retour aussi
         await supertest(expressApp)
             .post('/api/dictionaries')
             .send({ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] })
             .expect(StatusCodes.OK);
-        //expect(response).to.deep.equal('Succès du téléversement du dictionnaire');
+        expect(dbDictionaryService.addDictionary.args[0]).to.deep.equal([{ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] }]);
     });
 
     it('should update dictionaries', async () => {
@@ -276,8 +274,8 @@ describe('HttpController', () => {
         await supertest(expressApp).delete('/api/vp-names-reset').expect(StatusCodes.OK);
     });
 
-    // it('should download dictionaries', async () => {
-    //     const response = await supertest(expressApp).get('/api/dictionaries/download/:id').send({ id: '2' }).expect(StatusCodes.OK);
-    //     expect(response.body).to.deep.equal('');
-    // });
+    it('should download dictionaries', async () => {
+        const response = await supertest(expressApp).get('/api/dictionaries/0');
+        expect(response.body).to.deep.equal('/dictionaries/dictionary-test.json');
+    });
 });

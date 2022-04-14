@@ -62,11 +62,13 @@ export class DbDictionariesService {
     }
 
     async downloadDictionary(id: string): Promise<string> {
+        console.log('entered');
         let result = '';
         await fs.promises
             .access(`./dictionaries/dictionary-${id}.json`, fs.constants.F_OK)
             .then(() => (result = `./dictionaries/dictionary-${id}.json`))
             .catch(() => (result = "Couldn't read this directory"));
+        console.log('done');
         return result;
     }
 
