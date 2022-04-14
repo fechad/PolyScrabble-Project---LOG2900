@@ -4,7 +4,7 @@
     <li *ngFor="let game of games" class="game-box">
         <div class="header">
             <div class="title">
-                <h4>{{ game.startTime }}</h4>
+                <h4>{{ game.startTime.toLocaleString() }}</h4>
             </div>
             <div class="label"></div>
         </div>
