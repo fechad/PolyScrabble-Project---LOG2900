@@ -13,11 +13,12 @@ import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { DataBaseController } from './db.controller';
-// import Sinon = require('sinon');
+import e = require('express');
 
 class DBManager {
     db: Db;
@@ -275,7 +276,8 @@ describe('HttpController', () => {
     });
 
     it('should download dictionaries', async () => {
-        const response = await supertest(expressApp).get('/api/dictionaries/0');
-        expect(response.body).to.deep.equal('/dictionaries/dictionary-test.json');
+        sinon.stub(e.response.download);
+        await supertest(expressApp).get('/api/dictionaries/download/0').expect(StatusCodes.NOT_FOUND);
+        expect(dbDictionaryService.downloadDictionary.args[0][0]).to.deep.equal('0');
     });
 });

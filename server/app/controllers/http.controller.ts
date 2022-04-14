@@ -118,7 +118,6 @@ export class HttpController {
         });
 
         this.router.get('/dictionaries', async (req: Request, res: Response) => {
-            console.log('get dictionaries');
             const dictionaries = await this.dbDictionaryService.getDictionaries();
             res.json(dictionaries);
         });
@@ -136,8 +135,7 @@ export class HttpController {
             res.json(dictionaries);
         });
 
-        this.router.get('/dictionaries/:id', async (req: Request, res: Response) => {
-            console.log('entered downlaod');
+        this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
         });
