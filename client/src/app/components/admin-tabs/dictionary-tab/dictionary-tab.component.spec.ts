@@ -1,6 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DbDictionary } from '@app/classes/dictionnary';
@@ -116,25 +116,69 @@ fdescribe('DictionaryTabComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should update list when add a dictionary', fakeAsync(() => {
+    it('should return error message if wrong json format ', async () => {
+        setHTML();
         component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
-        component.dictionaryForm.value.id = 1;
-        component.dictionaryForm.value.title = 'dict-1';
-        component.dictionaryForm.value.description = 'test-1';
-        component.newWords = ['a', 'b', 'c'];
+        component.uploading = true;
+        const dataTransfer = new DataTransfer();
+        const dictionaryFile = new File([JSON.stringify({ description: 'test-1', words: ['a', 'b', 'c'] })], 'dict-1.txt', {
+            type: 'text/plain',
+        });
+        dataTransfer.items.add(dictionaryFile);
+        const inputCollection = document.getElementsByClassName('form-control');
+        const input = inputCollection.item(0) as HTMLInputElement;
+        input.files = dataTransfer.files;
 
-        const updateSpy = spyOn(component, 'updateList');
-        component.createNewDbDictionary();
+        input.addEventListener('change', async (event: Event) => await component.getFileInfos(event));
+        input.dispatchEvent(new InputEvent('change'));
+        await new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), TIME_OUT);
+        });
 
-        expect(component.newDictionnary).toEqual({ id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] });
-        component.addDictionary();
-        tick();
+        expect(component.error).toEqual('Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.');
+        fixture.detectChanges();
+    });
+
+    it('should add new dictionnary to the list', fakeAsync(() => {
+        component.newDictionnary = { id: 2, title: 'dict-2', description: 'test-2', words: ['d', 'e', 'f'] };
+        const spy = spyOn(component['snackbar'], 'open').and.callThrough();
+
+        const subscription = component.addDictionary();
+
+        from(subscription).subscribe(() => {
+            expect(component.uploadStatus).toEqual('succès');
+            expect(spy).toHaveBeenCalled();
+        });
+
         const req = httpMock.match(`${environment.serverUrl}/dictionaries`);
-
         expect(req[2].request.method).toBe('POST');
+        req[1].flush('succès');
+        req[0].flush({ id: 2, title: 'dict-2', description: 'test-2', words: ['d', 'e', 'f'] });
+        httpMock.verify();
+    }));
+
+    it('should delete dictionnary', fakeAsync(() => {
+        const listBeforeDelete: DbDictionary[] = [
+            { id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] },
+            { id: 1, title: 'dict-1', description: 'test-1', words: ['d', 'e', 'f'] },
+        ];
+        const id = 1;
+        const listAfterDelete: DbDictionary[] = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+
+        const subscription = component.deleteDictionary('1');
+
+        from(subscription).subscribe(() => {
+            expect(component.list).toEqual(listAfterDelete);
+        });
+
+        const reqDelete = httpMock.match(`${environment.serverUrl}/dictionaries/${id}`);
+        const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
+
+        expect(reqDelete[0].request.method).toBe('DELETE');
+        expect(reqGet[0].request.method).toBe('GET');
+        reqDelete[0].flush(listBeforeDelete);
+        reqGet[0].flush(listAfterDelete);
 
         httpMock.verify();
-
-        expect(updateSpy).toHaveBeenCalled();
     }));
 });
