@@ -197,7 +197,6 @@ export class CommunicationService {
     }
 
     private serverDownAlert() {
-        console.log('entered');
         swal.fire({
             title: 'Oh non!',
             text: "Vous n'êtes pas connecté au serveur actuellement",

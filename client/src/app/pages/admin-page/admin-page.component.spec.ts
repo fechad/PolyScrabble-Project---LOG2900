@@ -1,4 +1,7 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { AdminPageComponent } from './admin-page.component';
 
 const setHTML = () => {
@@ -22,6 +25,7 @@ describe('AdminPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             declarations: [AdminPageComponent],
         }).compileComponents();
     });
@@ -41,7 +45,7 @@ describe('AdminPageComponent', () => {
         const event = new MouseEvent('click');
         const history = document.getElementById('history');
         history?.addEventListener('click', (e) => component.changeSelection(e));
-        const dictionaries = document.getElementById('dictionaires');
+        const dictionaries = document.getElementById('dictionaries');
         history?.dispatchEvent(event);
 
         expect(history?.classList.contains('selected')).toBeTruthy();

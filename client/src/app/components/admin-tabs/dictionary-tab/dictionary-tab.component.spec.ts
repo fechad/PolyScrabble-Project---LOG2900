@@ -1,6 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DbDictionary } from '@app/classes/dictionnary';
@@ -22,7 +22,7 @@ const setHTML = () => {
 
 const TIME_OUT = 100;
 
-describe('DictionaryTabComponent', () => {
+fdescribe('DictionaryTabComponent', () => {
     let component: DictionaryTabComponent;
     let fixture: ComponentFixture<DictionaryTabComponent>;
     let httpMock: HttpTestingController;
@@ -115,4 +115,26 @@ describe('DictionaryTabComponent', () => {
         expect(component.newDictionnary).toEqual(expected);
         fixture.detectChanges();
     });
+
+    it('should update list when add a dictionary', fakeAsync(() => {
+        component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        component.dictionaryForm.value.id = 1;
+        component.dictionaryForm.value.title = 'dict-1';
+        component.dictionaryForm.value.description = 'test-1';
+        component.newWords = ['a', 'b', 'c'];
+
+        const updateSpy = spyOn(component, 'updateList');
+        component.createNewDbDictionary();
+
+        expect(component.newDictionnary).toEqual({ id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] });
+        component.addDictionary();
+        tick();
+        const req = httpMock.match(`${environment.serverUrl}/dictionaries`);
+
+        expect(req[2].request.method).toBe('POST');
+
+        httpMock.verify();
+
+        expect(updateSpy).toHaveBeenCalled();
+    }));
 });
