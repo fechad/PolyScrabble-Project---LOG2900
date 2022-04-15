@@ -17,6 +17,9 @@ export class GameHistoryTabComponent implements OnInit {
 
     async ngOnInit(): Promise<void> {
         this.games = (await this.httpClient.get<GameHistory[]>(`${environment.serverUrl}/game-history`).toPromise()).reverse();
+        this.games.map((game) => {
+            game.startTime = new Date(game.startTime); // this allows to use Date() Object functions on attribute startTime
+        });
     }
 
     async clearHistory() {

@@ -17,7 +17,7 @@ describe('Game History Service', () => {
         const secondPlayer: PlayerGameInfo = { name: 'frank', pointsScored: 109, replacedBy: null };
 
         playedGame = {
-            startTime: new Date().toLocaleString(),
+            startTime: new Date(),
             length: '0 min 3 sec',
             firstPlayer: secondPlayer,
             secondPlayer: firstPlayer,

@@ -58,7 +58,6 @@ export class Game {
     private readonly wordGetter;
     private gameHistory: GameHistory;
     private objectives: Objectives | undefined;
-    private startTime: Date;
 
     constructor(
         readonly room: Room,
@@ -77,9 +76,8 @@ export class Game {
         const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined, replacedBy: null };
         const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined, replacedBy: null };
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
-        this.startTime = new Date();
         this.gameHistory = {
-            startTime: this.startTime.toLocaleString(),
+            startTime: new Date(),
             length: undefined,
             firstPlayer: firstPlayerInfo,
             secondPlayer: secondPlayerInfo,
@@ -324,7 +322,7 @@ export class Game {
     }
 
     private completeGameHistory() {
-        const differenceInMs = new Date().getTime() - this.startTime.getTime();
+        const differenceInMs = new Date().getTime() - this.gameHistory.startTime.getTime();
         const lengthInSeconds = Math.ceil((differenceInMs % cst.MIN_TO_MS) / cst.SEC_TO_MS);
         const lengthInMinutes = Math.floor(differenceInMs / cst.MIN_TO_MS);
         this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' s';
