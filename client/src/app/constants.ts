@@ -85,6 +85,8 @@ export const NORMAL_RACK_LENGTH = 7;
 
 export const MISSING = -1;
 
+export const RENDERING_DELAY = 10;
+
 export const COMMAND_INDEX = 0;
 export const LETTERS_TO_EXCHANGE_INDEX = 1;
 export const POSITION_BLOCK_INDEX = 1;
