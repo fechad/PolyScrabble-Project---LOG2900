@@ -18,7 +18,7 @@
             </button>
         </div>
         <a
-            href="{{ environment.serverUrl }}/dictionaries/download/{{ dictionary.id }}"
+            href="{{ environment.serverUrl }}/dictionary-files/{{ dictionary.id }}"
             download
             class="download"
             (click)="downloadDictionary(dictionary.id.toString())"

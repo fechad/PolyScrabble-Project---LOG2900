@@ -120,7 +120,7 @@ export class DictionaryTabComponent implements OnInit {
     }
 
     async downloadDictionary(id: string) {
-        await this.httpClient.get(`${environment.serverUrl}/dictionaries/download/${id}`).toPromise();
+        await this.httpClient.get(`${environment.serverUrl}/dictionary-files/${id}`).toPromise();
     }
 
     findDoubles(nameToFind: string): boolean {

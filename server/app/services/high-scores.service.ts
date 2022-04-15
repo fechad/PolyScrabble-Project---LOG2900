@@ -1,5 +1,7 @@
 import * as cst from '@app/controllers/db.controller';
 import { DataBaseController, Score, User } from '@app/controllers/db.controller';
+import { Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -13,12 +15,13 @@ export class HighScoresService {
         this.collection = this.dataBase.db?.collection(cst.SCORES_COLLECTION);
     }
 
-    async resetScores(): Promise<string> {
+    async resetScores(res: Response) {
         try {
             await this?.collection?.deleteMany({});
-            return 'Succès: Réinitialisation des meilleurs scores';
+            res.status(StatusCodes.OK).send('Succès: Réinitialisation des meilleurs scores');
+            // return 'Succès: Réinitialisation des meilleurs scores';
         } catch (e) {
-            return 'Échec: Meilleurs scores non réinitialisés';
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Meilleurs scores non réinitialisés');
         }
     }
 

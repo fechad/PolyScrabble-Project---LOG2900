@@ -277,7 +277,7 @@ describe('HttpController', () => {
 
     it('should download dictionaries', async () => {
         sinon.stub(express.response.download);
-        await supertest(expressApp).get('/api/dictionaries/download/0').expect(StatusCodes.NOT_FOUND);
+        await supertest(expressApp).get('/api/dictionary-files/0').expect(StatusCodes.NOT_FOUND);
         expect(dbDictionaryService.downloadDictionary.args[0][0]).to.deep.equal('0');
     });
 });

@@ -215,7 +215,7 @@ describe('DictionaryTabComponent', () => {
 
     it('should download dictionnary function', fakeAsync(() => {
         component.downloadDictionary('1');
-        const req = httpMock.match(`${environment.serverUrl}/dictionaries/download/1`);
+        const req = httpMock.match(`${environment.serverUrl}/dictionary-files/1`);
         const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
         expect(req[0].request.method).toBe('GET');
         req[0].flush('/dict-1.json');
