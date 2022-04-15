@@ -43,7 +43,13 @@ describe('PlayAreaComponent', () => {
             letterForServer: 'a',
         });
         mouseService = jasmine.createSpyObj('MouseService', ['MouseHitDetect'], { mousePosition: { x: 20, y: 510 }, isHorizontal: true });
-        placeService = jasmine.createSpyObj('PlaceLetterService', ['sendPlacedLetters', 'removeWord', 'removeLetterOnCanvas', 'placeWordOnCanvas']);
+        placeService = jasmine.createSpyObj('PlaceLetterService', [
+            'sendPlacedLetters',
+            'removeWord',
+            'removeLetterOnCanvas',
+            'placeWordOnCanvas',
+            'clear',
+        ]);
     });
 
     beforeEach(async () => {
