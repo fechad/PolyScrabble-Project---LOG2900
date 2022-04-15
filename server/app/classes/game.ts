@@ -5,7 +5,9 @@ import { GameHistory, GameMode, PlayerGameInfo } from '@app/game-history';
 import { Message } from '@app/message';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
+import { VpNamesService } from '@app/services/vp-names.service';
 import { EventEmitter } from 'events';
+import { Container } from 'typedi';
 import { Board } from './board';
 import { Objective, OBJECTIVE_TYPES } from './objectives';
 import { Difficulty } from './parameters';
@@ -290,7 +292,7 @@ export class Game {
         this.eventEmitter.emit('reserve-content', playerId, this.reserve.getContent());
     }
 
-    forfeit(idLoser: PlayerId) {
+    async forfeit(idLoser: PlayerId) {
         if (this.room.getState() !== State.Started) return;
         if (this.players.every((player) => player.id !== idLoser)) return;
         if (this.players.some((player) => player.virtual)) {
@@ -302,7 +304,7 @@ export class Game {
             const playerReplaced = loserIsMainPlayer ? this.gameHistory.firstPlayer : this.gameHistory.secondPlayer;
             const idxPlayerToReplace = loserIsMainPlayer ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
             const oldName = this.players[idxPlayerToReplace].name;
-            this.replaceByVirtualPlayer(idxPlayerToReplace);
+            await this.replaceByVirtualPlayer(idxPlayerToReplace);
             const replacementPlayer = this.players[idxPlayerToReplace].name;
             playerReplaced.replacedBy = replacementPlayer;
             const message = `Votre adversaire ${oldName} a abandonné et sera remplacé par ${replacementPlayer}`;
@@ -376,13 +378,14 @@ export class Game {
         }
     }
 
-    private replaceByVirtualPlayer(idxPlayerToReplace: number) {
-        const listOfNames = ['name1', 'name2', 'name3', 'name4']; // TODO: prendre les vrais eventuellement
+    private async replaceByVirtualPlayer(idxPlayerToReplace: number) {
+        const vpNamesService = Container.get(VpNamesService);
+        const listOfNames = (await vpNamesService.getNames()).filter((vp) => vp.beginner);
         let idxName = Math.floor(Math.random() * listOfNames.length);
-        if (this.players.every((player, idx) => idx !== idxPlayerToReplace && listOfNames[idxName] === player.name)) {
+        if (this.players.every((player, idx) => idx !== idxPlayerToReplace && listOfNames[idxName].name === player.name)) {
             idxName = (idxName + 1) % listOfNames.length;
         }
-        this.players[idxPlayerToReplace].name = listOfNames[idxName];
+        this.players[idxPlayerToReplace].name = listOfNames[idxName].name;
         this.players[idxPlayerToReplace].virtual = true;
         this.players[idxPlayerToReplace].id = 'VP';
         const vP = new VirtualPlayer(Difficulty.Beginner, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
