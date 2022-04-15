@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { VP } from '@app/classes/virtual-player';
+import * as constant from '@app/constants';
 import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 
@@ -9,7 +10,12 @@ import { environment } from 'src/environments/environment';
     templateUrl: './virtual-players-tab.component.html',
     styleUrls: ['./virtual-players-tab.component.scss'],
 })
-export class VirtualPlayersTabComponent implements OnInit {
+export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
+    @ViewChild('text') private text: ElementRef;
+    @ViewChild('scrollMe') private scroller: ElementRef;
+    @ViewChild('textExpert') private textExpert: ElementRef;
+    @ViewChild('scrollMeExpert') private scrollerExpert: ElementRef;
+
     faTrash = faTrashAlt;
     faRefresh = faSync;
     list: VP[] = [];
@@ -20,12 +26,15 @@ export class VirtualPlayersTabComponent implements OnInit {
     nameInputExpert: string = '';
     error: [boolean, string] = [true, ''];
 
-    constructor(readonly httpClient: HttpClient) {}
+    constructor(readonly httpClient: HttpClient, private detectChanges: ChangeDetectorRef) {}
 
     async ngOnInit(): Promise<void> {
         this.updateList();
     }
 
+    ngAfterContentChecked() {
+        this.detectChanges.detectChanges();
+    }
     async updateList(): Promise<void> {
         this.beginnerList = [];
         this.expertList = [];
@@ -62,6 +71,20 @@ export class VirtualPlayersTabComponent implements OnInit {
     async deleteAll() {
         await this.httpClient.delete(`${environment.serverUrl}/vp-names-reset`).toPromise();
         this.updateList();
+    }
+
+    clicking() {
+        setTimeout(() => {
+            this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+            this.text.nativeElement.focus();
+        }, constant.RENDERING_DELAY);
+    }
+
+    clickingExpert() {
+        setTimeout(() => {
+            this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+            this.textExpert.nativeElement.focus();
+        }, constant.RENDERING_DELAY);
     }
 
     invalidName(name: string, beginner: boolean): boolean {
