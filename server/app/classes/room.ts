@@ -51,11 +51,13 @@ export class Room extends EventEmitter {
     }
 
     quit(mainPlayer: boolean) {
-        if (mainPlayer) {
+        if (mainPlayer && this.state === State.Setup) {
             this.mainPlayer.connected = false;
             this.kickOtherPlayer();
         } else if (this.state === State.Setup) {
             this.otherPlayer = undefined;
+        } else if (mainPlayer) {
+            this.mainPlayer.connected = false;
         } else if (this.otherPlayer) {
             this.otherPlayer.connected = false;
         }
