@@ -51,7 +51,8 @@ export class CommandParsing {
         const DOUBLE_DIGIT_LENGTH = 2;
         if (position.length > DOUBLE_DIGIT_LENGTH) return false;
         const firstDigitIsValid = position[0].match(/[1-9]/g);
-        return position.length === DOUBLE_DIGIT_LENGTH ? position[0].match(/[1]/g) && position[1].match(/[0-5]/g) : firstDigitIsValid;
+        const bothDigitsAreValid = position[0].match(/[1]/g) && position[1].match(/[0-5]/g);
+        return position.length === DOUBLE_DIGIT_LENGTH ? bothDigitsAreValid : firstDigitIsValid;
     }
 
     static isValidOrientation(orientation: string) {
