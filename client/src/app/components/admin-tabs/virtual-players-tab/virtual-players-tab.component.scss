@@ -54,9 +54,12 @@
     background-color: red;
 }
 
-.vp-names div,
-#add-input,
-#add-input-export {
+
+.refresh:hover{
+    cursor:pointer;
+}
+
+.vp-names div {
     height: 15%;
     width: 60%;
     border-radius: 20px;
@@ -187,4 +190,13 @@
 .cancel-expert {
     left: 30%;
     bottom: 10%;
+}
+
+.cancel:hover{
+    cursor:pointer;
+}
+
+.feedback {
+    text-align: center;
+    color: red;
 }
