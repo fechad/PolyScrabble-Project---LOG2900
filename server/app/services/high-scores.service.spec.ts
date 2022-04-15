@@ -2,8 +2,8 @@ import { DataBaseController, DEFAULT_USERS } from '@app/controllers/db.controlle
 import { expect } from 'chai';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as sinon from 'sinon';
 import { HighScoresService } from './high-scores.service';
-import Sinon = require('sinon');
 
 // List your collection names here
 const COLLECTIONS: string[] = ['col'];
@@ -173,9 +173,11 @@ describe('High scores service', () => {
     });
 
     it('should create collection on connect', async () => {
+        // used to access private attribute of service
         // eslint-disable-next-line dot-notation
-        Sinon.stub(highScoresService['dataBase']).connect();
+        sinon.stub(highScoresService['dataBase']).connect();
         highScoresService.connect();
-        expect(await highScoresService['collection']).not.undefined;
+        // eslint-disable-next-line dot-notation
+        expect(highScoresService['collection']).not.equal(undefined);
     });
 });

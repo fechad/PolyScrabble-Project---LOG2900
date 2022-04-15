@@ -65,10 +65,10 @@ export class CommunicationService {
     }
 
     isServerDown(): boolean {
-        if (!this.mainSocket?.connected) {
+        if (!this.mainSocket?.connected && !this.roomSocket?.connected) {
             this.serverDownAlert();
             return true;
-        } else if (!this.mainSocket?.connected && !this.roomSocket?.connected) {
+        } else if (!this.mainSocket?.connected) {
             this.serverDownAlert();
             return true;
         }

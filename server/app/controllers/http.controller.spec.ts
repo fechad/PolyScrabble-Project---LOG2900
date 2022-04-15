@@ -10,6 +10,7 @@ import { LoginsService } from '@app/services/logins.service';
 import { RoomsService } from '@app/services/rooms.service';
 import { VpNamesService } from '@app/services/vp-names.service';
 import { expect } from 'chai';
+import * as express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -18,7 +19,6 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { DataBaseController } from './db.controller';
-import e = require('express');
 
 class DBManager {
     db: Db;
@@ -276,7 +276,7 @@ describe('HttpController', () => {
     });
 
     it('should download dictionaries', async () => {
-        sinon.stub(e.response.download);
+        sinon.stub(express.response.download);
         await supertest(expressApp).get('/api/dictionaries/download/0').expect(StatusCodes.NOT_FOUND);
         expect(dbDictionaryService.downloadDictionary.args[0][0]).to.deep.equal('0');
     });

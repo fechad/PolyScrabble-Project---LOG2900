@@ -141,6 +141,8 @@ describe('DictionaryTabComponent', () => {
 
     it('should add new dictionnary to the list', fakeAsync(() => {
         component.newDictionnary = { id: 2, title: 'dict-2', description: 'test-2', words: ['d', 'e', 'f'] };
+        // to get the private attribute snackbar
+        // eslint-disable-next-line dot-notation
         const spy = spyOn(component['snackbar'], 'open').and.callThrough();
 
         const subscription = component.addDictionary();

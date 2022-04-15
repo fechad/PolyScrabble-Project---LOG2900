@@ -73,7 +73,7 @@ describe('VpNamesService', () => {
     });
     it('should add virtual player names', async () => {
         const newVp: VP = { default: false, beginner: true, name: 'Jean' };
-        vpNamesService.addVP(newVp);
+        await vpNamesService.addVP(newVp);
         expect(await vpNamesService.getNames()).to.deep.equal([
             { default: true, beginer: true, name: 'Dummy' },
             { default: false, beginer: true, name: 'Alex' },
@@ -98,7 +98,7 @@ describe('VpNamesService', () => {
 
     it('should delete virtual player names', async () => {
         const name = 'Antoine';
-        vpNamesService.deleteVP(name);
+        await vpNamesService.deleteVP(name);
         expect(await vpNamesService.getNames()).to.deep.equal([
             { default: true, beginer: true, name: 'Dummy' },
             { default: false, beginer: true, name: 'Alex' },
@@ -107,7 +107,7 @@ describe('VpNamesService', () => {
     });
 
     it('should delete all virtual player names except default ones', async () => {
-        vpNamesService.deleteAll();
+        await vpNamesService.deleteAll();
         expect(await vpNamesService.getNames()).to.deep.equal([
             { default: true, beginer: true, name: 'Dummy' },
             { default: true, beginer: false, name: 'Dummer' },
