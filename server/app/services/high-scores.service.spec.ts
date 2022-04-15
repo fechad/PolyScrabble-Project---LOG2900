@@ -1,5 +1,6 @@
 import { DataBaseController, DEFAULT_USERS } from '@app/controllers/db.controller';
 import { expect } from 'chai';
+import * as express from 'express';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as sinon from 'sinon';
@@ -147,7 +148,9 @@ describe('High scores service', () => {
             { name: 'Bob4', score: -31, log2990: true },
             { name: 'Bob5', score: -30, log2990: true },
         ]);
-        await highScoresService.resetScores();
+        const status = sinon.stub();
+        const resStub = { status: sinon.stub().returns({ send: status }) } as unknown as express.Response;
+        await highScoresService.resetScores(resStub);
         expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
     });
 

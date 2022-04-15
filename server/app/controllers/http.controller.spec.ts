@@ -83,6 +83,9 @@ describe('HttpController', () => {
         dictionnaryService.getDictionnaries.returns(DICTIONNARIES);
         dictionnaryService.init.callsFake(async () => Promise.resolve());
         highScoreService = createStubInstance(HighScoresService);
+        highScoreService.resetScores.callsFake(async (res) => {
+            res.status(StatusCodes.OK).send('succes');
+        });
         await highScoreService.connect();
         highScoreService.getScores.callsFake(async (log2990) => (log2990 ? HIGH_SCORES_LOG2990 : HIGH_SCORES_NORMAL));
         gameHistoryService = createStubInstance(GameHistoryService);
@@ -138,7 +141,7 @@ describe('HttpController', () => {
 
     it('should reset high scores', async () => {
         const response = await supertest(expressApp).delete('/api/high-scores').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal('');
+        expect(response.body).to.deep.equal({});
     });
 
     it('should not add high scores when the input format is not respected', async () => {
