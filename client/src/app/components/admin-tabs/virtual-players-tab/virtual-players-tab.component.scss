@@ -82,6 +82,7 @@
     max-height: 7.5%;
     padding-left: 7.5%;
     max-width: 52.5%;
+    margin-bottom: 10%;
 }
 .text-box,
 .text-box-expert {
@@ -189,10 +190,10 @@
 
 .cancel-expert {
     left: 30%;
-    bottom: 10%;
+    bottom: 12%;
 }
 
-.cancel:hover{
+.cancel:hover, .cancel-expert:hover{
     cursor:pointer;
 }
 
