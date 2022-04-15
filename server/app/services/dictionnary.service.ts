@@ -5,10 +5,11 @@ import { Service } from 'typedi';
 
 export type Dictionnary = { id: number; name: string; words: string[]; trie: LetterNode };
 export type DictionnaryInfo = { id: number; name: string; words: string[] };
+export type DialogDictionary = { id: number; name: string; description: string; words: string[]; trie: LetterNode };
 
 @Service()
 export class DictionnaryService {
-    dictionnaries: Dictionnary[] = [];
+    dictionnaries: DialogDictionary[] = [];
 
     static generateTrie(dictionnary: string[]): LetterNode {
         const trie = new LetterNode('*');
@@ -29,6 +30,7 @@ export class DictionnaryService {
         this.dictionnaries.push({
             id: 0,
             name: 'français',
+            description: 'description de base',
             words: readDictionary.words,
             trie: DictionnaryService.generateTrie(readDictionary.words),
         });
@@ -44,16 +46,18 @@ export class DictionnaryService {
                 this.dictionnaries.push({
                     id,
                     name: readDictionary.title,
+                    description: readDictionary.description,
                     words: readDictionary.words,
                     trie: DictionnaryService.generateTrie(readDictionary.words),
                 });
             }
         }
-        console.log(this.dictionnaries);
     }
 
-    getDictionnaries(): DictionnaryInfo[] {
-        const dictionaryList = this.dictionnaries.map((dict) => ({ id: dict.id, name: dict.name } as DictionnaryInfo));
+    getDictionnaries(): DialogDictionary[] {
+        const dictionaryList = this.dictionnaries.map(
+            (dict) => ({ id: dict.id, name: dict.name, description: dict.description } as DialogDictionary),
+        );
         return dictionaryList;
     }
 
