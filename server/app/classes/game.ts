@@ -292,7 +292,7 @@ export class Game {
             const loserIsMainPlayer = idLoser === this.players[cst.MAIN_PLAYER].id;
             const idxPlayerToReplace = this.getPlayerIndex(idLoser);
             const playerReplaced = loserIsMainPlayer ? this.gameHistory.firstPlayer : this.gameHistory.secondPlayer;
-            this.replaceByVirtualPlayer(idxPlayerToReplace);
+            await this.replaceByVirtualPlayer(idxPlayerToReplace);
             const replacementPlayer = this.players[idxPlayerToReplace].name;
             playerReplaced.replacedBy = replacementPlayer;
             const message = `Votre adversaire ${playerReplaced.name} a abandonné et sera remplacé par ${replacementPlayer}`;

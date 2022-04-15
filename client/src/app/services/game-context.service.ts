@@ -81,9 +81,6 @@ export class GameContextService {
         socket.on('objectives', (objectives: Objective[]) => {
             this.objectives.next(objectives);
         });
-        socket.on('disconnect', () => {
-            this.serverDownAlert();
-        });
     }
 
     close() {
