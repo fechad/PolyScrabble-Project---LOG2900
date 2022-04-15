@@ -22,7 +22,7 @@ const setHTML = () => {
 
 const TIME_OUT = 100;
 
-fdescribe('DictionaryTabComponent', () => {
+describe('DictionaryTabComponent', () => {
     let component: DictionaryTabComponent;
     let fixture: ComponentFixture<DictionaryTabComponent>;
     let httpMock: HttpTestingController;
@@ -178,6 +178,108 @@ fdescribe('DictionaryTabComponent', () => {
         expect(reqGet[0].request.method).toBe('GET');
         reqDelete[0].flush(listBeforeDelete);
         reqGet[0].flush(listAfterDelete);
+
+        httpMock.verify();
+    }));
+
+    it('should update dictionnary', fakeAsync(() => {
+        const listBeforeUpdate: DbDictionary[] = [
+            { id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] },
+            { id: 1, title: 'dict-1', description: 'test-1', words: ['d', 'e', 'f'] },
+        ];
+        const listAfterUpdate: DbDictionary[] = [
+            { id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] },
+            { id: 1, title: 'dict-2', description: 'test-1', words: ['d', 'e', 'f'] },
+        ];
+        component.list = listBeforeUpdate;
+        component.dictionaryForm.value.title = 'dict-2';
+        component.oldTitle = 'dict-1';
+
+        const spy = spyOn(component, 'updateList').and.callThrough();
+        const subscription = component.updateDictionary();
+
+        from(subscription).subscribe(() => {
+            expect(spy).toHaveBeenCalled();
+            expect(component.list).toEqual(listAfterUpdate);
+        });
+
+        const req = httpMock.match(`${environment.serverUrl}/dictionaries`);
+        expect(req[2].request.method).toBe('PATCH');
+        req[0].flush(listBeforeUpdate);
+        req[1].flush(listAfterUpdate);
+
+        httpMock.verify();
+    }));
+
+    it('should download dictionnary function', fakeAsync(() => {
+        component.downloadDictionary('1');
+        const req = httpMock.match(`${environment.serverUrl}/dictionaries/download/1`);
+        const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
+        expect(req[0].request.method).toBe('GET');
+        req[0].flush('/dict-1.json');
+        reqGet[0].flush('');
+
+        httpMock.verify();
+    }));
+
+    it('should find doubles', fakeAsync(() => {
+        const list: DbDictionary[] = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        component.list = list;
+        const result = component.findDoubles('dict-0');
+
+        expect(result).toEqual(true);
+
+        const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
+        expect(reqGet[0].request.method).toBe('GET');
+        reqGet[0].flush(list);
+
+        httpMock.verify();
+    }));
+
+    it('should empty form', fakeAsync(() => {
+        const list: DbDictionary[] = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        component.emptyForm();
+
+        expect(component.dictionaryForm.value).toEqual({ id: null, title: null, description: null, file: null });
+
+        const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
+        expect(reqGet[0].request.method).toBe('GET');
+        reqGet[0].flush(list);
+
+        httpMock.verify();
+    }));
+
+    it('should not add dictionary if form is not filed out', fakeAsync(() => {
+        const spy = spyOn(component, 'addDictionary').and.callThrough();
+        const list: DbDictionary[] = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        component.onSubmit();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
+        expect(reqGet[0].request.method).toBe('GET');
+        reqGet[0].flush(list);
+
+        httpMock.verify();
+    }));
+
+    it('should call update list after delete all', fakeAsync(() => {
+        const spy = spyOn(component, 'updateList').and.callThrough();
+        const list: DbDictionary[] = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        const subscription = component.deleteAll();
+
+        from(subscription).subscribe(() => {
+            expect(component.list).toEqual([]);
+            expect(spy).toHaveBeenCalled();
+        });
+
+        component.onSubmit();
+
+        const reqDeleteAll = httpMock.match(`${environment.serverUrl}/dictionaries-reset`);
+        const reqGet = httpMock.match(`${environment.serverUrl}/dictionaries`);
+        expect(reqDeleteAll[0].request.method).toBe('DELETE');
+        reqGet[0].flush(list);
+        reqDeleteAll[0].flush([]);
 
         httpMock.verify();
     }));

@@ -145,6 +145,7 @@ export class DictionaryTabComponent implements OnInit {
         if (this.findDoubles(this.dictionaryForm.value.title)) return;
         for (const key of Object.keys(this.dictionaryForm.controls)) {
             if (!this.dictionaryForm.controls[key].valid) {
+                console.log(this.dictionaryForm.value.file);
                 return;
             }
         }
