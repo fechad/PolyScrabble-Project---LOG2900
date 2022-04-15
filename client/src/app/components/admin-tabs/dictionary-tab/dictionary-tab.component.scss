@@ -180,8 +180,8 @@
     position: absolute;
     justify-content: center;
     align-items: stretch;
-    background-color: #e0f1f2;
-    box-shadow: 2px 2px 2px 2px;
+    background-color: white;
+    box-shadow: 0 0 20px #000;
     border-radius: 15px;
     padding: 1.5%;
 }
@@ -191,7 +191,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #e0f1f2;
+    background-color: white;
     border-radius: 15px;
 }
 
@@ -237,8 +237,8 @@
     position: absolute;
     justify-content: flex-start;
     align-items: center;
-    background-color: rgb(241, 238, 207);
-    box-shadow: 2px 2px 2px 2px;
+    background-color: white;
+    box-shadow: 0 0 20px #000;
     border-radius: 15px;
     padding: 1.5%;
 }
@@ -299,4 +299,8 @@ textarea{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.download{
+    color: black;
 }

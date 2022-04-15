@@ -200,3 +200,7 @@
     text-align: center;
     color: red;
 }
+
+::ng-deep .snackbar .mat-simple-snackbar-action {
+    color: rgb(108, 226, 108);
+}

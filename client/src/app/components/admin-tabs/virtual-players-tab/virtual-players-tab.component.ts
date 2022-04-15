@@ -1,9 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { VP } from '@app/classes/virtual-player';
 import * as constant from '@app/constants';
 import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+<<<<<<< HEAD
+=======
+import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+>>>>>>> 7a796fc... fix pop up admin page dictionary colors
 
 @Component({
     selector: 'app-virtual-players-tab',
@@ -26,7 +32,7 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
     nameInputExpert: string = '';
     error: [boolean, string] = [true, ''];
 
-    constructor(readonly httpClient: HttpClient, private detectChanges: ChangeDetectorRef) {}
+    constructor(readonly httpClient: HttpClient, private snackbar: MatSnackBar, private detectChanges: ChangeDetectorRef,) {}
 
     async ngOnInit(): Promise<void> {
         this.updateList();
@@ -52,6 +58,7 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
         await this.httpClient.post<VP>(`${environment.serverUrl}/vp-names`, newVp).toPromise();
         this.updateList();
         this.hideInput(beginner);
+        this.snackbar.open('Succès: ajout du nom', 'OK', { duration: 2000, panelClass: ['snackbar'] });
     }
 
     async updatePlayer(oldName: string, newName: string, beginner: boolean) {

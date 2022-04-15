@@ -20,7 +20,7 @@
     <section class="edit" *ngIf="editing">
         <div class="header">
             <h2>Modifier le dictionnaire</h2>
-            <button class="cancel" (click)="editing = false"><b>X</b></button>
+            <mat-icon class="cancel" (click)="editing = false">cancel</mat-icon>
         </div>
         <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
             <div>

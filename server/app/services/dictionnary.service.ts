@@ -49,7 +49,6 @@ export class DictionnaryService {
                 });
             }
         }
-        console.log(this.dictionnaries);
     }
 
     getDictionnaries(): DictionnaryInfo[] {
