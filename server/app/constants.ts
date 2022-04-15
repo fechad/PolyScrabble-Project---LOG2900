@@ -7,6 +7,7 @@ export const MIDDLE_INDEX = 7;
 export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
 export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
 export const PREVIOUS = -1;
+export const INVALID_INDEX = -1;
 export const AI_ID = 'VP';
 export const DECIMAL_BASE = 10;
 export const PROBABILITY = 10;

@@ -47,14 +47,14 @@ type ObjectiveInfo = { text: string; score: number; isPublic: boolean; available
 type Objectives = { objective: Objective; player?: PlayerId; doneByPlayer?: PlayerId }[];
 
 export class Game {
-    readonly eventEmitter = new EventEmitter();
-    readonly reserve = new Reserve();
+    readonly eventEmitter: EventEmitter;
+    readonly reserve: Reserve;
     readonly board: Board;
-    readonly messages: Message[] = [];
-    readonly scores: number[] = [0, 0];
+    readonly messages: Message[];
+    readonly scores: number[];
     readonly players: Player[];
     private isPlayer0Turn: boolean;
-    private skipCounter;
+    private skipCounter: number;
     private winner: PlayerId | undefined = undefined;
     private timeout: NodeJS.Timeout | undefined = undefined;
     private readonly wordGetter;
@@ -69,6 +69,10 @@ export class Game {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board();
+        this.reserve = new Reserve();
+        this.eventEmitter = new EventEmitter();
+        this.messages = [];
+        this.scores = [0, 0];
         this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * cst.SEC_TO_MS);
         this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
@@ -126,30 +130,20 @@ export class Game {
             winner: this.winner,
         };
         this.eventEmitter.emit('state', state);
-        this.eventEmitter.emit('objectives', this.players[cst.MAIN_PLAYER].id, this.objectivesInfo(this.players[cst.MAIN_PLAYER].id));
-        this.eventEmitter.emit('objectives', this.players[cst.OTHER_PLAYER].id, this.objectivesInfo(this.players[cst.OTHER_PLAYER].id));
-        this.eventEmitter.emit(
-            'rack',
-            this.players[cst.MAIN_PLAYER].id,
-            this.reserve.letterRacks[cst.MAIN_PLAYER].map((letter) => ({ name: letter, score: ALPHABET[letter].score })),
-        );
-        this.eventEmitter.emit(
-            'rack',
-            this.players[cst.OTHER_PLAYER].id,
-            this.reserve.letterRacks[cst.OTHER_PLAYER].map((letter) => ({ name: letter, score: ALPHABET[letter].score })),
-        );
+        this.players.forEach((player, playerIdx) => {
+            this.eventEmitter.emit('objectives', player.id, this.objectivesInfo(player.id));
+            this.eventEmitter.emit(
+                'rack',
+                player.id,
+                this.reserve.letterRacks[playerIdx].map((letter) => ({ name: letter, score: ALPHABET[letter].score })),
+            );
+        });
     }
 
     getPlayerInfo(id: PlayerId): PlayerInfo {
-        let idx;
-        if (id === this.players[cst.MAIN_PLAYER].id) {
-            idx = cst.MAIN_PLAYER;
-        } else if (id === this.players[cst.OTHER_PLAYER].id) {
-            idx = cst.OTHER_PLAYER;
-        } else {
-            throw new Error('Not one of the players');
-        }
-        return { info: this.players[idx], score: this.scores[idx], rackCount: this.reserve.letterRacks[idx].length };
+        const playerIdx = this.players.findIndex((player) => player.id === id);
+        if (playerIdx === cst.INVALID_INDEX) throw new Error('Not one of the players');
+        return { info: this.players[playerIdx], score: this.scores[playerIdx], rackCount: this.reserve.letterRacks[playerIdx].length };
     }
 
     message(message: Message) {
@@ -158,65 +152,63 @@ export class Game {
     }
 
     async placeLetters(playerId: PlayerId, letters: string[], pos: Position, isHorizontal?: boolean) {
-        if (this.checkTurn(playerId)) {
-            console.log(
-                `User ${playerId} made placement of word ${letters} at position ${JSON.stringify(pos)} in direction ${
-                    isHorizontal ? 'horizontal' : 'vertical'
-                }`,
-            );
-            const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
-            const player = this.getCurrentPlayer();
-            if (this.timeout !== undefined) clearTimeout(this.timeout);
-            this.timeout = undefined;
-            try {
-                if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
-                isHorizontal ??= this.board.isInContact(pos, false);
-                const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
-                const words = this.wordGetter.getWords(triedPlacement);
-                if (!words.every((wordOption) => this.dictionnaryService.isValidWord(this.room.parameters.dictionnary, wordOption.word)))
-                    throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
+        if (!this.checkTurn(playerId)) return;
+        console.log(
+            `User ${playerId} made placement of word ${letters} at position ${JSON.stringify(pos)} in direction ${
+                isHorizontal ? 'horizontal' : 'vertical'
+            }`,
+        );
+        const playerIndex = this.getPlayerIndex(this.getCurrentPlayer().id);
+        const player = this.getCurrentPlayer();
+        if (this.timeout !== undefined) clearTimeout(this.timeout);
+        this.timeout = undefined;
+        try {
+            if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
+            isHorizontal ??= this.board.isInContact(pos, false);
+            const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
+            const words = this.wordGetter.getWords(triedPlacement);
+            if (!words.every((wordOption) => this.dictionnaryService.isValidWord(this.room.parameters.dictionnary, wordOption.word)))
+                throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
 
-                await new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve(null);
-                    }, cst.BOARD_PLACEMENT_DELAY);
-                });
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(null);
+                }, cst.BOARD_PLACEMENT_DELAY);
+            });
 
-                this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
+            this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
 
-                this.scores[playerIndex] += words.reduce((sum, word) => (sum += word.score), 0);
-                if (letters.length === cst.WORD_LENGTH_BONUS) this.scores[playerIndex] += cst.BONUS_POINTS;
-                if (this.objectives) {
-                    const accomplishedObjectives = this.objectives
-                        .filter((objective) => !objective.player || objective.player === playerId)
-                        .filter((objective) => !objective.doneByPlayer)
-                        .filter((objective) =>
-                            objective.objective.isAccomplished(
-                                triedPlacement,
-                                words.map((word) => word.word),
-                            ),
-                        );
-                    for (const objective of accomplishedObjectives) {
-                        console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
-                        this.scores[playerIndex] += objective.objective.points;
-                        objective.doneByPlayer = playerId;
-                    }
+            this.scores[playerIndex] += words.reduce((sum, word) => (sum += word.score), 0);
+            if (letters.length === cst.WORD_LENGTH_BONUS) this.scores[playerIndex] += cst.BONUS_POINTS;
+            if (this.objectives) {
+                const accomplishedObjectives = this.objectives
+                    .filter((objective) => !objective.player || objective.player === playerId || !objective.doneByPlayer)
+                    .filter((objective) =>
+                        objective.objective.isAccomplished(
+                            triedPlacement,
+                            words.map((word) => word.word),
+                        ),
+                    );
+                for (const objective of accomplishedObjectives) {
+                    console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
+                    this.scores[playerIndex] += objective.objective.points;
+                    objective.doneByPlayer = playerId;
                 }
-
-                this.board.place(triedPlacement.newLetters);
-
-                const validMessage = player.name + ' : ' + Game.createCommand(letters, pos, isHorizontal);
-                this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
-            } catch (e) {
-                this.eventEmitter.emit('message', { text: player.name + ' a fait un mauvais placement', emitter: 'command' } as Message);
-                this.eventEmitter.emit('game-error', player.id, e.message);
             }
-            this.nextTurn(false);
-            if (this.reserve.getCount() === 0 && this.emptiedRack()) {
-                this.endGame();
-            }
-            this.sendState();
+
+            this.board.place(triedPlacement.newLetters);
+
+            const validMessage = player.name + ' : ' + Game.createCommand(letters, pos, isHorizontal);
+            this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
+        } catch (e) {
+            this.eventEmitter.emit('message', { text: player.name + ' a fait un mauvais placement', emitter: 'command' } as Message);
+            this.eventEmitter.emit('game-error', player.id, e.message);
         }
+        this.nextTurn(false);
+        if (this.reserve.getCount() === 0 && this.emptiedRack()) {
+            this.endGame();
+        }
+        this.sendState();
     }
 
     emptiedRack(): boolean {
@@ -233,29 +225,28 @@ export class Game {
     }
 
     changeLetters(letters: string[], playerId: PlayerId) {
-        if (this.checkTurn(playerId)) {
-            if (
-                this.reserve.getCount() >= letters.length &&
-                (this.getCurrentPlayer().virtual || this.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT)
-            ) {
-                this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
-                let validMessage = 'Vous avez échangé les lettres:  ' + letters;
-                this.eventEmitter.emit('valid-exchange', playerId, validMessage);
-                validMessage = this.getCurrentPlayer().name + ' a échangé ' + letters.length + ' lettres';
-                const opponentId = this.getPlayerId(false);
-                this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
-                this.nextTurn(false);
-            } else {
-                this.eventEmitter.emit('game-error', playerId, new Error('La réserve est trop petite pour y échanger des lettres').message);
-            }
-            this.sendState();
+        if (!this.checkTurn(playerId)) return;
+        if (
+            this.reserve.getCount() >= letters.length &&
+            (this.getCurrentPlayer().virtual || this.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT)
+        ) {
+            this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
+            let validMessage = 'Vous avez échangé les lettres:  ' + letters;
+            this.eventEmitter.emit('valid-exchange', playerId, validMessage);
+            validMessage = this.getCurrentPlayer().name + ' a échangé ' + letters.length + ' lettres';
+            const opponentId = this.getPlayerId(false);
+            this.eventEmitter.emit('valid-exchange', opponentId, validMessage);
+            this.nextTurn(false);
+        } else {
+            this.eventEmitter.emit('game-error', playerId, new Error('La réserve est trop petite pour y échanger des lettres').message);
         }
+        this.sendState();
     }
 
     hint(playerId: PlayerId) {
         if (this.checkTurn(playerId)) {
             const virtual = new VirtualPlayer(Difficulty.Expert, this, this.dictionnaryService.dictionnaries[this.room.parameters.dictionnary].trie);
-            const player = playerId === this.players[cst.MAIN_PLAYER].id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
+            const player = this.getPlayerIndex(playerId);
             const options = virtual.chooseWords(this.reserve.letterRacks[player]).slice(0, 3);
             let hintMessage =
                 options.length === 0
@@ -299,13 +290,12 @@ export class Game {
             this.completeGameHistory();
         } else {
             const loserIsMainPlayer = idLoser === this.players[cst.MAIN_PLAYER].id;
+            const idxPlayerToReplace = this.getPlayerIndex(idLoser);
             const playerReplaced = loserIsMainPlayer ? this.gameHistory.firstPlayer : this.gameHistory.secondPlayer;
-            const idxPlayerToReplace = loserIsMainPlayer ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
-            const oldName = this.players[idxPlayerToReplace].name;
-            await this.replaceByVirtualPlayer(idxPlayerToReplace);
+            this.replaceByVirtualPlayer(idxPlayerToReplace);
             const replacementPlayer = this.players[idxPlayerToReplace].name;
             playerReplaced.replacedBy = replacementPlayer;
-            const message = `Votre adversaire ${oldName} a abandonné et sera remplacé par ${replacementPlayer}`;
+            const message = `Votre adversaire ${playerReplaced.name} a abandonné et sera remplacé par ${replacementPlayer}`;
             this.eventEmitter.emit('message', { text: message, emitter: 'command' } as Message);
         }
         this.sendState();
@@ -315,6 +305,10 @@ export class Game {
         if (this.scores[cst.MAIN_PLAYER] > this.scores[cst.OTHER_PLAYER]) return this.players[cst.MAIN_PLAYER].id;
         else if (this.scores[cst.MAIN_PLAYER] < this.scores[cst.OTHER_PLAYER]) return this.players[cst.OTHER_PLAYER].id;
         return undefined;
+    }
+
+    getPlayerIndex(playerId: PlayerId) {
+        return this.players[cst.MAIN_PLAYER].id === playerId ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
     }
 
     endGame() {
@@ -363,8 +357,7 @@ export class Game {
     private nextTurn(userRequest: boolean) {
         this.isPlayer0Turn = !this.isPlayer0Turn;
 
-        if (userRequest) this.skipCounter += 1;
-        else this.skipCounter = 0;
+        this.skipCounter = userRequest ? this.skipCounter + 1 : 0;
 
         if (this.skipCounter === cst.MAX_SKIP_IN_A_ROW) this.endGame();
 
@@ -396,9 +389,7 @@ export class Game {
 
     private checkTurn(playerId: PlayerId) {
         const validTurn = playerId === this.getPlayerId(true);
-        if (!validTurn) {
-            this.eventEmitter.emit('game-error', playerId, new Error("Ce n'est pas votre tour").message);
-        }
+        if (!validTurn) this.eventEmitter.emit('game-error', playerId, new Error("Ce n'est pas votre tour").message);
         return validTurn;
     }
 }
