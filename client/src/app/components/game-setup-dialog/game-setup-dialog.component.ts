@@ -1,10 +1,12 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Parameters } from '@app/classes/parameters';
 import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService, DialogDictionary } from '@app/services/communication.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-game-setup-dialog',
@@ -12,9 +14,14 @@ import { CommunicationService } from '@app/services/communication.service';
     styleUrls: ['../../styles/dialogs.scss'],
 })
 export class GameSetupDialogComponent implements OnInit {
+    @ViewChild('dropDown') dropDown: ElementRef;
     gameParametersForm: FormGroup;
+    dictionnaries: DialogDictionary[];
+    environment = environment;
+    dictionaryName: number;
 
     constructor(
+        readonly httpClient: HttpClient,
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<GameSetupDialogComponent>,
         public communicationService: CommunicationService,
@@ -39,6 +46,16 @@ export class GameSetupDialogComponent implements OnInit {
         });
     }
 
+    // async getListDictionaries() {
+    //     this.dictionnaries = await this.communicationService.dictionnaries;
+    // }
+
+    // async getSummary(): Promise<string> {
+    //     for (const dictionnary of this.dictionnaries) {
+    //         if (this.dropDown.nativeElement.text === dictionnary.name) return dictionnary.description;
+    //     }
+    //     return 'Dictionnaire par défaut';
+    // }
     async onSubmit() {
         for (const key of Object.keys(this.gameParametersForm.controls)) {
             if (!this.gameParametersForm.controls[key].valid) {
