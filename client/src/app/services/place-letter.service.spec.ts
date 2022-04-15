@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { State } from '@app/classes/room';
+import { Vec2 } from '@app/classes/vec2';
 import { BehaviorSubject, of } from 'rxjs';
 import { GameContextService, Tile } from './game-context.service';
 import { GridService } from './grid.service';
@@ -32,9 +33,9 @@ describe('PlaceLetterService', () => {
         gameService.isMyTurn.and.callFake(() => of(true));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
             rack: [{ name: 'A', score: 1 }] as Letter[],
-            letterPosition: [[0, 0]] as number[][],
+            letterPosition: [{ x: 0, y: 0 }] as Vec2[],
             firstLetter: [0, 0] as number[],
-            letters: [] as Letter[],
+            letters: [{ name: 'A', score: 1 }] as Letter[],
             letterForServer: 'a',
         });
         mouseService = jasmine.createSpyObj('MouseService', ['MouseHitDetect'], { mousePosition: { x: 20, y: 510 }, isHorizontal: true });
@@ -55,9 +56,24 @@ describe('PlaceLetterService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('sendPlacedLetters should clear all the variable', () => {
+    it('send placed letters to the server or remove the word from the board should clear all the variable', () => {
         const clearSpy = spyOn(service, 'clear');
         service.sendPlacedLetters();
+        service.removeWord();
         expect(clearSpy).toHaveBeenCalled();
+    });
+    it('removedLetterOnCanvas should clear redraw an arrow a the right place', () => {
+        const arrowSpy = spyOn(service, 'drawShiftedArrow');
+        service.removeLetterOnCanvas();
+        expect(arrowSpy).toHaveBeenCalled();
+    });
+    it('placeWordOnCanvas should update the rack', () => {
+        service.placeWordOnCanvas('a');
+        expect(gameService.tempUpdateRack).toHaveBeenCalled();
+    });
+
+    it('clearing the variable should redraw the board', () => {
+        service.clear();
+        expect(gridService.drawGrid).toHaveBeenCalled();
     });
 });
