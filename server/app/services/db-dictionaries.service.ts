@@ -1,6 +1,8 @@
 import * as cst from '@app/controllers/db.controller';
 import { DataBaseController, DbDictionary, DICTIONARY_COLLECTION } from '@app/controllers/db.controller';
+import { Response } from 'express';
 import * as fs from 'fs';
+import { StatusCodes } from 'http-status-codes';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -24,7 +26,7 @@ export class DbDictionariesService {
         return dictionaries;
     }
 
-    async addDictionary(dictionary: DbDictionary): Promise<string> {
+    async addDictionary(dictionary: DbDictionary, res: Response): Promise<void> {
         const filteredDictionary: ClientDictionaryInterface = { id: dictionary.id, title: dictionary.title, description: dictionary.description };
         await this.collection?.insertOne(filteredDictionary);
         const fileToCreate: WholeDictionary = { title: dictionary.title, description: dictionary.description, words: dictionary.words };
@@ -32,9 +34,9 @@ export class DbDictionariesService {
         try {
             await fs.promises.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary);
             await this.syncDictionaries();
-            return 'Succès du téléversement du dictionnaire';
+            res.status(StatusCodes.OK).json('Succès: Téléversement du dictionnaire.');
         } catch (e) {
-            return 'Échec de téléversement du dictionnaire dans le serveur';
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json('Échec: Dictionnaire non téléversé.');
         }
     }
 

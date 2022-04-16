@@ -91,9 +91,15 @@ describe('HttpController', () => {
         gameHistoryService = createStubInstance(GameHistoryService);
         vpNamesService = createStubInstance(VpNamesService);
         vpNamesService.getNames.returns(Promise.resolve(DEFAULT_VPS));
+        vpNamesService.addVP.callsFake(async (_Vp, res) => {
+            res.status(StatusCodes.OK).send('succes');
+        });
         dbDictionaryService = createStubInstance(DbDictionariesService);
         dbDictionaryService.getDictionaries.returns(Promise.resolve(DICTIONARY));
         dbDictionaryService.syncDictionaries.returns(Promise.resolve());
+        dbDictionaryService.addDictionary.callsFake(async (dictionary, res) => {
+            res.status(StatusCodes.OK).send(`succes, ${dictionary}`);
+        });
         dbDictionaryService.downloadDictionary.returns(Promise.resolve('/dictionaries/dictionary-test.json'));
         await gameHistoryService.connect();
         const loginsService = createStubInstance(LoginsService);
@@ -256,7 +262,7 @@ describe('HttpController', () => {
             .post('/api/dictionaries')
             .send({ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] })
             .expect(StatusCodes.OK);
-        expect(dbDictionaryService.addDictionary.args[0]).to.deep.equal([{ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] }]);
+        expect(dbDictionaryService.addDictionary.args[0][0]).to.deep.equal({ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] });
     });
 
     it('should update dictionaries', async () => {
