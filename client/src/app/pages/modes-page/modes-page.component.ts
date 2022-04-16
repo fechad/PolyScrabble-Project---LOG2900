@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Button } from '@app/classes/button';
 import { GameSetupDialogComponent } from '@app/components/game-setup-dialog/game-setup-dialog.component';
 import { SoloDialogComponent } from '@app/components/solo-dialog/solo-dialog.component';
+import { CommunicationService } from '@app/services/communication.service';
 
 @Component({
     selector: 'app-modes-page',
@@ -14,7 +15,8 @@ export class ModesPageComponent {
     log2990: boolean;
     buttons: Button[];
 
-    constructor(public matDialog: MatDialog, route: ActivatedRoute) {
+    constructor(public matDialog: MatDialog, route: ActivatedRoute, private communicationService: CommunicationService) {
+        this.communicationService.isServerDown();
         this.log2990 = route.snapshot.url[0].toString() === '2990';
         this.buttons = [
             { promptsDialog: true, route: '', toolTip: '', text: 'Solo', disabled: false },

@@ -10,11 +10,19 @@
             <div class="description">
                 <p>{{ dictionary.description }}</p>
             </div>
-        <a href="{{environment.serverUrl}}/dictionaries/download/{{dictionary.id}}" download class="download" (click)="downloadDictionary(dictionary.id.toString())"><fa-icon [icon]="faDownload" size="lg"></fa-icon></a>
+            <a
+                href="{{ environment.serverUrl }}/dictionary-files/{{ dictionary.id }}"
+                download
+                class="download"
+                (click)="downloadDictionary(dictionary.id.toString())"
+                ><fa-icon [icon]="faDownload" size="lg"></fa-icon
+            ></a>
         </div>
         <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
             <button class="trash-can" (click)="deleteDictionary(dictionary.id.toString())"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
-            <button class="pencil" (click)="editing = true; oldTitle = dictionary.title; oldDescription = dictionary.description"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
+            <button class="pencil" (click)="editing = true; oldTitle = dictionary.title; oldDescription = dictionary.description">
+                <fa-icon [icon]="faPencil" size="lg"></fa-icon>
+            </button>
         </div>
     </div>
     <section class="edit" *ngIf="editing">
@@ -47,24 +55,24 @@
             <mat-card-title>Téléversez votre dictionnaire!</mat-card-title>
             <mat-icon class="cancel" (click)="emptyForm()">cancel</mat-icon>
         </mat-card-header>
-        <br/>
+        <br />
         <mat-card-content>
             <div class="dictionary-form">
                 <form class="format" [formGroup]="dictionaryForm" (submit)="onSubmit()">
                     <label>Format JSON accepté:</label>
                     <div>
                         {{ '{' }}
-                        <br/>
-                            "title": "exemple",
-                            <br/>
-                            "description": "une description quelconque",
-                            <br/>
-                            "words": ["aa", "bb"]
-                            <br/>
+                        <br />
+                        "title": "exemple",
+                        <br />
+                        "description": "une description quelconque",
+                        <br />
+                        "words": ["aa", "bb"]
+                        <br />
                         {{ '}' }}
-                        <br/>
+                        <br />
                     </div>
-                    <br/>
+                    <br />
                     <div class="file-area">
                         <input
                             type="file"
@@ -74,10 +82,9 @@
                             (click)="error = ''"
                             (change)="getFileInfos($event)"
                         />
-                    <div class="error" *ngIf="error !== ''">{{ error }}</div>
-
+                        <div class="error" *ngIf="error !== ''">{{ error }}</div>
                     </div>
-                     <br/>
+                    <br />
                     <button class="submission" [disabled]="dictionaryForm.invalid" type="submit">Soumettre</button>
                 </form>
             </div>

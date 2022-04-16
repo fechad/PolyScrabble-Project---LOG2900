@@ -4,8 +4,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
-import { Parameters } from '@app/classes/parameters';
-import { Room, State } from '@app/classes/room';
+import { State } from '@app/classes/room';
+import { CommunicationServiceMock } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent, CountdownTimer } from 'ngx-countdown';
@@ -42,23 +42,6 @@ class GameContextServiceMock {
         return;
     }
 }
-
-class CommunicationServiceMock {
-    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
-        id: 0,
-        name: 'Room',
-        parameters: new Parameters(),
-        mainPlayer: { name: 'Player 1', id: '0', connected: true },
-        otherPlayer: undefined,
-        state: State.Setup,
-    } as Room);
-    dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
-
-    getId() {
-        return 0;
-    }
-}
-
 describe('ChronoContainerComponent', () => {
     let component: ChronoContainerComponent;
     let fixture: ComponentFixture<ChronoContainerComponent>;

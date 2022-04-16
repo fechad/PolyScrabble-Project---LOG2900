@@ -1,3 +1,7 @@
+import { BehaviorSubject } from 'rxjs';
+import { GameType } from './classes/parameters';
+import { Room, State } from './classes/room';
+
 export const DEFAULT_WIDTH = 525;
 export const DEFAULT_HEIGHT = 525;
 export const MAX_RACK_SIZE = 7;
@@ -149,3 +153,58 @@ export const imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-image
 export const LAST_IMG = 3;
 export const NUMBER_ICONS = 4;
 export const MAX_NAME_CHARACTERS = 15;
+
+export class CommunicationServiceMock {
+    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
+        id: 0,
+        name: 'Room',
+        parameters: { avatar: 'a', timer: 60, dictionnary: 0, gameType: GameType.Multiplayer, log2990: false },
+        mainPlayer: { avatar: 'a', name: 'Player 1', id: '0', connected: true },
+        otherPlayer: undefined,
+        state: State.Setup,
+    } as Room);
+    dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
+    rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
+
+    isWinner = false;
+
+    start() {
+        return;
+    }
+
+    kick() {
+        return;
+    }
+
+    kickLeave() {
+        return;
+    }
+
+    confirmForfeit() {
+        return;
+    }
+
+    switchTurn(timerRequest: boolean) {
+        return timerRequest;
+    }
+
+    saveScore() {
+        return;
+    }
+    leave() {
+        return;
+    }
+    getId(): number {
+        return 1;
+    }
+    createRoom() {
+        return;
+    }
+    async joinRoom() {
+        return;
+    }
+
+    isServerDown() {
+        return false;
+    }
+}

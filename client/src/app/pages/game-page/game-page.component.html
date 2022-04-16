@@ -66,7 +66,7 @@
                         <fa-icon id="increase" [icon]="faFont" size="3x" (click)="changeSize(1.1)"></fa-icon>
                     </button>
                 </div>
-                <div id="objectives-container">
+                <div id="objectives-container" *ngIf="publicObjectives.length !== 0">
                     <app-objectives [objectives]="privateObjectives" headerName="Objectifs privés"></app-objectives>
                     <app-objectives [objectives]="publicObjectives" id="public-objective" headerName="Objectifs publiques"></app-objectives>
                 </div>

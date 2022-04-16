@@ -1,25 +1,50 @@
+.tab-container {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+}
 .container {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     width: 95%;
-    height: 90%;
-    margin-top: 2.5%;
+    height: 85%;
     overflow-y: auto;
 }
 
+.reset-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
 .refresh {
     position: sticky;
-    top: 1px;
-    left: 90%;
     width: 4%;
+    margin-right: 10%;
     min-height: 8%;
     border-radius: 20%;
     background-color: red;
 }
 
-.refresh:hover{
-    cursor:pointer;
+.reset-scores {
+    display: flex;
+    background-color: red;
+    width: 15vw;
+    height: 5vh;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: space-around;
+    margin-left: 2%;
+}
+
+.reset-scores:hover {
+    cursor: pointer;
+}
+
+::ng-deep .snackbar .mat-simple-snackbar-action {
+    color: rgb(108, 226, 108);
 }
 
 .game-box {
@@ -77,19 +102,6 @@
     margin-left: 15%;
     width: 20%;
     height: 100%;
-}
-
-.trash-can {
-    color: red;
-    border: white;
-    width: 80%;
-    height: 100%;
-    background-color: white;
-    margin-top: 2%;
-}
-
-.trash-can:hover {
-    cursor: pointer;
 }
 
 .trash-can:active {

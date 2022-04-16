@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { CommunicationService } from '@app/services/communication.service';
 import { faHome, faSync } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -12,7 +13,10 @@ export class AdminPageComponent {
     faRefresh = faSync;
     tabSelection: string = 'history';
 
+    constructor(private communicationService: CommunicationService) {}
+
     changeSelection(e: MouseEvent) {
+        this.communicationService.isServerDown();
         const selection = e.target as HTMLElement;
         const id = selection.id;
         Array.from(this.tabsRef.nativeElement.children).forEach((element) => {

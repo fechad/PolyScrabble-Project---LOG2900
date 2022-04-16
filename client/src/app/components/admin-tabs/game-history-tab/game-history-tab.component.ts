@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameHistory } from '@app/game-history';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
@@ -13,7 +14,7 @@ import Swal from 'sweetalert2';
 export class GameHistoryTabComponent implements OnInit {
     faTrash = faTrashAlt;
     games: GameHistory[] = [];
-    constructor(readonly httpClient: HttpClient) {}
+    constructor(readonly httpClient: HttpClient, private snackbar: MatSnackBar) {}
 
     async ngOnInit(): Promise<void> {
         this.games = (await this.httpClient.get<GameHistory[]>(`${environment.serverUrl}/game-history`).toPromise()).reverse();
@@ -25,6 +26,11 @@ export class GameHistoryTabComponent implements OnInit {
     async clearHistory() {
         await this.httpClient.delete(`${environment.serverUrl}/game-history`).toPromise();
         this.games = [];
+    }
+
+    async clearHighScores() {
+        const response = await this.httpClient.delete<string>(`${environment.serverUrl}/high-scores`).toPromise();
+        this.snackbar.open(response, 'OK', { duration: 2000, panelClass: ['snackbar'] });
     }
 
     async confirmReset() {
