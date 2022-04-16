@@ -294,7 +294,12 @@ textarea{
     color: rgb(108, 226, 108);
 }
 
-
+.format{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .download{
     color: black;
