@@ -1,5 +1,5 @@
 <section class="container">
-    <button class="refresh" (click)="deleteAll()"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
+    <button class="refresh" (click)="confirmReset()"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
     <div class="big-box" [ngClass]="{ regular: dictionary.title !== 'Mon dictionnaire' }" *ngFor="let dictionary of list">
         <div class="dico-box">
             <div class="header">
@@ -50,7 +50,7 @@
         <br/>
         <mat-card-content>
             <div class="dictionary-form">
-                <form class="test" [formGroup]="dictionaryForm" (submit)="onSubmit()">
+                <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
                     <label>Format JSON accepté:</label>
                     <div>
                         {{ '{' }}
