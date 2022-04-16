@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DbDictionary } from '@app/classes/dictionnary';
 import { BOARD_SIZE } from '@app/constants';
-import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faPencilAlt, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 
@@ -15,7 +15,6 @@ import Swal from 'sweetalert2';
 })
 export class DictionaryTabComponent implements OnInit {
     faTrash = faTrashAlt;
-    faRefresh = faSync;
     faUpload = faUpload;
     faDownload = faDownload;
     faPencil = faPencilAlt;

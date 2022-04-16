@@ -3,7 +3,7 @@ import { AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { VP } from '@app/classes/virtual-player';
 import * as constant from '@app/constants';
-import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 
@@ -19,7 +19,6 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
     @ViewChild('scrollMeExpert') private scrollerExpert: ElementRef;
 
     faTrash = faTrashAlt;
-    faRefresh = faSync;
     list: VP[] = [];
     beginnerList: VP[];
     expertList: VP[];
