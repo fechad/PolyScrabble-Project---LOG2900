@@ -3,8 +3,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Parameters } from '@app/classes/parameters';
 import { Room, State } from '@app/classes/room';
+import { CommunicationServiceMock } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
-import { BehaviorSubject } from 'rxjs';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
 const dialogMock = {
@@ -18,19 +18,6 @@ const data = {
     name: 'test',
     dictionary: 'francais',
 };
-
-export class CommunicationServiceMock {
-    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
-        id: 0,
-        name: 'Room',
-        parameters: new Parameters(),
-        mainPlayer: { name: 'Player 1', id: '0', connected: true },
-        otherPlayer: undefined,
-        state: State.Setup,
-    } as Room);
-    dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
-}
-
 describe('JoiningRoomPageComponent', () => {
     let component: JoiningRoomPageComponent;
     let fixture: ComponentFixture<JoiningRoomPageComponent>;

@@ -1,7 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CommunicationServiceMock } from '@app/constants';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication.service';
 import { AdminPageComponent } from './admin-page.component';
 
 const setHTML = () => {
@@ -27,6 +29,7 @@ describe('AdminPageComponent', () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, AppRoutingModule],
             declarations: [AdminPageComponent],
+            providers: [{ provide: CommunicationService, useClass: CommunicationServiceMock }],
         }).compileComponents();
     });
 

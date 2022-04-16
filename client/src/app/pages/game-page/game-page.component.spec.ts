@@ -15,6 +15,7 @@ import { State } from '@app/classes/room';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
+import { CommunicationServiceMock } from '@app/constants';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { GameContextService } from '@app/services/game-context.service';
@@ -29,27 +30,6 @@ const dialogMock = {
         return;
     },
 };
-
-class CommunicationServiceMock {
-    isWinner = false;
-    getId(): number {
-        return 1;
-    }
-    confirmForfeit() {
-        return;
-    }
-    leave() {
-        return;
-    }
-    switchTurn(timerRequest: boolean) {
-        return timerRequest;
-    }
-
-    saveScore() {
-        return;
-    }
-}
-
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
