@@ -66,7 +66,7 @@ export class VirtualPlayer {
         if (this.difficulty === Difficulty.Expert) {
             const sortedWordOptions = this.chooseWords(rack);
             if (sortedWordOptions.length > 0) await play(sortedWordOptions[0].placement);
-            else if (this.game.reserve.getCount() > 0) await changeLetters(cst.RACK_LENGTH);
+            else if (this.game.reserve.getCount() > 0) await changeLetters(rack.length);
         } else if (randomOutOfTen > 1) {
             // 80 % chance
             const bracket = this.getRandomPointBracket();
@@ -76,7 +76,7 @@ export class VirtualPlayer {
             await play(sortedWordOptions[randomIndex].placement);
         } else if (randomOutOfTen === 1 && this.game.reserve.getCount() >= cst.RACK_LENGTH) {
             // 10 % chance
-            const sliceIndex = Math.floor(Math.random() * rack.length);
+            const sliceIndex = Math.floor(Math.random() * (rack.length - 1)) + 1;
             await changeLetters(sliceIndex);
         }
     }

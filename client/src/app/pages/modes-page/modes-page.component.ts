@@ -17,11 +17,17 @@ export class ModesPageComponent {
 
     constructor(public matDialog: MatDialog, route: ActivatedRoute, private communicationService: CommunicationService) {
         this.communicationService.isServerDown();
-        this.log2990 = route.snapshot.url[0].toString() === '2990';
+        this.log2990 = route.snapshot.url[0].toString() === 'log2990';
         this.buttons = [
             { promptsDialog: true, route: '', toolTip: '', text: 'Solo', disabled: false },
             { promptsDialog: true, route: '', toolTip: '', text: 'Multijoueur', disabled: false },
-            { promptsDialog: false, route: '/joining-room', toolTip: '', text: 'Rejoindre une partie', disabled: false },
+            {
+                promptsDialog: false,
+                route: `/joining-room${this.log2990 ? '-log2990' : ''}`,
+                toolTip: '',
+                text: 'Rejoindre une partie',
+                disabled: false,
+            },
             { promptsDialog: false, route: '/home', toolTip: 'Retour au menu principal', text: 'Retour', disabled: false },
         ];
     }
