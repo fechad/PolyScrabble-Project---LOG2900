@@ -54,9 +54,12 @@
     background-color: red;
 }
 
-.vp-names div,
-#add-input,
-#add-input-export {
+
+.refresh:hover{
+    cursor:pointer;
+}
+
+.vp-names div {
     height: 15%;
     width: 60%;
     border-radius: 20px;
@@ -79,6 +82,7 @@
     max-height: 7.5%;
     padding-left: 7.5%;
     max-width: 52.5%;
+    margin-bottom: 10%;
 }
 .text-box,
 .text-box-expert {
@@ -186,5 +190,18 @@
 
 .cancel-expert {
     left: 30%;
-    bottom: 10%;
+    bottom: 12%;
+}
+
+.cancel:hover, .cancel-expert:hover{
+    cursor:pointer;
+}
+
+.feedback {
+    text-align: center;
+    color: red;
+}
+
+::ng-deep .snackbar .mat-simple-snackbar-action {
+    color: rgb(108, 226, 108);
 }

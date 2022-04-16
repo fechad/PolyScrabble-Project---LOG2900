@@ -61,9 +61,9 @@ export class HttpController {
             const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
-        this.router.delete('/high-scores', async (req: Request, res: Response) => {
-            await this.highScoreService.resetScores();
-            res.json();
+        this.router.delete('/high-scores', async (req: Request, res: Response, next) => {
+            await this.highScoreService.resetScores(res);
+            next();
         });
         this.router.get('/high-scores', async (req: Request, res: Response) => {
             const scores = await this.highScoreService.getScores(false);
@@ -135,10 +135,11 @@ export class HttpController {
             res.json(dictionaries);
         });
 
-        this.router.get('/dictionaries/download/:id', async (req: Request, res: Response) => {
+        this.router.get('/dictionary-files/:id', async (req: Request, res: Response) => {
             const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
             res.download(dictionary);
         });
+
         this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.deleteAll();
             res.json(dictionaries);

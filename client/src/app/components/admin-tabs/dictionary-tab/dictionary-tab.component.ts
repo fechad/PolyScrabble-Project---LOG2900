@@ -4,8 +4,9 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DbDictionary } from '@app/classes/dictionnary';
 import { BOARD_SIZE } from '@app/constants';
-import { faDownload, faPencilAlt, faSync, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faPencilAlt, faTrashAlt, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-dictionary-tab',
@@ -14,7 +15,6 @@ import { environment } from 'src/environments/environment';
 })
 export class DictionaryTabComponent implements OnInit {
     faTrash = faTrashAlt;
-    faRefresh = faSync;
     faUpload = faUpload;
     faDownload = faDownload;
     faPencil = faPencilAlt;
@@ -155,5 +155,24 @@ export class DictionaryTabComponent implements OnInit {
     async deleteAll() {
         await this.httpClient.delete(`${environment.serverUrl}/dictionaries-reset`).toPromise();
         this.updateList();
+    }
+
+    async confirmReset() {
+        const result = await Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: 'Vous vous apprêtez à réinitialiser tous les dictionnaires',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Oui',
+            cancelButtonText: 'Non',
+            heightAuto: false,
+        });
+
+        if (!result.value) return;
+        if (result.isConfirmed) {
+            this.deleteAll();
+        } else {
+            Swal.close();
+        }
     }
 }

@@ -1,5 +1,5 @@
 <section class="container">
-    <button class="refresh" (click)="deleteAll()"><fa-icon [icon]="faRefresh" size="2x"></fa-icon></button>
+    <button class="refresh" title="Réinitialiser les dictionnaires" (click)="confirmReset()"><fa-icon [icon]="faTrash" size="2x"></fa-icon></button>
     <div class="big-box" [ngClass]="{ regular: dictionary.title !== 'Mon dictionnaire' }" *ngFor="let dictionary of list">
         <div class="dico-box">
             <div class="header">
@@ -10,15 +10,18 @@
             <div class="description">
                 <p>{{ dictionary.description }}</p>
             </div>
+        <a href="{{environment.serverUrl}}/dictionaries/download/{{dictionary.id}}" download class="download" (click)="downloadDictionary(dictionary.id.toString())"><fa-icon [icon]="faDownload" size="lg"></fa-icon></a>
         </div>
         <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
             <button class="trash-can" (click)="deleteDictionary(dictionary.id.toString())"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
             <button class="pencil" (click)="editing = true; oldTitle = dictionary.title; oldDescription = dictionary.description"><fa-icon [icon]="faPencil" size="lg"></fa-icon></button>
         </div>
-        <a href="{{environment.serverUrl}}/dictionaries/download/{{dictionary.id}}" download class="download" (click)="downloadDictionary(dictionary.id.toString())"><fa-icon [icon]="faDownload" size="lg"></fa-icon></a>
     </div>
     <section class="edit" *ngIf="editing">
-        <button class="cancel" (click)="editing = false">X</button>
+        <div class="header">
+            <h2>Modifier le dictionnaire</h2>
+            <mat-icon class="cancel" (click)="editing = false">cancel</mat-icon>
+        </div>
         <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
             <div>
                 <label>Nom du dictionnaire:</label>
@@ -26,32 +29,43 @@
             </div>
             <div class="error" *ngIf="error !== ''">{{ error }}</div>
             <div>
-                <p>Description du dictionnaire:</p>
+                <p>Description du dictionnaire (max. 120 caractères):</p>
                 <textarea
                     class="form-control"
                     formControlName="description"
                     rows="10"
                     type="text"
-                    maxlength="512"
+                    maxlength="120"
                     [ngModel]="oldDescription"
                 ></textarea>
             </div>
         </form>
-        <button class="cancel" (click)="updateDictionary()">Soumettre modification</button>
+        <button class="submission" (click)="updateDictionary()">Soumettre modification</button>
     </section>
     <section *ngIf="uploading" class="dictionary-dialog">
         <mat-card-header>
             <mat-card-title>Téléversez votre dictionnaire!</mat-card-title>
-            <button (click)="emptyForm()">X</button>
+            <mat-icon class="cancel" (click)="emptyForm()">cancel</mat-icon>
         </mat-card-header>
-
+        <br/>
         <mat-card-content>
             <div class="dictionary-form">
-                <form [formGroup]="dictionaryForm" (submit)="onSubmit()">
-                    <div class="error" *ngIf="error !== ''">{{ error }}</div>
-
+                <form class="format" [formGroup]="dictionaryForm" (submit)="onSubmit()">
+                    <label>Format JSON accepté:</label>
                     <div>
-                        <label>Téléverser un fichier JSON</label>
+                        {{ '{' }}
+                        <br/>
+                            "title": "exemple",
+                            <br/>
+                            "description": "une description quelconque",
+                            <br/>
+                            "words": ["aa", "bb"]
+                            <br/>
+                        {{ '}' }}
+                        <br/>
+                    </div>
+                    <br/>
+                    <div class="file-area">
                         <input
                             type="file"
                             accept=".json"
@@ -60,8 +74,11 @@
                             (click)="error = ''"
                             (change)="getFileInfos($event)"
                         />
+                    <div class="error" *ngIf="error !== ''">{{ error }}</div>
+
                     </div>
-                    <button [disabled]="dictionaryForm.invalid" type="submit">Soumettre</button>
+                     <br/>
+                    <button class="submission" [disabled]="dictionaryForm.invalid" type="submit">Soumettre</button>
                 </form>
             </div>
         </mat-card-content>

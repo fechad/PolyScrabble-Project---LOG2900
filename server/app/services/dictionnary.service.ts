@@ -36,6 +36,7 @@ export class DictionnaryService {
 
     async copyDictionaries() {
         const files = await fs.promises.readdir('./dictionaries/');
+        this.dictionnaries.splice(1);
         for (const file of files) {
             const id = Number(file.split('-')[1][0]);
             if (id !== 0) {
@@ -49,7 +50,6 @@ export class DictionnaryService {
                 });
             }
         }
-        console.log(this.dictionnaries);
     }
 
     getDictionnaries(): DictionnaryInfo[] {

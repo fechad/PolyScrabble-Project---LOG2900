@@ -1,7 +1,9 @@
 import { DataBaseController, DEFAULT_USERS } from '@app/controllers/db.controller';
 import { expect } from 'chai';
+import * as express from 'express';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as sinon from 'sinon';
 import { HighScoresService } from './high-scores.service';
 
 // List your collection names here
@@ -146,7 +148,9 @@ describe('High scores service', () => {
             { name: 'Bob4', score: -31, log2990: true },
             { name: 'Bob5', score: -30, log2990: true },
         ]);
-        await highScoresService.resetScores();
+        const status = sinon.stub();
+        const resStub = { status: sinon.stub().returns({ send: status }) } as unknown as express.Response;
+        await highScoresService.resetScores(resStub);
         expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
     });
 
@@ -169,5 +173,14 @@ describe('High scores service', () => {
         highScoresService['db'] = null;
         expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
         expect(async () => await highScoresService.addScore({ name: 'Dummy', score: 400, log2990: true })).not.to.throw();
+    });
+
+    it('should create collection on connect', async () => {
+        // used to access private attribute of service
+        // eslint-disable-next-line dot-notation
+        sinon.stub(highScoresService['dataBase']).connect();
+        highScoresService.connect();
+        // eslint-disable-next-line dot-notation
+        expect(highScoresService['collection']).not.equal(undefined);
     });
 });

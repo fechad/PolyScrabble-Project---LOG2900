@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { GameHistory } from '@app/game-history';
-import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-game-history-tab',
@@ -11,7 +12,6 @@ import { environment } from 'src/environments/environment';
 })
 export class GameHistoryTabComponent implements OnInit {
     faTrash = faTrashAlt;
-    faRefresh = faSync;
     games: GameHistory[] = [];
     constructor(readonly httpClient: HttpClient) {}
 
@@ -25,5 +25,24 @@ export class GameHistoryTabComponent implements OnInit {
     async clearHistory() {
         await this.httpClient.delete(`${environment.serverUrl}/game-history`).toPromise();
         this.games = [];
+    }
+
+    async confirmReset() {
+        const result = await Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: 'Vous vous apprêtez à effacer toutes les parties',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Oui',
+            cancelButtonText: 'Non',
+            heightAuto: false,
+        });
+
+        if (!result.value) return;
+        if (result.isConfirmed) {
+            this.clearHistory();
+        } else {
+            Swal.close();
+        }
     }
 }
