@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameHistory } from '@app/game-history';
-import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-game-history-tab',
@@ -12,7 +13,6 @@ import { environment } from 'src/environments/environment';
 })
 export class GameHistoryTabComponent implements OnInit {
     faTrash = faTrashAlt;
-    faRefresh = faSync;
     games: GameHistory[] = [];
     constructor(readonly httpClient: HttpClient, private snackbar: MatSnackBar) {}
 
@@ -31,5 +31,24 @@ export class GameHistoryTabComponent implements OnInit {
     async clearHighScores() {
         const response = await this.httpClient.delete<string>(`${environment.serverUrl}/high-scores`).toPromise();
         this.snackbar.open(response, 'OK', { duration: 2000, panelClass: ['snackbar'] });
+    }
+
+    async confirmReset() {
+        const result = await Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: 'Vous vous apprêtez à effacer toutes les parties',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Oui',
+            cancelButtonText: 'Non',
+            heightAuto: false,
+        });
+
+        if (!result.value) return;
+        if (result.isConfirmed) {
+            this.clearHistory();
+        } else {
+            Swal.close();
+        }
     }
 }

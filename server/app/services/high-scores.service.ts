@@ -19,7 +19,6 @@ export class HighScoresService {
         try {
             await this?.collection?.deleteMany({});
             res.status(StatusCodes.OK).send('Succès: Réinitialisation des meilleurs scores');
-            // return 'Succès: Réinitialisation des meilleurs scores';
         } catch (e) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Meilleurs scores non réinitialisés');
         }

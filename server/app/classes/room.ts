@@ -42,24 +42,18 @@ export class Room extends EventEmitter {
     }
 
     addPlayer(playerId: PlayerId, playerName: string, virtual: boolean, avatar: string): Error | undefined {
-        if (playerName === this.mainPlayer.name) {
-            return Error('Ce nom a déjà été pris');
-        }
-        if (playerId === this.mainPlayer.id) {
-            return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
-        }
-        if (this.otherPlayer) {
-            return Error('Il y a déjà deux joueurs dans cette partie');
-        }
+        if (playerName === this.mainPlayer.name) return Error('Ce nom a déjà été pris');
+        if (playerId === this.mainPlayer.id) return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
+        if (this.otherPlayer) return Error('Il y a déjà deux joueurs dans cette partie');
         this.otherPlayer = { id: playerId, avatar, name: playerName, connected: true, virtual };
         this.emit('update-room');
-        return undefined;
+        return;
     }
 
     quit(mainPlayer: boolean) {
         if (mainPlayer && this.state === State.Setup) {
             this.mainPlayer.connected = false;
-            this.emit('kick');
+            this.kickOtherPlayer();
         } else if (this.state === State.Setup) {
             this.otherPlayer = undefined;
         } else if (mainPlayer) {

@@ -1,6 +1,5 @@
 <div id="wholeBox">
     <div id="nonWritingBox" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-        <!--<div class="chat-log-opponent"></div>-->
         <div *ngFor="let message of gameContextService.messages | async" class="message-container">
             <span *ngIf="message.emitter === myId" class="myself">{{ (gameContextService.getMe() | async)?.info?.name }}</span>
             <span *ngIf="message.emitter !== myId && message.emitter !== 'local' && message.emitter !== 'command'" class="opponent">{{

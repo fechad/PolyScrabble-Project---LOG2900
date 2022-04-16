@@ -55,6 +55,10 @@
 }
 
 
+.refresh:hover{
+    cursor:pointer;
+}
+
 .vp-names div {
     height: 15%;
     width: 60%;
@@ -68,13 +72,36 @@
     align-items: center;
 }
 
+#add-input,
+#add-input-expert {
+    padding-bottom: 5%;
+    background-color: #ffec7f;
+    margin-bottom: 0%;
+}
+#add-input-expert {
+    max-height: 7.5%;
+    padding-left: 7.5%;
+    max-width: 52.5%;
+    margin-bottom: 10%;
+}
+.text-box,
+.text-box-expert {
+    height: 90%;
+    width: 90%;
+    background-color: #ffec7f;
+    border: none;
+    font-size: 20px;
+    outline: none;
+    font-family: Signika negative;
+    text-align: center;
+}
+
 .regular {
     position: relative;
     height: 100%;
     min-height: 100%;
     left: 14%;
 }
-
 
 .vp-names .new {
     width: 100%;
@@ -126,6 +153,7 @@
     background-color: #fff;
     border: #fff;
 }
+
 .trash-can-vp:active {
     box-shadow: 0px 0px 0px;
 }
@@ -147,15 +175,33 @@
     width: 10px;
     border-radius: 15px;
 }
-.add-input {
-    width: 100%;
-    margin-left: 30%;
+.cancel,
+.cancel-expert {
+    position: relative;
+    left: 41%;
+    bottom: 20%;
+    font-size: 30px;
+    color: red;
+    width: 15%;
+    height: 80%;
+    background-color: #fff;
+    border: #fff;
 }
 
-.cancel {
-    width: 5%;
-    height: 100%;
-    border-radius: 100%;
-    margin-left: 2%;
-    background-color: #fa4e4e;
+.cancel-expert {
+    left: 30%;
+    bottom: 12%;
+}
+
+.cancel:hover, .cancel-expert:hover{
+    cursor:pointer;
+}
+
+.feedback {
+    text-align: center;
+    color: red;
+}
+
+::ng-deep .snackbar .mat-simple-snackbar-action {
+    color: rgb(108, 226, 108);
 }

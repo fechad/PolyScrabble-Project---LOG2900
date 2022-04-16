@@ -42,6 +42,10 @@
     background-color: red;
 }
 
+.refresh:hover {
+    cursor: pointer;
+}
+
 .description {
     display: flex;
     justify-content: center;
@@ -113,6 +117,10 @@
     margin: 18% 0 0 20%;
 }
 
+.pencil:hover {
+    cursor: pointer;
+}
+
 .upload-area {
     display: flex;
     justify-content: center;
@@ -139,15 +147,24 @@
 
 .dictionary-dialog {
     z-index: 2;
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    justify-content: start;
-    align-items: center;
-    background-color: #eee9bd;
-    margin-left: 18%;
+    justify-content: center;
+    align-items: stretch;
+    background-color: white;
+    box-shadow: 0 0 20px #000;
+    border-radius: 15px;
+    padding: 1.5%;
 }
 
 .dictionary-form {
-    background-color: #eee9bd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 15px;
 }
 
 .dictionary-form form {
@@ -155,17 +172,81 @@
     flex-direction: column;
 }
 
+.mat-card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.mat-card-title {
+    display: flex;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    align-items: baseline;
+}
+
+.file-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .error {
     color: red;
 }
 
 .edit {
+    display: flex;
+    flex-direction: column;
     z-index: 2;
     position: absolute;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
-    background-color: #eee9bd;
-    margin-left: 18%;
+    background-color: white;
+    box-shadow: 0 0 20px #000;
+    border-radius: 15px;
+    padding: 1.5%;
+}
+
+.cancel,
+.submission {
+    font-size: 20px;
+    border: none;
+    background: none;
+    margin: 0;
+    padding-left: 3%;
+}
+
+.submission {
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.submission:active {
+    cursor: pointer;
+    transform: scale(1.01);
+}
+
+.submission:hover:not(:active):not(:disabled) {
+    cursor: pointer;
+}
+
+.cancel:hover {
+    cursor: pointer;
+    color: red;
+}
+
+textarea {
+    width: 100%;
+    height: 5%;
+    resize: none;
 }
 
 .container::-webkit-scrollbar {
@@ -184,4 +265,15 @@
 
 ::ng-deep .snackbar .mat-simple-snackbar-action {
     color: rgb(108, 226, 108);
+}
+
+.format {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.download {
+    color: black;
 }

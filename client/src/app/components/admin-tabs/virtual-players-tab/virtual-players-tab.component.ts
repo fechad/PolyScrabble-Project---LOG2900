@@ -1,17 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { VP } from '@app/classes/virtual-player';
-import { faSync, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import * as constant from '@app/constants';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-virtual-players-tab',
     templateUrl: './virtual-players-tab.component.html',
     styleUrls: ['./virtual-players-tab.component.scss'],
 })
-export class VirtualPlayersTabComponent implements OnInit {
+export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
+    @ViewChild('text') private text: ElementRef;
+    @ViewChild('scrollMe') private scroller: ElementRef;
+    @ViewChild('textExpert') private textExpert: ElementRef;
+    @ViewChild('scrollMeExpert') private scrollerExpert: ElementRef;
+
     faTrash = faTrashAlt;
-    faRefresh = faSync;
     list: VP[] = [];
     beginnerList: VP[];
     expertList: VP[];
@@ -20,12 +27,15 @@ export class VirtualPlayersTabComponent implements OnInit {
     nameInputExpert: string = '';
     error: [boolean, string] = [true, ''];
 
-    constructor(readonly httpClient: HttpClient) {}
+    constructor(readonly httpClient: HttpClient, private snackbar: MatSnackBar, private detectChanges: ChangeDetectorRef) {}
 
     async ngOnInit(): Promise<void> {
         this.updateList();
     }
 
+    ngAfterContentChecked() {
+        this.detectChanges.detectChanges();
+    }
     async updateList(): Promise<void> {
         this.beginnerList = [];
         this.expertList = [];
@@ -43,6 +53,7 @@ export class VirtualPlayersTabComponent implements OnInit {
         await this.httpClient.post<VP>(`${environment.serverUrl}/vp-names`, newVp).toPromise();
         this.updateList();
         this.hideInput(beginner);
+        this.snackbar.open('Succès: ajout du nom', 'OK', { duration: 2000, panelClass: ['snackbar'] });
     }
 
     async updatePlayer(oldName: string, newName: string, beginner: boolean) {
@@ -62,6 +73,20 @@ export class VirtualPlayersTabComponent implements OnInit {
     async deleteAll() {
         await this.httpClient.delete(`${environment.serverUrl}/vp-names-reset`).toPromise();
         this.updateList();
+    }
+
+    clicking() {
+        setTimeout(() => {
+            this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+            this.text.nativeElement.focus();
+        }, constant.RENDERING_DELAY);
+    }
+
+    clickingExpert() {
+        setTimeout(() => {
+            this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+            this.textExpert.nativeElement.focus();
+        }, constant.RENDERING_DELAY);
     }
 
     invalidName(name: string, beginner: boolean): boolean {
@@ -89,5 +114,24 @@ export class VirtualPlayersTabComponent implements OnInit {
             this.nameInputExpert = '';
         }
         this.error = [beginner, ''];
+    }
+
+    async confirmReset() {
+        const result = await Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: 'Vous vous apprêtez à réinitialiser tous les joueurs virtuels',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Oui',
+            cancelButtonText: 'Non',
+            heightAuto: false,
+        });
+
+        if (!result.value) return;
+        if (result.isConfirmed) {
+            this.deleteAll();
+        } else {
+            Swal.close();
+        }
     }
 }

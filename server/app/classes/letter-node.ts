@@ -5,12 +5,13 @@ export class LetterNode {
 
     addNext(letter: string) {
         let nextNode = this.getNext(letter);
-        if (nextNode === undefined) {
+        if (!nextNode) {
             nextNode = new LetterNode(letter);
             this.nextNodes.push(nextNode);
         }
         return nextNode;
     }
+
     getNext(letter: string) {
         return this.nextNodes.find((node) => node.letter === letter);
     }

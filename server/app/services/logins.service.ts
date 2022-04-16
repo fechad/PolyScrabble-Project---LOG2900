@@ -10,9 +10,7 @@ export class LoginsService {
     private users: Users = {};
 
     login(id: PlayerId | undefined, socketId: PlayerId): [PlayerId, Token] {
-        if (!id || !this.users[id] || this.users[id].loggedIn) {
-            id = socketId;
-        }
+        if (!id || !this.users[id] || this.users[id].loggedIn) id = socketId;
         console.log(`Connexion par l'utilisateur avec id : ${id}`);
 
         const token = randomInt(cst.MAX_TOKEN_VALUE);
