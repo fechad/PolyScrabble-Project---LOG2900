@@ -98,7 +98,9 @@ export class DictionaryTabComponent implements OnInit {
 
     async addDictionary() {
         this.uploadStatus = '';
-        this.uploadStatus = await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, this.newDictionnary).toPromise();
+        this.uploadStatus = await this.httpClient
+            .post(`${environment.serverUrl}/dictionaries`, this.newDictionnary, { responseType: 'text' })
+            .toPromise();
         this.snackbar.open(this.uploadStatus, 'OK', { duration: 2000, panelClass: ['snackbar'] });
         this.updateList();
     }

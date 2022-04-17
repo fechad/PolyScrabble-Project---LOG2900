@@ -16,11 +16,12 @@ export class HighScoresService {
     }
 
     async resetScores(res: Response): Promise<void> {
+        res.header({ 'content-type': 'text/plain' });
         try {
             await this?.collection?.deleteMany({});
-            res.status(StatusCodes.OK).json('Succès: Réinitialisation des meilleurs scores.');
+            res.status(StatusCodes.OK).send('Succès: Réinitialisation des meilleurs scores.');
         } catch (e) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json('Échec: Meilleurs scores non réinitialisés.');
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Meilleurs scores non réinitialisés.');
         }
     }
 

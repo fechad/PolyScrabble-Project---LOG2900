@@ -23,9 +23,9 @@ export class VpNamesService {
     async addVP(vp: VP, res: Response): Promise<void> {
         try {
             await this.vpCollection?.insertOne(vp);
-            res.status(StatusCodes.OK).json('Succès: Joueur virtuel ajouté.');
+            res.status(StatusCodes.OK).send('Succès: Joueur virtuel ajouté.');
         } catch (e) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json('Échec: Joueur virtuel non ajouté.');
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Joueur virtuel non ajouté.');
         }
     }
 

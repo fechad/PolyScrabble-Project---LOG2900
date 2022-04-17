@@ -30,17 +30,4 @@ export class DictionnaryService {
     getDictionnaries(): DictionnaryInfo[] {
         return this.dictionnaries.map((dict) => dict.getInfo());
     }
-
-    // isValidWord(id: number, playedWord: string) {
-    //     if (!this.isWord(playedWord)) return false;
-    //     return this.dictionnaries[id].words.includes(playedWord.toLowerCase());
-    // }
-
-    // validateWords(id: number, wordList: string[]): boolean {
-    //     return wordList.map((word) => word.split(';')).every((words) => this.isValidWord(id, words[words.length - 1]));
-    // }
-
-    // private isWord(expression: string): boolean {
-    //     return expression.match(/[a-z]+/i) !== null;
-    // }
 }

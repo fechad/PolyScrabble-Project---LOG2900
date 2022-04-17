@@ -6,7 +6,6 @@ import { Parameters } from '@app/classes/parameters';
 import { Room, State } from '@app/classes/room';
 import { CommunicationServiceMock } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
-import { ActivatedRouteMock } from '../modes-page/modes-page.component.spec';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
 const dialogMock = {
@@ -32,7 +31,7 @@ describe('JoiningRoomPageComponent', () => {
             imports: [MatCardModule],
             providers: [
                 { provide: CommunicationService, useValue: service },
-                { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
+                { provide: ActivatedRoute, useValue: { snapshot: { url: ['joining-room'] } } },
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: data },
             ],

@@ -63,8 +63,8 @@ describe('DbDictionariesService', () => {
         const newDictionary = { id: 1, title: 'dummy', description: 'def', words: ['d', 'e', 'f'] };
         const status = sinon.stub();
         const resStub = {
-            status: sinon.stub().returns({ send: status, json: status, end: status }),
-            json: sinon.stub(),
+            status: sinon.stub().returns({ send: status }),
+            header: sinon.stub(),
         } as unknown as express.Response;
         dbDictionariesService.addDictionary(newDictionary, resStub);
         expect(await dbDictionariesService.getDictionaries()).to.deep.equal([

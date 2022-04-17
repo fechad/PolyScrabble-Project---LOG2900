@@ -150,8 +150,8 @@ describe('High scores service', () => {
         ]);
         const status = sinon.stub();
         const resStub = {
-            status: sinon.stub().returns({ send: status, json: status, end: status }),
-            json: sinon.stub(),
+            status: sinon.stub().returns({ send: status }),
+            header: sinon.stub(),
         } as unknown as express.Response;
         await highScoresService.resetScores(resStub);
         expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);

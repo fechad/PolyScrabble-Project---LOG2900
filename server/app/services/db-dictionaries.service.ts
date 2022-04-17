@@ -34,9 +34,9 @@ export class DbDictionariesService {
         try {
             await fs.promises.writeFile(`./dictionaries/dictionary-${dictionary.id}.json`, jsonDictionary);
             await this.syncDictionaries();
-            res.status(StatusCodes.OK).json('Succès: Téléversement du dictionnaire.');
+            res.status(StatusCodes.OK).send('Succès: Téléversement du dictionnaire.');
         } catch (e) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json('Échec: Dictionnaire non téléversé.');
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Dictionnaire non téléversé.');
         }
     }
 

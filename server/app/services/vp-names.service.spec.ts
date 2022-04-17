@@ -78,8 +78,8 @@ describe('VpNamesService', () => {
         const newVp: VP = { default: false, beginner: true, name: 'Jean' };
         const status = sinon.stub();
         const resStub = {
-            status: sinon.stub().returns({ send: status, json: status, end: status }),
-            json: sinon.stub(),
+            status: sinon.stub().returns({ send: status }),
+            header: sinon.stub(),
         } as unknown as express.Response;
         await vpNamesService.addVP(newVp, resStub);
         expect(await vpNamesService.getNames()).to.deep.equal([
