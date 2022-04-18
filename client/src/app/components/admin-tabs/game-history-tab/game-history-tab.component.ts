@@ -29,7 +29,7 @@ export class GameHistoryTabComponent implements OnInit {
     }
 
     async clearHighScores() {
-        const response = await this.httpClient.delete<string>(`${environment.serverUrl}/high-scores`).toPromise();
+        const response = await this.httpClient.delete(`${environment.serverUrl}/high-scores`, { responseType: 'text' }).toPromise();
         this.snackbar.open(response, 'OK', { duration: 2000, panelClass: ['snackbar'] });
     }
 

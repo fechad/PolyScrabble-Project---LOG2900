@@ -15,12 +15,13 @@ export class HighScoresService {
         this.collection = this.dataBase.db?.collection(cst.SCORES_COLLECTION);
     }
 
-    async resetScores(res: Response) {
+    async resetScores(res: Response): Promise<void> {
+        res.header({ 'content-type': 'text/plain' });
         try {
             await this?.collection?.deleteMany({});
-            res.status(StatusCodes.OK).send('Succès: Réinitialisation des meilleurs scores');
+            res.status(StatusCodes.OK).send('Succès: Réinitialisation des meilleurs scores.');
         } catch (e) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Meilleurs scores non réinitialisés');
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Meilleurs scores non réinitialisés.');
         }
     }
 

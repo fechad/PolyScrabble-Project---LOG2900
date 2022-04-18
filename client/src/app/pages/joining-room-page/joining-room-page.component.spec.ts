@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { Parameters } from '@app/classes/parameters';
 import { Room, State } from '@app/classes/room';
 import { CommunicationServiceMock } from '@app/constants';
@@ -30,6 +31,7 @@ describe('JoiningRoomPageComponent', () => {
             imports: [MatCardModule],
             providers: [
                 { provide: CommunicationService, useValue: service },
+                { provide: ActivatedRoute, useValue: { snapshot: { url: ['joining-room'] } } },
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: data },
             ],
@@ -68,7 +70,7 @@ describe('JoiningRoomPageComponent', () => {
             otherPlayer: undefined,
             state: State.Setup,
         };
-        component.communicationService.rooms?.next([testRoom]);
+        component.rooms[0] = testRoom;
         const openDialogSpy = spyOn(component, 'openDialog');
         component.getRandomRoom();
         expect(openDialogSpy).toHaveBeenCalled();

@@ -38,7 +38,7 @@ describe('VirtualPlayer', () => {
         const room = new Room(1, '1', 'Dummy', parameters);
         room.addPlayer('2', 'otherDummy', false, 'a');
         room.addPlayer(cst.AI_ID, 'heo', true, 'a');
-        game = new Game(room, dictionnaryService, gameHistory);
+        game = new Game(room, dictionnaryService.dictionnaries[0], gameHistory);
         vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
         previousMathRandom = Math.random;
     });
@@ -260,7 +260,7 @@ describe('VirtualPlayer', () => {
         for (const option of options) {
             const words = wordGetter.getWords(option.placement);
             for (const word of words) {
-                expect(dictionnaryService.isValidWord(0, word.word)).to.equal(true, `${word} is not a valid word`);
+                expect(game['dictionary'].isValidWord(word.word)).to.equal(true, `${word} is not a valid word`);
             }
         }
     });

@@ -1,10 +1,12 @@
 import { DataBaseController, DbDictionary } from '@app/controllers/db.controller';
 import { expect } from 'chai';
+import * as express from 'express';
 import * as fs from 'fs';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as sinon from 'sinon';
 import { DbDictionariesService, DictPair } from './db-dictionaries.service';
+
 const COLLECTIONS: string[] = ['col'];
 
 class DBManager {
@@ -59,7 +61,12 @@ describe('DbDictionariesService', () => {
     it('should add dictionary', async () => {
         const stub = sandbox.stub(fs.promises, 'writeFile').returns(Promise.resolve());
         const newDictionary = { id: 1, title: 'dummy', description: 'def', words: ['d', 'e', 'f'] };
-        dbDictionariesService.addDictionary(newDictionary);
+        const status = sinon.stub();
+        const resStub = {
+            status: sinon.stub().returns({ send: status }),
+            header: sinon.stub(),
+        } as unknown as express.Response;
+        dbDictionariesService.addDictionary(newDictionary, resStub);
         expect(await dbDictionariesService.getDictionaries()).to.deep.equal([
             { id: 0, title: 'dummy', description: 'abc' },
             { id: 1, title: 'dummy', description: 'def' },

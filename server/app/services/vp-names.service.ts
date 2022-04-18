@@ -1,5 +1,7 @@
 import * as cst from '@app/controllers/db.controller';
 import { DataBaseController, VP } from '@app/controllers/db.controller';
+import { Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -18,8 +20,13 @@ export class VpNamesService {
         return vpNames;
     }
 
-    async addVP(vp: VP) {
-        await this.vpCollection?.insertOne(vp);
+    async addVP(vp: VP, res: Response): Promise<void> {
+        try {
+            await this.vpCollection?.insertOne(vp);
+            res.status(StatusCodes.OK).send('Succès: Joueur virtuel ajouté.');
+        } catch (e) {
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Joueur virtuel non ajouté.');
+        }
     }
 
     async updateVP(vps: VpPair) {

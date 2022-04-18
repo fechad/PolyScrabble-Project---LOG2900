@@ -61,9 +61,8 @@ export class HttpController {
             const dictionnaries = this.dictionnaryService.getDictionnaries();
             res.json(dictionnaries);
         });
-        this.router.delete('/high-scores', async (req: Request, res: Response, next) => {
+        this.router.delete('/high-scores', async (req: Request, res: Response) => {
             await this.highScoreService.resetScores(res);
-            next();
         });
         this.router.get('/high-scores', async (req: Request, res: Response) => {
             const scores = await this.highScoreService.getScores(false);
@@ -105,8 +104,7 @@ export class HttpController {
         });
 
         this.router.post('/vp-names', async (req: Request, res: Response) => {
-            const names = await this.vpNamesService.addVP(req.body);
-            res.json(names);
+            await this.vpNamesService.addVP(req.body, res);
         });
         this.router.patch('/vp-names', async (req: Request, res: Response) => {
             const names = await this.vpNamesService.updateVP(req.body);
@@ -123,8 +121,7 @@ export class HttpController {
         });
 
         this.router.post('/dictionaries', async (req: Request, res: Response) => {
-            const response = await this.dbDictionaryService.addDictionary(req.body);
-            res.status(StatusCodes.OK).json(response);
+            await this.dbDictionaryService.addDictionary(req.body, res);
         });
         this.router.patch('/dictionaries', async (req: Request, res: Response) => {
             const dictionaries = await this.dbDictionaryService.updateDictionary(req.body);

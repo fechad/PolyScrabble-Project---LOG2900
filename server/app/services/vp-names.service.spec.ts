@@ -1,8 +1,11 @@
 import { DataBaseController, DEFAULT_VPS, VP } from '@app/controllers/db.controller';
 import { expect } from 'chai';
+import * as express from 'express';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as sinon from 'sinon';
 import { VpNamesService, VpPair } from './vp-names.service';
+
 const COLLECTIONS: string[] = ['col'];
 
 class DBManager {
@@ -73,7 +76,12 @@ describe('VpNamesService', () => {
     });
     it('should add virtual player names', async () => {
         const newVp: VP = { default: false, beginner: true, name: 'Jean' };
-        await vpNamesService.addVP(newVp);
+        const status = sinon.stub();
+        const resStub = {
+            status: sinon.stub().returns({ send: status }),
+            header: sinon.stub(),
+        } as unknown as express.Response;
+        await vpNamesService.addVP(newVp, resStub);
         expect(await vpNamesService.getNames()).to.deep.equal([
             { default: true, beginer: true, name: 'Dummy' },
             { default: false, beginer: true, name: 'Alex' },

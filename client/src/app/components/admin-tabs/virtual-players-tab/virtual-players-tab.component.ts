@@ -50,10 +50,10 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
     async addPlayer(name: string, beginner: boolean) {
         if (name.trim() === '' || this.findDoubles(name, beginner) || this.invalidName(name, beginner)) return;
         const newVp: VP = { default: false, beginner, name };
-        await this.httpClient.post<VP>(`${environment.serverUrl}/vp-names`, newVp).toPromise();
+        const response = await this.httpClient.post(`${environment.serverUrl}/vp-names`, newVp, { responseType: 'text' }).toPromise();
         this.updateList();
         this.hideInput(beginner);
-        this.snackbar.open('Succès: ajout du nom', 'OK', { duration: 2000, panelClass: ['snackbar'] });
+        this.snackbar.open(response, 'OK', { duration: 2000, panelClass: ['snackbar'] });
     }
 
     async updatePlayer(oldName: string, newName: string, beginner: boolean) {
