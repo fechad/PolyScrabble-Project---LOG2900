@@ -7,7 +7,6 @@ import { GameHistoryTabComponent } from './game-history-tab.component';
 describe('GameHistoryTabComponent', () => {
     let component: GameHistoryTabComponent;
     let fixture: ComponentFixture<GameHistoryTabComponent>;
-    // let httpMock: HttpTestingController;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -15,7 +14,6 @@ describe('GameHistoryTabComponent', () => {
             declarations: [GameHistoryTabComponent],
             providers: [MatSnackBar, Overlay],
         }).compileComponents();
-        // httpMock = TestBed.inject(HttpTestingController);
     });
 
     beforeEach(() => {
@@ -31,19 +29,4 @@ describe('GameHistoryTabComponent', () => {
         component.clearHistory();
         expect(component.games).toEqual([]);
     });
-
-    // it('should delete all games from list on confirmation', fakeAsync(() => {
-    //     component.confirmReset(false);
-    //     Swal.clickConfirm();
-    //     tick();
-    //     expect(component.games).toEqual([]);
-
-    //     const req = httpMock.match(`${environment.serverUrl}/game-history`);
-    //     console.log(req[2]);
-    //     expect(req[1].request.method).toBe('DELETE');
-    //     req[0].flush('succes');
-    //     req[1].flush('score');
-
-    //     httpMock.verify();
-    // }));
 });
