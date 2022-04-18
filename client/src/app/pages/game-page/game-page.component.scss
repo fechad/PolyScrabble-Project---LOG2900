@@ -29,8 +29,8 @@
 #objectives-container {
     display: flex;
     flex-direction: column;
-    height: 50vh;
-    width: 14vw;
+    height: 60vh;
+    width: 15.5vw;
     margin-top: 10vh;
     margin-right: 5vw;
 }
@@ -71,6 +71,7 @@
 }
 #public-objective {
     height: 20vh;
+    margin-top: 2vh;
 }
 
 .objectives .objective-header {
@@ -207,7 +208,7 @@
 }
 
 .play {
-    background-color: #e1ac01;
+    background-color: #25be4b;
 }
 
 #quit-game {
@@ -246,7 +247,8 @@
     margin: 1vw 0vw 1vw 2vw;
 }
 
-.walk, .arrow-right{
+.walk,
+.arrow-right {
     width: 20%;
 }
 

@@ -39,7 +39,9 @@ export class SoloDialogComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         const minutesSelect = this.data.timer ? Math.floor(this.data.timer / constants.SEC_CONVERT) : 1;
         const secondsSelect = this.data.timer ? this.data.timer % constants.SEC_CONVERT : 0;
-        const dictionarySelect = (await this.communicationService.dictionnaries).findIndex((dictionary) => dictionary.name == this.data.dictionnary);
+        const dictionarySelect = this.data.dictionnary
+            ? (await this.communicationService.dictionnaries).findIndex((dictionary) => dictionary.name == this.data.dictionnary)
+            : 0;
 
         this.soloParametersForm = this.formBuilder.group({
             playerName: new FormControl(this.data.name || '', [
