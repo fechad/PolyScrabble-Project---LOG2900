@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameHistoryTabComponent } from './game-history-tab.component';
@@ -7,7 +7,7 @@ import { GameHistoryTabComponent } from './game-history-tab.component';
 describe('GameHistoryTabComponent', () => {
     let component: GameHistoryTabComponent;
     let fixture: ComponentFixture<GameHistoryTabComponent>;
-    let httpMock: HttpTestingController;
+    // let httpMock: HttpTestingController;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -15,7 +15,7 @@ describe('GameHistoryTabComponent', () => {
             declarations: [GameHistoryTabComponent],
             providers: [MatSnackBar, Overlay],
         }).compileComponents();
-        httpMock = TestBed.inject(HttpTestingController);
+        // httpMock = TestBed.inject(HttpTestingController);
     });
 
     beforeEach(() => {
