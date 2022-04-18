@@ -22,7 +22,7 @@ export class DictionnaryService {
             if (id !== 0) {
                 const fileBuffer = await promises.readFile(`./dictionaries/dictionary-${id}.json`);
                 const readDictionary = JSON.parse(fileBuffer.toString());
-                this.dictionnaries.push(new Dictionnary(readDictionary.id, readDictionary.title, readDictionary.words));
+                this.dictionnaries.push(new Dictionnary(id, readDictionary.title, readDictionary.words));
             }
         }
     }
