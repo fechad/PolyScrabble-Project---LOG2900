@@ -8,7 +8,7 @@ import { ModesPageComponent } from '@app/pages/modes-page/modes-page.component';
 import { WaitingRoomPageComponent } from '@app/pages/waiting-room-page/waiting-room-page.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/admin', pathMatch: 'full' },
+    { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'classic', component: ModesPageComponent },
     { path: 'log2990', component: ModesPageComponent },

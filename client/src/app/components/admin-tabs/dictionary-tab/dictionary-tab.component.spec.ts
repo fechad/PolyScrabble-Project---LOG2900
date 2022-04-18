@@ -135,7 +135,7 @@ describe('DictionaryTabComponent', () => {
             setTimeout(() => resolve(), TIME_OUT);
         });
 
-        expect(component.error).toEqual('Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.');
+        expect(component.error).not.toBeUndefined();
         fixture.detectChanges();
     });
 

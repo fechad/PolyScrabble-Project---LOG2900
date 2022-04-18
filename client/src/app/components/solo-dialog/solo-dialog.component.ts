@@ -39,6 +39,7 @@ export class SoloDialogComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         const minutesSelect = this.data.timer ? Math.floor(this.data.timer / constants.SEC_CONVERT) : 1;
         const secondsSelect = this.data.timer ? this.data.timer % constants.SEC_CONVERT : 0;
+        const dictionarySelect = (await this.communicationService.dictionnaries).findIndex((dictionary) => dictionary.name == this.data.dictionnary);
 
         this.soloParametersForm = this.formBuilder.group({
             playerName: new FormControl(this.data.name || '', [
@@ -49,7 +50,7 @@ export class SoloDialogComponent implements OnInit {
             difficulty: new FormControl(Difficulty.Beginner, [Validators.required]),
             minutes: new FormControl(minutesSelect, [Validators.required]),
             seconds: new FormControl(secondsSelect, [Validators.required]),
-            dictionnary: new FormControl(0, [Validators.required]),
+            dictionnary: new FormControl(dictionarySelect, [Validators.required]),
         });
         this.databaseNames = await this.httpClient.get<VP[]>(`${environment.serverUrl}/vp-names`).toPromise();
         await this.chooseOpponent();
