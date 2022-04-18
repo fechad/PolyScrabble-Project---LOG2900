@@ -162,7 +162,7 @@ export class DictionaryTabComponent implements OnInit {
     async confirmReset() {
         const result = await Swal.fire({
             title: 'Êtes-vous sûr?',
-            text: 'Vous vous apprêtez à réinitialiser tous les dictionnaires',
+            text: 'Vous vous apprêtez à réinitialiser tous les dictionnaires.',
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Oui',

@@ -1,7 +1,9 @@
 <section class="tab-container">
     <section class="reset-buttons">
-        <button class="reset-scores" (click)="clearHighScores()"><p>Réinitialiser les meilleurs scores</p></button>
-        <button class="refresh" title="Supprimer toutes les parties" (click)="confirmReset()"><fa-icon [icon]="faTrash" size="2x"></fa-icon></button>
+        <button class="reset-scores" (click)="confirmReset(true)"><p>Réinitialiser les meilleurs scores</p></button>
+        <button class="refresh" title="Supprimer toutes les parties" (click)="confirmReset(false)">
+            <fa-icon [icon]="faTrash" size="2x"></fa-icon>
+        </button>
     </section>
 
     <section class="container">

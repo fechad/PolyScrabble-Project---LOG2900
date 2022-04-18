@@ -119,7 +119,7 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
     async confirmReset() {
         const result = await Swal.fire({
             title: 'Êtes-vous sûr?',
-            text: 'Vous vous apprêtez à réinitialiser tous les joueurs virtuels',
+            text: 'Vous vous apprêtez à réinitialiser tous les joueurs virtuels.',
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Oui',
