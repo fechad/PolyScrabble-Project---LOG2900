@@ -60,8 +60,8 @@ export class DictionaryTabComponent implements OnInit {
         return this.newDictionnary;
     }
 
-    async getFileInfos(e: Event) {
-        const target = e.target as HTMLInputElement;
+    async getFileInfos(event: Event) {
+        const target = event.target as HTMLInputElement;
         const newFile = (target.files as FileList)[0];
         const reader = new FileReader();
         reader.onload = () => {

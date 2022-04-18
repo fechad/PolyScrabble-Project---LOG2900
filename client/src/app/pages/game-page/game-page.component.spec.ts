@@ -164,13 +164,13 @@ describe('GamePageComponent', () => {
         flush();
     }));
 
-    fit('should show objectives', () => {
+    it('should show objectives', () => {
         component.showObjective(true);
         expect(component.publicObjectivesShown).toEqual(false);
         expect(component.privateObjectivesShown).toEqual(true);
     });
 
-    fit('should not show objectives', () => {
+    it('should not show objectives', () => {
         component.showObjective(false);
         expect(component.publicObjectivesShown).toEqual(true);
         expect(component.privateObjectivesShown).toEqual(false);
