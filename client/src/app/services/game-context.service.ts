@@ -15,6 +15,15 @@ export type Tile = Letter | null;
 export type Board = Tile[][];
 export type Objective = { text: string; score: number; isPublic: boolean; available: boolean; mine: boolean };
 export type ReserveContent = { [letter: string]: number };
+export enum Command {
+    Place = 'place-letters',
+    Switch = 'switch-turn',
+    Forfeit = 'confirm-forfeit',
+    Exchange = 'change-letters',
+    Hint = 'hint',
+    getReserve = 'reserve-content',
+    SyncRack = 'current-rack',
+}
 
 @Injectable({
     providedIn: 'root',
@@ -110,11 +119,6 @@ export class GameContextService {
         this.skipTurnEnabled = isAllowed;
     }
 
-    switchTurn(timerRequest: boolean) {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('switch-turn', timerRequest);
-    }
-
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
         if (this.socket?.disconnected) {
             setTimeout(() => {
@@ -126,32 +130,16 @@ export class GameContextService {
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
 
-    exchange(letters: string) {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('change-letters', letters);
-    }
-
-    hint() {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('hint');
-    }
-
-    getReserve() {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('reserve-content');
-    }
-
     syncRack() {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else
-            this.socket?.emit(
-                'current-rack',
-                this.rack.rack.value.map((letter) => letter.name),
-            );
+        this.executeCommand(
+            Command.SyncRack,
+            this.rack.rack.value.map((letter) => letter.name),
+        );
     }
 
-    confirmForfeit() {
-        this.socket?.emit('confirm-forfeit');
+    executeCommand(command: Command, ...params: unknown[]) {
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else this.socket?.emit(command, params);
     }
 
     private serverDownAlert() {

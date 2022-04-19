@@ -11,7 +11,7 @@ import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import swal from 'sweetalert2';
 import { AuthService } from './auth.service';
-import { GameContextService } from './game-context.service';
+import { Command, GameContextService } from './game-context.service';
 
 type Token = number;
 type SaveScoreBody = { id: string | undefined; token: number; room: number | undefined };
@@ -103,7 +103,7 @@ export class CommunicationService {
     }
 
     confirmForfeit() {
-        this.gameContextService.confirmForfeit();
+        this.gameContextService.executeCommand(Command.Forfeit);
         this.leaveGame();
     }
 

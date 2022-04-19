@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { Letter } from '@app/classes/letter';
 import * as cst from '@app/constants';
-import { GameContextService } from '@app/services/game-context.service';
+import { Command, GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
 @Component({
@@ -126,7 +126,7 @@ export class LetterRackComponent {
 
     exchange() {
         const selectedLetters = this.exchanging.map((letter) => this.letters[letter].name.toLowerCase()).join('');
-        this.gameContextService.exchange(selectedLetters);
+        this.gameContextService.executeCommand(Command.Exchange, selectedLetters);
     }
 
     getReserveCount(): boolean {

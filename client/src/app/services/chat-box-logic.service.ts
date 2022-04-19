@@ -3,7 +3,7 @@ import { MessageType } from '@app/classes/chat-log';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
-import { GameContextService } from '@app/services/game-context.service';
+import { Command, GameContextService } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
 import { GridService } from './grid.service';
 
@@ -90,19 +90,19 @@ export class ChatBoxLogicService {
         if (!isInBound) throw new Error("Impossible d'échanger cette quantité de lettres");
 
         this.gameContextService.rack.attemptTempUpdate(this.parsedLetters);
-        this.gameContextService.exchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
+        this.gameContextService.executeCommand(Command.Exchange, this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
     }
 
     private pass() {
-        this.gameContextService.switchTurn(false);
+        this.gameContextService.executeCommand(Command.Switch, false);
     }
 
     private hint() {
-        this.gameContextService.hint();
+        this.gameContextService.executeCommand(Command.Hint);
     }
 
     private getReserve() {
-        this.gameContextService.getReserve();
+        this.gameContextService.executeCommand(Command.getReserve);
     }
 
     private assignPositionSpec(positionBlock: string) {

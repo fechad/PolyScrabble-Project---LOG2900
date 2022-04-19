@@ -44,7 +44,7 @@ describe('GamePageComponent', () => {
         communicationService = new CommunicationServiceMock();
         rack = jasmine.createSpyObj('Rack', ['tempUpdate', 'addTemp', 'attemptTempUpdate'], { rack: new BehaviorSubject([{ name: 'A', score: 1 }]) });
         chatLog = jasmine.createSpyObj('ChatLog', ['addMessages'], { messages: new BehaviorSubject([] as Message[]) });
-        gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn'], {
+        gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn', 'executeCommand'], {
             state: new BehaviorSubject({
                 players: [
                     { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
@@ -108,7 +108,7 @@ describe('GamePageComponent', () => {
 
     it('should switch turn if skipTurn() is called', () => {
         component.skipMyTurn();
-        expect(component.gameContextService.switchTurn).toHaveBeenCalled();
+        expect(component.gameContextService.executeCommand).toHaveBeenCalled();
     });
 
     it('click on reducing font size of board should call changeSize()', fakeAsync(() => {

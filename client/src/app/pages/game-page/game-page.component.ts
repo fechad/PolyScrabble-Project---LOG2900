@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService, Objective } from '@app/services/game-context.service';
+import { Command, GameContextService, Objective } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import { faAngleLeft, faAngleRight, faArrowRight, faFont, faPlay, faSignOutAlt, faWalking } from '@fortawesome/free-solid-svg-icons';
@@ -85,7 +85,7 @@ export class GamePageComponent implements AfterViewChecked {
         }
     }
     skipMyTurn() {
-        this.gameContextService.switchTurn(false);
+        this.gameContextService.executeCommand(Command.Switch, false);
     }
 
     changeSize(multiplier: number) {

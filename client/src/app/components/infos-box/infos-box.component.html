@@ -1,8 +1,12 @@
 <div class="infos">
     <div class="player">
         <div *ngIf="summary && isWinner">👑</div>
-        <div 
-        [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false }" class="profile"><img class="profile-icon" [src]="myAvatar" /></div>
+        <div
+            [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false }"
+            class="profile"
+        >
+            <img class="profile-icon" [src]="myAvatar" />
+        </div>
         <div class="p-infos">
             <p class="name">{{ (this.gameContextService.getMe() | async)?.info?.name }}</p>
             <p class="points">{{ (this.gameContextService.getMe() | async)?.score }} points</p>
@@ -22,19 +26,24 @@
             matTooltipPosition="right"
             matTooltipClass="tool"
             [disabled]="(gameContextService.isMyTurn() | async) === false"
-            (click)="this.gameContextService.switchTurn(false)"
+            (click)="this.switchTurn(false)"
         >
             <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
         </button>
     </div>
-    <div class="summary-container"> 
+    <div class="summary-container">
         <p *ngIf="summary">{{ summary }}</p>
     </div>
     <p class="reserve-title">Réserve:</p>
     <p class="reserve">{{ (this.gameContextService.state | async)?.reserveCount }} lettres restantes</p>
     <div class="opponent">
         <div *ngIf="summary && !isWinner">👑</div>
-        <div [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false }" class="profile"><img class="profile-icon" [src]="opponentAvatar" /></div>
+        <div
+            [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false }"
+            class="profile"
+        >
+            <img class="profile-icon" [src]="opponentAvatar" />
+        </div>
         <div class="p-infos">
             <p class="name">{{ (this.gameContextService.getOther() | async)?.info?.name }}</p>
             <p class="points">{{ (this.gameContextService.getOther() | async)?.score }} points</p>

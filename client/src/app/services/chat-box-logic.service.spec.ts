@@ -64,7 +64,7 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('placer should call communicationService.echanger() for a list of valid !echanger commands', async () => {
-        const comExchange = spyOn(service.gameContextService, 'exchange');
+        const comExchange = spyOn(service.gameContextService, 'executeCommand');
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {
@@ -92,7 +92,7 @@ describe('ChatBoxLogicService', () => {
     });
 
     it('pass should call communicationService.switchTurn() for a valid !passer command', async () => {
-        const switchTurn = spyOn(service.gameContextService, 'switchTurn');
+        const switchTurn = spyOn(service.gameContextService, 'executeCommand');
         await service.validateSyntax('!passer');
         expect(switchTurn).toHaveBeenCalled();
     });
