@@ -110,23 +110,31 @@ export const DECIMAL_BASE = 10;
 export const HINT_COMMAND_LENGTH = 1;
 
 export const HELP_MESSAGE: string =
-    '-- Voici les commandes que vous pouvez faire: --\n' +
-    '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
-    'ex: La commande "!placer g10v abc" placera les lettres\n' +
-    'abc verticalement à partir de la position g10.\n' +
-    '\n!passer permet de passer votre tour\n' +
-    '\n!échanger permet changer vos lettres\n' +
-    'ex: !échanger abc\n' +
-    '\n!réserve : Afficher la quantité restante de chaque lettre dans la réserve.\n' +
+    '-- Commandes disponibles: -- \n' +
+    '\n!placer [ligne][colonne][(h|v)] [lettres] : Ajouter des lettres sur la grille en fonction de la ligne, de la colonne et du sens désiré. \n' +
+    'exemple: !placer 9gh jeu\n' +
+    '\n!échanger [lettre] : Échanger les lettres choisies par des nouvelles lettres durant votre tour.\n' +
+    'exemple: !échanger abc\n' +
+    '\n!passer : Passer votre tour.\n' +
     '\n!indice : Obtenir 3 choix de mots à placer.\n' +
-    '\n!aide : Obtenir une explication des commandes disponibles.\n' +
-    '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
-    '\n1. Cliquez sur une tuile pour la déplacer soit avec les flèches de votre clavier, la roulette de votre souris' +
-    '\nou tapez sur la touche de votre clavier correspondant à la lettre pour la sélectionner.\n' +
-    '\n2. Faites un clic droit sur les tuiles pour sélectionner des lettres à échanger.\n' +
-    '\n3. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
-    'en tapant les touches correspondantes du clavier \n' +
-    '(cliquez une seconde fois pour placer verticalement).\n';
+    '\n!réserve : Afficher la quantité restante de chaque lettre dans la réserve (commande disponible en tout temps).\n' +
+    '\n!aide ou bouton (?): Obtenir une explication des commandes du jeu (commande disponible en tout temps).\n' +
+    '\n-- Manipulations du chevalet: --\n' +
+    "\n1. Sélectionnez une tuile de votre chevalet soit à l'aide d'un clic gauche ou en tapant sur votre clavier la lettre de celle-ci.\n" +
+    '2. Utilisez les flèches de votre clavier ou la roulette de votre souris pour déplacer la tuile sélectionnée.\n' +
+    "\nPour échanger une ou plusieurs tuiles, faites un clic droit sur celles-ci, puis appuyez sur le bouton 'Échanger' qui apparait.\n" +
+    '\n-- Manipulations du plateau: --\n' +
+    '\n1. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement \n' +
+    'en tapant les touches correspondantes du clavier\n' +
+    '(cliquez une seconde fois pour placer verticalement).\n' +
+    "2. Appuyez sur la touche 'enter' ou sur le bouton vert à droite du chevalet pour envoyer le placement.\n" +
+    '\n-- Utilisation des lettres blanches --\n' +
+    '\nLes lettres blanches sont représentées par des * dans les tuiles du chevalet.\n' +
+    'Pour faire un placement avec une lettre blanche: \n' +
+    '\nMettez une lettre en majuscule dans la commande de placement pour représenter la lettre blanche.\n' +
+    "exemple: !placer h7h dormiR Pour faire un échange d'une lettre blanche:\n" +
+    "\nMettez directement le symbole * dans la commande d'échange ou faites un clic droit\n" +
+    'sur la tuile du chevalet. exemple: !échanger ab*\n';
 
 export const DEFAULT_FONT = '20px system-ui';
 
