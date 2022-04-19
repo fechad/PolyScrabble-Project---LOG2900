@@ -23,11 +23,11 @@ export const DICTIONARY_COLLECTION = 'dictionaries';
 
 export const MAX_RESULTS = 5;
 export const DEFAULT_USERS: Score[] = [
+    { score: 5, names: ['François Tourigny'] },
     { score: 3, names: ['Justin St-Arnaud'] },
     { score: 2, names: ['Fedwin Chatelier'] },
     { score: 1, names: ['Anna Guo'] },
     { score: 0, names: ["Xavier L'Heureux"] },
-    { score: 42, names: ['François Tourigny'] },
 ];
 
 export const DEFAULT_VPS: VP[] = [
