@@ -5,7 +5,7 @@ describe('Dictionary service', () => {
     let dictionnary: Dictionnary;
 
     before(async () => {
-        dictionnary = new Dictionnary(0, 'example', ['zythums', 'bonjour', 'passant']);
+        dictionnary = new Dictionnary(0, 'example', ['zythums', 'bonjour', 'passant'], 'description');
     });
     it('should validate correct words', () => {
         assert(dictionnary.isValidWord('zythums'));
