@@ -130,8 +130,6 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
         if (!result.value) return;
         if (result.isConfirmed) {
             this.deleteAll();
-        } else {
-            Swal.close();
         }
     }
 }

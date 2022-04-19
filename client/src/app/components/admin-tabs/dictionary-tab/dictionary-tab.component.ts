@@ -176,8 +176,6 @@ export class DictionaryTabComponent implements OnInit {
         if (!result.value) return;
         if (result.isConfirmed) {
             this.deleteAll();
-        } else {
-            Swal.close();
         }
     }
 }
