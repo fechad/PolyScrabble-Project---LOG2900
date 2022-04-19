@@ -53,6 +53,8 @@ describe('GameHistoryTabComponent', () => {
                 mode: GameMode.Classic,
             },
         ];
+        // get private attribute
+        // eslint-disable-next-line dot-notation
         const spy = spyOn(component['snackbar'], 'open').and.callThrough();
         const subscription = component.clearHighScores();
         tick();

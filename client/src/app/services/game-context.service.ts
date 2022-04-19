@@ -106,7 +106,6 @@ export class GameContextService {
     }
 
     allowSwitch(isAllowed: boolean) {
-        console.log('entered');
         this.skipTurnEnabled = isAllowed;
     }
 
