@@ -49,8 +49,6 @@ export class GameHistoryTabComponent implements OnInit {
             this.clearHighScores();
         } else if (result.isConfirmed) {
             this.clearHistory();
-        } else {
-            Swal.close();
         }
     }
 }

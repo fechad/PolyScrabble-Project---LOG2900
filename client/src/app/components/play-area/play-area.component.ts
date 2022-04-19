@@ -55,9 +55,9 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.buttonPressed = event.key;
         switch (this.buttonPressed) {
             case 'Enter':
-                if (this.gridService.letterForServer.length === 0)
+                if (this.gridService.letterForServer.length === 0) {
                     this.gameContextService.addMessage("Vous n'avez placé aucune lettre sur le plateau de jeu", MessageType.Local);
-                else {
+                } else {
                     this.placeLetterService.sendPlacedLetters();
                 }
                 break;
