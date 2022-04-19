@@ -11,7 +11,7 @@ const dialogMock = {
     },
 };
 
-fdescribe('HighScoresComponent', () => {
+describe('HighScoresComponent', () => {
     let component: HighScoresComponent;
     let fixture: ComponentFixture<HighScoresComponent>;
     let httpMock: HttpTestingController;

@@ -215,4 +215,13 @@ describe('VirtualPlayersTabComponent', () => {
         expect(component.nameInputExpert).toBe('');
         expect(component.clicked).toEqual([false, false]);
     });
+
+    it('should call addPlayer if clicked is true', () => {
+        const addPlayerSpy = spyOn(component, 'addPlayer').and.callThrough();
+        component.clicking(true, true);
+        expect(addPlayerSpy).toHaveBeenCalled();
+
+        component.clicking(true, false);
+        expect(addPlayerSpy).toHaveBeenCalled();
+    });
 });

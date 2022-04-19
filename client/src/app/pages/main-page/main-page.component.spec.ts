@@ -9,6 +9,12 @@ import { CommunicationService } from '@app/services/communication.service';
 
 import SpyObj = jasmine.SpyObj;
 
+const dialogMock = {
+    open: () => {
+        return;
+    },
+};
+
 describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
@@ -23,6 +29,7 @@ describe('MainPageComponent', () => {
                 { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: Location, useValue: location },
                 { provide: MatDialog, useValue: {} },
+                { provide: MatDialog, useValue: dialogMock },
             ],
         }).compileComponents();
     });
@@ -35,5 +42,13 @@ describe('MainPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should open dialog', () => {
+        // to get private attribute
+        // eslint-disable-next-line dot-notation
+        const openDialogSpy = spyOn(component['matDialog'], 'open').and.callThrough();
+        component.openPopUp();
+        expect(openDialogSpy).toHaveBeenCalled();
     });
 });

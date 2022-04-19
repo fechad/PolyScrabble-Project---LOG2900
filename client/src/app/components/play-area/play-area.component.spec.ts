@@ -11,11 +11,24 @@ import { MouseService } from '@app/services/mouse.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 
-describe('PlayAreaComponent', () => {
+class GridServiceMock {
+    gridContext: CanvasRenderingContext2D;
+
+    rack = [{ name: 'A', score: 1 }] as Letter[];
+    letterPosition = [[0, 0]] as number[][];
+    firstLetter = [0, 0] as number[];
+    letters = [] as Letter[];
+    letterForServer = '';
+
+    drawGrid() {
+        return;
+    }
+}
+
+fdescribe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
     let gameService: jasmine.SpyObj<GameContextService>;
-    let gridService: jasmine.SpyObj<GridService>;
     let mouseService: jasmine.SpyObj<MouseService>;
     let placeService: jasmine.SpyObj<PlaceLetterService>;
     beforeEach(() => {
@@ -35,13 +48,13 @@ describe('PlayAreaComponent', () => {
             },
         );
         gameService.isMyTurn.and.callFake(() => of(true));
-        gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
-            rack: [{ name: 'A', score: 1 }] as Letter[],
-            letterPosition: [[0, 0]] as number[][],
-            firstLetter: [0, 0] as number[],
-            letters: [] as Letter[],
-            letterForServer: 'a',
-        });
+        // gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
+        //     rack: [{ name: 'A', score: 1 }] as Letter[],
+        //     letterPosition: [[0, 0]] as number[][],
+        //     firstLetter: [0, 0] as number[],
+        //     letters: [] as Letter[],
+        //     letterForServer: 'a',
+        // });
         mouseService = jasmine.createSpyObj('MouseService', ['MouseHitDetect'], { mousePosition: { x: 20, y: 510 }, isHorizontal: true });
         placeService = jasmine.createSpyObj('PlaceLetterService', [
             'sendPlacedLetters',
@@ -58,7 +71,7 @@ describe('PlayAreaComponent', () => {
             imports: [RouterTestingModule, HttpClientTestingModule],
             providers: [
                 { provide: GameContextService, useValue: gameService },
-                { provide: GridService, useValue: gridService },
+                { provide: GridService, useClass: GridServiceMock },
                 { provide: MouseService, useValue: mouseService },
                 { provide: PlaceLetterService, useValue: placeService },
             ],
@@ -104,14 +117,15 @@ describe('PlayAreaComponent', () => {
     });
 
     it('pressing escape should remove all the letters', () => {
-        gridService.letters.push({ name: 'a', score: 1 });
-        gridService.letters.push({ name: 'a', score: 1 });
+        const drawGridSpy = spyOn(component.gridService, 'drawGrid').and.callThrough();
+        component.gridService.letters.push({ name: 'a', score: 1 });
+        component.gridService.letters.push({ name: 'a', score: 1 });
         const expectedKey = 'Escape';
         const buttonEvent = {
             key: expectedKey,
         } as KeyboardEvent;
         component.buttonDetect(buttonEvent);
-        expect(gridService.drawGrid).toHaveBeenCalled();
+        expect(drawGridSpy).toHaveBeenCalled();
     });
 
     it('typing an allowed letter should place the letter', () => {
@@ -127,8 +141,17 @@ describe('PlayAreaComponent', () => {
     });
 
     it('isInbound should return true if the letter fit inside the board', () => {
-        gridService.letters.push({ name: 'a', score: 1 });
+        component.gridService.letters.push({ name: 'a', score: 1 });
         const result = component.isInBound();
         expect(result).toEqual(true);
+    });
+
+    it('should sendPlacedLetters if length is not 0', () => {
+        console.log(component.gridService.letterForServer.length);
+        // component.gridService.le = gridServiceMock.letterForServer;
+        console.log(component.gridService.letterForServer.length);
+        const keydown = new KeyboardEvent('Enter');
+        window.dispatchEvent(keydown);
+        expect(gameService.addMessage).toHaveBeenCalled();
     });
 });
