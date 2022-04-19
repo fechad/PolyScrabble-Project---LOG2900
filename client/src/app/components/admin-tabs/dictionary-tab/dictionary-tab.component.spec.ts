@@ -1,11 +1,12 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DbDictionary } from '@app/classes/dictionnary';
 import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 import { DictionaryTabComponent } from './dictionary-tab.component';
 
 const setHTML = () => {
@@ -135,7 +136,7 @@ describe('DictionaryTabComponent', () => {
             setTimeout(() => resolve(), TIME_OUT);
         });
 
-        expect(component.error).toEqual('Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.');
+        expect(component.error).not.toBeUndefined();
         fixture.detectChanges();
     });
 
@@ -182,6 +183,24 @@ describe('DictionaryTabComponent', () => {
         reqGet[0].flush(listAfterDelete);
 
         httpMock.verify();
+    }));
+
+    it('should delete all dictionaries from list except default one', fakeAsync(() => {
+        const subscription = component.deleteAll();
+
+        from(subscription).subscribe(() => {
+            expect(component.list.length).toEqual(1);
+        });
+    }));
+
+    it('should delete all dictionaries from list except default one on confirmation', fakeAsync(() => {
+        const spy = spyOn(component, 'deleteAll').and.callThrough();
+
+        component.confirmReset();
+        Swal.clickConfirm();
+        tick();
+        flush();
+        expect(spy).toHaveBeenCalled();
     }));
 
     it('should update dictionnary', fakeAsync(() => {

@@ -1,10 +1,11 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { VP } from '@app/classes/virtual-player';
 import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
 import { VirtualPlayersTabComponent } from './virtual-players-tab.component';
 
 class MatSnackBarMock {
@@ -139,6 +140,38 @@ describe('VirtualPlayersTabComponent', () => {
         reqGet[0].flush(result);
 
         httpMock.verify();
+    }));
+
+    it('should delete all players from list except default ones', fakeAsync(() => {
+        component.list = [
+            { default: true, beginner: true, name: 'Antoine' },
+            { default: false, beginner: true, name: 'Jean' },
+            { default: true, beginner: false, name: 'Simone' },
+            { default: false, beginner: false, name: 'Alexandra' },
+            { default: false, beginner: true, name: 'Anna' },
+        ];
+
+        const subscription = component.deleteAll();
+
+        from(subscription).subscribe(() => {
+            expect(component.list.length).toEqual(2);
+        });
+    }));
+
+    it('should delete all players from list except default ones on confirmation', fakeAsync(() => {
+        const spy = spyOn(component, 'deleteAll').and.callThrough();
+        component.list = [
+            { default: true, beginner: true, name: 'Antoine' },
+            { default: false, beginner: true, name: 'Jean' },
+            { default: true, beginner: false, name: 'Simone' },
+            { default: false, beginner: false, name: 'Alexandra' },
+            { default: false, beginner: true, name: 'Anna' },
+        ];
+        component.confirmReset();
+        Swal.clickConfirm();
+        tick();
+        flush();
+        expect(spy).toHaveBeenCalled();
     }));
 
     it('should validate good name', () => {
