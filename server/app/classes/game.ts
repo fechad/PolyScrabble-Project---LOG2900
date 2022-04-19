@@ -60,6 +60,7 @@ export class Game {
     private readonly wordGetter;
     private gameHistory: GameHistory;
     private objectives: Objectives | undefined;
+    private playedWords: Set<string>;
 
     constructor(readonly room: Room, private readonly dictionary: Dictionnary, private readonly gameHistoryService: GameHistoryService) {
         if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
@@ -84,7 +85,8 @@ export class Game {
             mode: gameMode,
         };
         if (room.parameters.log2990) {
-            this.objectives = Game.genRandomObjectives(this.players[cst.MAIN_PLAYER].id, this.players[cst.OTHER_PLAYER].id);
+            this.playedWords = new Set<string>();
+            this.objectives = Game.genRandomObjectives(this.players[cst.MAIN_PLAYER].id, this.players[cst.OTHER_PLAYER].id, this.playedWords);
         }
     }
 
@@ -97,8 +99,8 @@ export class Game {
         return array;
     }
 
-    private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId): Objectives {
-        const playedWords: Set<string> = new Set<string>();
+    private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId, playedWords: Set<string>): Objectives {
+        playedWords = new Set<string>();
         const players = [undefined, undefined, playerOne, playerTwo];
         return this.shuffleArray(OBJECTIVE_TYPES.slice())
             .slice(0, players.length)
@@ -186,6 +188,7 @@ export class Game {
                             words.map((word) => word.word),
                         ),
                     );
+                for (const newWord of words) this.playedWords.add(newWord.word);
                 for (const objective of accomplishedObjectives) {
                     console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
                     this.scores[playerIndex] += objective.objective.points;
