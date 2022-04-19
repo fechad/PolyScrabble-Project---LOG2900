@@ -66,7 +66,7 @@ export class VirtualPlayer {
             if (!played) await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
             played = true;
         };
-        const randomOutOfTen = 1; // Math.floor(Math.random() * cst.PROBABILITY);
+        const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
         if (this.difficulty === Difficulty.Expert) {
             const sortedWordOptions = this.chooseWords(rack);
             if (sortedWordOptions.length > 0) await play(sortedWordOptions[0].placement);
