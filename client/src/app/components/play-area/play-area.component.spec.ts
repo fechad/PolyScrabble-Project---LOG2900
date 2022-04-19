@@ -1,8 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ChatLog } from '@app/classes/chat-log';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
+import { Message } from '@app/classes/message';
 import { Rack } from '@app/classes/rack';
 import { State } from '@app/classes/room';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -19,10 +21,12 @@ describe('PlayAreaComponent', () => {
     let mouseService: jasmine.SpyObj<MouseService>;
     let placeService: jasmine.SpyObj<PlaceLetterService>;
     let rack: jasmine.SpyObj<Rack>;
+    let chatLog: jasmine.SpyObj<ChatLog>;
     let gridService: jasmine.SpyObj<GridService>;
 
     beforeEach(() => {
         rack = jasmine.createSpyObj('Rack', ['tempUpdate'], { rack: new BehaviorSubject([{ name: 'A', score: 1 }]) });
+        chatLog = jasmine.createSpyObj('ChatLog', ['addMessage'], { messages: new BehaviorSubject([] as Message[]) });
         gameService = jasmine.createSpyObj(
             'GameContextService',
             ['place', 'addMessage', 'tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'],
@@ -36,6 +40,7 @@ describe('PlayAreaComponent', () => {
                     ] as Tile[][],
                 } as unknown as GameState),
                 rack,
+                chatLog,
             },
         );
         gameService.isMyTurn.and.callFake(() => of(true));

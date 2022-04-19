@@ -4,7 +4,7 @@ import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import { AuthService } from './auth.service';
-import { GameContextService } from './game-context.service';
+import { Command, GameContextService } from './game-context.service';
 
 describe('GameContextService', () => {
     let service: GameContextService;
@@ -44,7 +44,7 @@ describe('GameContextService', () => {
         const serviceMock = new GameContextService();
         const prototype = Object.getPrototypeOf(serviceMock);
         const serverDownSpy = spyOn(prototype, 'serverDownAlert');
-        service.hint();
+        service.executeCommand(Command.Hint);
         // get private attribute
         // eslint-disable-next-line dot-notation
         service['socket']?.disconnect();
@@ -52,7 +52,7 @@ describe('GameContextService', () => {
     });
 
     it('should call clearMessages when close', () => {
-        const clearMessagesSpy = spyOn(service, 'clearMessages');
+        const clearMessagesSpy = spyOn(service.chatLog, 'clearMessages');
         service.close();
 
         expect(clearMessagesSpy).toHaveBeenCalled();
