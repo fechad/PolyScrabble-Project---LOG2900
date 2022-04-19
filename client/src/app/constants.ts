@@ -110,23 +110,23 @@ export const DECIMAL_BASE = 10;
 export const HINT_COMMAND_LENGTH = 1;
 
 export const HELP_MESSAGE: string =
-    '-- Voici ce que vous pouvez faire: --\n' +
+    '-- Voici les commandes que vous pouvez faire: --\n' +
     '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
-    'ex: !placer g10v abc placera les lettres\n' +
-    'abc verticalement à partir de la position g10\n' +
+    'ex: La commande "!placer g10v abc" placera les lettres\n' +
+    'abc verticalement à partir de la position g10.\n' +
     '\n!passer permet de passer votre tour\n' +
     '\n!échanger permet changer vos lettres\n' +
     'ex: !échanger abc\n' +
-    '\n!réserve : afficher la quantité restante de chaque lettre dans la réserve\n' +
-    '\n!indice : obtenir 3 choix de mots à placer\n' +
-    '\n!aide : obtenir une explication des commandes disponibles\n' +
+    '\n!réserve : Afficher la quantité restante de chaque lettre dans la réserve.\n' +
+    '\n!indice : Obtenir 3 choix de mots à placer.\n' +
+    '\n!aide : Obtenir une explication des commandes disponibles.\n' +
     '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
-    '\ncliquez sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
-    '\nou tapez sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
-    '\nfaites un clic droit sur les tuiles pour sélectionner des lettres à échanger\n' +
-    '\ncliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
-    'en tapant les touches correspondantes du clavier,\n' +
-    'cliquez une seconde fois pour placer verticalement\n';
+    '\n1. Cliquez sur une tuile pour la déplacer soit avec les flèches de votre clavier, la roulette de votre souris' +
+    '\nou tapez sur la touche de votre clavier correspondant à la lettre pour la sélectionner.\n' +
+    '\n2. Faites un clic droit sur les tuiles pour sélectionner des lettres à échanger.\n' +
+    '\n3. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
+    'en tapant les touches correspondantes du clavier \n' +
+    '(cliquez une seconde fois pour placer verticalement).\n';
 
 export const DEFAULT_FONT = '20px system-ui';
 
