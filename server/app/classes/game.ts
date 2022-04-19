@@ -100,7 +100,6 @@ export class Game {
     }
 
     private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId, playedWords: Set<string>): Objectives {
-        playedWords = new Set<string>();
         const players = [undefined, undefined, playerOne, playerTwo];
         return this.shuffleArray(OBJECTIVE_TYPES.slice())
             .slice(0, players.length)
