@@ -11,26 +11,28 @@ import { MouseService } from '@app/services/mouse.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 
-class GridServiceMock {
-    gridContext: CanvasRenderingContext2D;
+// class GridServiceMock {
+//     gridContext: CanvasRenderingContext2D;
 
-    rack = [{ name: 'A', score: 1 }] as Letter[];
-    letterPosition = [[0, 0]] as number[][];
-    firstLetter = [0, 0] as number[];
-    letters = [] as Letter[];
-    letterForServer = '';
+//     rack = [{ name: 'A', score: 1 }] as Letter[];
+//     letterPosition = [[0, 0]] as number[][];
+//     firstLetter = [0, 0] as number[];
+//     letters = [] as Letter[];
+//     letterForServer = '';
 
-    drawGrid() {
-        return;
-    }
-}
+//     drawGrid() {
+//         return;
+//     }
+// }
 
-fdescribe('PlayAreaComponent', () => {
+describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
     let gameService: jasmine.SpyObj<GameContextService>;
     let mouseService: jasmine.SpyObj<MouseService>;
     let placeService: jasmine.SpyObj<PlaceLetterService>;
+    let gridService: jasmine.SpyObj<GridService>;
+
     beforeEach(() => {
         gameService = jasmine.createSpyObj(
             'GameContextService',
@@ -48,13 +50,6 @@ fdescribe('PlayAreaComponent', () => {
             },
         );
         gameService.isMyTurn.and.callFake(() => of(true));
-        // gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
-        //     rack: [{ name: 'A', score: 1 }] as Letter[],
-        //     letterPosition: [[0, 0]] as number[][],
-        //     firstLetter: [0, 0] as number[],
-        //     letters: [] as Letter[],
-        //     letterForServer: 'a',
-        // });
         mouseService = jasmine.createSpyObj('MouseService', ['MouseHitDetect'], { mousePosition: { x: 20, y: 510 }, isHorizontal: true });
         placeService = jasmine.createSpyObj('PlaceLetterService', [
             'sendPlacedLetters',
@@ -63,6 +58,15 @@ fdescribe('PlayAreaComponent', () => {
             'placeWordOnCanvas',
             'clear',
         ]);
+        // gridService = new GridService(gameService);
+
+        gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
+            rack: [{ name: 'A', score: 1 }] as Letter[],
+            letterPosition: [[0, 0]] as number[][],
+            firstLetter: [0, 0] as number[],
+            letters: [] as Letter[],
+            letterForServer: 'a',
+        });
     });
 
     beforeEach(async () => {
@@ -71,7 +75,7 @@ fdescribe('PlayAreaComponent', () => {
             imports: [RouterTestingModule, HttpClientTestingModule],
             providers: [
                 { provide: GameContextService, useValue: gameService },
-                { provide: GridService, useClass: GridServiceMock },
+                { provide: GridService, useValue: gridService },
                 { provide: MouseService, useValue: mouseService },
                 { provide: PlaceLetterService, useValue: placeService },
             ],
@@ -83,6 +87,8 @@ fdescribe('PlayAreaComponent', () => {
         component = fixture.componentInstance;
         component.sent = new Subject<void>();
         component.sent.subscribe();
+        component.gridService = gridService;
+
         fixture.detectChanges();
     });
 
@@ -117,7 +123,6 @@ fdescribe('PlayAreaComponent', () => {
     });
 
     it('pressing escape should remove all the letters', () => {
-        const drawGridSpy = spyOn(component.gridService, 'drawGrid').and.callThrough();
         component.gridService.letters.push({ name: 'a', score: 1 });
         component.gridService.letters.push({ name: 'a', score: 1 });
         const expectedKey = 'Escape';
@@ -125,7 +130,7 @@ fdescribe('PlayAreaComponent', () => {
             key: expectedKey,
         } as KeyboardEvent;
         component.buttonDetect(buttonEvent);
-        expect(drawGridSpy).toHaveBeenCalled();
+        expect(component.gridService.drawGrid).toHaveBeenCalled();
     });
 
     it('typing an allowed letter should place the letter', () => {
@@ -147,11 +152,21 @@ fdescribe('PlayAreaComponent', () => {
     });
 
     it('should sendPlacedLetters if length is not 0', () => {
-        console.log(component.gridService.letterForServer.length);
-        // component.gridService.le = gridServiceMock.letterForServer;
-        console.log(component.gridService.letterForServer.length);
-        const keydown = new KeyboardEvent('Enter');
-        window.dispatchEvent(keydown);
+        gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
+            rack: [{ name: 'A', score: 1 }] as Letter[],
+            letterPosition: [[0, 0]] as number[][],
+            firstLetter: [0, 0] as number[],
+            letters: [] as Letter[],
+            letterForServer: '',
+        });
+        component.gridService = gridService;
+        fixture.detectChanges();
+
+        const expectedKey = 'Enter';
+        const buttonEvent = {
+            key: expectedKey,
+        } as KeyboardEvent;
+        component.buttonDetect(buttonEvent);
         expect(gameService.addMessage).toHaveBeenCalled();
     });
 });

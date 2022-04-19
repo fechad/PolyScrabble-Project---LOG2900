@@ -53,7 +53,6 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     buttonDetect(event: KeyboardEvent) {
         if (!this.myTurn || this.gameContextService.state.value.state !== State.Started) return;
         this.buttonPressed = event.key;
-        console.log(this.gridService.letterForServer.length);
         switch (this.buttonPressed) {
             case 'Enter':
                 if (this.gridService.letterForServer.length === 0) {
