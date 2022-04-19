@@ -11,20 +11,6 @@ import { MouseService } from '@app/services/mouse.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 
-// class GridServiceMock {
-//     gridContext: CanvasRenderingContext2D;
-
-//     rack = [{ name: 'A', score: 1 }] as Letter[];
-//     letterPosition = [[0, 0]] as number[][];
-//     firstLetter = [0, 0] as number[];
-//     letters = [] as Letter[];
-//     letterForServer = '';
-
-//     drawGrid() {
-//         return;
-//     }
-// }
-
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
@@ -58,7 +44,6 @@ describe('PlayAreaComponent', () => {
             'placeWordOnCanvas',
             'clear',
         ]);
-        // gridService = new GridService(gameService);
 
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
             rack: [{ name: 'A', score: 1 }] as Letter[],
