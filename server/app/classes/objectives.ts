@@ -10,7 +10,6 @@ export abstract class Objective {
 
     isAccomplished(wordPlacement: PlacementOption, newWords: string[]): boolean {
         const accomplished = this.isObjectiveAccomplished(wordPlacement, newWords);
-        for (const newWord of newWords) this.playedWords.add(newWord);
         return accomplished;
     }
 

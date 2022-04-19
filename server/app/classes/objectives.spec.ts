@@ -60,11 +60,10 @@ describe('Objectives', () => {
 
     it('should give points for a word already on board', () => {
         objective = new ObjectiveAlreadyOnBoard(playedWords);
-        const otherObjective = new ObjectivePalindrome(playedWords);
 
-        objective.isAccomplished(placement, ['premiertest']);
-        objective.isAccomplished(placement, ['secondtest']);
-        otherObjective.isAccomplished(placement, ['troisiemetest']);
+        playedWords.add('premiertest');
+        playedWords.add('secondtest');
+        playedWords.add('troisiemetest');
 
         let result = objective.isAccomplished(placement, ['premiertest']);
         expect(result).to.equal(true);
@@ -78,6 +77,10 @@ describe('Objectives', () => {
 
     it('should not give points for not already on board', () => {
         objective = new ObjectiveAlreadyOnBoard(playedWords);
+
+        playedWords.add('premier');
+        playedWords.add('secondtesttttt');
+        playedWords.add('troisiiiiiemetest');
 
         let result = objective.isAccomplished(placement, ['premiertest']);
         expect(result).to.equal(false);
@@ -117,11 +120,10 @@ describe('Objectives', () => {
 
     it('should give points for an anagram of a word already on board', () => {
         objective = new ObjectiveAnagram(playedWords);
-        const otherObjective = new ObjectivePalindrome(playedWords);
 
-        objective.isAccomplished(placement, ['premiertest']);
-        objective.isAccomplished(placement, ['secondtest']);
-        otherObjective.isAccomplished(placement, ['troisiemetest']);
+        playedWords.add('premiertest');
+        playedWords.add('secondtest');
+        playedWords.add('troisiemetest');
 
         let result = objective.isAccomplished(placement, ['testpremier']);
         expect(result).to.equal(true);
@@ -135,7 +137,10 @@ describe('Objectives', () => {
 
     it('should not give points for no anagram', () => {
         objective = new ObjectiveAnagram(playedWords);
-        objective.isAccomplished(placement, ['premiertttt']);
+
+        playedWords.add('premier');
+        playedWords.add('secondtesttttt');
+        playedWords.add('troisiiiiiemetest');
 
         let result = objective.isAccomplished(placement, ['premiertest']);
         expect(result).to.equal(false);
