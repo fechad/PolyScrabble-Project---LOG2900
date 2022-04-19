@@ -111,7 +111,7 @@ describe('DictionaryTabComponent', () => {
         ];
 
         component.startEdit(1);
-        // eslint-ignore-next-line dot-notation
+        // eslint-disable-next-line dot-notation
         const spy = spyOn(component['communicationService'], 'updateDictionaries').and.returnValue(Promise.resolve());
         const subscription = component.updateDictionary();
 
@@ -151,7 +151,7 @@ describe('DictionaryTabComponent', () => {
     }));
 
     it('should call update list after delete all', fakeAsync(() => {
-        // eslint-ignore-next-line dot-notation
+        // eslint-disable-next-line dot-notation
         const spy = spyOn(component['communicationService'], 'updateDictionaries').and.callThrough();
         const list: Dictionnary[] = [{ id: 0, title: 'dict-0', description: 'test-0' }];
         const subscription = component.deleteAll();

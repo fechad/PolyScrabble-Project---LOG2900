@@ -19,7 +19,7 @@ describe('Dictionnary service', () => {
         sandbox = sinon.createSandbox();
         writeStub = sandbox.stub(fs.promises, 'writeFile').returns(Promise.resolve());
         unlinkStub = sandbox.stub(fs.promises, 'unlink').returns(Promise.resolve());
-        
+
         // eslint-disable-next-line dot-notation
         dictionnaryService['dictionnaries'].splice(0);
         // eslint-disable-next-line dot-notation
@@ -30,7 +30,7 @@ describe('Dictionnary service', () => {
     afterEach(async () => {
         sandbox.restore();
     });
-    
+
     it('should be created', () => {
         expect(dictionnaryService).not.to.equal(undefined);
     });
@@ -47,7 +47,7 @@ describe('Dictionnary service', () => {
         sandbox.stub(fs.promises, 'readdir').returns(Promise.resolve(['aaa-1.json'] as unknown as fs.Dirent[]));
         sandbox
             .stub(fs.promises, 'readFile')
-            .callsFake((file) => Promise.resolve(Buffer.from(`{"title":"Hello ${file}", "description":"Desc", "words": ["aa", "bb", "cc"]}`)));
+            .callsFake(async (file) => Promise.resolve(Buffer.from(`{"title":"Hello ${file}", "description":"Desc", "words": ["aa", "bb", "cc"]}`)));
         await dictionnaryService.init();
         // eslint-disable-next-line dot-notation
         expect(dictionnaryService['dictionnaries']).to.deep.equal([
@@ -79,9 +79,11 @@ describe('Dictionnary service', () => {
     });
 
     it('should edit dictionary File', async () => {
-        // eslint-ignore-next-line dot-notation
+        // eslint-disable-next-line dot-notation
         await dictionnaryService['writeDict'](new Dictionnary(1, 'dummy', 'description', ['aa', 'bb', 'cc'], 'file.json'));
-        expect(writeStub.args).to.deep.equal([['file.json', JSON.stringify({ title: 'dummy', description: 'description', words: ['aa', 'bb', 'cc'] })]]);
+        expect(writeStub.args).to.deep.equal([
+            ['file.json', JSON.stringify({ title: 'dummy', description: 'description', words: ['aa', 'bb', 'cc'] })],
+        ]);
     });
 
     it('should delete all dictionaries except default one', async () => {
