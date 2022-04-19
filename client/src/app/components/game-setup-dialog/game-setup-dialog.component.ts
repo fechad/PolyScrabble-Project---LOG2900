@@ -8,6 +8,10 @@ import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { environment } from 'src/environments/environment';
+<<<<<<< HEAD
+=======
+import { CommunicationService, DialogDictionary } from '@app/services/communication.service';
+>>>>>>> e29a9bcadb38d0bbe3b02504e783c0e8ed70b0b9
 
 @Component({
     selector: 'app-game-setup-dialog',
@@ -17,9 +21,15 @@ import { environment } from 'src/environments/environment';
 export class GameSetupDialogComponent implements OnInit {
     @ViewChild('dropDown') dropDown: ElementRef;
     gameParametersForm: FormGroup;
+<<<<<<< HEAD
     dictionnaries: DbDictionary[];
     environment = environment;
     dictionaryID: number;
+=======
+    dictionnaries: DialogDictionary[];
+    environment = environment;
+    dictionaryName: number;
+>>>>>>> e29a9bcadb38d0bbe3b02504e783c0e8ed70b0b9
 
     constructor(
         readonly httpClient: HttpClient,
@@ -46,10 +56,6 @@ export class GameSetupDialogComponent implements OnInit {
             dictionnary: new FormControl(0, [Validators.required]),
         });
     }
-
-    // async getListDictionaries() {
-    //     this.dictionnaries = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
-    // }
 
     rightSummary(id: string): boolean {
         return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[3] === id;
