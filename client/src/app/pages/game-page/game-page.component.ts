@@ -52,7 +52,6 @@ export class GamePageComponent implements AfterViewChecked {
             this.publicObjectives = objectives ? objectives.filter((objective) => objective.isPublic) : [];
             this.privateObjectives = objectives ? objectives.filter((objective) => !objective.isPublic) : [];
         });
-        console.log(this.publicObjectives);
     }
 
     ngAfterViewChecked(): void {
