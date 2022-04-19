@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DbDictionary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
-import { CommunicationService, DialogDictionary } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communication.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -16,9 +17,9 @@ import { environment } from 'src/environments/environment';
 export class GameSetupDialogComponent implements OnInit {
     @ViewChild('dropDown') dropDown: ElementRef;
     gameParametersForm: FormGroup;
-    dictionnaries: DialogDictionary[];
+    dictionnaries: DbDictionary[];
     environment = environment;
-    dictionaryName: number;
+    dictionaryID: number;
 
     constructor(
         readonly httpClient: HttpClient,
@@ -47,15 +48,13 @@ export class GameSetupDialogComponent implements OnInit {
     }
 
     // async getListDictionaries() {
-    //     this.dictionnaries = await this.communicationService.dictionnaries;
+    //     this.dictionnaries = await this.httpClient.get<DbDictionary[]>(`${environment.serverUrl}/dictionaries`).toPromise();
     // }
 
-    // async getSummary(): Promise<string> {
-    //     for (const dictionnary of this.dictionnaries) {
-    //         if (this.dropDown.nativeElement.text === dictionnary.name) return dictionnary.description;
-    //     }
-    //     return 'Dictionnaire par défaut';
-    // }
+    rightSummary(id: string): boolean {
+        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[3] === id;
+    }
+
     async onSubmit() {
         for (const key of Object.keys(this.gameParametersForm.controls)) {
             if (!this.gameParametersForm.controls[key].valid) {

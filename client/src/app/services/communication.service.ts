@@ -41,6 +41,7 @@ export class CommunicationService {
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
         this.dictionnaries = httpClient.get<DialogDictionary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
+        console.log(this.dictionnaries);
 
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
             this.myId.next(id);

@@ -11,7 +11,7 @@ export class DictionnaryService {
         if (this.dictionnaries.length !== 0) return;
         const fileBuffer = await promises.readFile('./assets/dictionnary.json');
         const readDictionary = JSON.parse(fileBuffer.toString());
-        this.dictionnaries.push(new Dictionnary(0, 'français', readDictionary.words));
+        this.dictionnaries.push(new Dictionnary(0, 'français', readDictionary.words, readDictionary.description));
     }
 
     async copyDictionaries() {
@@ -22,7 +22,7 @@ export class DictionnaryService {
             if (id !== 0) {
                 const fileBuffer = await promises.readFile(`./dictionaries/dictionary-${id}.json`);
                 const readDictionary = JSON.parse(fileBuffer.toString());
-                this.dictionnaries.push(new Dictionnary(id, readDictionary.title, readDictionary.words));
+                this.dictionnaries.push(new Dictionnary(id, readDictionary.title, readDictionary.words, readDictionary.description));
             }
         }
     }
