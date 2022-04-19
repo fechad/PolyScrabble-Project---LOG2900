@@ -160,18 +160,18 @@ export class Game {
         if (this.timeout !== undefined) clearTimeout(this.timeout);
         this.timeout = undefined;
         try {
-            if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
-            isHorizontal ??= this.board.isInContact(pos, false);
-            const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
-            const words = this.wordGetter.getWords(triedPlacement);
-            if (!words.every((wordOption) => this.dictionary.isValidWord(wordOption.word)))
-                throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
-
             await new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(null);
                 }, cst.BOARD_PLACEMENT_DELAY);
             });
+
+            if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
+            isHorizontal ??= this.board.isInContact(pos, false);
+            const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
+            const words = this.wordGetter.getWords(triedPlacement);
+            if (!words.every((wordOption) => this.dictionary.isValidWord(wordOption.word)))
+                throw new Error(words.map((word) => word.word).join(' et ') + " n'existe(nt) pas dans ce dictionnaire");
 
             this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
 
