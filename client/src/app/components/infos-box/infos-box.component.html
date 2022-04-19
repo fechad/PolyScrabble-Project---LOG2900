@@ -38,7 +38,7 @@
             matTooltipPosition="right"
             matTooltipClass="tool"
             [disabled]="(gameContextService.isMyTurn() | async) === false"
-            (click)="this.gameContextService.switchTurn(false)"
+            (click)="this.switchTurn(false)"
         >
             <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
         </button>

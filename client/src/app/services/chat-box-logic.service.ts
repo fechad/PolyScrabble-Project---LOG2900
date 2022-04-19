@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { MessageType } from '@app/classes/chat-log';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
-import { GameContextService, MessageType } from '@app/services/game-context.service';
+import { Command, GameContextService } from '@app/services/game-context.service';
 import { take } from 'rxjs/operators';
 import { GridService } from './grid.service';
 
@@ -20,7 +21,7 @@ export class ChatBoxLogicService {
 
     async validateSyntax(textValue: string) {
         if (!CommandParsing.containsIllegalCharacters(textValue.trim()) && textValue.trim() !== '')
-            return this.gameContextService.addMessage(
+            return this.gameContextService.chatLog.addMessage(
                 'Les messages peuvent seulement contenir des caractères textuels ou bien !, ? et *',
                 MessageType.Local,
             );
@@ -32,11 +33,11 @@ export class ChatBoxLogicService {
             } catch (e: unknown) {
                 if (e instanceof Error) {
                     const message = e.message;
-                    this.gameContextService.addMessage(message, MessageType.Local);
+                    this.gameContextService.chatLog.addMessage(message, MessageType.Local);
                 }
             }
         } else {
-            this.gameContextService.addMessage(textValue);
+            this.gameContextService.chatLog.addMessage(textValue);
         }
     }
 
@@ -59,11 +60,11 @@ export class ChatBoxLogicService {
     }
 
     private sendHelp() {
-        this.gameContextService.addMessage(cst.HELP_MESSAGE, MessageType.Command);
+        this.gameContextService.chatLog.addMessage(cst.HELP_MESSAGE, MessageType.Command);
     }
 
     private place() {
-        this.gameContextService.attemptTempRackUpdate(this.parsedLetters);
+        this.gameContextService.rack.attemptTempUpdate(this.parsedLetters);
         if (!CommandParsing.isPlayableWord(this.parsedLetters)) throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
         if (!CommandParsing.isValidVerticalPosition(this.verticalPosition))
             throw new Error("La position verticale choisie n'est pas sur la grille de jeu");
@@ -88,20 +89,20 @@ export class ChatBoxLogicService {
             throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
         if (!isInBound) throw new Error("Impossible d'échanger cette quantité de lettres");
 
-        this.gameContextService.attemptTempRackUpdate(this.parsedLetters);
-        this.gameContextService.exchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
+        this.gameContextService.rack.attemptTempUpdate(this.parsedLetters);
+        this.gameContextService.executeCommand(Command.Exchange, this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
     }
 
     private pass() {
-        this.gameContextService.switchTurn(false);
+        this.gameContextService.executeCommand(Command.Switch, false);
     }
 
     private hint() {
-        this.gameContextService.hint();
+        this.gameContextService.executeCommand(Command.Hint);
     }
 
     private getReserve() {
-        this.gameContextService.getReserve();
+        this.gameContextService.executeCommand(Command.GetReserve);
     }
 
     private assignPositionSpec(positionBlock: string) {
