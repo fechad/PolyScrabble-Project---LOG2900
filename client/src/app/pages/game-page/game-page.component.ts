@@ -66,8 +66,8 @@ export class GamePageComponent implements AfterViewChecked {
     async quitGame() {
         const text =
             this.gameContextService.state.value.state !== State.Started
-                ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
-                : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+                ? ['Êtes-vous sûr?', 'Vous vous apprêtez à quitter la partie.', 'Quitter', 'Rester']
+                : ['Êtes-vous sûr?', 'Vous vous apprêtez à déclarer forfait.', 'Abandonner', 'Continuer à jouer'];
         const result = await Swal.fire({
             title: text[0],
             text: text[1],
@@ -75,6 +75,7 @@ export class GamePageComponent implements AfterViewChecked {
             showCancelButton: true,
             confirmButtonText: text[2],
             cancelButtonText: text[3],
+            heightAuto: false,
         });
 
         if (!result.value) return;

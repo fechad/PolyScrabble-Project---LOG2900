@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
 
-type Score = { score: number; names: string[] };
+export type Score = { score: number; names: string[] };
 type Page = { scores: Score[]; name: string };
 
 @Component({

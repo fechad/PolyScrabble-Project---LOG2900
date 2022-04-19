@@ -75,18 +75,24 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
         this.updateList();
     }
 
-    clicking() {
-        setTimeout(() => {
-            this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
-            this.text.nativeElement.focus();
-        }, constant.RENDERING_DELAY);
-    }
+    clicking(isAdding: boolean, isBeginner: boolean) {
+        if (isAdding && isBeginner) {
+            this.addPlayer(this.nameInput, true);
+        } else if (isAdding) {
+            this.addPlayer(this.nameInputExpert, false);
+        }
 
-    clickingExpert() {
-        setTimeout(() => {
-            this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
-            this.textExpert.nativeElement.focus();
-        }, constant.RENDERING_DELAY);
+        if (isBeginner)
+            setTimeout(() => {
+                this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+                this.text.nativeElement.focus();
+            }, constant.RENDERING_DELAY);
+        else {
+            setTimeout(() => {
+                this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+                this.textExpert.nativeElement.focus();
+            }, constant.RENDERING_DELAY);
+        }
     }
 
     invalidName(name: string, beginner: boolean): boolean {
@@ -119,7 +125,7 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
     async confirmReset() {
         const result = await Swal.fire({
             title: 'Êtes-vous sûr?',
-            text: 'Vous vous apprêtez à réinitialiser tous les joueurs virtuels',
+            text: 'Vous vous apprêtez à réinitialiser tous les joueurs virtuels.',
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Oui',
@@ -130,8 +136,6 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
         if (!result.value) return;
         if (result.isConfirmed) {
             this.deleteAll();
-        } else {
-            Swal.close();
         }
     }
 }

@@ -9,7 +9,12 @@ import { CommunicationServiceMock } from '@app/constants';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
+
 const dialogMock = {
+    open: () => {
+        return;
+    },
+
     close: () => {
         return;
     },
@@ -50,5 +55,11 @@ describe('WaitingRoomPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should open dialog', () => {
+        const openDialogSpy = spyOn(component.matDialog, 'open').and.callThrough();
+        component.openSoloDialog();
+        expect(openDialogSpy).toHaveBeenCalled();
     });
 });

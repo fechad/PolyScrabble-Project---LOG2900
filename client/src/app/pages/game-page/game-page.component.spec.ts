@@ -170,4 +170,16 @@ describe('GamePageComponent', () => {
         expect(scoreSpy).toHaveBeenCalled();
         flush();
     }));
+
+    it('should show objectives', () => {
+        component.showObjective(true);
+        expect(component.publicObjectivesShown).toEqual(false);
+        expect(component.privateObjectivesShown).toEqual(true);
+    });
+
+    it('should not show objectives', () => {
+        component.showObjective(false);
+        expect(component.publicObjectivesShown).toEqual(true);
+        expect(component.privateObjectivesShown).toEqual(false);
+    });
 });

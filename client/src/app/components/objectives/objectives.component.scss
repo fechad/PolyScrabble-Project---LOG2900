@@ -1,4 +1,4 @@
-p {
+.opjectives p {
     font-size: 1em;
     overflow: hidden;
 }
@@ -24,13 +24,12 @@ p.isMine {
 }
 
 p:not(.available, .isMine) {
-    color: red;
+    color: rgb(8, 8, 8);
 }
 
 .objectives {
     display: flex;
     flex-direction: row;
-    border-radius: 15px;
     width: 100%;
     height: 20vh;
 }
@@ -41,7 +40,7 @@ p:not(.available, .isMine) {
     border-radius: 15px 0 0 0;
     border: black solid;
     border-width: thin;
-    background-color: burlywood;
+    background-color: #e1ac01;
     text-align: center;
 }
 
