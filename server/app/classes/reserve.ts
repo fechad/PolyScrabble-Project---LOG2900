@@ -37,7 +37,9 @@ export class Reserve {
         const rack = this.letterRacks[playerIndex];
 
         for (const unwantedLetter of lettersToChange) {
-            const i = rack.findIndex((letter) => unwantedLetter === letter.toLowerCase() || (unwantedLetter.match(/[A-Z]/g) && letter === '*'));
+            const i = rack.findIndex(
+                (letter) => unwantedLetter === letter.toLowerCase() || (unwantedLetter.toUpperCase() === unwantedLetter && letter === '*'),
+            );
             if (i === cst.UNDEFINED) throw new Error('Tried to remove letter that is not in rack');
             if (putBack) this.reserve.push(rack[i]);
             rack[i] = rack[rack.length - 1];
