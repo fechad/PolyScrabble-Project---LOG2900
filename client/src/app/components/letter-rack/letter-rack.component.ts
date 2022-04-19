@@ -17,7 +17,7 @@ export class LetterRackComponent {
     previousSelection = cst.MISSING;
 
     constructor(public gameContextService: GameContextService, public gridService: GridService) {
-        this.gameContextService.rack.subscribe((newRack) => (this.letters = newRack));
+        this.gameContextService.rack.rack.subscribe((newRack) => (this.letters = newRack));
     }
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {

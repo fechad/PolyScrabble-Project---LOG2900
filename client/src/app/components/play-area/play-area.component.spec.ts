@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
+import { Rack } from '@app/classes/rack';
 import { State } from '@app/classes/room';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { GameContextService, Tile } from '@app/services/game-context.service';
@@ -18,7 +19,9 @@ describe('PlayAreaComponent', () => {
     let gridService: jasmine.SpyObj<GridService>;
     let mouseService: jasmine.SpyObj<MouseService>;
     let placeService: jasmine.SpyObj<PlaceLetterService>;
+    let rack: jasmine.SpyObj<Rack>;
     beforeEach(() => {
+        rack = jasmine.createSpyObj('Rack', ['tempUpdate'], { rack: new BehaviorSubject([{ name: 'A', score: 1 }]) });
         gameService = jasmine.createSpyObj(
             'GameContextService',
             ['place', 'addMessage', 'tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'],
@@ -31,7 +34,7 @@ describe('PlayAreaComponent', () => {
                         [null, null, null],
                     ] as Tile[][],
                 } as unknown as GameState),
-                rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+                rack,
             },
         );
         gameService.isMyTurn.and.callFake(() => of(true));

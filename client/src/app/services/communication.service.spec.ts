@@ -2,6 +2,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { MessageType } from '@app/classes/chat-log';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
@@ -10,7 +11,7 @@ import { Room, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService, MessageType } from './game-context.service';
+import { GameContextService } from './game-context.service';
 
 /* eslint-disable dot-notation, max-lines */
 
@@ -257,7 +258,7 @@ describe('CommunicationService', () => {
     });
 
     it('should receive message', async () => {
-        const spy = spyOn(gameContext, 'receiveMessages');
+        const spy = spyOn(gameContext.chatLog, 'receiveMessages');
         joinGame();
         const message: Message = { emitter: ID, text: 'Random text' };
         (gameContext['socket'] as unknown as SocketMock).events.emit('message', message, 2);
@@ -268,14 +269,14 @@ describe('CommunicationService', () => {
     });
 
     it('should receive game errors', async () => {
-        const spy = spyOn(gameContext, 'addMessage');
+        const spy = spyOn(gameContext.chatLog, 'addMessage');
         joinGame();
         (gameContext['socket'] as unknown as SocketMock).events.emit('game-error', 'BOBO');
         expect(spy).toHaveBeenCalledWith('BOBO', MessageType.Local);
     });
 
     it('should receive valid exchanges', async () => {
-        const spy = spyOn(gameContext, 'addMessage');
+        const spy = spyOn(gameContext.chatLog, 'addMessage');
         joinGame();
         (gameContext['socket'] as unknown as SocketMock).events.emit('valid-exchange', 'BOBO');
         expect(spy).toHaveBeenCalledWith('BOBO', MessageType.Command);
@@ -285,7 +286,7 @@ describe('CommunicationService', () => {
         joinGame();
         const letters: Letter[] = [{ name: 'A', score: 1 }];
         (gameContext['socket'] as unknown as SocketMock).events.emit('rack', letters);
-        expect(gameContext.rack.value).toBe(letters);
+        expect(gameContext.rack.rack.value).toBe(letters);
     });
 
     it('should save id when unloading', () => {

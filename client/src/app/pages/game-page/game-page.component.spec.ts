@@ -10,11 +10,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ChatLog } from '@app/classes/chat-log';
 import { GameState } from '@app/classes/game';
+import { Message } from '@app/classes/message';
+import { Rack } from '@app/classes/rack';
 import { State } from '@app/classes/room';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { CommunicationServiceMock } from '@app/constants';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
@@ -35,9 +37,13 @@ describe('GamePageComponent', () => {
     let fixture: ComponentFixture<GamePageComponent>;
     let communicationService: CommunicationServiceMock;
     let gameContext: jasmine.SpyObj<GameContextService>;
+    let rack: jasmine.SpyObj<Rack>;
+    let chatLog: jasmine.SpyObj<ChatLog>;
 
     beforeEach(async () => {
         communicationService = new CommunicationServiceMock();
+        rack = jasmine.createSpyObj('Rack', ['tempUpdate', 'addTemp', 'attemptTempUpdate'], { rack: new BehaviorSubject([{ name: 'A', score: 1 }]) });
+        chatLog = jasmine.createSpyObj('ChatLog', ['addMessages'], { messages: new BehaviorSubject([] as Message[]) });
         gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn'], {
             state: new BehaviorSubject({
                 players: [
@@ -49,13 +55,14 @@ describe('GamePageComponent', () => {
                 turn: undefined,
                 state: State.Started,
             } as GameState),
-            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+            rack,
+            chatLog,
             objectives: new BehaviorSubject(undefined),
         });
         gameContext.isMyTurn.and.callFake(() => of(true));
 
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, ChatBoxComponent, LetterRackComponent],
+            declarations: [GamePageComponent, ChatBoxComponent, LetterRackComponent],
             schemas: [NO_ERRORS_SCHEMA],
             imports: [
                 RouterTestingModule.withRoutes(routes),

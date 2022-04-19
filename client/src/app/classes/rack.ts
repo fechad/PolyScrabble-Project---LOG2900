@@ -7,11 +7,11 @@ export class Rack {
     readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
     tempRack: Letter[];
 
-    tempUpdateRack() {
+    tempUpdate() {
         this.rack.next(this.tempRack);
     }
 
-    attemptTempRackUpdate(letters: string) {
+    attemptTempUpdate(letters: string) {
         const tempRack = [...this.rack.value];
         for (const letter of letters) {
             const index = tempRack.findIndex((foundLetter) => {
@@ -23,7 +23,8 @@ export class Rack {
         }
         this.tempRack = tempRack;
     }
-    addTempRack(letter: Letter) {
+
+    addTemp(letter: Letter) {
         this.tempRack.push(letter);
     }
 }
