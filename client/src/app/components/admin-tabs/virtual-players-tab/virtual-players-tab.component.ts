@@ -75,18 +75,24 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
         this.updateList();
     }
 
-    clicking() {
-        setTimeout(() => {
-            this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
-            this.text.nativeElement.focus();
-        }, constant.RENDERING_DELAY);
-    }
+    clicking(isAdding: boolean, isBeginner: boolean) {
+        if (isAdding && isBeginner) {
+            this.addPlayer(this.nameInput, true);
+        } else if (isAdding) {
+            this.addPlayer(this.nameInputExpert, false);
+        }
 
-    clickingExpert() {
-        setTimeout(() => {
-            this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
-            this.textExpert.nativeElement.focus();
-        }, constant.RENDERING_DELAY);
+        if (isBeginner)
+            setTimeout(() => {
+                this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+                this.text.nativeElement.focus();
+            }, constant.RENDERING_DELAY);
+        else if (!isBeginner) {
+            setTimeout(() => {
+                this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
+                this.textExpert.nativeElement.focus();
+            }, constant.RENDERING_DELAY);
+        }
     }
 
     invalidName(name: string, beginner: boolean): boolean {
