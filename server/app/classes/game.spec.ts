@@ -14,7 +14,7 @@ import { Position } from './position';
 import { Letter } from './reserve';
 import { Player, Room } from './room';
 
-/* eslint-disable dot-notation, @typescript-eslint/no-magic-numbers, max-lines */
+/* eslint-disable dot-notation, @typescript-eslint/no-magic-numbers, max-lines, @typescript-eslint/no-non-null-assertion */
 
 const RESPONSE_DELAY = 400;
 const HALF_LENGTH = 7;

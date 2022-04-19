@@ -81,6 +81,7 @@ describe('HttpController', () => {
         dictionnaryService.getDictionnaries.returns(DICTIONNARIES.map((dict) => dict.getInfo()));
         dictionnaryService.init.callsFake(async () => Promise.resolve());
         dictionnaryService.get.returns(new Dictionnary(0, 'a', 'd', [], 'tsconfig.spec.json'));
+        dictionnaryService.add.returns(Promise.resolve(true));
         highScoreService = createStubInstance(HighScoresService);
         highScoreService.resetScores.callsFake(async (res) => {
             res.status(StatusCodes.OK).send('succes');
@@ -235,16 +236,13 @@ describe('HttpController', () => {
     it('should add dictionary', async () => {
         await supertest(expressApp)
             .post('/api/dictionaries')
-            .send({ name: 'Test', description: 'Testing', words: ['aa', 'bb'] })
+            .send({ title: 'Test', description: 'Testing', words: ['aa', 'bb'] })
             .expect(StatusCodes.OK);
         expect(dictionnaryService.add.args[0]).to.deep.equal(['Test', 'Testing', ['aa', 'bb']]);
     });
 
     it('should update dictionaries', async () => {
-        await supertest(expressApp)
-            .patch('/api/dictionaries/1')
-            .send({ name: 'Modif', description: 'Testing' })
-            .expect(StatusCodes.NO_CONTENT);
+        await supertest(expressApp).patch('/api/dictionaries/1').send({ name: 'Modif', description: 'Testing' }).expect(StatusCodes.NO_CONTENT);
     });
 
     it('should delete dictionaries', async () => {

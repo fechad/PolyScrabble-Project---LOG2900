@@ -27,9 +27,9 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
 
 const NEW_DICT_SCHEMA: ValidateFunction = {
     type: 'object',
-    required: ['name', 'description', 'words'],
+    required: ['title', 'description', 'words'],
     properties: {
-        name: {
+        title: {
             type: 'string',
             minLength: 1,
         },
@@ -49,7 +49,7 @@ const NEW_DICT_SCHEMA: ValidateFunction = {
 const PATCH_DICT_SCHEMA: ValidateFunction = {
     type: 'object',
     properties: {
-        name: {
+        title: {
             type: 'string',
             minLength: 1,
         },
@@ -141,12 +141,12 @@ export class HttpController {
         });
 
         this.router.get('/dictionaries/:id', async (req: Request, res: Response) => {
-            const dictionary = this.dictionnaryService.get(Number.parseInt(req.params.id));
+            const dictionary = this.dictionnaryService.get(Number.parseInt(req.params.id, 10));
             if (!dictionary) res.sendStatus(StatusCodes.NOT_FOUND);
             else res.download(dictionary.filename);
         });
         this.router.patch('/dictionaries/:id', validate({ body: PATCH_DICT_SCHEMA }), async (req: Request, res: Response) => {
-            await this.dictionnaryService.update(Number.parseInt(req.params.id), req.body.name, req.body.description);
+            await this.dictionnaryService.update(Number.parseInt(req.params.id, 10), req.body.title, req.body.description);
             res.sendStatus(StatusCodes.NO_CONTENT);
         });
         this.router.delete('/dictionaries/all', async (req: Request, res: Response) => {
@@ -154,7 +154,7 @@ export class HttpController {
             res.sendStatus(StatusCodes.NO_CONTENT);
         });
         this.router.delete('/dictionaries/:id', async (req: Request, res: Response) => {
-            await this.dictionnaryService.delete(Number.parseInt(req.params.id));
+            await this.dictionnaryService.delete(Number.parseInt(req.params.id, 10));
             res.sendStatus(StatusCodes.NO_CONTENT);
         });
         this.router.get('/dictionaries', async (req: Request, res: Response) => {
@@ -162,8 +162,8 @@ export class HttpController {
             res.json(dictionnaries);
         });
         this.router.post('/dictionaries', validate({ body: NEW_DICT_SCHEMA }), async (req: Request, res: Response) => {
-            const response = await this.dictionnaryService.add(req.body.name, req.body.description, req.body.words);
-            res.status(StatusCodes.OK).json(response);
+            const added = await this.dictionnaryService.add(req.body.title, req.body.description, req.body.words);
+            res.sendStatus(added ? StatusCodes.OK : StatusCodes.CONFLICT);
         });
 
         this.router.delete('/vp-names-reset', async (req: Request, res: Response) => {

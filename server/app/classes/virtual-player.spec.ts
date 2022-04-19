@@ -35,8 +35,10 @@ describe('VirtualPlayer', () => {
         const room = new Room(1, '1', 'Dummy', parameters);
         room.addPlayer('2', 'otherDummy', false, 'a');
         room.addPlayer(constants.AI_ID, 'heo', true, 'a');
-        game = new Game(room, dictionnaryService.get(0)!, {} as unknown as GameHistoryService);
-        vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.get(0)!.trie);
+        const dict = dictionnaryService.get(0);
+        if (!dict) throw new Error('No dicts');
+        game = new Game(room, dict, {} as unknown as GameHistoryService);
+        vP = new VirtualPlayer(Difficulty.Expert, game, dict.trie);
         previousMathRandom = Math.random;
     });
 

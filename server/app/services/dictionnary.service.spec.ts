@@ -8,7 +8,9 @@ import { Container } from 'typedi';
 describe('Dictionnary service', () => {
     let dictionnaryService: DictionnaryService;
     let sandbox: sinon.SinonSandbox;
-    beforeEach(async () => { sandbox = sinon.createSandbox(); });
+    beforeEach(async () => {
+        sandbox = sinon.createSandbox();
+    });
     afterEach(async () => sandbox.restore());
 
     before(async () => {
@@ -24,20 +26,21 @@ describe('Dictionnary service', () => {
     });
 
     it('should read dictionnaries', async () => {
-        const sandbox = sinon.createSandbox();
+        const innerSandbox = sinon.createSandbox();
         // eslint-disable-next-line dot-notation
         dictionnaryService['dictionnaries'].splice(0);
-        sandbox.stub(fs.promises, 'readdir').returns(
-                Promise.resolve(['aaa-1.json'] as unknown as fs.Dirent[]),
-        );
-        sandbox.stub(fs.promises, 'readFile').returns(
-            Promise.resolve(Buffer.from('{"title":"Hello", "description":"Desc", "words": ["aa", "bb", "cc"]}')),
-        );
+        innerSandbox.stub(fs.promises, 'readdir').returns(Promise.resolve(['aaa-1.json'] as unknown as fs.Dirent[]));
+        innerSandbox
+            .stub(fs.promises, 'readFile')
+            .returns(Promise.resolve(Buffer.from('{"title":"Hello", "description":"Desc", "words": ["aa", "bb", "cc"]}')));
         await dictionnaryService.init();
         // eslint-disable-next-line dot-notation
-        expect(dictionnaryService['dictionnaries']).to.deep.equal([new Dictionnary(0, "Hello", "Desc", ["aa", "bb", "cc"], './assets/dictionnary.json'), new Dictionnary(1, "Hello", "Desc", ["aa", "bb", "cc"], './dictionaries/aaa-1.json')]);
+        expect(dictionnaryService['dictionnaries']).to.deep.equal([
+            new Dictionnary(0, 'Hello', 'Desc', ['aa', 'bb', 'cc'], './assets/dictionnary.json'),
+            new Dictionnary(1, 'Hello', 'Desc', ['aa', 'bb', 'cc'], './dictionaries/aaa-1.json'),
+        ]);
+        innerSandbox.restore();
     });
-
 
     // TODO
     /*

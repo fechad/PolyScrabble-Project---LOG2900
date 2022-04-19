@@ -10,18 +10,6 @@ export class DictionnaryService {
     private readonly dictionnaries: Dictionnary[] = [];
     private nextId = 0;
 
-    private async loadDict(file: string) {
-        const fileBuffer = await promises.readFile(file);
-        const readDictionary = JSON.parse(fileBuffer.toString());
-        this.dictionnaries.push(new Dictionnary(this.nextId, readDictionary.title, readDictionary.description, readDictionary.words, file));
-        this.nextId += 1;
-    }
-
-    private async writeDict(dict: Dictionnary): Promise<void> {
-        const jsonDictionary = JSON.stringify({ title: dict.title, description: dict.description, words: [...dict.words] });
-        await fs.promises.writeFile(dict.filename, jsonDictionary);
-    }
-
     async init() {
         if (this.dictionnaries.length !== 0) return;
         this.nextId = 0;
@@ -32,7 +20,7 @@ export class DictionnaryService {
     }
 
     get(id: number): Dictionnary | undefined {
-        return this.dictionnaries.find(dict => dict.id === id);
+        return this.dictionnaries.find((dict) => dict.id === id);
     }
 
     getDictionnaries(): DictionnaryInfo[] {
@@ -40,7 +28,7 @@ export class DictionnaryService {
     }
 
     async add(title: string, description: string, words: string[]): Promise<boolean> {
-        if (this.dictionnaries.some(dictionnary => dictionnary.title === title)) return false;
+        if (this.dictionnaries.some((dictionnary) => dictionnary.title === title)) return false;
         const filename = `./dictionaries/dictionary-${uuidv4()}.json`;
         const newDict = new Dictionnary(this.nextId, title, description, words, filename);
         this.nextId += 1;
@@ -50,7 +38,7 @@ export class DictionnaryService {
     }
 
     async update(id: number, newTitle?: string, newDescription?: string) {
-        const dictionnary = this.dictionnaries.find(dict => dict.id === id);
+        const dictionnary = this.dictionnaries.find((dict) => dict.id === id);
         if (!dictionnary) return;
         if (newTitle) dictionnary.title = newTitle;
         if (newDescription) dictionnary.description = newDescription;
@@ -58,7 +46,7 @@ export class DictionnaryService {
     }
 
     async delete(id: number) {
-        const dictionnaryIdx = this.dictionnaries.findIndex(dict => dict.id === id);
+        const dictionnaryIdx = this.dictionnaries.findIndex((dict) => dict.id === id);
         if (dictionnaryIdx === UNDEFINED || dictionnaryIdx === 0) return;
         await fs.promises.unlink(this.dictionnaries[dictionnaryIdx].filename);
         this.dictionnaries.splice(dictionnaryIdx, 1);
@@ -67,5 +55,17 @@ export class DictionnaryService {
     async deleteAll() {
         for (const dictionnary of this.dictionnaries.slice(1)) await fs.promises.unlink(dictionnary.filename);
         this.dictionnaries.splice(1);
+    }
+
+    private async loadDict(file: string) {
+        const fileBuffer = await promises.readFile(file);
+        const readDictionary = JSON.parse(fileBuffer.toString());
+        this.dictionnaries.push(new Dictionnary(this.nextId, readDictionary.title, readDictionary.description, readDictionary.words, file));
+        this.nextId += 1;
+    }
+
+    private async writeDict(dict: Dictionnary): Promise<void> {
+        const jsonDictionary = JSON.stringify({ title: dict.title, description: dict.description, words: [...dict.words] });
+        await fs.promises.writeFile(dict.filename, jsonDictionary);
     }
 }

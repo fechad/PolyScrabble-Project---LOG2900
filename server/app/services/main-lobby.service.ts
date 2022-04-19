@@ -46,11 +46,7 @@ export class MainLobbyService {
                 if (!dict) throw new Error('Dict deleted'); // TODO
                 const game = new Game(room, dict, this.gameHistoyService);
                 this.roomsService.games.push(game);
-                const vP = new VirtualPlayer(
-                    parameters.difficulty || Difficulty.Beginner,
-                    game,
-                    dict.trie,
-                );
+                const vP = new VirtualPlayer(parameters.difficulty || Difficulty.Beginner, game, dict.trie);
                 vP.waitForTurn();
             }
         });
