@@ -65,7 +65,7 @@ export class SoloDialogComponent implements OnInit {
     }
 
     rightSummary(id: string): boolean {
-        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[3] === id;
+        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[constants.INDEX_POSITION] === id;
     }
 
     async getPlayers(): Promise<string[]> {
