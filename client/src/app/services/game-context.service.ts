@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { CommandParsing } from '@app/classes/command-parsing';
 import { GameState, PlayerInfo } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
+import { Rack } from '@app/classes/rack';
 import { PlayerId, State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -25,7 +25,7 @@ export enum MessageType {
     providedIn: 'root',
 })
 export class GameContextService {
-    readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
+    readonly rack: Rack = new Rack();
     readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
     readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
     readonly objectives: BehaviorSubject<Objective[]> = new BehaviorSubject([] as Objective[]);
@@ -69,7 +69,7 @@ export class GameContextService {
         socket.on('game-error', (error: string) => this.addMessage(error, MessageType.Local));
         socket.on('valid-exchange', (response: string) => this.addMessage(response, MessageType.Command));
         socket.on('rack', (rack: Letter[]) => {
-            this.rack.next(rack);
+            this.rack.rack.next(rack);
             this.allowSwitch(true);
         });
         socket.on('reserve-content', (sortedReserve: ReserveContent) => {
@@ -138,26 +138,6 @@ export class GameContextService {
         }
     }
 
-    tempUpdateRack() {
-        this.rack.next(this.tempRack);
-    }
-
-    attemptTempRackUpdate(letters: string) {
-        const tempRack = [...this.rack.value];
-        for (const letter of letters) {
-            const index = tempRack.findIndex((foundLetter) => {
-                return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && CommandParsing.isUpperCaseLetter(letter));
-            });
-            if (index === cst.MISSING) throw new Error('Ces lettres ne sont pas dans le chevalet');
-            tempRack[index] = tempRack[tempRack.length - 1];
-            tempRack.pop();
-        }
-        this.tempRack = tempRack;
-    }
-    addTempRack(letter: Letter) {
-        this.tempRack.push(letter);
-    }
-
     switchTurn(timerRequest: boolean) {
         if (this.socket?.disconnected) return this.serverDownAlert();
         else this.socket?.emit('switch-turn', timerRequest);
@@ -169,7 +149,7 @@ export class GameContextService {
                 this.serverDownAlert();
             }, cst.SEC_TO_MS);
         }
-        this.tempUpdateRack();
+        this.rack.tempUpdateRack();
         this.allowSwitch(false);
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
@@ -194,7 +174,7 @@ export class GameContextService {
         else
             this.socket?.emit(
                 'current-rack',
-                this.rack.value.map((letter) => letter.name),
+                this.rack.rack.value.map((letter) => letter.name),
             );
     }
 
