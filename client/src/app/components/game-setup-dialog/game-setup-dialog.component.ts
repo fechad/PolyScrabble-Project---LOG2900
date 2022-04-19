@@ -8,10 +8,6 @@ import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { environment } from 'src/environments/environment';
-<<<<<<< HEAD
-=======
-import { CommunicationService, DialogDictionary } from '@app/services/communication.service';
->>>>>>> e29a9bc (show description of dictionary in dialog)
 
 @Component({
     selector: 'app-game-setup-dialog',
@@ -21,15 +17,9 @@ import { CommunicationService, DialogDictionary } from '@app/services/communicat
 export class GameSetupDialogComponent implements OnInit {
     @ViewChild('dropDown') dropDown: ElementRef;
     gameParametersForm: FormGroup;
-<<<<<<< HEAD
     dictionnaries: DbDictionary[];
     environment = environment;
     dictionaryID: number;
-=======
-    dictionnaries: DialogDictionary[];
-    environment = environment;
-    dictionaryName: number;
->>>>>>> e29a9bc (show description of dictionary in dialog)
 
     constructor(
         readonly httpClient: HttpClient,
