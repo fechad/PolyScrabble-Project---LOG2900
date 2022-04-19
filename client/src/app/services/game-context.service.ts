@@ -21,7 +21,7 @@ export enum Command {
     Forfeit = 'confirm-forfeit',
     Exchange = 'change-letters',
     Hint = 'hint',
-    getReserve = 'reserve-content',
+    GetReserve = 'reserve-content',
     SyncRack = 'current-rack',
 }
 
