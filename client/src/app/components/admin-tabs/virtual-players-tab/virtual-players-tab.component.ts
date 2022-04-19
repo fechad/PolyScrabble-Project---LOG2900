@@ -87,7 +87,7 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
                 this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
                 this.text.nativeElement.focus();
             }, constant.RENDERING_DELAY);
-        else if (!isBeginner) {
+        else {
             setTimeout(() => {
                 this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
                 this.textExpert.nativeElement.focus();
