@@ -81,7 +81,6 @@ export class PlaceLetterService {
             this.mouseDetectService.isHorizontal,
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
-        this.nextPosExist();
         if (this.nextPosExist()) this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
         this.gameContextService.tempUpdateRack();
     }
