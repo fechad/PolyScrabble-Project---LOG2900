@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
@@ -12,6 +11,9 @@ import { environment } from 'src/environments/environment';
 import swal from 'sweetalert2';
 import { AuthService } from './auth.service';
 import { GameContextService } from './game-context.service';
+<<<<<<< HEAD
+=======
+>>>>>>> 46980e6 (Add tests)
 
 type Token = number;
 type SaveScoreBody = { id: string | undefined; token: number; room: number | undefined };
@@ -32,7 +34,7 @@ export class CommunicationService {
     private readonly mainSocket: Socket;
     private roomSocket: Socket | undefined;
 
-    constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private router: Router, private io: IoWrapper) {
+    constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private io: IoWrapper) {
         this.rooms = new BehaviorSubject([] as Room[]);
         this.selectedRoom = new BehaviorSubject(undefined as Room | undefined);
         this.dictionnaries = new BehaviorSubject([] as Dictionnary[]);
@@ -187,7 +189,6 @@ export class CommunicationService {
                 showCloseButton: true,
                 confirmButtonText: 'Compris!',
             });
-            this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (error: string) => this.handleError(error));

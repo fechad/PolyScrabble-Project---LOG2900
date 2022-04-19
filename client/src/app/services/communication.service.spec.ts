@@ -3,14 +3,16 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MessageType } from '@app/classes/chat-log';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
-import { Parameters } from '@app/classes/parameters';
+import { GameType, Parameters } from '@app/classes/parameters';
 import { Room, State } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
 import { SocketMock } from '@app/classes/socket-wrapper.spec';
 import { CommunicationService } from '@app/services/communication.service';
+import { BehaviorSubject } from 'rxjs';
 import { GameContextService } from './game-context.service';
 
 /* eslint-disable dot-notation, max-lines */
@@ -18,6 +20,61 @@ import { GameContextService } from './game-context.service';
 class IoWrapperMock {
     io(): SocketMock {
         return new SocketMock();
+    }
+}
+
+export class CommunicationServiceMock {
+    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
+        id: 0,
+        name: 'Room',
+        parameters: { avatar: 'a', timer: 60, dictionnary: 0, gameType: GameType.Multiplayer, log2990: false },
+        mainPlayer: { avatar: 'a', name: 'Player 1', id: '0', connected: true },
+        otherPlayer: undefined,
+        state: State.Setup,
+    } as Room);
+    dictionnaries = new BehaviorSubject<Dictionnary[]>([{ id: 0, title: 'francais', description: 'desc' }]);
+    rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
+
+    isWinner = false;
+
+    start() {
+        return;
+    }
+
+    kick() {
+        return;
+    }
+
+    kickLeave() {
+        return;
+    }
+
+    confirmForfeit() {
+        return;
+    }
+
+    switchTurn(timerRequest: boolean) {
+        return timerRequest;
+    }
+
+    saveScore() {
+        return;
+    }
+    leave() {
+        return;
+    }
+    getId(): number {
+        return 1;
+    }
+    createRoom() {
+        return;
+    }
+    async joinRoom() {
+        return;
+    }
+
+    isServerDown() {
+        return false;
     }
 }
 
@@ -48,7 +105,7 @@ describe('CommunicationService', () => {
         service = TestBed.inject(CommunicationService);
         httpMock = TestBed.inject(HttpTestingController);
         gameContext = TestBed.inject(GameContextService);
-        const dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionnaries');
+        const dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionaries');
         dictionnaries.flush([]);
         sessionStorage.clear();
     });

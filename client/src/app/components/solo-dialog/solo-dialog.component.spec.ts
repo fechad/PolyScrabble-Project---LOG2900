@@ -9,9 +9,9 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { State } from '@app/classes/room';
-import { CommunicationServiceMock } from '@app/constants';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { SoloDialogComponent } from './solo-dialog.component';
 
 const dialogMock = {

@@ -8,9 +8,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CommunicationServiceMock } from '@app/constants';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { JoinSetupDialogComponent } from './join-setup-dialog.component';
 
 const dialogMock = {

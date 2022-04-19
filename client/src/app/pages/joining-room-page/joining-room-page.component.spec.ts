@@ -4,8 +4,8 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Parameters } from '@app/classes/parameters';
 import { Room, State } from '@app/classes/room';
-import { CommunicationServiceMock } from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { JoiningRoomPageComponent } from './joining-room-page.component';
 
 const dialogMock = {

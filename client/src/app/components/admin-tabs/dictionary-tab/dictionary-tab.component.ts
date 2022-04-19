@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -26,10 +26,15 @@ export class DictionaryTabComponent implements OnInit {
     dictionaries: Dictionnary[] = [];
     editedDictionary: number | undefined;
 
-    constructor(readonly httpClient: HttpClient, private formBuilder: FormBuilder, private snackbar: MatSnackBar, private communicationService: CommunicationService) {
-        communicationService.dictionnaries.subscribe(dictionaries => {
+    constructor(
+        readonly httpClient: HttpClient,
+        private formBuilder: FormBuilder,
+        private snackbar: MatSnackBar,
+        private communicationService: CommunicationService,
+    ) {
+        communicationService.dictionnaries.subscribe((dictionaries) => {
             this.dictionaries = dictionaries;
-        })
+        });
     }
 
     async ngOnInit(): Promise<void> {
@@ -42,26 +47,32 @@ export class DictionaryTabComponent implements OnInit {
 
     async addDictionary(files: FileList) {
         try {
-            await this.httpClient.post<string>(`${environment.serverUrl}/dictionaries`, files[0]).toPromise();
-            this.communicationService.updateDictionaries();
+            await this.httpClient.post(`${environment.serverUrl}/dictionaries`, files[0], { responseType: 'text' }).toPromise();
+            await this.communicationService.updateDictionaries();
             this.snackbar.open('Le dictionnaire a bien été ajouté', 'OK', { duration: 2000, panelClass: ['snackbar'] });
         } catch (e) {
-            console.error(e);
-            this.snackbar.open("Le dictionnaire n'a pas pu être ajouté. Est-il dans le bon format?", 'OK', { duration: 2000, panelClass: ['snackbar'] });
+            const error = e as HttpErrorResponse;
+            const errorMsg =
+                error.error instanceof ErrorEvent
+                    ? "Impossible d'accéder au serveur"
+                    : error.status === HttpStatusCode.Conflict
+                    ? 'Il existe déjà un dictionnaire avec ce nom'
+                    : "Le format n'est pas respecté";
+            this.snackbar.open(`Le dictionnaire n'a pas pu être ajouté. ${errorMsg}`, 'OK', { duration: 2000, panelClass: ['snackbar'] });
         }
     }
 
     async deleteDictionary(id: number) {
         await this.httpClient.delete<void>(`${environment.serverUrl}/dictionaries/${id}`).toPromise();
-        this.communicationService.updateDictionaries();
+        await this.communicationService.updateDictionaries();
     }
 
     startEdit(id: number) {
         this.editedDictionary = id;
-        const dictionary = this.dictionaries.find(dict => dict.id === id);
+        const dictionary = this.dictionaries.find((dict) => dict.id === id);
         if (!dictionary) return;
-        this.dictionaryForm.get('title')?.setValue(dictionary.title)
-        this.dictionaryForm.get('description')?.setValue(dictionary.description)
+        this.dictionaryForm.get('title')?.setValue(dictionary.title);
+        this.dictionaryForm.get('description')?.setValue(dictionary.description);
     }
 
     async updateDictionary() {
@@ -74,17 +85,20 @@ export class DictionaryTabComponent implements OnInit {
             this.error = 'Le titre ne peut pas être vide';
             return;
         }
-        await this.httpClient.patch<void>(`${environment.serverUrl}/dictionaries/${this.editedDictionary}`, { title: newTitle, description: this.dictionaryForm.value.description }).toPromise();
-        this.communicationService.updateDictionaries();
+        await this.httpClient
+            .patch(`${environment.serverUrl}/dictionaries/${this.editedDictionary}`, {
+                title: newTitle,
+                description: this.dictionaryForm.value.description,
+            })
+            .toPromise();
+        await this.communicationService.updateDictionaries();
         this.editedDictionary = undefined;
     }
 
-    async downloadDictionary(id: number) {
-        await this.httpClient.get(`${environment.serverUrl}/dictionary/${id}`).toPromise();
-    }
-
     findDoubles(titleToFind: string): boolean {
-        return this.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === titleToFind.toLowerCase());
+        return this.dictionaries.some(
+            (dictionary) => dictionary.id !== this.editedDictionary && dictionary.title.toLowerCase() === titleToFind.toLowerCase(),
+        );
     }
 
     emptyForm() {
@@ -97,7 +111,7 @@ export class DictionaryTabComponent implements OnInit {
 
     async deleteAll() {
         await this.httpClient.delete(`${environment.serverUrl}/dictionaries/all`).toPromise();
-        this.communicationService.updateDictionaries();
+        await this.communicationService.updateDictionaries();
     }
 
     async confirmReset() {

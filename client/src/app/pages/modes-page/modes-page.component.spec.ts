@@ -4,10 +4,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CommunicationServiceMock } from '@app/constants';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { ModesPageComponent } from './modes-page.component';
 
 export class ActivatedRouteMock {

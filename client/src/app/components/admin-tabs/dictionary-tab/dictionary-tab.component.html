@@ -11,11 +11,10 @@
                 <p>{{ dictionary.description }}</p>
             </div>
             <a
-                href="{{ environment.serverUrl }}/dictionary/{{ dictionary.id }}"
-                download
+                href="{{ environment.serverUrl }}/dictionaries/{{ dictionary.id }}"
+                download="{{dictionary.title}}.json"
                 class="download"
-                (click)="downloadDictionary(dictionary.id)"
-                ><fa-icon [icon]="faDownload" size="lg"></fa-icon
+            ><fa-icon [icon]="faDownload" size="lg"></fa-icon
             ></a>
         </div>
         <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
