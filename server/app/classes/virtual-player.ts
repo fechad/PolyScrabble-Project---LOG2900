@@ -54,7 +54,11 @@ export class VirtualPlayer {
         const rack = this.game.reserve.letterRacks[this.game.players[cst.MAIN_PLAYER].id === this.id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER];
         const changeLetters = async (length: number) => {
             await minTimeout;
-            if (!played) this.game.changeLetters(rack.slice(0, Math.min(this.game.reserve.getCount(), length)).map(letter => letter.toLowerCase()), this.id);
+            if (!played)
+                this.game.changeLetters(
+                    rack.slice(0, Math.min(this.game.reserve.getCount(), length)).map((letter) => letter.toLowerCase()),
+                    this.id,
+                );
             played = true;
         };
         const play = async (chosenWord: PlacementOption) => {
@@ -62,7 +66,7 @@ export class VirtualPlayer {
             if (!played) await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
             played = true;
         };
-        const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
+        const randomOutOfTen = 1; // Math.floor(Math.random() * cst.PROBABILITY);
         if (this.difficulty === Difficulty.Expert) {
             const sortedWordOptions = this.chooseWords(rack);
             if (sortedWordOptions.length > 0) await play(sortedWordOptions[0].placement);
@@ -76,7 +80,7 @@ export class VirtualPlayer {
             await play(sortedWordOptions[randomIndex].placement);
         } else if (randomOutOfTen === 1 && this.game.reserve.getCount() >= cst.RACK_LENGTH) {
             // 10 % chance
-            const sliceIndex = Math.floor(Math.random() * rack.length);
+            const sliceIndex = Math.floor(Math.random() * rack.length + 1);
             await changeLetters(sliceIndex);
         }
     }
