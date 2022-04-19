@@ -102,7 +102,7 @@ export class ChatBoxLogicService {
     }
 
     private getReserve() {
-        this.gameContextService.executeCommand(Command.getReserve);
+        this.gameContextService.executeCommand(Command.GetReserve);
     }
 
     private assignPositionSpec(positionBlock: string) {
