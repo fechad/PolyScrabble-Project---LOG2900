@@ -33,10 +33,10 @@ export class GameHistoryTabComponent implements OnInit {
         this.snackbar.open(response, 'OK', { duration: 2000, panelClass: ['snackbar'] });
     }
 
-    async confirmReset() {
+    async confirmReset(resettingScores: boolean) {
         const result = await Swal.fire({
             title: 'Êtes-vous sûr?',
-            text: 'Vous vous apprêtez à effacer toutes les parties',
+            text: `Vous vous apprêtez à effacer ${resettingScores ? 'tous les meilleurs scores.' : 'toutes les parties.'}`,
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Oui',
@@ -45,7 +45,9 @@ export class GameHistoryTabComponent implements OnInit {
         });
 
         if (!result.value) return;
-        if (result.isConfirmed) {
+        if (result.isConfirmed && resettingScores) {
+            this.clearHighScores();
+        } else if (result.isConfirmed) {
             this.clearHistory();
         } else {
             Swal.close();

@@ -1,8 +1,24 @@
 <div class="infos">
     <div class="player">
-        <div *ngIf="summary && isWinner">👑</div>
-        <div 
-        [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false }" class="profile"><img class="profile-icon" [src]="myAvatar" /></div>
+        <div class="avatar-container">
+            <div>
+                <div class="crown" *ngIf="summary && isWinner">👑</div>
+                <div
+                    [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false }"
+                    class="profile"
+                >
+                    <img class="profile-icon" [src]="myAvatar" />
+                </div>
+            </div>
+            <div class="jump-container">
+                <div *ngIf="(gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false" class="jump">
+                    <div class="jump1"></div>
+                    <div class="jump2"></div>
+                    <div class="jump3"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="p-infos">
             <p class="name">{{ (this.gameContextService.getMe() | async)?.info?.name }}</p>
             <p class="points">{{ (this.gameContextService.getMe() | async)?.score }} points</p>
@@ -27,14 +43,38 @@
             <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
         </button>
     </div>
-    <div class="summary-container"> 
+    <div class="summary-container">
         <p *ngIf="summary">{{ summary }}</p>
     </div>
     <p class="reserve-title">Réserve:</p>
     <p class="reserve">{{ (this.gameContextService.state | async)?.reserveCount }} lettres restantes</p>
     <div class="opponent">
-        <div *ngIf="summary && !isWinner">👑</div>
-        <div [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false }" class="profile"><img class="profile-icon" [src]="opponentAvatar" /></div>
+        <div class="avatar-container">
+            <div>
+                <div class="crown" *ngIf="summary && !isWinner">👑</div>
+                <div
+                    [ngClass]="{
+                        playing: (gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false
+                    }"
+                    class="profile"
+                >
+                    <img class="profile-icon" [src]="opponentAvatar" />
+                </div>
+            </div>
+
+            <div class="jump-container">
+                <div class="point"></div>
+                <div
+                    *ngIf="(gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false"
+                    class="jump point"
+                >
+                    <div class="jump1"></div>
+                    <div class="jump2"></div>
+                    <div class="jump3"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="p-infos">
             <p class="name">{{ (this.gameContextService.getOther() | async)?.info?.name }}</p>
             <p class="points">{{ (this.gameContextService.getOther() | async)?.score }} points</p>

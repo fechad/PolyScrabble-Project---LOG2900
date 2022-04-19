@@ -60,40 +60,43 @@ export class DictionaryTabComponent implements OnInit {
         return this.newDictionnary;
     }
 
-    async getFileInfos(e: Event) {
-        const target = e.target as HTMLInputElement;
+    async getFileInfos(event: Event) {
+        const target = event.target as HTMLInputElement;
         const newFile = (target.files as FileList)[0];
         const reader = new FileReader();
         reader.onload = () => {
             const content = reader.result as string;
             try {
                 const obj = JSON.parse(content);
-                if (this.validateDictionary(obj.title, obj.description, obj.words)) {
-                    this.newWords = obj.words;
-                    this.dictionaryForm.value.title = obj.title;
-                    this.dictionaryForm.value.description = obj.description;
-                    this.createNewDbDictionary();
-                } else throw new Error();
-            } catch (error) {
-                this.error = 'Veuillez choisir un fichier de format JSON contenant un titre, une description et une liste de mots.';
+                this.validateDictionary(obj.title, obj.description, obj.words);
+                this.newWords = obj.words;
+                this.dictionaryForm.value.title = obj.title;
+                this.dictionaryForm.value.description = obj.description;
+                this.createNewDbDictionary();
+            } catch (e) {
+                const error = e as Error;
+                if (error.message.includes('token')) this.error = 'Dictionnaire non admissible: seul le format JSON est accepté. ';
+                else this.error = error.message;
                 this.dictionaryForm.controls.file.reset();
             }
         };
         reader.readAsText(newFile);
     }
 
-    validateDictionary(title: string, description: string, words: string[]): boolean {
+    validateDictionary(title: string, description: string, words: string[]) {
         const validTitle = title !== '' && title !== undefined;
         const validDescription = description !== '' && description !== undefined;
-        return validTitle && validDescription && this.validateDictionaryWords(words);
+        if (!validTitle && !validDescription)
+            throw new Error('Dictionnaire non admissible: votre dictionnaire doit contenir un titre et une description.');
+        this.validateDictionaryWords(words);
     }
 
-    validateDictionaryWords(words: string[]): boolean {
+    validateDictionaryWords(words: string[]) {
         for (const word of words) {
-            if (word.includes(' ') || !word.match(/[A-zÀ-ù]/g)) return false;
-            if (word.length > BOARD_SIZE) return false;
+            if (word.includes(' ') || !word.match(/[A-zÀ-ù]/g))
+                throw new Error('Dictionnaire non admissible: au moins un des mots contient des caractères non alphabétiques.');
+            if (word.length > BOARD_SIZE) throw new Error('Dictionnaire non admissible: au moins un des mots contient plus de 15 lettres.');
         }
-        return true;
     }
 
     async addDictionary() {
@@ -162,7 +165,7 @@ export class DictionaryTabComponent implements OnInit {
     async confirmReset() {
         const result = await Swal.fire({
             title: 'Êtes-vous sûr?',
-            text: 'Vous vous apprêtez à réinitialiser tous les dictionnaires',
+            text: 'Vous vous apprêtez à réinitialiser tous les dictionnaires.',
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Oui',

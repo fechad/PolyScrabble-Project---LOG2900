@@ -4,9 +4,7 @@
             <h1>{{ headerName }}</h1>
         </div>
         <div *ngFor="let objective of objectives">
-            <p [ngClass]="{ available: objective.available, isMine: objective.mine }">
-                {{ objective.text }}: {{ objective.score }}pts
-            </p>
+            <p [ngClass]="{ available: objective.available, isMine: objective.mine }">{{ objective.text }}: {{ objective.score }}pts</p>
         </div>
     </div>
     <button (click)="showObjectives()">

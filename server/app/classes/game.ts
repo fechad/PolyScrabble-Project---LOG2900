@@ -98,10 +98,11 @@ export class Game {
     }
 
     private static genRandomObjectives(playerOne: PlayerId, playerTwo: PlayerId): Objectives {
+        const playedWords: Set<string> = new Set<string>();
         const players = [undefined, undefined, playerOne, playerTwo];
         return this.shuffleArray(OBJECTIVE_TYPES.slice())
             .slice(0, players.length)
-            .map((objectiveType, i) => ({ objective: new objectiveType(), player: players[i] }));
+            .map((objectiveType, i) => ({ objective: new objectiveType(playedWords), player: players[i] }));
     }
 
     private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
