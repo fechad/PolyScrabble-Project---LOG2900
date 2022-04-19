@@ -9,13 +9,14 @@
 .close {
     width: 0%;
 }
-
+.done {
+}
 p.available {
     color: black;
     font-size: 15px;
 }
 
-p:not(.available) {
+p:not(.available).p:not(.done) {
     text-decoration: line-through;
 }
 
@@ -23,8 +24,9 @@ p.isMine {
     color: darkolivegreen;
 }
 
-p:not(.available, .isMine) {
-    color: rgb(8, 8, 8);
+.done {
+    color: rgba(201, 201, 201, 0.499);
+    text-decoration: none;
 }
 
 .objectives {

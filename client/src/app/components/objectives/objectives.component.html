@@ -4,7 +4,11 @@
             <h1>{{ headerName }}</h1>
         </div>
         <div *ngFor="let objective of objectives">
-            <p [ngClass]="{ available: objective.available, isMine: objective.mine }">{{ objective.text }}: {{ objective.score }}pts</p>
+            <p *ngIf="!objective.isPublic && (objective.available || objective.mine)">Votre objectif</p>
+            <p [ngClass]="{ available: objective.available, isMine: objective.mine, done: !objective.available && !objective.mine }">
+                {{ objective.text }}: {{ objective.score }}pts
+            </p>
+            <p *ngIf="!objective.isPublic && (objective.available || objective.mine)">Objectif de votre adversaire</p>
         </div>
     </div>
     <button (click)="showObjectives()">
