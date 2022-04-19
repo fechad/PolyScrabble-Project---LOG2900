@@ -1,5 +1,4 @@
 import { State } from '@app/classes/room';
-import { DbDictionariesService } from '@app/services/db-dictionaries.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
@@ -26,11 +25,44 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
     },
 };
 
+const NEW_DICT_SCHEMA: ValidateFunction = {
+    type: 'object',
+    required: ['name', 'description', 'words'],
+    properties: {
+        name: {
+            type: 'string',
+            minLength: 1,
+        },
+        description: {
+            type: 'string',
+        },
+        words: {
+            type: 'array',
+            items: {
+                type: 'string',
+                minLength: 2,
+            },
+        },
+    },
+};
+
+const PATCH_DICT_SCHEMA: ValidateFunction = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            minLength: 1,
+        },
+        description: {
+            type: 'string',
+        },
+    },
+};
+
 @Service()
 export class HttpController {
     router: Router;
     private vpNamesService: VpNamesService;
-    private dbDictionaryService: DbDictionariesService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
@@ -47,7 +79,6 @@ export class HttpController {
     private async init() {
         await this.dataBase.connect();
         this.vpNamesService = Container.get(VpNamesService);
-        this.dbDictionaryService = Container.get(DbDictionariesService);
         await this.highScoreService.connect();
         await this.gameHistoryService.connect();
     }
@@ -55,12 +86,6 @@ export class HttpController {
     private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
-        this.router.get('/dictionnaries', async (req: Request, res: Response) => {
-            await this.dbDictionaryService.syncDictionaries();
-            await this.dictionnaryService.copyDictionaries();
-            const dictionnaries = this.dictionnaryService.getDictionnaries();
-            res.json(dictionnaries);
-        });
         this.router.delete('/high-scores', async (req: Request, res: Response) => {
             await this.highScoreService.resetScores(res);
         });
@@ -115,31 +140,30 @@ export class HttpController {
             res.json(names);
         });
 
-        this.router.get('/dictionaries', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.getDictionaries();
-            res.json(dictionaries);
+        this.router.get('/dictionaries/:id', async (req: Request, res: Response) => {
+            const dictionary = this.dictionnaryService.get(Number.parseInt(req.params.id));
+            if (!dictionary) res.sendStatus(StatusCodes.NOT_FOUND);
+            else res.download(dictionary.filename);
         });
-
-        this.router.post('/dictionaries', async (req: Request, res: Response) => {
-            await this.dbDictionaryService.addDictionary(req.body, res);
+        this.router.patch('/dictionaries/:id', validate({ body: PATCH_DICT_SCHEMA }), async (req: Request, res: Response) => {
+            await this.dictionnaryService.update(Number.parseInt(req.params.id), req.body.name, req.body.description);
+            res.sendStatus(StatusCodes.NO_CONTENT);
         });
-        this.router.patch('/dictionaries', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.updateDictionary(req.body);
-            res.json(dictionaries);
+        this.router.delete('/dictionaries/all', async (req: Request, res: Response) => {
+            await this.dictionnaryService.deleteAll();
+            res.sendStatus(StatusCodes.NO_CONTENT);
         });
         this.router.delete('/dictionaries/:id', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.deleteDictionary(req.params.id);
-            res.json(dictionaries);
+            await this.dictionnaryService.delete(Number.parseInt(req.params.id));
+            res.sendStatus(StatusCodes.NO_CONTENT);
         });
-
-        this.router.get('/dictionary-files/:id', async (req: Request, res: Response) => {
-            const dictionary = await this.dbDictionaryService.downloadDictionary(req.params.id);
-            res.download(dictionary);
+        this.router.get('/dictionaries', async (req: Request, res: Response) => {
+            const dictionnaries = this.dictionnaryService.getDictionnaries();
+            res.json(dictionnaries);
         });
-
-        this.router.delete('/dictionaries-reset', async (req: Request, res: Response) => {
-            const dictionaries = await this.dbDictionaryService.deleteAll();
-            res.json(dictionaries);
+        this.router.post('/dictionaries', validate({ body: NEW_DICT_SCHEMA }), async (req: Request, res: Response) => {
+            const response = await this.dictionnaryService.add(req.body.name, req.body.description, req.body.words);
+            res.status(StatusCodes.OK).json(response);
         });
 
         this.router.delete('/vp-names-reset', async (req: Request, res: Response) => {

@@ -14,18 +14,15 @@ describe('MainLobby service tests', () => {
     let rooms: RoomsService;
     let playersSocket: EventEmitter[];
     let dictionnaryService: DictionnaryService;
-    let gameHistory: GameHistoryService;
 
     before(async () => {
         dictionnaryService = Container.get(DictionnaryService);
         await dictionnaryService.init();
-        gameHistory = Container.get(GameHistoryService);
-        await gameHistory.connect();
     });
 
     beforeEach(() => {
         rooms = new RoomsService();
-        service = new MainLobbyService(rooms, dictionnaryService, gameHistory);
+        service = new MainLobbyService(rooms, dictionnaryService, {} as unknown as GameHistoryService);
 
         const player1 = new EventEmitter();
         service.connect(player1, 'DummyId');

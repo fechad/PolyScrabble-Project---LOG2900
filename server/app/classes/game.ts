@@ -1,4 +1,5 @@
 import { ALPHABET } from '@app/alphabet-template';
+import { Dictionnary } from '@app/classes/dictionary';
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
 import * as constants from '@app/constants';
 import { GameHistory, GameMode, PlayerGameInfo } from '@app/game-history';
@@ -8,7 +9,6 @@ import { VpNamesService } from '@app/services/vp-names.service';
 import { EventEmitter } from 'events';
 import { Container } from 'typedi';
 import { Board } from './board';
-import { Dictionnary } from './dictionary';
 import { Objective, OBJECTIVE_TYPES } from './objectives';
 import { Difficulty } from './parameters';
 import { PlacementOption } from './placement-option';
@@ -387,7 +387,7 @@ export class Game {
         this.players[idxPlayerToReplace].name = listOfNames[idxName].name;
         this.players[idxPlayerToReplace].virtual = true;
         this.players[idxPlayerToReplace].id = 'VP';
-        const vP = new VirtualPlayer(Difficulty.Expert, this, this.dictionary.trie);
+        const vP = new VirtualPlayer(Difficulty.Beginner, this, this.dictionary.trie);
         vP.waitForTurn();
     }
 

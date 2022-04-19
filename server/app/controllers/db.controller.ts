@@ -1,4 +1,3 @@
-import { promises } from 'fs';
 import { Db, MongoClient } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -38,18 +37,6 @@ export const DEFAULT_VPS: VP[] = [
     { default: true, beginner: false, name: 'Justin' },
     { default: true, beginner: false, name: 'Xavier' },
 ];
-export const DEFAULT_DICTIONARY: DbDictionary[] = [];
-// need to wait for file reading
-// eslint-disable-next-line no-async-promise-executor
-new Promise(async (resolve) => {
-    const fileBuffer = await promises.readFile('./assets/dictionnary.json');
-    const readDictionary = JSON.parse(fileBuffer.toString());
-    const dictionary: DbDictionary[] = [{ id: 0, title: readDictionary.title, description: readDictionary.description, words: readDictionary.words }];
-    resolve(dictionary);
-}).then((words: DbDictionary[]) => {
-    DEFAULT_DICTIONARY.push(words[0]);
-    return words;
-});
 
 @Service()
 export class DataBaseController {

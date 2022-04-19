@@ -144,7 +144,7 @@ const dummyFind = (game: Game, dictionnary: Dictionnary, rack: string[]): Placem
     const gameHistoryService = new GameHistoryService(new DataBaseController());
 
     for (let i = 0; ; i++) {
-        console.log('Iteration ' + (i + 1));
-        await playGame(dictionnaryService.dictionnaries[0], gameHistoryService, true);
+        console.log(`Iteration ${i + 1}`);
+        await playGame(dictionnaryService.get(0)!, gameHistoryService, true);
     }
 })();

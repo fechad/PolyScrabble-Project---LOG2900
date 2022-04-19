@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
@@ -23,7 +24,7 @@ export type DialogDictionary = { id: number; name: string; description: string; 
 export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]>;
     readonly selectedRoom: BehaviorSubject<Room | undefined>;
-    readonly dictionnaries: Promise<DialogDictionary[]>;
+    readonly dictionnaries: BehaviorSubject<Dictionnary[]>;
     private myId: BehaviorSubject<PlayerId | undefined>;
     private token: Token;
 
@@ -34,6 +35,7 @@ export class CommunicationService {
     constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private router: Router, private io: IoWrapper) {
         this.rooms = new BehaviorSubject([] as Room[]);
         this.selectedRoom = new BehaviorSubject(undefined as Room | undefined);
+        this.dictionnaries = new BehaviorSubject([] as Dictionnary[]);
         this.myId = new BehaviorSubject(undefined as PlayerId | undefined);
         this.roomSocket = undefined;
         this.waitingRoomsSocket = this.io.io(`${environment.socketUrl}/waitingRoom`);
@@ -44,7 +46,7 @@ export class CommunicationService {
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('error', (error) => this.handleError(error));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
-        this.dictionnaries = httpClient.get<DialogDictionary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
+        this.updateDictionaries();
 
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
             this.myId.next(id);
@@ -53,6 +55,11 @@ export class CommunicationService {
 
             addEventListener('beforeunload', () => AuthService.saveAuth(id), { capture: true });
         });
+    }
+
+    async updateDictionaries(): Promise<void> {
+        this.dictionnaries.next([]);
+        this.dictionnaries.next(await this.httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionaries`).toPromise());
     }
 
     async saveScore() {

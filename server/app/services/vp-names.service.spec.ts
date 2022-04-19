@@ -35,9 +35,10 @@ describe('VpNamesService', () => {
     const dataBase = new DataBaseController();
     const dataBaseManager: DBManager = new DBManager();
     let collection: Collection;
+
     beforeEach(async () => {
         await dataBaseManager.start();
-        await dataBase.connect();
+        dataBase.db = dataBaseManager.db;
         vpNamesService = new VpNamesService(dataBase);
         collection = dataBaseManager.db.collection(COLLECTIONS[0]);
         // pour pouvoir accéder à l'atribut private

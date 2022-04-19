@@ -3,7 +3,6 @@ import { Dictionnary } from '@app/classes/dictionary';
 import { Game } from '@app/classes/game';
 import { Parameters } from '@app/classes/parameters';
 import { Room } from '@app/classes/room';
-import { ClientDictionaryInterface, DbDictionariesService } from '@app/services/db-dictionaries.service';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
@@ -44,7 +43,7 @@ class DBManager {
 }
 
 describe('HttpController', () => {
-    const DICTIONNARIES: Dictionnary[] = [new Dictionnary(0, 'français', [], 'description')];
+    const DICTIONNARIES: Dictionnary[] = [new Dictionnary(0, 'français', 'description', ['a', 'b', 'c'], 'filename.json')];
     const HIGH_SCORES_LOG2990 = [
         { score: 34, names: ['Bob', 'Bob1'] },
         { score: 33, names: ['Bo', 'B'] },
@@ -65,13 +64,10 @@ describe('HttpController', () => {
         { default: true, beginner: false, name: 'Xavier' },
     ];
 
-    const DICTIONARY: ClientDictionaryInterface[] = [{ id: 0, title: 'Mon dictionnaire', description: 'Description de base' }];
-
     let highScoreService: SinonStubbedInstance<HighScoresService>;
     let dictionnaryService: SinonStubbedInstance<DictionnaryService>;
     let gameHistoryService: SinonStubbedInstance<GameHistoryService>;
     let vpNamesService: SinonStubbedInstance<VpNamesService>;
-    let dbDictionaryService: SinonStubbedInstance<DbDictionariesService>;
     const dataBase = new DataBaseController();
     const dataBaseManager: DBManager = new DBManager();
     let roomsService: RoomsService;
@@ -79,10 +75,12 @@ describe('HttpController', () => {
 
     before(async () => {
         await dataBaseManager.start();
+        dataBase.db = dataBaseManager.db;
         await dataBase.connect();
         dictionnaryService = createStubInstance(DictionnaryService);
         dictionnaryService.getDictionnaries.returns(DICTIONNARIES.map((dict) => dict.getInfo()));
         dictionnaryService.init.callsFake(async () => Promise.resolve());
+        dictionnaryService.get.returns(new Dictionnary(0, 'a', 'd', [], 'tsconfig.spec.json'));
         highScoreService = createStubInstance(HighScoresService);
         highScoreService.resetScores.callsFake(async (res) => {
             res.status(StatusCodes.OK).send('succes');
@@ -95,20 +93,11 @@ describe('HttpController', () => {
         vpNamesService.addVP.callsFake(async (vp, res) => {
             res.status(StatusCodes.OK).send(`succes, ${vp}`);
         });
-        dbDictionaryService = createStubInstance(DbDictionariesService);
-        dbDictionaryService.getDictionaries.returns(Promise.resolve(DICTIONARY));
-        dbDictionaryService.syncDictionaries.returns(Promise.resolve());
-        dbDictionaryService.addDictionary.callsFake(async (dictionary, res) => {
-            res.status(StatusCodes.OK).send(`succes, ${dictionary}`);
-        });
-        dbDictionaryService.downloadDictionary.returns(Promise.resolve('/dictionaries/dictionary-test.json'));
-        await gameHistoryService.connect();
         const loginsService = createStubInstance(LoginsService);
         loginsService.verify.callsFake((id, token) => id === ID && token === TOKEN);
         roomsService = new RoomsService();
         Container.set(DictionnaryService, dictionnaryService);
         Container.set(VpNamesService, vpNamesService);
-        Container.set(DbDictionariesService, dbDictionaryService);
         Container.set(HighScoresService, highScoreService);
         Container.set(LoginsService, loginsService);
         Container.set(RoomsService, roomsService);
@@ -129,11 +118,6 @@ describe('HttpController', () => {
     });
     afterEach(async () => {
         dataBaseManager.cleanup();
-    });
-
-    it('should return dictionnaries on request to /dictionnaries', async () => {
-        const response = await supertest(expressApp).get('/api/dictionnaries').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal(DICTIONNARIES.map((dict) => dict.getInfo()));
     });
 
     it('should return normal high scores', async () => {
@@ -243,32 +227,32 @@ describe('HttpController', () => {
         await supertest(expressApp).delete('/api/vp-names/:name').send({ name: 'Hi' }).expect(StatusCodes.OK);
     });
 
-    it('should return default dictionary on request to /dictionaries', async () => {
+    it('should return dictionaries on request to /dictionaries', async () => {
         const response = await supertest(expressApp).get('/api/dictionaries').expect(StatusCodes.OK);
-        expect(response.body).to.deep.equal(DICTIONARY);
+        expect(response.body).to.deep.equal(DICTIONNARIES.map((dict) => dict.getInfo()));
     });
 
     it('should add dictionary', async () => {
         await supertest(expressApp)
             .post('/api/dictionaries')
-            .send({ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] })
+            .send({ name: 'Test', description: 'Testing', words: ['aa', 'bb'] })
             .expect(StatusCodes.OK);
-        expect(dbDictionaryService.addDictionary.args[0][0]).to.deep.equal({ id: 20, title: 'Test', description: 'Testing', words: ['a', 'b'] });
+        expect(dictionnaryService.add.args[0]).to.deep.equal(['Test', 'Testing', ['aa', 'bb']]);
     });
 
     it('should update dictionaries', async () => {
         await supertest(expressApp)
-            .patch('/api/dictionaries')
-            .send({ id: 20, title: 'Modif', description: 'Testing', words: ['a', 'b'] })
-            .expect(StatusCodes.OK);
+            .patch('/api/dictionaries/1')
+            .send({ name: 'Modif', description: 'Testing' })
+            .expect(StatusCodes.NO_CONTENT);
     });
 
     it('should delete dictionaries', async () => {
-        await supertest(expressApp).delete('/api/dictionaries/:id').send({ id: '3' }).expect(StatusCodes.OK);
+        await supertest(expressApp).delete('/api/dictionaries/:id').expect(StatusCodes.NO_CONTENT);
     });
 
     it('should reset dictionaries', async () => {
-        await supertest(expressApp).delete('/api/dictionaries-reset').expect(StatusCodes.OK);
+        await supertest(expressApp).delete('/api/dictionaries/all').expect(StatusCodes.NO_CONTENT);
     });
 
     it('should reset virtual player names to default', async () => {
@@ -277,7 +261,7 @@ describe('HttpController', () => {
 
     it('should download dictionaries', async () => {
         sinon.stub(express.response.download);
-        await supertest(expressApp).get('/api/dictionary-files/0').expect(StatusCodes.NOT_FOUND);
-        expect(dbDictionaryService.downloadDictionary.args[0][0]).to.deep.equal('0');
+        const response = await supertest(expressApp).get('/api/dictionaries/0').expect(StatusCodes.OK);
+        expect(response.text).to.deep.equal('{\n    "extends": "./tsconfig.json",\n    "include": ["app/**/*.ts", "test/*"]\n}\n');
     });
 });

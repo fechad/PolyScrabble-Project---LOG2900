@@ -41,7 +41,7 @@ export class SoloDialogComponent implements OnInit {
         const minutesSelect = this.data.timer ? Math.floor(this.data.timer / constants.CONVERT_TO_SECONDS) : 1;
         const secondsSelect = this.data.timer ? this.data.timer % constants.CONVERT_TO_SECONDS : 0;
         const dictionarySelect = this.data.dictionnary
-            ? (await this.communicationService.dictionnaries).findIndex((dictionary) => dictionary.name === this.data.dictionnary)
+            ? this.communicationService.dictionnaries.value.findIndex((dictionary) => dictionary.title === this.data.dictionnary)
             : 0;
 
         this.soloParametersForm = this.formBuilder.group({

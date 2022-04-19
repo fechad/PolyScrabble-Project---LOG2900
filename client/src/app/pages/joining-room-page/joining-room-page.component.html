@@ -19,7 +19,7 @@
                 <span class="params">
                     <p id="firstPlayer">{{ room.name }}</p>
                     <p id="timer">Temps limite par tour: {{ room.parameters.timer }} secondes</p>
-                    <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[room.parameters.dictionnary].name : '…' }}</p>
+                    <p id="dictChoice">Dictionnaire: {{ dictionnaries ? dictionnaries[room.parameters.dictionnary].title : '…' }}</p>
                 </span>
             </div>
             <img class="avatar" [src]="room.parameters.avatar" />

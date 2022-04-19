@@ -19,7 +19,7 @@ export class JoiningRoomPageComponent {
     constructor(public dialog: MatDialog, communicationService: CommunicationService, location: ActivatedRoute) {
         this.log2990 = location.snapshot.url[0].toString() === 'joining-room-log2990';
         communicationService.rooms?.subscribe((rooms) => (this.rooms = rooms.filter((room) => room.parameters.log2990 === this.log2990)));
-        communicationService.dictionnaries.then((dictionnaries) => {
+        communicationService.dictionnaries.subscribe((dictionnaries) => {
             this.dictionnaries = dictionnaries;
         });
     }
@@ -29,7 +29,7 @@ export class JoiningRoomPageComponent {
             data: {
                 room: room.id,
                 name: room.mainPlayer.name,
-                dictionnary: this.dictionnaries ? this.dictionnaries[room.parameters?.dictionnary || 0]?.name : '…',
+                dictionnary: this.dictionnaries ? this.dictionnaries[room.parameters?.dictionnary || 0]?.title : '…',
                 timer: room.parameters.timer,
             },
         });

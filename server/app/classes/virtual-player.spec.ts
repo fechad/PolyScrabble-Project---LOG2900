@@ -17,15 +17,12 @@ describe('VirtualPlayer', () => {
     let game: Game;
     let vP: VirtualPlayer;
     let dictionnaryService: DictionnaryService;
-    let gameHistory: GameHistoryService;
     let parameters: Parameters;
     let previousMathRandom: typeof Math.random;
 
     before(async () => {
         dictionnaryService = Container.get(DictionnaryService);
         await dictionnaryService.init();
-        gameHistory = Container.get(GameHistoryService);
-        await gameHistory.connect();
     });
 
     beforeEach(() => {
@@ -38,8 +35,8 @@ describe('VirtualPlayer', () => {
         const room = new Room(1, '1', 'Dummy', parameters);
         room.addPlayer('2', 'otherDummy', false, 'a');
         room.addPlayer(constants.AI_ID, 'heo', true, 'a');
-        game = new Game(room, dictionnaryService.dictionnaries[0], gameHistory);
-        vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
+        game = new Game(room, dictionnaryService.get(0)!, {} as unknown as GameHistoryService);
+        vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.get(0)!.trie);
         previousMathRandom = Math.random;
     });
 

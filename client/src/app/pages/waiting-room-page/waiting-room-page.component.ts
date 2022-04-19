@@ -27,7 +27,7 @@ export class WaitingRoomPageComponent {
             this.canControl = hasOtherPlayer && this.isMainPlayer;
         });
 
-        this.communicationService.dictionnaries.then((dictionnaries) => {
+        this.communicationService.dictionnaries.subscribe((dictionnaries) => {
             this.dictionnaries = dictionnaries;
         });
     }
@@ -38,7 +38,7 @@ export class WaitingRoomPageComponent {
                 data: {
                     name: this.communicationService.selectedRoom.value.mainPlayer.name,
                     dictionnary: this.dictionnaries
-                        ? this.dictionnaries[this.communicationService.selectedRoom.value.parameters?.dictionnary || 0]?.name
+                        ? this.dictionnaries[this.communicationService.selectedRoom.value.parameters?.dictionnary || 0]?.title
                         : '…',
                     timer: this.communicationService.selectedRoom.value.parameters.timer,
                     log2990: this.log2990,

@@ -1,6 +1,5 @@
 export type Dictionnary = {
     id: number;
-    name: string;
+    title: string;
+    description: string;
 };
-
-export type DbDictionary = { id: number; title: string; description: string; words?: string[] };

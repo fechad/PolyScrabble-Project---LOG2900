@@ -70,7 +70,7 @@
                             <label>Choix du dictionnaire: </label>
                             <select id="dictionaries" name="dictionnary" formControlName="dictionnary" class="form-control" #dropDown>
                                 <option [ngValue]="dictionnary.id" *ngFor="let dictionnary of communicationService.dictionnaries | async">
-                                    {{ dictionnary.name }}
+                                    {{ dictionnary.title }}
                                 </option>
                             </select>
                         </div>

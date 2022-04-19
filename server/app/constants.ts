@@ -4,6 +4,7 @@ import { Position } from './classes/position';
 
 export type Bracket = [number, number];
 
+export const DEFAULT_ID = 0;
 export const RACK_LENGTH = 7;
 export const MIDDLE_INDEX = 7;
 export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);

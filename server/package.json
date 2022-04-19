@@ -46,6 +46,7 @@
         "@app": "out/"
     },
     "dependencies": {
+        "@types/uuid": "^8.3.4",
         "cookie-parser": "1.4.5",
         "cors": "2.8.5",
         "debug": "^4.3.2",
@@ -61,7 +62,8 @@
         "socket.io": "^4.4.1",
         "swagger-jsdoc": "^6.1.0",
         "swagger-ui-express": "^4.1.6",
-        "typedi": "^0.10.0"
+        "typedi": "^0.10.0",
+        "uuid": "^3.4.0"
     },
     "devDependencies": {
         "@types/body-parser": "1.19.1",

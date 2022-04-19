@@ -1,12 +1,12 @@
 import { LetterNode } from './letter-node';
 
-export type DictionnaryInfo = { id: number; name: string; description: string };
+export type DictionnaryInfo = { id: number; title: string; description: string };
 
 export class Dictionnary {
     readonly trie: LetterNode;
     readonly words: Set<string>;
 
-    constructor(readonly id: number, readonly name: string, words: string[], readonly description: string) {
+    constructor(readonly id: number, public title: string, public description: string, words: string[], readonly filename: string) {
         this.trie = Dictionnary.generateTrie(words);
         this.words = new Set(words);
     }
@@ -24,7 +24,7 @@ export class Dictionnary {
     }
 
     getInfo(): DictionnaryInfo {
-        return { id: this.id, name: this.name, description: this.description };
+        return { id: this.id, title: this.title, description: this.description };
     }
 
     isValidWord(playedWord: string) {

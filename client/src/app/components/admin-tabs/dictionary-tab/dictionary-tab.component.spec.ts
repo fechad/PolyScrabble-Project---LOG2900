@@ -3,7 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DbDictionary } from '@app/classes/dictionnary';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { from } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
@@ -54,51 +54,12 @@ describe('DictionaryTabComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should update list ont init', () => {
-        const updateListSpy = spyOn(component, 'updateList').and.callThrough();
-        component.ngOnInit();
-        expect(updateListSpy).toHaveBeenCalled();
-    });
-
-    it('should update list', fakeAsync(() => {
-        const list: DbDictionary[] = [
-            { id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] },
-            { id: 1, title: 'dict-1', description: 'test-1', words: ['d', 'e', 'f'] },
-        ];
-
-        const subscription = component.updateList();
-
-        from(subscription).subscribe(() => {
-            expect(component.list).toEqual(list);
-        });
-
-        const req = httpMock.match(`${environment.serverUrl}/dictionaries`);
-
-        expect(req[1].request.method).toBe('GET');
-        req[1].flush(list);
-
-        httpMock.verify();
-    }));
-
-    it('should create new dictionary', () => {
-        component.dictionaryForm.value.id = 1;
-        component.dictionaryForm.value.title = 'dict-1';
-        component.dictionaryForm.value.description = 'test-1';
-        component.dictionaryForm.value.words = ['a', 'b', 'c'];
-        component.newWords = ['a', 'b', 'c'];
-        component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
-
-        const newDictionary: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
-        const result: DbDictionary = component.createNewDbDictionary();
-        expect(result).toEqual(newDictionary);
-    });
-
     it('should get file infos ', async () => {
         setHTML();
-        component.list = [{ id: 0, title: 'dict-0', description: 'test-0', words: ['a', 'b', 'c'] }];
+        component.dictionaries = [{ id: 0, title: 'dict-0', description: 'test-0' }];
         component.uploading = true;
         const dataTransfer = new DataTransfer();
-        const expected: DbDictionary = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
+        const expected: Dictionnary[] = { id: 1, title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] };
         const dictionaryFile = new File([JSON.stringify({ title: 'dict-1', description: 'test-1', words: ['a', 'b', 'c'] })], 'dict-1.json', {
             type: 'application/json',
         });
