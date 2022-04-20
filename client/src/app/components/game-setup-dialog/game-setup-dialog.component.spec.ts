@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { BehaviorSubject } from 'rxjs';
 import { GameSetupDialogComponent } from './game-setup-dialog.component';
 
 const HALFMINUTE = 30;
@@ -46,7 +47,9 @@ describe('GameSetupDialogComponent', () => {
 
     beforeEach(async () => {
         router = jasmine.createSpyObj('Router', ['navigate']);
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['createRoom']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['createRoom'], {
+            dictionnaries: new BehaviorSubject([{ id: 0, title: 'title', description: 'desc' }]),
+        });
         await TestBed.configureTestingModule({
             declarations: [GameSetupDialogComponent],
             providers: [

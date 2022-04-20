@@ -10,3 +10,7 @@ coverage/
 
 #Node Modules
 /node_modules
+
+#Dictionaries
+dictionaries/
+server/assets/dictionary-test1.json

@@ -1,21 +1,41 @@
+import { Position } from './classes/position';
+
+/* eslint-disable  @typescript-eslint/no-magic-numbers */
+
+export type Bracket = [number, number];
+
+export const DEFAULT_ID = 0;
+export const RACK_LENGTH = 7;
 export const MIDDLE_INDEX = 7;
+export const MIDDLE = new Position(MIDDLE_INDEX, MIDDLE_INDEX);
+export const ALL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
+export const PREVIOUS = -1;
+export const INVALID_INDEX = -1;
 export const AI_ID = 'VP';
-export const AI_GAME_INDEX = 1;
+export const DECIMAL_BASE = 10;
 export const PROBABILITY = 10;
 export const BOARD_LENGTH = 15;
-export const CONTACT_CHAR = '#';
 export const DELAY_CHECK_TURN = 1000; // ms
 export const DELAY_NO_PLACEMENT = 20000; // ms
 export const HALF_PROBABILITY = 0.5;
 export const ROW_CONTACT = 0;
 export const COL_CONTACT = 1;
 export const LETTER_PLACE_CONTACT = 2;
+export const DATE_STRING_UNWANTED_CHARS_QTY = 5;
+export const POINTS_OBJECTIVE_PALINDORME = 35;
+export const POINTS_OBJECTIVE_ALREADY_ON_BOARD = 25;
+export const POINTS_OBJECTIVE_3_VOWELS = 15;
+export const POINTS_OBJECTIVE_ANAGRAM = 20;
+export const POINTS_OBJECTIVE_ONLY_VOWELS = 10;
+export const POINTS_OBJECTIVE_2_BIG_LETTERS = 50;
+export const POINTS_OBJECTIVE_7_LETTERS_OR_MORE = 20;
+export const POINTS_OBJECTIVE_NUMBER_OF_LETTER = 7;
+export const POINTS_OBJECTIVE_CORNER_PLACEMENT = 15;
 export const ROOMS_LIST_UPDATE_TIMEOUT = 200; // ms
-export const DELETION_DELAY = 5000; // ms
 export const UNDEFINED = -1;
 export const TIMEOUT_DELETION = 5000; // ms
 export const MAX_TOKEN_VALUE = 10000000; // 1 μs per request
-export const AWOL_DELAY = 5000;
+export const DISCONNECTED_DELAY = 5000; // ms
 export const MAIN_PLAYER = 0;
 export const OTHER_PLAYER = 1;
 export const PLAYER_0_TURN_PROBABILITY = 0.5;
@@ -27,16 +47,18 @@ export const HINT_NUMBER_OPTIONS = 3;
 export const HALF_LENGTH = 7;
 export const WORD_LENGTH_BONUS = 7;
 export const BONUS_POINTS = 50;
+export const NO_POINTS = 0;
 export const BOARD_PLACEMENT_DELAY = 3000; // ms
-export const ONE_TENTH = 0.1;
 export const PROBABILITY_OF_40 = 3;
 export const PROBABILITY_OF_30 = 6;
 export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
-/* eslint-disable  @typescript-eslint/no-magic-numbers */
-export const LOWER_POINT_BRACKET = [1, 6];
-export const MIDDLE_POINT_BRACKET = [7, 12];
-export const HIGHER_POINT_BRACKET = [13, 18];
+export const MIN_TO_MS = 60000;
+export const LOWER_POINT_BRACKET: Bracket = [1, 6];
+export const MIDDLE_POINT_BRACKET: Bracket = [7, 12];
+export const HIGHER_POINT_BRACKET: Bracket = [13, 18];
+export const VOWELS = new Set<string>(['a', 'e', 'i', 'o', 'u', 'y']);
+export const BIG_POINTS = new Set<string>(['j', 'k', 'q', 'w', 'x', 'y', 'z']);
 export const MULT_WORDS_3 = [
     [0, 0],
     [0, 7],
@@ -56,6 +78,7 @@ export const MULT_WORDS_2 = [
     [3, 11],
     [4, 4],
     [4, 10],
+    [7, 7],
     [10, 4],
     [10, 10],
     [11, 3],
@@ -106,3 +129,5 @@ export const MULT_LETTERS_2 = [
     [14, 3],
     [14, 11],
 ];
+export const imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-images/2.png', 'assets/icon-images/3.png', 'assets/icon-images/4.png'];
+export const NUMBER_ICONS = 4;

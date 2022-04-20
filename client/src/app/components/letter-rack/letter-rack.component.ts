@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { Letter } from '@app/classes/letter';
-import * as cst from '@app/constants';
-import { GameContextService } from '@app/services/game-context.service';
+import * as constants from '@app/constants';
+import { Command, GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 
 @Component({
@@ -14,15 +14,17 @@ export class LetterRackComponent {
     manipulating: number | undefined;
     exchanging: number[] = [];
     timeOut: number;
-    previousSelection = cst.MISSING;
+    previousSelection = constants.MISSING;
 
     constructor(public gameContextService: GameContextService, public gridService: GridService) {
-        this.gameContextService.rack.subscribe((newRack) => (this.letters = newRack));
+        this.gameContextService.rack.rack.subscribe((newRack) => (this.letters = newRack));
     }
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         const buttonPressed = event.key;
-        if (event.target instanceof Element && (event.target.id === 'writingBox' || event.target.classList.contains('play-area'))) {
+        const clickedOutOfRack =
+            event.target instanceof Element && (event.target.id === 'writingBox' || event.target.classList.contains('play-area'));
+        if (clickedOutOfRack) {
             return;
         }
         if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);
@@ -41,14 +43,14 @@ export class LetterRackComponent {
     }
 
     @HostListener('document:wheel', ['$event'])
-    scrollDetect(e: WheelEvent) {
-        this.shiftLetter(e.deltaY);
+    scrollDetect(event: WheelEvent) {
+        this.shiftLetter(event.deltaY);
     }
 
     @HostListener('document:click', ['$event'])
-    clear(e: MouseEvent) {
-        const selection = e.target as HTMLElement;
-        const parentPossibilities = [
+    clear(event: MouseEvent) {
+        const selection = event.target as HTMLElement;
+        const PARENT_POSSIBILITIES = [
             'name',
             'letter-name',
             'big-let',
@@ -65,7 +67,7 @@ export class LetterRackComponent {
         ];
         const name = selection?.getAttribute('class') as string;
 
-        if (!parentPossibilities.includes(name)) {
+        if (!PARENT_POSSIBILITIES.includes(name)) {
             this.manipulating = undefined;
             this.exchanging = [];
         }
@@ -81,7 +83,7 @@ export class LetterRackComponent {
 
     shiftLetter(keypress: string | number) {
         if (this.manipulating === undefined) return;
-        let newIndex = cst.MISSING;
+        let newIndex = constants.MISSING;
 
         if (keypress === 'ArrowRight' || keypress > 0) {
             newIndex = (this.manipulating + 1) % this.letters.length;
@@ -89,13 +91,24 @@ export class LetterRackComponent {
             newIndex = (this.manipulating + this.letters.length - 1) % this.letters.length;
         }
         this.swapLetters(newIndex, this.manipulating);
-        this.gameContextService.showMyRack();
+        this.gameContextService.syncRack();
     }
 
     swapLetters(index: number, oldIndex: number) {
-        const temp = this.letters[oldIndex];
-        this.letters[oldIndex] = this.letters[index];
-        this.letters[index] = temp;
+        if (oldIndex === 0 && index === this.letters.length - 1) {
+            const firstElement = this.letters.shift();
+            // rack will never be empty if a letter is selected for manipulation
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.letters.push(firstElement!);
+        } else if (oldIndex === this.letters.length - 1 && index === 0) {
+            // rack will never be empty if a letter is selected for manipulation
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.letters.unshift(this.letters.pop()!);
+        } else {
+            const temporaryLetter = this.letters[oldIndex];
+            this.letters[oldIndex] = this.letters[index];
+            this.letters[index] = temporaryLetter;
+        }
         this.manipulating = index;
     }
 
@@ -115,10 +128,10 @@ export class LetterRackComponent {
 
     exchange() {
         const selectedLetters = this.exchanging.map((letter) => this.letters[letter].name.toLowerCase()).join('');
-        this.gameContextService.exchange(selectedLetters);
+        this.gameContextService.executeCommand(Command.Exchange, selectedLetters);
     }
 
     getReserveCount(): boolean {
-        return this.gameContextService.state.value.reserveCount < cst.NORMAL_RACK_LENGTH;
+        return this.gameContextService.state.value.reserveCount < constants.NORMAL_RACK_LENGTH;
     }
 }

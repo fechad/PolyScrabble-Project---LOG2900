@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { GameType, Parameters } from './parameters';
 
-export type Player = { name: string; id: PlayerId; connected: boolean; virtual: boolean };
+export type Player = { avatar: string; name: string; id: PlayerId; connected: boolean; virtual: boolean };
 
 export type RoomId = number;
 export type PlayerId = string;
@@ -27,6 +27,7 @@ export class Room extends EventEmitter {
             name: playerName,
             connected: true,
             virtual: false,
+            avatar: parameters.avatar,
         };
         this.name = `Partie de ${playerName}`;
     }
@@ -40,25 +41,19 @@ export class Room extends EventEmitter {
         );
     }
 
-    addPlayer(playerId: PlayerId, playerName: string, virtual: boolean): Error | undefined {
-        if (playerName === this.mainPlayer.name) {
-            return Error('Ce nom a déjà été prit');
-        }
-        if (playerId === this.mainPlayer.id) {
-            return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
-        }
-        if (this.otherPlayer) {
-            return Error('Il y a déjà deux joueurs dans cette partie');
-        }
-        this.otherPlayer = { id: playerId, name: playerName, connected: true, virtual };
+    addPlayer(playerId: PlayerId, playerName: string, virtual: boolean, avatar: string): Error | undefined {
+        if (playerName === this.mainPlayer.name) return Error('Ce nom a déjà été pris');
+        if (playerId === this.mainPlayer.id) return Error("Impossible d'avoir le même identifiant pour les deux joueurs");
+        if (this.otherPlayer) return Error('Il y a déjà deux joueurs dans cette partie');
+        this.otherPlayer = { id: playerId, avatar, name: playerName, connected: true, virtual };
         this.emit('update-room');
-        return undefined;
+        return;
     }
 
     quit(mainPlayer: boolean) {
         if (mainPlayer && this.state === State.Setup) {
             this.mainPlayer.connected = false;
-            this.emit('kick');
+            this.kickOtherPlayer();
         } else if (this.state === State.Setup) {
             this.otherPlayer = undefined;
         } else if (mainPlayer) {
@@ -70,26 +65,23 @@ export class Room extends EventEmitter {
     }
 
     start() {
-        if (!this.needsOtherPlayer() && this.state === State.Setup) {
-            this.state = State.Started;
-            this.emit('update-room');
-        }
+        if (this.needsOtherPlayer() || this.state !== State.Setup) return;
+        this.state = State.Started;
+        this.emit('update-room');
     }
 
     end(forfeit: boolean) {
-        if (this.state === State.Started) {
-            this.state = forfeit ? State.Aborted : State.Ended;
-            this.emit('update-room');
-        }
+        if (this.state !== State.Started) return;
+        this.state = forfeit ? State.Aborted : State.Ended;
+        this.emit('update-room');
     }
 
     kickOtherPlayer() {
-        if (this.otherPlayer && this.state === State.Setup) {
-            console.log(`Kicked player from room ${this.id}`);
-            this.otherPlayer = undefined;
-            this.emit('kick');
-            this.emit('update-room');
-        }
+        if (!this.otherPlayer || this.state !== State.Setup) return;
+        console.log(`Kicked player from room ${this.id}`);
+        this.otherPlayer = undefined;
+        this.emit('kick');
+        this.emit('update-room');
     }
 
     hasOtherPlayer(): boolean {

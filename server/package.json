@@ -9,7 +9,8 @@
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
         "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' mocha --config=.mocharc.json --node-env=test",
-        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' nyc mocha --config=.mocharc.json --node-env=test --exit"
+        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' nyc mocha --config=.mocharc.json --node-env=test --exit",
+        "test-jv": "npm run build && node --inspect out/test-jv.js"
     },
     "nyc": {
         "check-coverage": true,
@@ -24,7 +25,8 @@
             "**/*.spec.ts",
             "app/index.ts",
             "app/server.ts",
-            "app/app.ts"
+            "app/app.ts",
+            "app/test-jv.ts"
         ],
         "require": [
             "ts-node/register",
@@ -44,6 +46,7 @@
         "@app": "out/"
     },
     "dependencies": {
+        "@types/uuid": "^8.3.4",
         "cookie-parser": "1.4.5",
         "cors": "2.8.5",
         "debug": "^4.3.2",
@@ -59,7 +62,8 @@
         "socket.io": "^4.4.1",
         "swagger-jsdoc": "^6.1.0",
         "swagger-ui-express": "^4.1.6",
-        "typedi": "^0.10.0"
+        "typedi": "^0.10.0",
+        "uuid": "^3.4.0"
     },
     "devDependencies": {
         "@types/body-parser": "1.19.1",
@@ -71,6 +75,7 @@
         "@types/morgan": "~1.9.3",
         "@types/node": "^16.6.1",
         "@types/node-uuid": "0.0.29",
+        "@types/seedrandom": "^3.0.2",
         "@types/sinon": "^10.0.2",
         "@types/supertest": "^2.0.11",
         "@types/swagger-jsdoc": "^6.0.1",
@@ -88,11 +93,12 @@
         "eslint-plugin-prefer-arrow": "^1.2.3",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-unicorn": "^35.0.0",
-        "mocha": "^9.0.3",
+        "mocha": "^9.2.2",
         "mongodb-memory-server": "^8.4.0",
         "nodemon": "^2.0.12",
         "nyc": "^15.1.0",
         "rimraf": "3.0.2",
+        "seedrandom": "^3.0.5",
         "sinon": "^11.1.2",
         "socket.io-client": "^4.4.1",
         "source-map-support": "^0.5.19",

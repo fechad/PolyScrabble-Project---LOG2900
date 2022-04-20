@@ -10,13 +10,16 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ChatLog } from '@app/classes/chat-log';
 import { GameState } from '@app/classes/game';
+import { Message } from '@app/classes/message';
+import { Rack } from '@app/classes/rack';
 import { State } from '@app/classes/room';
 import { ChatBoxComponent } from '@app/components/chat-box/chat-box.component';
 import { LetterRackComponent } from '@app/components/letter-rack/letter-rack.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -29,52 +32,37 @@ const dialogMock = {
         return;
     },
 };
-
-class CommunicationServiceMock {
-    isWinner = false;
-    getId(): number {
-        return 1;
-    }
-    confirmForfeit() {
-        return;
-    }
-    leave() {
-        return;
-    }
-    switchTurn(timerRequest: boolean) {
-        return timerRequest;
-    }
-
-    saveScore() {
-        return;
-    }
-}
-
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
     let communicationService: CommunicationServiceMock;
     let gameContext: jasmine.SpyObj<GameContextService>;
+    let rack: jasmine.SpyObj<Rack>;
+    let chatLog: jasmine.SpyObj<ChatLog>;
 
     beforeEach(async () => {
         communicationService = new CommunicationServiceMock();
-        gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn'], {
+        rack = jasmine.createSpyObj('Rack', ['tempUpdate', 'addTemp', 'attemptTempUpdate'], { rack: new BehaviorSubject([{ name: 'A', score: 1 }]) });
+        chatLog = jasmine.createSpyObj('ChatLog', ['addMessages'], { messages: new BehaviorSubject([] as Message[]) });
+        gameContext = jasmine.createSpyObj('GameContextService', ['isMyTurn', 'isEnded', 'subscribe', 'switchTurn', 'executeCommand'], {
             state: new BehaviorSubject({
                 players: [
-                    { id: '0', name: 'P1', connected: true, virtual: false },
-                    { id: '1', name: 'P2', connected: true, virtual: false },
+                    { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
+                    { id: '1', avatar: 'a', name: 'P2', connected: true, virtual: false },
                 ].map((info) => ({ info, score: 0, rackCount: 7 })),
                 reserveCount: 88,
                 board: [],
                 turn: undefined,
                 state: State.Started,
             } as GameState),
-            rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
+            rack,
+            chatLog,
+            objectives: new BehaviorSubject(undefined),
         });
         gameContext.isMyTurn.and.callFake(() => of(true));
 
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, ChatBoxComponent, LetterRackComponent],
+            declarations: [GamePageComponent, ChatBoxComponent, LetterRackComponent],
             schemas: [NO_ERRORS_SCHEMA],
             imports: [
                 RouterTestingModule.withRoutes(routes),
@@ -120,7 +108,7 @@ describe('GamePageComponent', () => {
 
     it('should switch turn if skipTurn() is called', () => {
         component.skipMyTurn();
-        expect(component.gameContextService.switchTurn).toHaveBeenCalled();
+        expect(component.gameContextService.executeCommand).toHaveBeenCalled();
     });
 
     it('click on reducing font size of board should call changeSize()', fakeAsync(() => {
@@ -182,4 +170,16 @@ describe('GamePageComponent', () => {
         expect(scoreSpy).toHaveBeenCalled();
         flush();
     }));
+
+    it('should show objectives', () => {
+        component.showObjective(true);
+        expect(component.publicObjectivesShown).toEqual(false);
+        expect(component.privateObjectivesShown).toEqual(true);
+    });
+
+    it('should not show objectives', () => {
+        component.showObjective(false);
+        expect(component.publicObjectivesShown).toEqual(true);
+        expect(component.privateObjectivesShown).toEqual(false);
+    });
 });

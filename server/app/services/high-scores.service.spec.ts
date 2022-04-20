@@ -1,12 +1,15 @@
-import { DEFAULT_USERS, HighScoresService } from '@app/services/high-scores.service';
+import { DataBaseController, DEFAULT_USERS } from '@app/controllers/db.controller';
 import { expect } from 'chai';
+import * as express from 'express';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as sinon from 'sinon';
+import { HighScoresService } from './high-scores.service';
 
 // List your collection names here
 const COLLECTIONS: string[] = ['col'];
 
-class DBManager {
+export class DBManager {
     db: Db;
     server: MongoMemoryServer = new MongoMemoryServer();
     connection: MongoClient;
@@ -30,15 +33,17 @@ class DBManager {
 
 describe('High scores service', () => {
     let highScoresService: HighScoresService;
+    const dataBase = new DataBaseController();
     const dbman: DBManager = new DBManager();
     let collection: Collection;
 
     beforeEach(async () => {
         await dbman.start();
-        highScoresService = new HighScoresService();
+        dataBase.db = dbman.db;
+        highScoresService = new HighScoresService(dataBase);
         collection = dbman.db.collection(COLLECTIONS[0]);
         // eslint-disable-next-line dot-notation
-        highScoresService['db'] = collection;
+        highScoresService['collection'] = collection;
     });
 
     after(async () => dbman.stop());
@@ -128,11 +133,28 @@ describe('High scores service', () => {
         ]);
         expect(await highScoresService.getScores(true)).to.deep.equal([
             DEFAULT_USERS[0],
-            { score: 2.2, names: ['Bob1'] },
             DEFAULT_USERS[1],
-            { score: 1.9, names: ['Bob2'] },
+            { score: 2.2, names: ['Bob1'] },
             DEFAULT_USERS[2],
+            { score: 1.9, names: ['Bob2'] },
         ]);
+    });
+
+    it('should reset scores', async () => {
+        await collection.insertMany([
+            { name: 'Bob1', score: 2.2, log2990: true },
+            { name: 'Bob2', score: 1.9, log2990: true },
+            { name: 'Bob3', score: -32, log2990: true },
+            { name: 'Bob4', score: -31, log2990: true },
+            { name: 'Bob5', score: -30, log2990: true },
+        ]);
+        const status = sinon.stub();
+        const resStub = {
+            status: sinon.stub().returns({ send: status }),
+            header: sinon.stub(),
+        } as unknown as express.Response;
+        await highScoresService.resetScores(resStub);
+        expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
     });
 
     it('should merge scores with defaults', async () => {
@@ -141,11 +163,27 @@ describe('High scores service', () => {
             { name: 'Bob2', score: 3, log2990: false },
         ]);
         expect(await highScoresService.getScores(false)).to.deep.equal([
-            { score: 3, names: ['Bob2', ...DEFAULT_USERS[0].names] },
-            { score: 2, names: ['Bob1', ...DEFAULT_USERS[1].names] },
-            DEFAULT_USERS[2],
+            DEFAULT_USERS[0],
+            { score: 3, names: ['Bob2', ...DEFAULT_USERS[1].names] },
+            { score: 2, names: ['Bob1', ...DEFAULT_USERS[2].names] },
             DEFAULT_USERS[3],
             DEFAULT_USERS[4],
         ]);
+    });
+
+    it('should return defaults when not connected to db', async () => {
+        // eslint-disable-next-line dot-notation
+        highScoresService['db'] = null;
+        expect(await highScoresService.getScores(true)).to.deep.equal(DEFAULT_USERS);
+        expect(async () => await highScoresService.addScore({ name: 'Dummy', score: 400, log2990: true })).not.to.throw();
+    });
+
+    it('should create collection on connect', async () => {
+        // used to access private attribute of service
+        // eslint-disable-next-line dot-notation
+        sinon.stub(highScoresService['dataBase']).connect();
+        highScoresService.connect();
+        // eslint-disable-next-line dot-notation
+        expect(highScoresService['collection']).not.equal(undefined);
     });
 });

@@ -21,46 +21,46 @@ describe('Room', () => {
 
     it('should check if has other player', (done) => {
         assert(!room.hasOtherPlayer());
-        const result = room.addPlayer('NotDummyId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         assert(room.hasOtherPlayer());
         done();
     });
 
     it('should not add a player with same name', (done) => {
-        const result = room.addPlayer('Rumumumumu', 'Dummy', false);
+        const result = room.addPlayer('Rumumumumu', 'Dummy', false, 'a');
         expect(result).to.not.be.undefined;
         done();
     });
 
     it('should not add a player with same name', (done) => {
-        const result = room.addPlayer('Rumumumumu', 'Dummy', false);
+        const result = room.addPlayer('Rumumumumu', 'Dummy', false, 'a');
         expect(result).to.not.be.undefined;
         done();
     });
 
     it('should not add a player with same ID', (done) => {
-        const result = room.addPlayer('DummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('DummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.not.be.undefined;
         done();
     });
 
     it('should not add more than 1 player', (done) => {
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
-        const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy', false);
+        const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy', false, 'a');
         expect(result2).to.not.be.undefined;
         done();
     });
 
     it('should add player', (done) => {
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         done();
     });
 
     it('should kick player', (done) => {
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.kickOtherPlayer();
         expect(room.getOtherPlayer()).to.be.undefined;
@@ -77,7 +77,7 @@ describe('Room', () => {
         const stub = sinon.stub();
         room.on('kick', stub);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.kickOtherPlayer();
         expect(room.getOtherPlayer()).to.be.undefined;
@@ -89,7 +89,7 @@ describe('Room', () => {
         const stub = sinon.stub();
         room.on('kick', stub);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.quit(true);
         assert(stub.called);
@@ -100,7 +100,7 @@ describe('Room', () => {
         const stub = sinon.stub();
         room.on('update-room', stub);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.quit(false);
         expect(room.getOtherPlayer()).to.be.undefined;
@@ -112,12 +112,12 @@ describe('Room', () => {
         const stub = sinon.stub();
         room.on('update-room', stub);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.quit(false);
         expect(room.getOtherPlayer()).to.be.undefined;
         assert(stub.called);
-        const result2 = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result2 = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result2).to.be.undefined;
         done();
     });
@@ -126,7 +126,7 @@ describe('Room', () => {
         const stub = sinon.stub();
         room.on('update-room', stub);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.start();
         assert(stub.called);
@@ -148,7 +148,7 @@ describe('Room', () => {
     it('should return if game is started', (done) => {
         assert(room.getState() === State.Setup);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.start();
 
@@ -160,12 +160,12 @@ describe('Room', () => {
         const stub = sinon.stub();
         room.on('update-room', stub);
 
-        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false);
+        const result = room.addPlayer('NotDummyPlayerId', 'NotDummy', false, 'a');
         expect(result).to.be.undefined;
         room.quit(false);
         expect(room.getOtherPlayer()).to.be.undefined;
         assert(stub.called);
-        const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy', false);
+        const result2 = room.addPlayer('NotNotDummyPlayerId', 'NotNotDummy', false, 'a');
         expect(result2).to.be.undefined;
         done();
     });

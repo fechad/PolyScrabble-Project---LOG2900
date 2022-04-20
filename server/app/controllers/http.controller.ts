@@ -1,12 +1,15 @@
 import { State } from '@app/classes/room';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { HighScoresService } from '@app/services/high-scores.service';
 import { LoginsService } from '@app/services/logins.service';
 import { RoomsService } from '@app/services/rooms.service';
+import { VpNamesService } from '@app/services/vp-names.service';
 import { Request, Response, Router } from 'express';
 import { ValidateFunction, Validator } from 'express-json-validator-middleware';
 import { StatusCodes } from 'http-status-codes';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
+import { DataBaseController } from './db.controller';
 
 const NEW_SCORE_SCHEMA: ValidateFunction = {
     type: 'object',
@@ -22,27 +25,69 @@ const NEW_SCORE_SCHEMA: ValidateFunction = {
     },
 };
 
+const NEW_DICT_SCHEMA: ValidateFunction = {
+    type: 'object',
+    required: ['title', 'description', 'words'],
+    properties: {
+        title: {
+            type: 'string',
+            minLength: 1,
+        },
+        description: {
+            type: 'string',
+        },
+        words: {
+            type: 'array',
+            items: {
+                type: 'string',
+                minLength: 2,
+            },
+        },
+    },
+};
+
+const PATCH_DICT_SCHEMA: ValidateFunction = {
+    type: 'object',
+    properties: {
+        title: {
+            type: 'string',
+            minLength: 1,
+        },
+        description: {
+            type: 'string',
+        },
+    },
+};
+
 @Service()
 export class HttpController {
     router: Router;
+    private vpNamesService: VpNamesService;
 
     constructor(
         private readonly dictionnaryService: DictionnaryService,
-        private readonly highScoreService: HighScoresService,
         private readonly logins: LoginsService,
         private readonly roomsService: RoomsService,
+        private readonly dataBase: DataBaseController,
+        private readonly highScoreService: HighScoresService,
+        private readonly gameHistoryService: GameHistoryService,
     ) {
+        this.init();
         this.configureRouter();
-        this.dictionnaryService.init();
-        this.highScoreService.connect();
     }
 
-    private configureRouter(): void {
+    private async init() {
+        await this.dataBase.connect();
+        this.vpNamesService = Container.get(VpNamesService);
+        await this.highScoreService.connect();
+        await this.gameHistoryService.connect();
+    }
+
+    private configureRouter() {
         const { validate } = new Validator({});
         this.router = Router();
-        this.router.get('/dictionnaries', (req: Request, res: Response) => {
-            const dictionnaries = this.dictionnaryService.getDictionnaries();
-            res.json(dictionnaries);
+        this.router.delete('/high-scores', async (req: Request, res: Response) => {
+            await this.highScoreService.resetScores(res);
         });
         this.router.get('/high-scores', async (req: Request, res: Response) => {
             const scores = await this.highScoreService.getScores(false);
@@ -67,6 +112,63 @@ export class HttpController {
             if (room.getState() === State.Aborted && game.getWinner() !== player.id) return res.sendStatus(StatusCodes.FORBIDDEN);
             await this.highScoreService.addScore({ name: info.info.name, score: info.score, log2990: room.parameters.log2990 });
             return res.sendStatus(StatusCodes.ACCEPTED);
+        });
+        this.router.get('/game-history', async (req: Request, res: Response) => {
+            const games = await this.gameHistoryService.getHistory();
+            res.json(games);
+        });
+
+        this.router.delete('/game-history', async (req: Request, res: Response) => {
+            const history = await this.gameHistoryService.clearHistory();
+            res.json(history);
+        });
+
+        this.router.get('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.getNames();
+            res.json(names);
+        });
+
+        this.router.post('/vp-names', async (req: Request, res: Response) => {
+            await this.vpNamesService.addVP(req.body, res);
+        });
+        this.router.patch('/vp-names', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.updateVP(req.body);
+            res.json(names);
+        });
+        this.router.delete('/vp-names/:name', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.deleteVP(req.params.name);
+            res.json(names);
+        });
+
+        this.router.get('/dictionaries/:id', async (req: Request, res: Response) => {
+            const dictionary = this.dictionnaryService.get(Number.parseInt(req.params.id, 10));
+            if (!dictionary) res.sendStatus(StatusCodes.NOT_FOUND);
+            else res.download(dictionary.filename);
+        });
+        this.router.patch('/dictionaries/:id', validate({ body: PATCH_DICT_SCHEMA }), async (req: Request, res: Response) => {
+            await this.dictionnaryService.update(Number.parseInt(req.params.id, 10), req.body.title, req.body.description);
+            res.sendStatus(StatusCodes.NO_CONTENT);
+        });
+        this.router.delete('/dictionaries/all', async (req: Request, res: Response) => {
+            await this.dictionnaryService.deleteAll();
+            res.sendStatus(StatusCodes.NO_CONTENT);
+        });
+        this.router.delete('/dictionaries/:id', async (req: Request, res: Response) => {
+            await this.dictionnaryService.delete(Number.parseInt(req.params.id, 10));
+            res.sendStatus(StatusCodes.NO_CONTENT);
+        });
+        this.router.get('/dictionaries', async (req: Request, res: Response) => {
+            const dictionnaries = this.dictionnaryService.getDictionnaries();
+            res.json(dictionnaries);
+        });
+        this.router.post('/dictionaries', validate({ body: NEW_DICT_SCHEMA }), async (req: Request, res: Response) => {
+            const added = await this.dictionnaryService.add(req.body.title, req.body.description, req.body.words);
+            res.sendStatus(added ? StatusCodes.OK : StatusCodes.CONFLICT);
+        });
+
+        this.router.delete('/vp-names-reset', async (req: Request, res: Response) => {
+            const names = await this.vpNamesService.deleteAll();
+            res.json(names);
         });
     }
 }

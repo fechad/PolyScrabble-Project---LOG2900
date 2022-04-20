@@ -1,7 +1,6 @@
 <mat-card-header>
     <mat-toolbar class="toolbar">
         <mat-card-title>Paramètres de la partie solo</mat-card-title>
-        <span class="toolbar-spacer"></span>
         <mat-icon class="icon-cancel" (click)="closeDialog()">cancel</mat-icon>
     </mat-toolbar>
 </mat-card-header>
@@ -11,60 +10,75 @@
         <form [formGroup]="soloParametersForm" (submit)="onSubmit()">
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-10">
-                        <label>Votre nom: </label>
-                        <input type="text" formControlName="playerName" class="form-control" />
+                    <div class="avatar-input">
+                        <button class="left-arrow" type="button" (click)="this.avatarSelectionService.chooseIcon(false)">
+                            <fa-icon [icon]="this.avatarSelectionService.faAngleLeft" size="2x"></fa-icon>
+                        </button>
+                        <img [src]="this.avatarSelectionService.imgChosen" /><img />
+                        <button class="right-arrow" type="button" (click)="this.avatarSelectionService.chooseIcon(true)">
+                            <fa-icon [icon]="this.avatarSelectionService.faAngleRight" size="2x"></fa-icon>
+                        </button>
                     </div>
+                    <div class="input-area">
+                        <div class="col-md-10">
+                            <label>Votre nom: </label>
+                            <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" (change)="checkName()" />
+                        </div>
 
-                    <div class="requirement" *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''">
-                        Rentrez un nom contenant seulement des lettres.
-                        
-                    </div>
+                        <div
+                            class="requirement"
+                            *ngIf="soloParametersForm.controls['playerName'].errors && soloParametersForm.value.playerName !== ''"
+                        >
+                            Rentrez un nom de maximum 15 caractères contenant seulement des lettres.
+                        </div>
 
-                    <div class="col-md-10">
-                        <label>Votre adversaire:</label>
-                        {{switchName(opponentName)}}
+                        <div class="col-md-10">
+                            <label>Votre adversaire:</label>
+                            {{ opponentName }}
+                        </div>
 
-                    </div>
+                        <div class="col-md-10">
+                            <label>Profil de l'adversaire: </label>
+                            <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control" (change)="checkName()">
+                                <option [ngValue]="difficulty.id" *ngFor="let difficulty of difficulties">
+                                    {{ difficulty.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-10">
+                            <label>Temps limite par tour: </label>
 
-                    <div class="col-md-10">
-                        <label>Profil de l'adversaire: </label>
-                        <select id="difficulties" name="difficulty" formControlName="difficulty" class="form-control">
-                            <option [ngValue] ='difficulties.id' [disabled]="difficulties.id===1" *ngFor="let difficulties of difficulty"> {{difficulties.name}} </option>
-                        </select>
-                    </div>
-                    <div class="col-md-10">
-                        <label>Temps limite par tour: </label>
-
-                        <select formControlName="minutes" class="form-control" id="minutes" name="minute">
-                            <option
-                                *ngFor="let minute of [0, 1, 2, 3, 4, 5]; let i = index"
-                                [disabled]="
-                                    (soloParametersForm.value.seconds === 0 && i === 0) || (soloParametersForm.value.seconds === 30 && i === 5)
-                                "
-                                [ngValue]="minute"
-                                [selected]="minute === 1"
-                            >
-                                {{ minute }}
-                            </option>
-                        </select>
-                        min :
-                        <select formControlName="seconds" class="form-control" id="seconds" name="second">
-                            <option [ngValue]="0" selected [disabled]="soloParametersForm.value.minutes === 0">00</option>
-                            <option [ngValue]="30" [disabled]="soloParametersForm.value.minutes === 5">30</option>
-                        </select>
-                    </div>
-                    <div class="col-md-10">
-                        <label>Choix du dictionnaire: </label>
-                        <select id="dictionaries" name="dictionnary" formControlName="dictionnary" class="form-control">
-                            <option [ngValue]="dictionnary.id" *ngFor="let dictionnary of communicationService.dictionnaries | async">
-                                {{ dictionnary.name }}
-                            </option>
-                        </select>
+                            <select formControlName="minutes" class="form-control" id="minutes" name="minute">
+                                <option
+                                    *ngFor="let minute of [0, 1, 2, 3, 4, 5]; let i = index"
+                                    [disabled]="
+                                        (soloParametersForm.value.seconds === 0 && i === 0) || (soloParametersForm.value.seconds === 30 && i === 5)
+                                    "
+                                    [ngValue]="minute"
+                                    [selected]="minute === 1"
+                                >
+                                    {{ minute }}
+                                </option>
+                            </select>
+                            min :
+                            <select formControlName="seconds" class="form-control" id="seconds" name="second">
+                                <option [ngValue]="0" selected [disabled]="soloParametersForm.value.minutes === 0">00</option>
+                                <option [ngValue]="30" [disabled]="soloParametersForm.value.minutes === 5">30</option>
+                            </select>
+                        </div>
+                        <div class="col-md-10">
+                            <label>Choix du dictionnaire: </label>
+                            <select id="dictionaries" name="dictionnary" formControlName="dictionnary" class="form-control" (change)="setDescription()">
+                                <option [ngValue]="dictionnary.id" *ngFor="let dictionnary of communicationService.dictionnaries | async">
+                                    {{ dictionnary.title }}
+                                </option>
+                            </select>
+                        </div>
+                        <span class="description"><p>{{ description }}</p></span>
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row-end">
                 <button [disabled]="soloParametersForm.controls['playerName'].errors" type="submit" class="btn success">Jouer!</button>
             </div>
         </form>

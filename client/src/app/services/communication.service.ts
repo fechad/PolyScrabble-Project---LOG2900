@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
@@ -16,31 +15,37 @@ import { GameContextService } from './game-context.service';
 type Token = number;
 type SaveScoreBody = { id: string | undefined; token: number; room: number | undefined };
 type ConnectBody = { id: string | undefined; token: number };
+export type DialogDictionary = { id: number; name: string; description: string; words: string[] };
 
 @Injectable({
     providedIn: 'root',
 })
 export class CommunicationService {
-    readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
-    readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
-    readonly dictionnaries: Promise<Dictionnary[]>;
-    private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
+    readonly rooms: BehaviorSubject<Room[]>;
+    readonly selectedRoom: BehaviorSubject<Room | undefined>;
+    readonly dictionnaries: BehaviorSubject<Dictionnary[]>;
+    private myId: BehaviorSubject<PlayerId | undefined>;
     private token: Token;
 
     private readonly waitingRoomsSocket: Socket;
     private readonly mainSocket: Socket;
-    private roomSocket: Socket | undefined = undefined;
+    private roomSocket: Socket | undefined;
 
-    constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private router: Router, private io: IoWrapper) {
+    constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private io: IoWrapper) {
+        this.rooms = new BehaviorSubject([] as Room[]);
+        this.selectedRoom = new BehaviorSubject(undefined as Room | undefined);
+        this.dictionnaries = new BehaviorSubject([] as Dictionnary[]);
+        this.myId = new BehaviorSubject(undefined as PlayerId | undefined);
+        this.roomSocket = undefined;
         this.waitingRoomsSocket = this.io.io(`${environment.socketUrl}/waitingRoom`);
         const auth = AuthService.getAuth();
         this.mainSocket = this.io.io(`${environment.socketUrl}/`, { auth });
 
         this.listenRooms();
+        this.mainSocket.on('dictionaries', (dictionaries) => this.dictionnaries.next(dictionaries));
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
-        this.mainSocket.on('error', (e) => this.handleError(e));
+        this.mainSocket.on('error', (error) => this.handleError(error));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
-        this.dictionnaries = httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
 
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
             this.myId.next(id);
@@ -61,30 +66,40 @@ export class CommunicationService {
     }
 
     isMainPlayer(): boolean {
-        return this.selectedRoom.value !== undefined && this.selectedRoom.value.mainPlayer.id === this.myId.value;
+        return !!this.selectedRoom.value && this.selectedRoom.value.mainPlayer.id === this.myId.value;
+    }
+
+    isServerDown(): boolean {
+        if ((!this.mainSocket?.connected && !this.roomSocket?.connected) || !this.mainSocket?.connected) {
+            this.serverDownAlert();
+            return true;
+        }
+        return false;
     }
 
     kick() {
+        if (this.isServerDown()) return;
         if (this.isMainPlayer()) {
             this.roomSocket?.emit('kick');
         } else {
-            throw new Error('Tried to kick when not room creator');
+            throw new Error("Vous avez essayé de rejeter un joueur de la salle alors que vous n'êtes pas son créateur.");
         }
     }
 
     leave() {
-        if (this.selectedRoom.value !== undefined) {
+        if (this.selectedRoom.value) {
             this.leaveGame();
         } else {
-            throw new Error('Tried to leave when not in room');
+            throw new Error('Vous avez essayé de quitter une salle alors que vous êtes dans aucune salle.');
         }
     }
 
     start() {
+        if (this.isServerDown()) return;
         if (this.isMainPlayer()) {
             this.roomSocket?.emit('start');
         } else {
-            throw new Error('Tried to start when not room creator');
+            throw new Error("Vous avez essayé de démarrer la partie alors que vous n'êtes pas le créateur.");
         }
     }
 
@@ -97,10 +112,11 @@ export class CommunicationService {
         this.leaveGame();
     }
 
-    async joinRoom(playerName: string, roomId: RoomId) {
-        if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
+    async joinRoom(avatar: string, playerName: string, roomId: RoomId) {
+        if (this.selectedRoom.value) throw Error('Vous êtes déjà dans une salle de jeu.');
 
-        this.mainSocket.emit('join-room', roomId, playerName);
+        if (this.isServerDown()) return;
+        this.mainSocket.emit('join-room', roomId, playerName, avatar);
         await this.waitForRoom();
     }
 
@@ -113,7 +129,8 @@ export class CommunicationService {
     }
 
     async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
-        if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
+        if (this.selectedRoom.value) throw Error('Vous êtes déjà dans une salle de jeu.');
+        if (this.isServerDown()) return;
         this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
     }
@@ -133,13 +150,13 @@ export class CommunicationService {
         if (this.waitingRoomsSocket.connected) this.waitingRoomsSocket.disconnect();
     }
 
-    private handleError(e: string) {
+    private handleError(error: string) {
         // eslint-disable-next-line no-console
-        if (!environment.production) console.error(e);
-        if (e === 'Il y a déjà deux joueurs dans cette partie') {
+        if (!environment.production) console.error(error);
+        if (error === 'Il y a déjà deux joueurs dans cette partie' || error === 'Le dictionnaire sélectionné a été supprimé') {
             swal.fire({
                 title: 'Erreur!',
-                text: e,
+                text: error,
                 showCloseButton: true,
                 confirmButtonText: 'Ok!',
             });
@@ -164,7 +181,6 @@ export class CommunicationService {
                 showCloseButton: true,
                 confirmButtonText: 'Compris!',
             });
-            this.router.navigate(['/joining-room']);
         });
         this.roomSocket.on('update-room', (room) => this.selectedRoom.next(room));
         this.roomSocket.on('error', (error: string) => this.handleError(error));
@@ -179,5 +195,15 @@ export class CommunicationService {
         const gameSocket = this.io.io(`${environment.socketUrl}/games/${gameId}`, { auth: body });
 
         this.gameContextService.init(gameSocket);
+    }
+
+    private serverDownAlert() {
+        swal.fire({
+            title: 'Oh non!',
+            text: "Vous n'êtes pas connecté au serveur actuellement.",
+            showCloseButton: true,
+            confirmButtonText: 'Compris!',
+            heightAuto: false,
+        });
     }
 }

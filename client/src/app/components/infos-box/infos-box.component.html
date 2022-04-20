@@ -1,28 +1,86 @@
 <div class="infos">
-    <div
-        class="opponent"
-        [ngClass]="{ player: true, tour: (gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false }"
-    >
+    <div class="player">
+        <div class="avatar-container">
+            <div>
+                <div class="crown" *ngIf="summary && isWinner">👑</div>
+                <div
+                    [ngClass]="{ playing: (gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false }"
+                    class="profile"
+                >
+                    <img class="profile-icon" [src]="myAvatar" />
+                </div>
+            </div>
+            <div class="jump-container">
+                <div *ngIf="(gameContextService.isMyTurn() | async) === true && (this.gameContextService.isEnded() | async) === false" class="jump">
+                    <div class="jump1"></div>
+                    <div class="jump2"></div>
+                    <div class="jump3"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="p-infos">
-            <p>{{ (this.gameContextService.getOther() | async)?.info?.name }} : {{ (this.gameContextService.getOther() | async)?.score }} points</p>
-            <p *ngIf="opponentRackIsVisible">{{ (this.gameContextService.getOther() | async)?.rackCount }} lettres restantes dans le chevalet</p>
+            <p class="name">{{ (this.gameContextService.getMe() | async)?.info?.name }}</p>
+            <p class="points">{{ (this.gameContextService.getMe() | async)?.score }} points</p>
+            <div class="status-container">
+                <div class="rack-number">
+                    <p *ngIf="myRackIsVisible">lettres restantes: {{ (this.gameContextService.getMe() | async)?.rackCount }}</p>
+                </div>
+            </div>
         </div>
     </div>
-    <div [ngClass]="{ 'game-infos': true, 'endgame-infos': (this.gameContextService.isEnded() | async) }">
-        <p>{{ (communicationService.selectedRoom | async)?.parameters?.log2990 ? 'Mode LOG2990' : 'Mode Classique' }}</p>
-        <div class="backChrono" *ngIf="!summary">
-            <countdown
-                #countdown
-                [config]="{ format: 'm:ss', leftTime: (communicationService.selectedRoom | async)?.parameters?.timer, demand: true }"
-            ></countdown>
-        </div>
+
+    <div *ngIf="(this.gameContextService.isEnded() | async) === false" id="chrono">
+        <app-chrono-container></app-chrono-container>
+        <button
+            class="skip-turn"
+            matTooltip="Passer votre tour"
+            matTooltipPosition="right"
+            matTooltipClass="tool"
+            [disabled]="(gameContextService.isMyTurn() | async) === false"
+            (click)="this.switchTurn(false)"
+        >
+            <fa-icon [icon]="faAngleDoubleRight"></fa-icon>
+        </button>
+    </div>
+    <div class="summary-container">
         <p *ngIf="summary">{{ summary }}</p>
-        <p>{{ (this.gameContextService.state | async)?.reserveCount }} lettres disponibles dans la réserve</p>
     </div>
-    <div class="player" [ngClass]="{ player: true, tour: (gameContextService.isMyTurn() | async) }">
+    <p class="reserve-title">Réserve:</p>
+    <p class="reserve">{{ (this.gameContextService.state | async)?.reserveCount }} lettres restantes</p>
+    <div class="opponent">
+        <div class="avatar-container">
+            <div>
+                <div class="crown" *ngIf="summary && !isWinner">👑</div>
+                <div
+                    [ngClass]="{
+                        playing: (gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false
+                    }"
+                    class="profile"
+                >
+                    <img class="profile-icon" [src]="opponentAvatar" />
+                </div>
+            </div>
+
+            <div class="jump-container">
+                <div class="point"></div>
+                <div
+                    *ngIf="(gameContextService.isMyTurn() | async) === false && (this.gameContextService.isEnded() | async) === false"
+                    class="jump point"
+                >
+                    <div class="jump1"></div>
+                    <div class="jump2"></div>
+                    <div class="jump3"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="p-infos">
-            <p>{{ (this.gameContextService.getMe() | async)?.info?.name }} : {{ (this.gameContextService.getMe() | async)?.score }} points</p>
-            <p *ngIf="myRackIsVisible">{{ (this.gameContextService.getMe() | async)?.rackCount }} lettres restantes dans le chevalet</p>
+            <p class="name">{{ (this.gameContextService.getOther() | async)?.info?.name }}</p>
+            <p class="points">{{ (this.gameContextService.getOther() | async)?.score }} points</p>
+            <div class="rack-number">
+                <p *ngIf="opponentRackIsVisible">lettres restantes: {{ (this.gameContextService.getOther() | async)?.rackCount }}</p>
+            </div>
         </div>
     </div>
 </div>

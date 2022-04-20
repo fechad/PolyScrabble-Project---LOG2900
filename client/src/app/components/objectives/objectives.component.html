@@ -1,0 +1,19 @@
+<div class="objectives">
+    <div [ngClass]="{ open: isOpen, close: !isOpen }" class="objective-infos">
+        <div class="objective-header">
+            <h1>{{ headerName }}</h1>
+        </div>
+        <div *ngFor="let objective of objectives">
+            <p class="divider" *ngIf="!objective.isPublic && (objective.available || objective.mine)">Votre objectif</p>
+            <p [ngClass]="{ text: true, available: objective.available, isMine: objective.mine, done: !objective.available && !objective.mine }">
+                {{ objective.text }}: {{ objective.score }}pts
+            </p>
+            <p class="divider" *ngIf="!objective.isPublic && (objective.available || objective.mine)">Objectif de votre adversaire</p>
+            <p class="text" *ngIf="objectives.length === 1">**************** - XX pts</p>
+        </div>
+    </div>
+    <button (click)="showObjectives()">
+        <fa-icon *ngIf="!isOpen" [icon]="faAngleRight" size="3x"></fa-icon>
+        <fa-icon *ngIf="isOpen" [icon]="faAngleLeft" size="3x"></fa-icon>
+    </button>
+</div>

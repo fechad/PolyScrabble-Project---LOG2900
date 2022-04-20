@@ -1,50 +1,42 @@
-import { Collection, MongoClient } from 'mongodb';
+import * as constants from '@app/controllers/db.controller';
+import { DataBaseController, Score, User } from '@app/controllers/db.controller';
+import { Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { Collection } from 'mongodb';
 import { Service } from 'typedi';
-
-type User = { name: string; score: number; log2990: boolean };
-type Score = { score: number; names: string[] };
-
-const DB_USERNAME = 'default-user';
-const DB_PASSWORD = 'Oh6Hj7L7aCXZQfAb';
-const DB_URL = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.407r1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const DB_DB = 'scores';
-const DB_COLLECTION = 'scores';
-
-export const DEFAULT_USERS: Score[] = [
-    { score: 3, names: ['Justin Saint-Arnaud'] },
-    { score: 2, names: ['Fedwin Chatelier'] },
-    { score: 1, names: ['Anna Guo'] },
-    { score: 0, names: ["Xavier L'Heureux"] },
-    { score: -42, names: ['François Tourigny'] },
-];
-const MAX_RESULTS = 5;
 
 @Service()
 export class HighScoresService {
-    private db: Collection | null = null;
+    private collection: Collection | undefined = undefined;
+    constructor(private dataBase: DataBaseController) {}
 
     async connect() {
+        await this.dataBase.connect();
+        this.collection = this.dataBase.db?.collection(constants.SCORES_COLLECTION);
+    }
+
+    async resetScores(res: Response): Promise<void> {
+        res.header({ 'content-type': 'text/plain' });
         try {
-            const client = new MongoClient(DB_URL);
-            await client.connect();
-            this.db = client.db(DB_DB).collection(DB_COLLECTION);
+            await this?.collection?.deleteMany({});
+            res.status(StatusCodes.OK).send('Succès: Réinitialisation des meilleurs scores.');
         } catch (e) {
-            console.error('Could not connect to mongodb', e);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Échec: Meilleurs scores non réinitialisés.');
         }
     }
 
     async getScores(log2990: boolean): Promise<Score[]> {
-        if (this.db === null) return DEFAULT_USERS;
-        let leaderboard = (await this.db
+        if (!this.collection) return constants.DEFAULT_USERS;
+        let leaderboard = (await this.collection
             .aggregate([
                 { $match: { log2990 } },
                 { $group: { _id: '$score', score: { $max: '$score' }, names: { $addToSet: '$name' } } },
                 { $sort: { score: -1 } },
             ])
-            .limit(MAX_RESULTS)
+            .limit(constants.MAX_RESULTS)
             .project({ _id: 0, log2990: 0 })
             .toArray()) as Score[];
-        leaderboard.push(...DEFAULT_USERS);
+        leaderboard.push(...constants.DEFAULT_USERS);
         leaderboard.sort((s1, s2) => s2.score - s1.score);
         leaderboard = leaderboard.reduce((arr, score) => {
             if (arr.length > 0 && arr[arr.length - 1].score === score.score) {
@@ -54,17 +46,17 @@ export class HighScoresService {
             }
             return arr;
         }, [] as Score[]);
-        leaderboard.splice(MAX_RESULTS);
+        leaderboard.splice(constants.MAX_RESULTS);
         return leaderboard;
     }
 
     async addScore(user: User) {
-        if (this.db === null) return;
-        const current = await this.db.findOne({ name: user.name, log2990: user.log2990 });
+        if (!this.collection) return;
+        const current = await this.collection.findOne({ name: user.name, log2990: user.log2990 });
         if (!current) {
-            await this.db.insertOne(user);
+            await this.collection.insertOne(user);
         } else if (current.score < user.score) {
-            await this.db.updateOne({ name: user.name, log2990: user.log2990 }, { $set: { score: user.score } });
+            await this.collection.updateOne({ name: user.name, log2990: user.log2990 }, { $set: { score: user.score } });
         }
     }
 }

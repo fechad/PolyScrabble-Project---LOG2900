@@ -5,9 +5,11 @@ import { Message } from '@app/message';
 import { RoomsService } from '@app/services/rooms.service';
 import { Server } from 'app/server';
 import { assert, expect } from 'chai';
+import { Router } from 'express';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
+import { HttpController } from './http.controller';
 import { SocketManager } from './socket.controller';
 
 const RESPONSE_DELAY = 100;
@@ -28,6 +30,7 @@ describe('SocketManager service tests', () => {
 
     const urlString = 'http://localhost:3000';
     beforeEach(async () => {
+        Container.set(HttpController, { router: Router() });
         server = Container.get(Server);
         Container.get(RoomsService).rooms.splice(0);
         Container.get(RoomsService).games.splice(0);
@@ -247,7 +250,7 @@ describe('SocketManager service tests', () => {
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
-        const letters = Container.get(RoomsService).games[0].reserve.letterRacks[0][0].name.toLowerCase();
+        const letters = Container.get(RoomsService).games[0].reserve.letterRacks[0][0].toLowerCase();
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();
@@ -255,8 +258,9 @@ describe('SocketManager service tests', () => {
         gameSocket2.on('rack', stub2);
         gameSocket.emit('change-letters', letters);
         await waitForCommunication(RESPONSE_DELAY + WORD_PLACEMENT_DELAY);
-        expect(stub.args).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[0]]]);
-        expect(stub2.args).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[1]]]);
+        const transform = (args: { name: string; score: number }[][][]) => args.map((call) => call.map((arg) => arg.map((letter) => letter.name)));
+        expect(transform(stub.args)).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[0]]]);
+        expect(transform(stub2.args)).to.deep.equal([[Container.get(RoomsService).games[0].reserve.letterRacks[1]]]);
     });
 
     it('should place letters', async () => {
@@ -264,14 +268,11 @@ describe('SocketManager service tests', () => {
         const row = 7;
         const col = 6;
         const isHoriontal = true;
-        const expectedPoints = 2;
+        const expectedPoints = 4;
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
-        Container.get(RoomsService).games[0].reserve.letterRacks[0] = [
-            { id: 0, name: 'A', score: 1, quantity: 1 },
-            { id: 1, name: 'S', score: 1, quantity: 1 },
-        ];
+        Container.get(RoomsService).games[0].reserve.letterRacks[0] = [...'AS'];
 
         const stub = sinon.stub();
         const stub2 = sinon.stub();

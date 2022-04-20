@@ -1,23 +1,33 @@
-.infos,
-.game-infos,
-.opponent,
-.player {
-    border-width: thin;
-    border-style: solid;
-}
 .infos {
-    display: inline-flex;
-    flex-direction: row;
-    height: 10vh;
-    width: 100vw;
-    box-sizing: border-box;
-    margin-bottom: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    align-items: center;
 }
+
+.opponent,
+.player {
+    padding: 5vh 0 1vh 0;
+    height: 30%;
+}
+
 .game-infos,
 .opponent,
 .player {
-    background-color: #e1ac01;
-    width: 33.33vw;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    font-size: 20px;
+    width: 100%;
+}
+
+.endgame-infos {
+    background-color: #54bd9d;
+    width: 10vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,18 +35,66 @@
     font-size: 20px;
 }
 
-.endgame-infos {
+.profile,
+.profile-icon {
+    border-radius: 100%;
+    height: 4vw;
+    width: 4vw;
+}
+
+.profile {
+    border: rgb(201, 201, 201) solid 5px;
+}
+
+.playing {
+    border: #188162 solid 5px;
+    border-radius: 100%;
+    height: 4vw;
+    width: 4vw;
+}
+
+.status-container,
+.status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4vh;
+    width: 10vw;
+    border-radius: 10px;
+    margin-top: 1vh;
+}
+
+.status {
     background-color: #54bd9d;
 }
 
-.opponent,
-.player {
-    flex-direction: row;
-    justify-content: space-around;
+.status p {
+    text-align: center;
+    width: 100%;
+    font-size: 80%;
 }
 
-.tour {
-    background-color: #54bd9d;
+.skip-turn {
+    height: 6vh;
+    width: 8vh;
+    font-size: 2em;
+    border-radius: 15px;
+    border-width: thin;
+    border-style: solid;
+    border-color: #000000;
+    transition: transform 0.3s ease-in-out;
+    margin-top: 10%;
+    background-color: #e69419;
+}
+.skip-turn:hover {
+    cursor: pointer;
+
+    transform: scale(1.1);
+}
+.skip-turn:disabled {
+    cursor: default;
+    opacity: 0.5;
+    transform: scale(1);
 }
 
 p {
@@ -48,17 +106,6 @@ p {
     align-items: center;
     flex-direction: column;
     width: 95%;
-}
-.p-infos p {
-    margin-left: 1vh;
-}
-.backChrono {
-    display: flex;
-    background-color: #f9f6f8;
-    width: 10%;
-    height: 30%;
-    justify-content: center;
-    align-items: center;
 }
 
 .winner-left,
@@ -72,4 +119,123 @@ p {
 
 .winner-right {
     justify-content: flex-end;
+}
+
+#chrono {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 2vh;
+}
+
+.name {
+    font-size: 25px;
+    padding: 2vh 0 2vh 0;
+}
+.points {
+    font-size: 30px;
+}
+
+.reserve,
+.reserve-title {
+    font-size: 20px;
+}
+
+.reserve-title {
+    margin-top: 2vh;
+}
+
+.summary-container {
+    display: flex;
+    width: 100%;
+    height: 40%;
+    background-color: #54bd9d;
+    align-items: center;
+    justify-content: center;
+    font-size: 90%;
+    margin-top: 2vh;
+}
+
+.rack-number {
+    font-size: 80%;
+}
+
+.opponent .rack-number {
+    margin-top: 5%;
+}
+
+.avatar-container {
+    display: flex;
+    flex-direction: row;
+    padding-left: 4vw;
+}
+
+.crown {
+    padding-left: 1.5vw;
+}
+
+// css code inspired by: https://stackoverflow.com/questions/56212616/css-wave-animation-for-chat-messages
+.jump-container,
+.jump {
+    margin-left: 0.5vh;
+    width: 4vw;
+    height: 4vh;
+    border-radius: 15px;
+}
+
+.jump {
+    background-color: #188162;
+    justify-content: space-around;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom-left-radius: 0.1rem;
+}
+
+.jump1,
+.jump2,
+.jump3 {
+    width: 1vh;
+    height: 1vh;
+    border-radius: 100%;
+    background-color: aliceblue;
+}
+
+.jump1,
+.jump2,
+.jump3 {
+    animation: playing 4s infinite;
+    animation-duration: 2s;
+}
+
+.jump1 {
+    animation-delay: 0s;
+}
+
+.jump2 {
+    animation-delay: 0.2s;
+}
+
+.jump3 {
+    animation-delay: 0.4s;
+}
+
+@keyframes playing {
+    0% {
+        transform: translateY(0vh);
+    }
+    25% {
+        transform: translateY(0vh);
+    }
+    50% {
+        transform: translateY(1vh);
+    }
+
+    75% {
+        transform: translateY(-1vh);
+    }
+    100% {
+        transform: translateY(0vh);
+    }
 }

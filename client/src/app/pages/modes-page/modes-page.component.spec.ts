@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { ModesPageComponent } from './modes-page.component';
 
 export class ActivatedRouteMock {
@@ -36,6 +38,7 @@ describe('ModesPageComponent', () => {
                 { provide: MatDialog, useValue: dialogMock },
                 { provide: ActivatedRoute, useValue: new ActivatedRouteMock() },
                 { provide: Router, useValue: router },
+                { provide: CommunicationService, useClass: CommunicationServiceMock },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(ModesPageComponent);

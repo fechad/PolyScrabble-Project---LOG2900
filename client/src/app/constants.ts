@@ -15,12 +15,18 @@ export const NUMBER_OF_TILES = 15;
 export const GRID_ORIGIN = 20;
 export const CANVAS_ADJUSTMENT = 16;
 
+export const INDEX_POSITION = 3;
+
 export const DEFAULT_INNER_WIDTH = 500;
 export const DEFAULT_INNER_HEIGHT = 500;
 export const CENTER_TILE = 7;
+export const HIGH_VALUE_TILE_SCORE = 10;
 export const AJUST_Y = 16;
 export const AJUST_TILE_Y = 10;
-export const AJUST_TILE_X = 5;
+export const AJUST_TILE_X = 2.5;
+export const ADJUST_SCORE_X = 25;
+export const HIGH_VALUE_ADJUST = 20;
+export const ADJUST_SCORE_Y = 10;
 export const AJUST_STAR_X = 4;
 export const AJUST_STAR_Y = 10;
 export const AJUST_BONUS = 10;
@@ -33,21 +39,55 @@ export const EXCEPTION_X = 11;
 export const EXCEPTION_Y = 0;
 export const AMOUNT_OF_NUMBER = 15;
 export const INITIAL_SIZE = 9;
-export const TILE_SIZE = 30;
+export const TILE_SIZE = 25;
+export const SCORE_SIZE = 10;
 export const BOARD_LENGTH = 15;
 export const FOURTH_SQUARE = 4;
 export const BOUNDS = BOARD_LENGTH / BOARD_LENGTH;
 export const SQUARE_SIZE = DEFAULT_INNER_WIDTH / BOARD_LENGTH - BOUNDS;
 export const RADIUS = 7.5;
 export const Y_PLACEMENT = 16;
+export const STEP_MESSAGE = 10;
+export const STEP_HEADER = 33.5;
+export const TRIPLE_WORD_POS = ['00', '07', '014', '70', '714', '147', '140', '1414'];
+export const TRIPLE_LETTER_POS = ['15', '19', '51', '55', '59', '513', '91', '95', '99', '913', '135', '139'];
+export const DOUBLE_WORD_POS = ['11', '22', '33', '44', '1010', '1111', '1212', '1313', '113', '212', '311', '410', '131', '122', '113', '104'];
+export const DOUBLE_LETTER_POS = [
+    '03',
+    '011',
+    '30',
+    '314',
+    '37',
+    '26',
+    '28',
+    '62',
+    '66',
+    '68',
+    '612',
+    '73',
+    '711',
+    '82',
+    '86',
+    '88',
+    '812',
+    '117',
+    '1114',
+    '126',
+    '128',
+    '143',
+    '1411',
+];
 
 export const DEFAULT_RESERVE = 88;
 
-export const SEC_CONVERT = 60;
+export const CONVERT_TO_SECONDS = 60;
+export const SEC_TO_MS = 1000;
 
 export const NORMAL_RACK_LENGTH = 7;
 
 export const MISSING = -1;
+
+export const RENDERING_DELAY = 10;
 
 export const COMMAND_INDEX = 0;
 export const LETTERS_TO_EXCHANGE_INDEX = 1;
@@ -68,23 +108,31 @@ export const DECIMAL_BASE = 10;
 export const HINT_COMMAND_LENGTH = 1;
 
 export const HELP_MESSAGE: string =
-    '-- Voici ce que vous pouvez faire: --\n' +
-    '\n!placer <ligne><colonne>[(h|v)] <letters>\n' +
-    'ex: !placer g10v abc placera les lettres\n' +
-    'abc verticalement à partir de la position g10\n' +
-    '\n!passer permet de passer votre tour\n' +
-    '\n!échanger permet changer vos lettres\n' +
-    'ex: !échanger abc\n' +
-    '\n!réserve : afficher la quantité restante de chaque lettre dans la réserve\n' +
-    '\n!indice : obtenir 3 choix de mots à placer\n' +
-    '\n!aide : obtenir une explication des commandes disponibles\n' +
-    '\n-- Voici ce que vous pouvez faire sur le chevalet et le plateau: --\n' +
-    '\ncliquez sur une tuile pour la déplacer avec les flèches de votre clavier ou la roulette de votre souris' +
-    '\nou tapez sur la touche de votre clavier correspondant à la lettre pour la sélectionner\n' +
-    '\nfaites un clic droit sur les tuiles pour sélectionner des lettres à échanger\n' +
-    '\ncliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement\n' +
-    'en tapant les touches correspondantes du clavier,\n' +
-    'cliquez une seconde fois pour placer verticalement\n';
+    '-- Commandes disponibles: -- \n' +
+    '\n!placer [ligne][colonne][(h|v)] [lettres] : Ajouter des lettres sur la grille en fonction de la ligne, de la colonne et du sens désiré. \n' +
+    'exemple: !placer 9gh jeu\n' +
+    '\n!échanger [lettre] : Échanger les lettres choisies par des nouvelles lettres durant votre tour.\n' +
+    'exemple: !échanger abc\n' +
+    '\n!passer : Passer votre tour.\n' +
+    '\n!indice : Obtenir 3 choix de mots à placer.\n' +
+    '\n!réserve : Afficher la quantité restante de chaque lettre dans la réserve (commande disponible en tout temps).\n' +
+    '\n!aide ou bouton (?): Obtenir une explication des commandes du jeu (commande disponible en tout temps).\n' +
+    '\n-- Manipulations du chevalet: --\n' +
+    "\n1. Sélectionnez une tuile de votre chevalet soit à l'aide d'un clic gauche ou en tapant sur votre clavier la lettre de celle-ci.\n" +
+    '2. Utilisez les flèches de votre clavier ou la roulette de votre souris pour déplacer la tuile sélectionnée.\n' +
+    "\nPour échanger une ou plusieurs tuiles, faites un clic droit sur celles-ci, puis appuyez sur le bouton 'Échanger' qui apparait.\n" +
+    '\n-- Manipulations du plateau: --\n' +
+    '\n1. Cliquez sur une case du plateau pour placer des lettres de votre chevalet horizontalement \n' +
+    'en tapant les touches correspondantes du clavier\n' +
+    '(cliquez une seconde fois pour placer verticalement).\n' +
+    "2. Appuyez sur la touche 'enter' ou sur le bouton vert à droite du chevalet pour envoyer le placement.\n" +
+    '\n-- Utilisation des lettres blanches --\n' +
+    '\nLes lettres blanches sont représentées par des * dans les tuiles du chevalet.\n' +
+    'Pour faire un placement avec une lettre blanche: \n' +
+    '\nMettez une lettre en majuscule dans la commande de placement pour représenter la lettre blanche.\n' +
+    "exemple: !placer h7h dormiR Pour faire un échange d'une lettre blanche:\n" +
+    "\nMettez directement le symbole * dans la commande d'échange ou faites un clic droit\n" +
+    'sur la tuile du chevalet. exemple: !échanger ab*\n';
 
 export const DEFAULT_FONT = '20px system-ui';
 
@@ -106,3 +154,8 @@ export enum Colors {
     Black = '#000000',
     White = '#FFFFFF',
 }
+
+export const imgList: string[] = ['assets/icon-images/1.png', 'assets/icon-images/2.png', 'assets/icon-images/3.png', 'assets/icon-images/4.png'];
+export const LAST_IMG = 3;
+export const NUMBER_ICONS = 4;
+export const MAX_NAME_CHARACTERS = 15;

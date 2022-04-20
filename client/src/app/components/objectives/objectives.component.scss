@@ -1,0 +1,82 @@
+.opjectives p {
+    font-size: 1em;
+    overflow: hidden;
+}
+
+.open {
+    width: 80%;
+}
+.close {
+    width: 0%;
+}
+.done {
+}
+p.available {
+    color: black;
+    font-size: 15px;
+}
+
+p:not(.available).p:not(.done) {
+    text-decoration: line-through;
+}
+
+p.isMine {
+    color: rgba(86, 136, 0, 0.97);
+    text-decoration: line-through;
+    font-weight: bold;
+}
+
+.done {
+    color: rgba(0, 0, 0, 0.499);
+    text-decoration: line-through;
+}
+.divider {
+    margin: 10% 0 10% 0;
+    font-size: 16px;
+    text-decoration: underline;
+}
+.objectives {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+.text {
+    width: 100%;
+    text-align: center;
+}
+
+.objective-header {
+    width: 100%;
+    height: 4vh;
+    border: black solid;
+    border-width: thin;
+    background-color: #e1ad01b2;
+    text-align: center;
+}
+
+.objective-header h1 {
+    height: 100%;
+    font-size: 01em;
+    overflow: hidden;
+}
+
+.objective-infos {
+    border-radius: 0 0 5px 0;
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+    background-color: #fffffff6;
+    height: 100%;
+}
+
+.objectives button {
+    height: 50%;
+    width: 15%;
+    border-radius: 0 10px 10px 0;
+    background-color: #e1ad01fb;
+}
+
+.objectives button:hover {
+    cursor: pointer;
+}

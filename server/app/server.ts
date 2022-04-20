@@ -1,18 +1,17 @@
 import { Application } from '@app/app';
+import * as constants from '@app/constants';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { SocketManager } from './controllers/socket.controller';
-import { DictionnaryTrieService } from './services/dictionnary-trie.service';
 import { DictionnaryService } from './services/dictionnary.service';
+import { GameHistoryService } from './services/game-history-service';
 import { LoginsService } from './services/logins.service';
 import { RoomsService } from './services/rooms.service';
 
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    private static readonly baseDix: number = 10;
     private server: http.Server;
     private socketManager: SocketManager;
 
@@ -20,18 +19,14 @@ export class Server {
         private readonly application: Application,
         private readonly roomsService: RoomsService,
         private readonly logins: LoginsService,
-        private dictionnnaryService: DictionnaryService,
+        private readonly dictionnnaryService: DictionnaryService,
+        private readonly gameHistoryService: GameHistoryService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
-        const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
-        if (isNaN(port)) {
-            return val;
-        } else if (port >= 0) {
-            return port;
-        } else {
-            return false;
-        }
+        const port: number = typeof val === 'string' ? parseInt(val, constants.DECIMAL_BASE) : val;
+        if (isNaN(port)) return val;
+        return port >= 0 ? port : false;
     }
     async init(): Promise<void> {
         this.application.app.set('port', Server.appPort);
@@ -39,8 +34,7 @@ export class Server {
         this.server = http.createServer(this.application.app);
 
         await this.dictionnnaryService.init();
-        const trie = new DictionnaryTrieService(this.dictionnnaryService);
-        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService, trie);
+        this.socketManager = new SocketManager(this.server, this.roomsService, this.logins, this.dictionnnaryService, this.gameHistoryService);
         this.socketManager.init();
 
         this.server.listen(Server.appPort);

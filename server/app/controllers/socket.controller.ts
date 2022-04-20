@@ -1,8 +1,9 @@
 import { Game } from '@app/classes/game';
+import { Position } from '@app/classes/position';
 import { PlayerId, Room, State } from '@app/classes/room';
-import * as cst from '@app/constants';
-import { DictionnaryTrieService } from '@app/services/dictionnary-trie.service';
+import * as constants from '@app/constants';
 import { DictionnaryService } from '@app/services/dictionnary.service';
+import { GameHistoryService } from '@app/services/game-history-service';
 import { LoginsService } from '@app/services/logins.service';
 import { MainLobbyService } from '@app/services/main-lobby.service';
 import { RoomsService } from '@app/services/rooms.service';
@@ -23,7 +24,7 @@ export class SocketManager {
         public roomsService: RoomsService,
         private logins: LoginsService,
         private dictionnaryService: DictionnaryService,
-        private trie: DictionnaryTrieService,
+        private gameHistoryService: GameHistoryService,
     ) {
         this.io = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -36,7 +37,7 @@ export class SocketManager {
     }
 
     private initLobby(): void {
-        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService, this.trie);
+        const mainLobby = new MainLobbyService(this.roomsService, this.dictionnaryService, this.gameHistoryService);
         this.io.on('connection', (socket) => {
             const [id, token] = this.logins.login(socket.handshake.auth.id, socket.id);
             this.token = token;
@@ -72,8 +73,8 @@ export class SocketManager {
         rooms.use((socket, next) => {
             const roomId = Number.parseInt(socket.nsp.name.substring('/rooms/'.length), 10);
             const idx = this.roomsService.rooms.findIndex((room) => room.id === roomId);
-            if (idx === cst.UNDEFINED) {
-                next(Error('Invalid room number'));
+            if (idx === constants.UNDEFINED) {
+                next(Error('Numéro de salle invalide'));
                 return;
             }
             socket.data.room = this.roomsService.rooms[idx];
@@ -82,7 +83,7 @@ export class SocketManager {
             if (this.logins.verify(id, token)) {
                 next();
             } else {
-                next(Error('Invalid token for room'));
+                next(Error('Jeton invalide pour la salle'));
             }
         });
         rooms.on('connect', (socket) => {
@@ -97,9 +98,7 @@ export class SocketManager {
                 if (otherPlayer) otherPlayer.connected = true;
             }
 
-            if (room.getState() === State.Started) {
-                socket.emit('join-game', room.id);
-            }
+            if (room.getState() === State.Started) socket.emit('join-game', room.id);
 
             const events: [string, () => void][] = [['update-room', () => socket.emit('update-room', room)]];
             if (!isMainPlayer) events.push(['kick', () => socket.emit('kick')]);
@@ -108,8 +107,14 @@ export class SocketManager {
             if (isMainPlayer) {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => {
+                    const dictionary = this.dictionnaryService.get(room.parameters.dictionnary);
+                    if (!dictionary) {
+                        socket.emit('error', 'Le dictionnaire sélectionné a été supprimé');
+                        room.quit(true);
+                        return;
+                    }
                     room.start();
-                    const game = new Game(room, this.dictionnaryService);
+                    const game = new Game(room, dictionary, this.gameHistoryService);
                     this.roomsService.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.id);
                 });
@@ -132,8 +137,8 @@ export class SocketManager {
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
             const idx = this.roomsService.games.findIndex((game) => game.id === gameId);
-            if (idx === cst.UNDEFINED) {
-                next(Error('Invalid game number'));
+            if (idx === constants.UNDEFINED) {
+                next(Error('Numéro de partie invalide'));
                 return;
             }
             socket.data.gameId = gameId;
@@ -143,7 +148,7 @@ export class SocketManager {
             if (this.logins.verify(id, token)) {
                 next();
             } else {
-                next(Error('Invalid token for game'));
+                next(Error('Jeton invalide pour la partie'));
             }
         });
         games.on('connect', (socket) => {
@@ -151,7 +156,7 @@ export class SocketManager {
             const game = this.roomsService.games[socket.data.gameIdx];
             socket.join(`game-${game.id}`);
 
-            console.log(`game ${socket.data.gameId} joined by player with token: ${socket.handshake.auth.token}`);
+            console.log(`Partie ${socket.data.gameId} contient le joueur avec le jeton: ${socket.handshake.auth.token}`);
 
             for (const message of game.messages) {
                 socket.emit('message', message);
@@ -159,7 +164,7 @@ export class SocketManager {
 
             const events: string[] = ['message', 'state'];
             const handlers: [string, (...params: unknown[]) => void][] = events.map((event) => [event, (...params) => socket.emit(event, ...params)]);
-            const specificPlayerEvents = ['rack', 'game-error', 'valid-exchange', 'reserve-content'];
+            const specificPlayerEvents = ['objectives', 'rack', 'game-error', 'valid-exchange', 'reserve-content'];
             for (const event of specificPlayerEvents) {
                 handlers.push([
                     event,
@@ -170,11 +175,11 @@ export class SocketManager {
             }
             handlers.forEach(([name, handler]) => game.eventEmitter.on(name, handler));
 
-            socket.on('message', (message: string) => game.message({ text: message, emitter: id }));
-            socket.on('confirm-forfeit', () => game.forfeit(id));
-            socket.on('change-letters', (letters: string) => game.changeLetters(letters, id));
+            socket.on('message', (message: string) => game.sendMessage({ text: message, emitter: id }));
+            socket.on('confirm-forfeit', async () => game.forfeit(id));
+            socket.on('change-letters', (letters: string) => game.changeLetters([...letters[0]], id));
             socket.on('place-letters', async (letters: string, row: number, col: number, isHorizontal?: boolean) =>
-                game.placeLetters(id, letters, row, col, isHorizontal),
+                game.placeLetters(id, [...letters], new Position(row, col), isHorizontal),
             );
             socket.on('switch-turn', () => game.skipTurn(id));
             socket.on('reserve-content', () => game.showReserveContent(id));
@@ -185,7 +190,7 @@ export class SocketManager {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
                 setTimeout(() => {
                     if (!this.logins.verify(id, this.token)) game.forfeit(id);
-                }, cst.AWOL_DELAY);
+                }, constants.DISCONNECTED_DELAY);
             });
 
             game.sendState();

@@ -1,0 +1,83 @@
+<section class="vp-container">
+    <section class="vp-beginner">
+        <section class="title">
+            <div><p>Débutant</p></div>
+        </section>
+        <section class="vp-names" #scrollMe>
+            <div *ngFor="let player of beginnerList" [ngClass]="{ new: !player.default, default: player.default }">
+                <div [ngClass]="{ regular: !player.default }">
+                    <p
+                        [attr.contenteditable]="!player.default"
+                        #inputName
+                        [(ngModel)]="nameInput"
+                        ngDefaultControl
+                        (keydown.enter)="$event.preventDefault(); updatePlayer(player.name, inputName.innerText, true)"
+                    >
+                        {{ player.name }}
+                    </p>
+                </div>
+                <button *ngIf="!player.default" class="trash-can-vp" (click)="deletePlayer(player.name)">
+                    <fa-icon [icon]="faTrash" size="1x"></fa-icon>
+                </button>
+            </div>
+            <div id="add-input" *ngIf="clicked[0]">
+                <input
+                    class="text-box"
+                    [(ngModel)]="nameInput"
+                    (keydown.enter)="addPlayer(nameInput, true)"
+                    type="text"
+                    placeholder="Entrez un nom"
+                    #text
+                />
+            </div>
+            <button *ngIf="clicked[0]" class="cancel" (click)="clicked[0] = false; error[1] = ''; nameInput = ''">
+                <fa-icon [icon]="faTrash" size="1x"></fa-icon>
+            </button>
+        </section>
+        <div class="feedback" *ngIf="error[0] === true && error[1] !== ''">
+            <p>{{ error[1] }}</p>
+        </div>
+        <section class="add-vp" (click)="clicked[0] = true; clicking(clicked[0], true)"><button>Ajouter un joueur</button></section>
+    </section>
+    <button class="refresh" title="Réinitialiser les joueurs" (click)="confirmReset()"><fa-icon [icon]="faTrash" size="2x"></fa-icon></button>
+    <section class="vp-expert">
+        <section class="title">
+            <div><p>Expert</p></div>
+        </section>
+        <section class="vp-names" #scrollMeExpert>
+            <div *ngFor="let player of expertList" [ngClass]="{ new: !player.default, default: player.default }">
+                <div [ngClass]="{ regular: !player.default, p: player.default }">
+                    <p
+                        [attr.contenteditable]="!player.default"
+                        #inputName
+                        [(ngModel)]="nameInput"
+                        ngDefaultControl
+                        (keydown.enter)="$event.preventDefault(); updatePlayer(player.name, inputName.innerText, false)"
+                    >
+                        {{ player.name }}
+                    </p>
+                </div>
+                <button *ngIf="!player.default" class="trash-can-vp" (click)="deletePlayer(player.name)">
+                    <fa-icon [icon]="faTrash" size="1x"></fa-icon>
+                </button>
+            </div>
+            <div id="add-input-expert" *ngIf="clicked[1]">
+                <input
+                    class="text-box-expert"
+                    [(ngModel)]="nameInputExpert"
+                    (keydown.enter)="addPlayer(nameInputExpert, false)"
+                    type="text"
+                    placeholder="Entrez un nom"
+                    #textExpert
+                />
+                <button class="cancel-expert" (click)="clicked[1] = false; error[1] = ''; nameInput = ''">
+                    <fa-icon [icon]="faTrash" size="1x"></fa-icon>
+                </button>
+            </div>
+        </section>
+        <div class="feedback" *ngIf="error[0] === false && error[1] !== ''">
+            <p>{{ error[1] }}</p>
+        </div>
+        <section class="add-vp" (click)="clicked[1] = true; clicking(clicked[1], false)"><button>Ajouter un joueur</button></section>
+    </section>
+</section>

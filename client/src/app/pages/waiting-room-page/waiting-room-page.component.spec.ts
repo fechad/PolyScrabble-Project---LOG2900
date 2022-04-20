@@ -4,47 +4,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Dictionnary } from '@app/classes/dictionnary';
-import { Parameters } from '@app/classes/parameters';
-import { Room, State } from '@app/classes/room';
+import { State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { BehaviorSubject } from 'rxjs';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
 
-export class CommunicationServiceMock {
-    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
-        id: 0,
-        name: 'Room',
-        parameters: new Parameters(),
-        mainPlayer: { name: 'Player 1', id: '0', connected: true },
-        otherPlayer: undefined,
-        state: State.Setup,
-    } as Room);
-    dictionnaries: Promise<Dictionnary[]> = Promise.resolve([{ id: 0, name: 'français' }]);
-
-    start() {
-        return;
-    }
-
-    leave() {
-        return;
-    }
-
-    kick() {
-        return;
-    }
-
-    kickLeave() {
-        return;
-    }
-
-    getId() {
-        return;
-    }
-}
-
 const dialogMock = {
+    open: () => {
+        return;
+    },
+
     close: () => {
         return;
     },
@@ -64,7 +34,7 @@ describe('WaitingRoomPageComponent', () => {
             providers: [
                 { provide: CommunicationService, useValue: service },
                 { provide: MatDialog, useValue: dialogMock },
-                { provide: ActivatedRoute, useValue: {} },
+                { provide: ActivatedRoute, useValue: { snapshot: { url: [''] } } },
             ],
         })
             .overrideComponent(WaitingRoomPageComponent, { set: { changeDetection: ChangeDetectionStrategy.Default } })
@@ -85,5 +55,11 @@ describe('WaitingRoomPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should open dialog', () => {
+        const openDialogSpy = spyOn(component.matDialog, 'open').and.callThrough();
+        component.openSoloDialog();
+        expect(openDialogSpy).toHaveBeenCalled();
     });
 });

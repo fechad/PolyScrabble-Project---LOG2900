@@ -1,12 +1,12 @@
 import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
-import { GameContextService } from '@app/services/game-context.service';
+import { Command, GameContextService, Objective } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faAngleDoubleRight, faFont, faPlay, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faAngleRight, faArrowRight, faFont, faPlay, faSignOutAlt, faWalking } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -19,11 +19,20 @@ export class GamePageComponent implements AfterViewChecked {
     faQuestionCircle = faQuestionCircle;
     faFont = faFont;
     faSignOutAlt = faSignOutAlt;
-    faAngleDoubleRight = faAngleDoubleRight;
     faPlay = faPlay;
-    resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
+    faWalking = faWalking;
+    faArrowRight = faArrowRight;
+    faAngleLeft = faAngleLeft;
+    faAngleRight = faAngleRight;
+
+    resetSize = constants.DEFAULT_HEIGHT + constants.DEFAULT_HEIGHT;
     placingWords = true;
+    publicObjectivesShown: boolean = true;
+    privateObjectivesShown: boolean = true;
     readonly sent: Subject<void> = new Subject<void>();
+    publicObjectives: Objective[];
+    privateObjectives: Objective[];
+
     constructor(
         public gridService: GridService,
         public communicationService: CommunicationService,
@@ -39,6 +48,10 @@ export class GamePageComponent implements AfterViewChecked {
             }
             ended = state.state !== State.Started;
         });
+        this.gameContextService.objectives.subscribe((objectives) => {
+            this.publicObjectives = objectives ? objectives.filter((objective) => objective.isPublic) : [];
+            this.privateObjectives = objectives ? objectives.filter((objective) => !objective.isPublic) : [];
+        });
     }
 
     ngAfterViewChecked(): void {
@@ -53,8 +66,8 @@ export class GamePageComponent implements AfterViewChecked {
     async quitGame() {
         const text =
             this.gameContextService.state.value.state !== State.Started
-                ? ['Êtes vous sûr?', 'Vous vous apprêtez à quitter la partie', 'Quitter', 'Rester']
-                : ['Êtes vous sûr?', 'Vous vous apprêtez à déclarer forfait', 'Abandonner', 'Continuer à jouer'];
+                ? ['Êtes-vous sûr?', 'Vous vous apprêtez à quitter la partie.', 'Quitter', 'Rester']
+                : ['Êtes-vous sûr?', 'Vous vous apprêtez à déclarer forfait.', 'Abandonner', 'Continuer à jouer'];
         const result = await Swal.fire({
             title: text[0],
             text: text[1],
@@ -62,6 +75,7 @@ export class GamePageComponent implements AfterViewChecked {
             showCancelButton: true,
             confirmButtonText: text[2],
             cancelButtonText: text[3],
+            heightAuto: false,
         });
 
         if (!result.value) return;
@@ -72,7 +86,7 @@ export class GamePageComponent implements AfterViewChecked {
         }
     }
     skipMyTurn() {
-        this.gameContextService.switchTurn(false);
+        this.gameContextService.executeCommand(Command.Switch, false);
     }
 
     changeSize(multiplier: number) {
@@ -80,5 +94,10 @@ export class GamePageComponent implements AfterViewChecked {
         this.gridService.gridContext.beginPath();
         this.gridService.gridContext.clearRect(0, 0, this.resetSize, this.resetSize);
         this.gridService.drawGrid();
+    }
+
+    showObjective(isPublic: boolean) {
+        if (isPublic) this.publicObjectivesShown = !this.publicObjectivesShown;
+        else this.privateObjectivesShown = !this.privateObjectivesShown;
     }
 }

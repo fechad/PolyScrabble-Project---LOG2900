@@ -8,11 +8,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Parameters } from '@app/classes/parameters';
-import { Room, State } from '@app/classes/room';
+import { State } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { BehaviorSubject } from 'rxjs';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { SoloDialogComponent } from './solo-dialog.component';
 
 const dialogMock = {
@@ -20,34 +19,6 @@ const dialogMock = {
         return;
     },
 };
-
-export class CommunicationServiceMock {
-    rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
-    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
-        id: 0,
-        name: 'Room',
-        parameters: new Parameters(),
-        mainPlayer: { name: 'Player 1', id: '0', connected: true },
-        otherPlayer: undefined,
-        state: State.Setup,
-    } as Room);
-
-    dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
-
-    async joinRoom() {
-        return;
-    }
-
-    leave() {
-        return;
-    }
-    getId(): number {
-        return 1;
-    }
-    createRoom() {
-        return;
-    }
-}
 
 describe('SoloDialogComponent', () => {
     let component: SoloDialogComponent;
@@ -120,7 +91,7 @@ describe('SoloDialogComponent', () => {
     it('switchName function should change opponent name', () => {
         component.soloParametersForm.controls.playerName.setValue('Anna');
         component.opponentName = 'Anna';
-        component.switchName('Anna');
+        component.checkName();
         expect(component.opponentName).not.toBe('Anna');
     });
 

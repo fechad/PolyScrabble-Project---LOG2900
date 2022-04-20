@@ -8,10 +8,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Room } from '@app/classes/room';
 import { AppRoutingModule, routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication.service';
-import { BehaviorSubject } from 'rxjs';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { JoinSetupDialogComponent } from './join-setup-dialog.component';
 
 const dialogMock = {
@@ -19,15 +18,6 @@ const dialogMock = {
         return;
     },
 };
-
-class CommunicationServiceMock {
-    rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
-
-    async joinRoom() {
-        return;
-    }
-}
-
 describe('JoinSetupDialogComponent', () => {
     let component: JoinSetupDialogComponent;
     let fixture: ComponentFixture<JoinSetupDialogComponent>;

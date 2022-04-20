@@ -1,0 +1,94 @@
+<section class="container">
+    <button class="refresh" title="Réinitialiser les dictionnaires" (click)="confirmReset()"><fa-icon [icon]="faTrash" size="2x"></fa-icon></button>
+    <div class="big-box" [ngClass]="{ regular: dictionary.title !== 'Mon dictionnaire' }" *ngFor="let dictionary of dictionaries">
+        <div class="dico-box">
+            <div class="header">
+                <div class="title">
+                    <h4>{{ dictionary.title }}</h4>
+                </div>
+            </div>
+            <div class="description">
+                <p>{{ dictionary.description }}</p>
+            </div>
+            <a
+                href="{{ environment.serverUrl }}/dictionaries/{{ dictionary.id }}"
+                download="{{dictionary.title}}.json"
+                class="download"
+            ><fa-icon [icon]="faDownload" size="lg"></fa-icon
+            ></a>
+        </div>
+        <div class="label" *ngIf="dictionary.title !== 'Mon dictionnaire'">
+            <button class="trash-can" (click)="deleteDictionary(dictionary.id)"><fa-icon [icon]="faTrash" size="lg"></fa-icon></button>
+            <button class="pencil" (click)="startEdit(dictionary.id)">
+                <fa-icon [icon]="faPencil" size="lg"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <section class="edit" *ngIf="editedDictionary">
+        <div class="header">
+            <h2>Modifier le dictionnaire</h2>
+            <mat-icon class="cancel" (click)="editedDictionary = undefined">cancel</mat-icon>
+        </div>
+        <form [formGroup]="dictionaryForm" (submit)="updateDictionary()">
+            <div>
+                <label>Nom du dictionnaire:</label>
+                <input type="text" formControlName="title" class="form-control" />
+            </div>
+            <div class="error" *ngIf="error !== ''">{{ error }}</div>
+            <div>
+                <p>Description du dictionnaire (max. 120 caractères):</p>
+                <textarea
+                    class="form-control"
+                    formControlName="description"
+                    rows="10"
+                    type="text"
+                    maxlength="120"
+                ></textarea>
+            </div>
+        </form>
+        <button class="submission" (click)="updateDictionary()">Soumettre modification</button>
+    </section>
+    <section *ngIf="uploading" class="dictionary-dialog">
+        <mat-card-header>
+            <mat-card-title>Téléversez votre dictionnaire!</mat-card-title>
+            <mat-icon class="cancel" (click)="emptyForm()">cancel</mat-icon>
+        </mat-card-header>
+        <br />
+        <mat-card-content>
+            <div class="dictionary-form">
+                <form class="format" [formGroup]="dictionaryForm" (submit)="fileUpload.files && addDictionary(fileUpload.files)">
+                    <label>Format JSON accepté:</label>
+                    <div>
+                        {{ '{' }}
+                        <br />
+                        "title": "exemple",
+                        <br />
+                        "description": "une description quelconque",
+                        <br />
+                        "words": ["aa", "bb"]
+                        <br />
+                        {{ '}' }}
+                        <br />
+                    </div>
+                    <br />
+                    <div class="file-area">
+                        <input
+                            type="file"
+                            accept=".json"
+                            formControlName="file"
+                            class="form-control"
+                            (click)="error = ''"
+                            #fileUpload
+                        />
+                        <div class="error" *ngIf="error !== ''">{{ error }}</div>
+                    </div>
+                    <br />
+                    <button class="submission" [disabled]="dictionaryForm.invalid || sending" type="submit">Soumettre</button>
+                </form>
+            </div>
+        </mat-card-content>
+    </section>
+    <div class="upload-area">
+        <button class="upload" (click)="uploading = true"><fa-icon [icon]="faUpload" size="3x"></fa-icon></button>
+    </div>
+</section>

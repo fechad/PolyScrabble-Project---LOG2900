@@ -2,9 +2,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
-import { Parameters } from '@app/classes/parameters';
-import { Room, State } from '@app/classes/room';
+import { State } from '@app/classes/room';
 import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationServiceMock } from '@app/services/communication.service.spec';
 import { GameContextService } from '@app/services/game-context.service';
 import { CountdownComponent, CountdownTimer } from 'ngx-countdown';
 import { BehaviorSubject, from } from 'rxjs';
@@ -13,8 +13,8 @@ import { InfosBoxComponent } from './infos-box.component';
 class GameContextServiceMock {
     state: BehaviorSubject<GameState> = new BehaviorSubject({
         players: [
-            { id: '0', name: 'P1', connected: true, virtual: false },
-            { id: '1', name: 'P2', connected: true, virtual: false },
+            { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
+            { id: '1', avatar: 'a', name: 'P2', connected: true, virtual: false },
         ].map((info) => ({ info, score: 0, rackCount: 7 })),
         reserveCount: 88,
         board: [],
@@ -40,23 +40,6 @@ class GameContextServiceMock {
         return;
     }
 }
-
-class CommunicationServiceMock {
-    selectedRoom: BehaviorSubject<Room> = new BehaviorSubject({
-        id: 0,
-        name: 'Room',
-        parameters: new Parameters(),
-        mainPlayer: { name: 'Player 1', id: '0', connected: true },
-        otherPlayer: undefined,
-        state: State.Setup,
-    } as Room);
-    dictionnaries = Promise.resolve([{ id: 0, name: 'francais' }]);
-
-    getId() {
-        return 0;
-    }
-}
-
 describe('InfosBoxComponent', () => {
     let component: InfosBoxComponent;
     let fixture: ComponentFixture<InfosBoxComponent>;
@@ -80,16 +63,21 @@ describe('InfosBoxComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(InfosBoxComponent);
         component = fixture.componentInstance;
+        component.opponentAvatar = 'a';
+        component.myAvatar = 'b';
         fixture.detectChanges();
     });
 
     it('should create', () => {
+        fixture.detectChanges();
         expect(component).toBeTruthy();
     });
 
-    it('should send winning summary if state of game is aborted', () => {
+    it('should send winning summary if state of game is aborted', (done) => {
         gameContextService.state.next({ ...gameContextService.state.value, state: State.Aborted });
-        expect(component.summary).toEqual('👑 Votre adversaire a abandonné, vous avez gagné! 👑');
+        fixture.detectChanges();
+        expect(component.summary).toEqual('Votre adversaire a abandonné, vous avez gagné!');
+        done();
     });
 
     it('should have undefined summary if state of game is not ended or aborted', () => {
@@ -106,15 +94,15 @@ describe('InfosBoxComponent', () => {
     it('should congratulate the winner if game ended and winner is defined', () => {
         gameContextService.state.next({ ...gameContextService.state.value, state: State.Ended });
         gameContextService.state.next({ ...gameContextService.state.value, winner: '1' });
-        expect(component.summary).toEqual('👑 Félicitations P2! 👑');
+        expect(component.summary).toEqual('Félicitations P2!');
     });
 
     it('should not put my number of letters visible if rack has 7 letters', () => {
         gameContextService.state.next({
             ...gameContextService.state.value,
             players: [
-                { id: '0', name: 'P1', connected: true, virtual: false },
-                { id: '1', name: 'P2', connected: true, virtual: false },
+                { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
+                { id: '1', avatar: 'a', name: 'P2', connected: true, virtual: false },
             ].map((info) => ({ info, score: 0, rackCount: 7 })),
         });
         expect(component.myRackIsVisible).toBeFalsy();
@@ -125,8 +113,8 @@ describe('InfosBoxComponent', () => {
         gameContextService.state.next({
             ...gameContextService.state.value,
             players: [
-                { id: '0', name: 'P1', connected: true, virtual: false },
-                { id: '1', name: 'P2', connected: true, virtual: false },
+                { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
+                { id: '1', avatar: 'a', name: 'P2', connected: true, virtual: false },
             ].map((info) => ({ info, score: 0, rackCount: 5 })),
         });
         expect(component.myRackIsVisible).toBeTruthy();
