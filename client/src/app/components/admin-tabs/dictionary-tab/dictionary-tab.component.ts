@@ -53,12 +53,7 @@ export class DictionaryTabComponent implements OnInit {
             this.uploading = false;
         } catch (e) {
             const error = e as HttpErrorResponse;
-            const errorMsg =
-                error.error instanceof ErrorEvent
-                    ? "Impossible d'accéder au serveur"
-                    : error.status === HttpStatusCode.Conflict
-                    ? 'Il existe déjà un dictionnaire avec ce nom'
-                    : "Le format n'est pas respecté";
+            const errorMsg = error.status === HttpStatusCode.Conflict ? 'Il existe déjà un dictionnaire avec ce nom' : "Le format n'est pas respecté";
             this.dictionaryForm.controls.file.reset();
             this.snackbar.open(`Le dictionnaire n'a pas pu être ajouté. ${errorMsg}`, 'OK', { duration: 2000, panelClass: ['snackbar'] });
         }

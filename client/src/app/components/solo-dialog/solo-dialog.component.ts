@@ -60,10 +60,11 @@ export class SoloDialogComponent implements OnInit {
         this.databaseNames = await this.httpClient.get<VP[]>(`${environment.serverUrl}/vp-names`).toPromise();
         this.list = this.databaseNames.filter((player) => player.beginner !== Boolean(this.soloParametersForm.value.difficulty)).map((vp) => vp.name);
         this.opponentName = this.list[Math.floor(Math.random() * this.list.length)];
+        this.setDescription();
     }
 
-    setDescription(id: number) {
-        this.description = this.communicationService.dictionnaries.value.find((dict) => dict.id === id)?.description || '';
+    setDescription() {
+        this.description = this.communicationService.dictionnaries.value[this.soloParametersForm.value.dictionnary]?.description || '';
     }
 
     closeDialog(): void {

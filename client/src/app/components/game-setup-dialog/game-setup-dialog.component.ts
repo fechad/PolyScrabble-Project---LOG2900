@@ -20,6 +20,7 @@ export class GameSetupDialogComponent implements OnInit {
     dictionnaries: Dictionnary[];
     environment = environment;
     dictionaryID: number;
+    description: string;
 
     constructor(
         readonly httpClient: HttpClient,
@@ -45,10 +46,11 @@ export class GameSetupDialogComponent implements OnInit {
             seconds: new FormControl(0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
+        this.setDescription();
     }
 
-    rightSummary(id: string): boolean {
-        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[constants.INDEX_POSITION] === id;
+    setDescription() {
+        this.description = this.communicationService.dictionnaries.value[this.gameParametersForm.value.dictionnary]?.description || '';
     }
 
     async onSubmit() {
