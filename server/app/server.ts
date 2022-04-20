@@ -25,13 +25,8 @@ export class Server {
 
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, constants.DECIMAL_BASE) : val;
-        if (isNaN(port)) {
-            return val;
-        } else if (port >= 0) {
-            return port;
-        } else {
-            return false;
-        }
+        if (isNaN(port)) return val;
+        return port >= 0 ? port : false;
     }
     async init(): Promise<void> {
         this.application.app.set('port', Server.appPort);

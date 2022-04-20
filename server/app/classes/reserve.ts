@@ -23,9 +23,9 @@ export class Reserve {
         const lettersToSend: Letter[] = [];
         const pullableQuantity = Math.min(quantity, this.reserve.length);
         for (let i = 0; i < pullableQuantity; i++) {
-            const index: number = Math.floor(Math.random() * this.reserve.length); // random number from array
+            const index: number = Math.floor(Math.random() * this.reserve.length);
             lettersToSend.push(this.reserve[index]);
-            // remove chosen element
+            // removes the chosen element
             this.reserve[index] = this.reserve[this.reserve.length - 1];
             this.reserve.pop();
         }
@@ -40,7 +40,7 @@ export class Reserve {
             const i = rack.findIndex(
                 (letter) => unwantedLetter === letter.toLowerCase() || (unwantedLetter.toUpperCase() === unwantedLetter && letter === '*'),
             );
-            if (i === constants.UNDEFINED) throw new Error('Tried to remove letter that is not in rack');
+            if (i === constants.UNDEFINED) throw new Error("Vous avez essayé d'enlever une lettre qui n'est pas dans votre chevalet");
             if (putBack) this.reserve.push(rack[i]);
             rack[i] = rack[rack.length - 1];
             rack.pop();

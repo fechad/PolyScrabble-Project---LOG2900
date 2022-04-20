@@ -26,10 +26,10 @@ export class Parameters {
         const MAX_TIME = 600;
 
         if (this.timer <= 0 || this.timer % MIN_DIVISION !== 0 || this.timer > MAX_TIME) {
-            return Error('Timer should be divisible by 30 and be between 0 and 600');
+            return Error('La minuteurie doit être divisible par 30 et doit être contenue entre 0 et 600');
         }
         if (this.gameType === GameType.Solo && this.difficulty === undefined) {
-            return Error('Difficulty is needed for Solo mode');
+            return Error('La difficultée doit être choisie en mode solo');
         }
         return;
     }

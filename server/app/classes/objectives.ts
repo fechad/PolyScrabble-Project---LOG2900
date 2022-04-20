@@ -31,7 +31,7 @@ export abstract class ObjectiveFormed extends Objective {
 }
 
 export class ObjectivePalindrome extends ObjectiveFormed {
-    points = constants.OBJECTIVE_PALINDORME;
+    points = constants.POINTS_OBJECTIVE_PALINDORME;
     description = 'Former un palindrome';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -41,7 +41,7 @@ export class ObjectivePalindrome extends ObjectiveFormed {
 }
 
 export class ObjectiveAlreadyOnBoard extends ObjectiveFormed {
-    points = constants.OBJECTIVE_ALREADY_ON_BOARD;
+    points = constants.POINTS_OBJECTIVE_ALREADY_ON_BOARD;
     description = 'Former un mot déjà présent sur le plateau';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -50,7 +50,7 @@ export class ObjectiveAlreadyOnBoard extends ObjectiveFormed {
 }
 
 export class Objective3Vowels extends ObjectiveFormed {
-    points = constants.OBJECTIVE_3_VOWELS;
+    points = constants.POINTS_OBJECTIVE_3_VOWELS;
     description = 'Former un mot avec 3 voyelles';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -60,7 +60,7 @@ export class Objective3Vowels extends ObjectiveFormed {
 }
 
 export class ObjectiveAnagram extends ObjectiveFormed {
-    points = constants.OBJECTIVE_ANAGRAM;
+    points = constants.POINTS_OBJECTIVE_ANAGRAM;
     description = "Former un anagramme d'un mot déja présent";
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -78,7 +78,7 @@ export class ObjectiveAnagram extends ObjectiveFormed {
 }
 
 export class ObjectiveOnlyVowels extends ObjectivePlacement {
-    points = constants.OBJECTIVE_ONLY_VOWELS;
+    points = constants.POINTS_OBJECTIVE_ONLY_VOWELS;
     description = 'Former un mot sans ajouter de consonne';
 
     isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean {
@@ -87,7 +87,7 @@ export class ObjectiveOnlyVowels extends ObjectivePlacement {
 }
 
 export class Objective2BigLetters extends ObjectiveFormed {
-    points = constants.OBJECTIVE_2_BIG_LETTERS;
+    points = constants.POINTS_OBJECTIVE_2_BIG_LETTERS;
     description = 'Former un mot avec 2 lettres de plus de 5 points';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -97,16 +97,16 @@ export class Objective2BigLetters extends ObjectiveFormed {
 }
 
 export class Objective7LettersOrMore extends ObjectiveFormed {
-    points = constants.OBJECTIVE_7_LETTERS_OR_MORE;
+    points = constants.POINTS_OBJECTIVE_7_LETTERS_OR_MORE;
     description = 'Former un mot de plus de 7 lettres';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        return word.length > constants.OBJECTIVE_NUMBER_OF_LETTER;
+        return word.length > constants.POINTS_OBJECTIVE_NUMBER_OF_LETTER;
     }
 }
 
 export class ObjectiveCornerPlacement extends ObjectivePlacement {
-    points = constants.OBJECTIVE_CORNER_PLACEMENT;
+    points = constants.POINTS_OBJECTIVE_CORNER_PLACEMENT;
     description = 'Placer une lettre dans un coin';
 
     isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean {

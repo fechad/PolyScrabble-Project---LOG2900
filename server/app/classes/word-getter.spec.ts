@@ -18,11 +18,11 @@ describe('Word getter', () => {
     it('should get the attempted word', () => {
         let testPlacement = PlacementOption.newPlacement(wordGetter.board, new Position(7, 7), false, [...'test']);
         let words = wordGetter.getWords(testPlacement);
-        expect(words).to.deep.equal([{ word: 'test', position: new Position(7, 7), horizontal: false, score: 4, contact: false }]);
+        expect(words).to.deep.equal([{ word: 'test', position: new Position(7, 7), horizontal: false, score: 8, contact: false }]);
 
         testPlacement = PlacementOption.newPlacement(wordGetter.board, new Position(7, 4), true, [...'test']);
         words = wordGetter.getWords(testPlacement);
-        expect(words).to.deep.equal([{ word: 'test', position: new Position(7, 4), horizontal: true, score: 4, contact: false }]);
+        expect(words).to.deep.equal([{ word: 'test', position: new Position(7, 4), horizontal: true, score: 8, contact: false }]);
 
         wordGetter.board.place([{ letter: 'a', position: new Position(7, 7) }]);
         testPlacement = PlacementOption.newPlacement(wordGetter.board, new Position(7, 5), true, [...'test']);

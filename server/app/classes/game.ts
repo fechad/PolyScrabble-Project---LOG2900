@@ -63,7 +63,7 @@ export class Game {
     private playedWords: Set<string>;
 
     constructor(readonly room: Room, private readonly dictionary: Dictionnary, private readonly gameHistoryService: GameHistoryService) {
-        if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
+        if (room.getOtherPlayer() === undefined) throw new Error('Vous ne pouvez pas faire une partie sans adversaire');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board();
         this.reserve = new Reserve();
@@ -144,11 +144,11 @@ export class Game {
 
     getPlayerInfo(id: PlayerId): PlayerInfo {
         const playerIdx = this.players.findIndex((player) => player.id === id);
-        if (playerIdx === constants.INVALID_INDEX) throw new Error('Not one of the players');
+        if (playerIdx === constants.INVALID_INDEX) throw new Error("Ce n'est pas un joueur valide");
         return { info: this.players[playerIdx], score: this.scores[playerIdx], rackCount: this.reserve.letterRacks[playerIdx].length };
     }
 
-    message(message: Message) {
+    sendMessage(message: Message) {
         this.messages.push(message);
         this.eventEmitter.emit('message', message);
     }
@@ -156,8 +156,8 @@ export class Game {
     async placeLetters(playerId: PlayerId, letters: string[], pos: Position, isHorizontal?: boolean) {
         if (!this.checkTurn(playerId)) return;
         console.log(
-            `User ${playerId} made placement of word ${letters} at position ${JSON.stringify(pos)} in direction ${
-                isHorizontal ? 'horizontal' : 'vertical'
+            `Joueur ${playerId} a fait un placement du mot ${letters} à la position ${JSON.stringify(pos)} dans la direction ${
+                isHorizontal ? 'horizontale' : 'verticale'
             }`,
         );
         const playerIndex = this.getPlayerIndex(this.getCurrentPlayer().id);
@@ -184,7 +184,7 @@ export class Game {
             if (letters.length === constants.WORD_LENGTH_BONUS) this.scores[playerIndex] += constants.BONUS_POINTS;
             if (this.objectives) {
                 const accomplishedObjectives = this.objectives
-                    .filter((objective) => !objective.player || objective.player === playerId || !objective.doneByPlayer)
+                    .filter((objective) => (!objective.player || objective.player === playerId) && !objective.doneByPlayer)
                     .filter((objective) =>
                         objective.objective.isAccomplished(
                             triedPlacement,
@@ -193,7 +193,7 @@ export class Game {
                     );
                 for (const newWord of words) this.playedWords.add(newWord.word);
                 for (const objective of accomplishedObjectives) {
-                    console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
+                    console.log(`Joueur ${playerId} a accompli l'objectif '${objective.objective.description}'`);
                     this.scores[playerIndex] += objective.objective.points;
                     objective.doneByPlayer = playerId;
                 }

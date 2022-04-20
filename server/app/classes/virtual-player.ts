@@ -30,7 +30,7 @@ export class VirtualPlayer {
     constructor(readonly difficulty: Difficulty, private game: Game, private trie: LetterNode) {
         this.board = game.board;
         this.wordGetter = new WordGetter(this.board);
-        console.log(`Virtual player created of difficulty ${difficulty === Difficulty.Beginner ? 'beginner' : 'expert'} for game ${game.id}`);
+        console.log(`Joueur virtuel de niveau ${difficulty === Difficulty.Beginner ? 'débutant' : 'expert'} pour la partie ${game.id}`);
     }
 
     waitForTurn() {
@@ -55,17 +55,18 @@ export class VirtualPlayer {
             this.game.reserve.letterRacks[this.game.players[constants.MAIN_PLAYER].id === this.id ? constants.MAIN_PLAYER : constants.OTHER_PLAYER];
         const changeLetters = async (length: number) => {
             await minTimeout;
-            if (!played)
-                this.game.changeLetters(
-                    rack.slice(0, Math.min(this.game.reserve.getCount(), length)).map((letter) => letter.toLowerCase()),
-                    this.id,
-                );
+            if (played) return;
             played = true;
+            this.game.changeLetters(
+                rack.slice(0, Math.min(this.game.reserve.getCount(), length)).map((letter) => letter.toLowerCase()),
+                this.id,
+            );
         };
         const play = async (chosenWord: PlacementOption) => {
             const letters = chosenWord.newLetters.map((l) => l.letter);
-            if (!played) await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
+            if (played) return;
             played = true;
+            await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
         };
         const randomOutOfTen = Math.floor(Math.random() * constants.PROBABILITY);
         if (this.difficulty === Difficulty.Expert) {
@@ -124,32 +125,31 @@ export class VirtualPlayer {
         const prefix = this.findPrefix(head.position, !head.isHorizontal);
         const nextPos = head.position.withOffset(head.isHorizontal, 1);
         [...new Set(head.rack)]
-            .flatMap((l): [string, boolean][] => {
-                if (l === '*') {
+            .flatMap((letter): [string, boolean][] => {
+                if (letter === '*') {
                     return prefix.nextNodes.map((node) => [node.letter, true]);
                 } else {
-                    return [[l, false]];
+                    return [[letter, false]];
                 }
             })
-            .forEach(([nextLetter, isGlob]) => {
+            .forEach(([nextLetter, isGlobal]) => {
                 const nextNode = head.node.getNext(nextLetter);
                 if (!nextNode) return;
                 if (!this.validSuffix(prefix, nextLetter, head.position, !head.isHorizontal)) return;
                 const newRack = head.rack.slice();
-                const idx = head.rack.findIndex((l) => l === (isGlob ? '*' : nextLetter));
-                newRack.splice(idx, 1);
+                const index = head.rack.findIndex((letter) => letter === (isGlobal ? '*' : nextLetter));
+                newRack.splice(index, 1);
                 const newLetters: LetterPlacement[] = [
                     ...head.letters,
-                    { letter: isGlob ? nextLetter : nextLetter.toLowerCase(), position: head.position },
+                    { letter: isGlobal ? nextLetter : nextLetter.toLowerCase(), position: head.position },
                 ];
                 searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
             });
     }
 
     private getInitialStack(rack: string[]): SearchHead[] {
-        const isStart = !this.board.get(constants.MIDDLE).letter;
         const searchStack: SearchHead[] = [];
-        if (isStart) {
+        if (!this.board.get(constants.MIDDLE).letter) {
             const isHorizontal = Math.random() > constants.HALF_PROBABILITY;
             searchStack.push({
                 position: constants.MIDDLE,
@@ -165,12 +165,12 @@ export class VirtualPlayer {
                     const position = new Position(row, col);
                     // for each direction
                     for (const isHorizontal of [true, false]) {
-                        let mightTouch = false;
+                        let connectableWord = false;
                         for (let delta = -constants.HALF_LENGTH; delta <= constants.HALF_LENGTH; delta++) {
                             const pos = isHorizontal ? new Position(row, col + delta) : new Position(row + delta, col);
-                            if (pos.isInBound() && this.board.get(pos).letter) mightTouch = true;
+                            if (pos.isInBound() && this.board.get(pos).letter) connectableWord = true;
                         }
-                        if (!mightTouch) continue;
+                        if (!connectableWord) continue;
 
                         const prevPos = position.withOffset(isHorizontal, constants.PREVIOUS);
                         if (prevPos.isInBound() && this.board.get(prevPos).letter) continue;
@@ -188,9 +188,9 @@ export class VirtualPlayer {
         for (let offset = startingOffset; offset < 0; offset++) {
             const pos = position.withOffset(isHorizontal, offset);
             const letter = this.board.get(pos).letter;
-            if (!letter) throw new Error('Could backtrack but now stuck??');
+            if (!letter) throw new Error('Aucune option de recherche');
             const nextNode = node.getNext(letter);
-            if (!nextNode) throw new Error('Prefix is not a valid word??');
+            if (!nextNode) throw new Error('Préfixe invalide');
             node = nextNode;
         }
         return node;

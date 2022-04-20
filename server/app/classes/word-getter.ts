@@ -23,14 +23,14 @@ export class WordGetter {
         const placeMiddle = placement.newLetters.some((letter) => letter.position.equals(new Position(constants.HALF_LENGTH, constants.HALF_LENGTH)));
         if (firstWord && !placeMiddle) throw new Error('Placement invalide: Le premier mot doit toucher le milieu du plateau');
         const mainWord = this.getWord(placement.newLetters, placement.isHorizontal);
-        if (mainWord) words.push(mainWord);
+        if (!mainWord) throw new Error("Aucun mot n'est formé");
+        words.push(mainWord);
         if (!firstWord && !words.some((word) => word.contact)) throw new Error('Placement invalide: Aucun point de contact');
-        // TODO: What if mainWord undefined?
         return words;
     }
 
     findStartingOffset(position: Position, isHorizontal: boolean): number {
-        if (!position.isInBound()) throw new Error('Initial position is out of bound');
+        if (!position.isInBound()) throw new Error('Position initiale hors de la grille');
         for (let offset = -1; ; offset--) {
             const newPos = position.withOffset(isHorizontal, offset);
             if (!newPos.isInBound() || !this.board.get(newPos).letter) return offset + 1;
@@ -51,7 +51,7 @@ export class WordGetter {
             const tile = this.board.get(newPos);
             if (!tile.letter) {
                 if (idx >= newLetters.length) break;
-                if (!newLetters[idx].position.equals(newPos)) throw new Error('End of word but still needs to place letters');
+                if (!newLetters[idx].position.equals(newPos)) throw new Error('Mot validé avant sa complétion');
                 const letter = newLetters[idx].letter;
                 idx++;
                 wordMultiplier *= tile.wordMultiplier;
