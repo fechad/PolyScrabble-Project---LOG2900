@@ -1,4 +1,4 @@
-import * as cst from '@app/controllers/db.controller';
+import * as constants from '@app/controllers/db.controller';
 import { DataBaseController, VP } from '@app/controllers/db.controller';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -11,11 +11,11 @@ export type VpPair = { oldVp: VP; newVp: VP };
 export class VpNamesService {
     private vpCollection: Collection | undefined = undefined;
     constructor(private dataBase: DataBaseController) {
-        this.vpCollection = this.dataBase.db?.collection(cst.VP_COLLECTION);
+        this.vpCollection = this.dataBase.db?.collection(constants.VP_COLLECTION);
     }
 
     async getNames(): Promise<VP[]> {
-        if (!this.vpCollection) return cst.DEFAULT_VPS;
+        if (!this.vpCollection) return constants.DEFAULT_VPS;
         const vpNames = (await this.vpCollection.aggregate().project({ _id: 0 }).toArray()) as VP[];
         return vpNames;
     }

@@ -65,26 +65,23 @@ export class Room extends EventEmitter {
     }
 
     start() {
-        if (!this.needsOtherPlayer() && this.state === State.Setup) {
-            this.state = State.Started;
-            this.emit('update-room');
-        }
+        if (this.needsOtherPlayer() || this.state !== State.Setup) return;
+        this.state = State.Started;
+        this.emit('update-room');
     }
 
     end(forfeit: boolean) {
-        if (this.state === State.Started) {
-            this.state = forfeit ? State.Aborted : State.Ended;
-            this.emit('update-room');
-        }
+        if (this.state !== State.Started) return;
+        this.state = forfeit ? State.Aborted : State.Ended;
+        this.emit('update-room');
     }
 
     kickOtherPlayer() {
-        if (this.otherPlayer && this.state === State.Setup) {
-            console.log(`Kicked player from room ${this.id}`);
-            this.otherPlayer = undefined;
-            this.emit('kick');
-            this.emit('update-room');
-        }
+        if (!this.otherPlayer || this.state !== State.Setup) return;
+        console.log(`Kicked player from room ${this.id}`);
+        this.otherPlayer = undefined;
+        this.emit('kick');
+        this.emit('update-room');
     }
 
     hasOtherPlayer(): boolean {

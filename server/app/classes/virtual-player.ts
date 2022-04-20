@@ -1,5 +1,5 @@
 import { LetterPlacement, PlacementOption } from '@app/classes/placement-option';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { Board } from './board';
 import { Game } from './game';
 import { LetterNode } from './letter-node';
@@ -23,14 +23,14 @@ export type PlacementScore = {
 };
 
 export class VirtualPlayer {
-    id: string = cst.AI_ID;
+    id: string = constants.AI_ID;
     private board: Board;
     private wordGetter: WordGetter;
 
     constructor(readonly difficulty: Difficulty, private game: Game, private trie: LetterNode) {
         this.board = game.board;
         this.wordGetter = new WordGetter(this.board);
-        console.log(`Virtual player created of difficulty ${difficulty === Difficulty.Beginner ? 'beginner' : 'expert'} for game ${game.id}`);
+        console.log(`Joueur virtuel de niveau ${difficulty === Difficulty.Beginner ? 'débutant' : 'expert'} pour la partie ${game.id}`);
     }
 
     waitForTurn() {
@@ -41,7 +41,7 @@ export class VirtualPlayer {
             alreadyPlaying = true;
             await this.playTurn();
             alreadyPlaying = false;
-        }, cst.DELAY_CHECK_TURN);
+        }, constants.DELAY_CHECK_TURN);
     }
 
     async playTurn() {
@@ -49,24 +49,26 @@ export class VirtualPlayer {
         setTimeout(() => {
             if (!played) this.game.skipTurn(this.id);
             played = true;
-        }, cst.DELAY_NO_PLACEMENT);
-        const minTimeout = new Promise<void>((resolve) => setTimeout(() => resolve(), cst.BOARD_PLACEMENT_DELAY));
-        const rack = this.game.reserve.letterRacks[this.game.players[cst.MAIN_PLAYER].id === this.id ? cst.MAIN_PLAYER : cst.OTHER_PLAYER];
+        }, constants.DELAY_NO_PLACEMENT);
+        const minTimeout = new Promise<void>((resolve) => setTimeout(() => resolve(), constants.BOARD_PLACEMENT_DELAY));
+        const rack =
+            this.game.reserve.letterRacks[this.game.players[constants.MAIN_PLAYER].id === this.id ? constants.MAIN_PLAYER : constants.OTHER_PLAYER];
         const changeLetters = async (length: number) => {
             await minTimeout;
-            if (!played)
-                this.game.changeLetters(
-                    rack.slice(0, Math.min(this.game.reserve.getCount(), length)).map((letter) => letter.toLowerCase()),
-                    this.id,
-                );
+            if (played) return;
             played = true;
+            this.game.changeLetters(
+                rack.slice(0, Math.min(this.game.reserve.getCount(), length)).map((letter) => letter.toLowerCase()),
+                this.id,
+            );
         };
         const play = async (chosenWord: PlacementOption) => {
             const letters = chosenWord.newLetters.map((l) => l.letter);
-            if (!played) await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
+            if (played) return;
             played = true;
+            await this.game.placeLetters(this.id, letters, chosenWord.newLetters[0].position, chosenWord.isHorizontal);
         };
-        const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
+        const randomOutOfTen = Math.floor(Math.random() * constants.PROBABILITY);
         if (this.difficulty === Difficulty.Expert) {
             const sortedWordOptions = this.chooseWords(rack);
             if (sortedWordOptions.length > 0) await play(sortedWordOptions[0].placement);
@@ -78,21 +80,22 @@ export class VirtualPlayer {
             if (sortedWordOptions.length === 0) return;
             const randomIndex = Math.floor(Math.random() * sortedWordOptions.length);
             await play(sortedWordOptions[randomIndex].placement);
-        } else if (randomOutOfTen === 1 && this.game.reserve.getCount() >= cst.RACK_LENGTH) {
+        } else if (randomOutOfTen === 1 && this.game.reserve.getCount() >= constants.RACK_LENGTH) {
             // 10 % chance
             const sliceIndex = Math.floor(Math.random() * rack.length + 1);
             await changeLetters(sliceIndex);
         }
     }
 
-    chooseWords(freeLetters: string[], bracket?: cst.Braket): PlacementScore[] {
+    chooseWords(freeLetters: string[], bracket?: constants.Bracket): PlacementScore[] {
         return this.getPlayablePositions(freeLetters)
             .map((placement) => {
                 const score = this.wordGetter.getWords(placement).reduce((totalScore, word) => totalScore + word.score, 0);
                 return { placement, score };
             })
             .filter(
-                (placement) => !bracket || (placement.score >= bracket[cst.LOWER_BOUND_INDEX] && placement.score <= bracket[cst.HIGHER_BOUND_INDEX]),
+                (placement) =>
+                    !bracket || (placement.score >= bracket[constants.LOWER_BOUND_INDEX] && placement.score <= bracket[constants.HIGHER_BOUND_INDEX]),
             )
             .sort((a, b) => b.score - a.score);
     }
@@ -122,35 +125,34 @@ export class VirtualPlayer {
         const prefix = this.findPrefix(head.position, !head.isHorizontal);
         const nextPos = head.position.withOffset(head.isHorizontal, 1);
         [...new Set(head.rack)]
-            .flatMap((l): [string, boolean][] => {
-                if (l === '*') {
+            .flatMap((letter): [string, boolean][] => {
+                if (letter === '*') {
                     return prefix.nextNodes.map((node) => [node.letter, true]);
                 } else {
-                    return [[l, false]];
+                    return [[letter, false]];
                 }
             })
-            .forEach(([nextLetter, isGlob]) => {
+            .forEach(([nextLetter, isGlobal]) => {
                 const nextNode = head.node.getNext(nextLetter);
                 if (!nextNode) return;
                 if (!this.validSuffix(prefix, nextLetter, head.position, !head.isHorizontal)) return;
                 const newRack = head.rack.slice();
-                const idx = head.rack.findIndex((l) => l === (isGlob ? '*' : nextLetter));
-                newRack.splice(idx, 1);
+                const index = head.rack.findIndex((letter) => letter === (isGlobal ? '*' : nextLetter));
+                newRack.splice(index, 1);
                 const newLetters: LetterPlacement[] = [
                     ...head.letters,
-                    { letter: isGlob ? nextLetter : nextLetter.toLowerCase(), position: head.position },
+                    { letter: isGlobal ? nextLetter : nextLetter.toLowerCase(), position: head.position },
                 ];
                 searchStack.push({ ...head, position: nextPos, node: nextNode, letters: newLetters, rack: newRack });
             });
     }
 
     private getInitialStack(rack: string[]): SearchHead[] {
-        const isStart = !this.board.get(cst.MIDDLE).letter;
         const searchStack: SearchHead[] = [];
-        if (isStart) {
-            const isHorizontal = Math.random() > cst.HALF_PROBABILITY;
+        if (!this.board.get(constants.MIDDLE).letter) {
+            const isHorizontal = Math.random() > constants.HALF_PROBABILITY;
             searchStack.push({
-                position: cst.MIDDLE,
+                position: constants.MIDDLE,
                 isHorizontal,
                 letters: [],
                 node: this.trie,
@@ -158,19 +160,19 @@ export class VirtualPlayer {
                 rack,
             });
         } else {
-            for (let row = 0; row < cst.BOARD_LENGTH; row++) {
-                for (let col = 0; col < cst.BOARD_LENGTH; col++) {
+            for (let row = 0; row < constants.BOARD_LENGTH; row++) {
+                for (let col = 0; col < constants.BOARD_LENGTH; col++) {
                     const position = new Position(row, col);
                     // for each direction
                     for (const isHorizontal of [true, false]) {
-                        let mightTouch = false;
-                        for (let delta = -cst.HALF_LENGTH; delta <= cst.HALF_LENGTH; delta++) {
+                        let connectableWord = false;
+                        for (let delta = -constants.HALF_LENGTH; delta <= constants.HALF_LENGTH; delta++) {
                             const pos = isHorizontal ? new Position(row, col + delta) : new Position(row + delta, col);
-                            if (pos.isInBound() && this.board.get(pos).letter) mightTouch = true;
+                            if (pos.isInBound() && this.board.get(pos).letter) connectableWord = true;
                         }
-                        if (!mightTouch) continue;
+                        if (!connectableWord) continue;
 
-                        const prevPos = position.withOffset(isHorizontal, cst.PREVIOUS);
+                        const prevPos = position.withOffset(isHorizontal, constants.PREVIOUS);
                         if (prevPos.isInBound() && this.board.get(prevPos).letter) continue;
                         searchStack.push({ position, isHorizontal, letters: [], node: this.trie, contact: false, rack });
                     }
@@ -186,9 +188,9 @@ export class VirtualPlayer {
         for (let offset = startingOffset; offset < 0; offset++) {
             const pos = position.withOffset(isHorizontal, offset);
             const letter = this.board.get(pos).letter;
-            if (!letter) throw new Error('Could backtrack but now stuck??');
+            if (!letter) throw new Error('Aucune option de recherche');
             const nextNode = node.getNext(letter);
-            if (!nextNode) throw new Error('Prefix is not a valid word??');
+            if (!nextNode) throw new Error('Préfixe invalide');
             node = nextNode;
         }
         return node;
@@ -216,16 +218,16 @@ export class VirtualPlayer {
     }
 
     private getRandomPointBracket(): [number, number] {
-        const randomOutOfTen = Math.floor(Math.random() * cst.PROBABILITY);
-        if (randomOutOfTen < cst.PROBABILITY_OF_40) {
+        const randomOutOfTen = Math.floor(Math.random() * constants.PROBABILITY);
+        if (randomOutOfTen < constants.PROBABILITY_OF_40) {
             // 40 % chance
-            return cst.LOWER_POINT_BRACKET;
-        } else if (randomOutOfTen < cst.PROBABILITY_OF_30) {
+            return constants.LOWER_POINT_BRACKET;
+        } else if (randomOutOfTen < constants.PROBABILITY_OF_30) {
             // 30 % chance
-            return cst.MIDDLE_POINT_BRACKET;
+            return constants.MIDDLE_POINT_BRACKET;
         } else {
             // 30 % chance
-            return cst.HIGHER_POINT_BRACKET;
+            return constants.HIGHER_POINT_BRACKET;
         }
     }
 }

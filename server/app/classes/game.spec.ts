@@ -66,7 +66,7 @@ describe('Game', () => {
         const stub = sinon.stub();
         const message: Message = { text: 'test message', emitter: '0' };
         game.eventEmitter.on('message', stub);
-        game.message(message);
+        game.sendMessage(message);
         stubSetTimeout.callThrough()(() => {
             assert(stub.calledWith(message));
             assert(game['messages'][0] === message);

@@ -1,4 +1,4 @@
-import * as cst from '@app/controllers/db.controller';
+import * as constants from '@app/controllers/db.controller';
 import { DataBaseController } from '@app/controllers/db.controller';
 import { GameHistory } from '@app/game-history';
 import { Collection } from 'mongodb';
@@ -11,7 +11,7 @@ export class GameHistoryService {
 
     async connect() {
         await this.dataBase.connect();
-        this.collection = this.dataBase.db?.collection(cst.GAMES_COLLECTION);
+        this.collection = this.dataBase.db?.collection(constants.GAMES_COLLECTION);
     }
 
     async getHistory(): Promise<GameHistory[]> {
