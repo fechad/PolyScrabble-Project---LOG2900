@@ -141,12 +141,12 @@ const dummyFind = (game: Game, dictionnary: Dictionnary, rack: string[]): Placem
 
     const dictionnaryService = new DictionnaryService();
     await dictionnaryService.init();
-    const dict = dictionnaryService.get(0);
-    if (!dict) throw new Error('No dictionnaries');
+    const dictionary = dictionnaryService.get(0);
+    if (!dictionary) throw new Error('No dictionaries loaded');
     const gameHistoryService = new GameHistoryService(new DataBaseController());
 
     for (let i = 0; ; i++) {
         console.log(`Iteration ${i + 1}`);
-        await playGame(dict, gameHistoryService, true);
+        await playGame(dictionary, gameHistoryService, true);
     }
 })();

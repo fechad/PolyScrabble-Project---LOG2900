@@ -50,6 +50,7 @@ export class DictionaryTabComponent implements OnInit {
             await this.httpClient.post(`${environment.serverUrl}/dictionaries`, files[0], { responseType: 'text' }).toPromise();
             await this.communicationService.updateDictionaries();
             this.snackbar.open('Le dictionnaire a bien été ajouté', 'OK', { duration: 2000, panelClass: ['snackbar'] });
+            this.uploading = false;
         } catch (e) {
             const error = e as HttpErrorResponse;
             const errorMsg =
@@ -58,6 +59,7 @@ export class DictionaryTabComponent implements OnInit {
                     : error.status === HttpStatusCode.Conflict
                     ? 'Il existe déjà un dictionnaire avec ce nom'
                     : "Le format n'est pas respecté";
+            this.dictionaryForm.controls.file.reset();
             this.snackbar.open(`Le dictionnaire n'a pas pu être ajouté. ${errorMsg}`, 'OK', { duration: 2000, panelClass: ['snackbar'] });
         }
     }

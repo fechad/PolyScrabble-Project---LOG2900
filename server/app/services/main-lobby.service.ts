@@ -42,11 +42,11 @@ export class MainLobbyService {
             if (virtualPlayer) {
                 room.addPlayer('VP', virtualPlayer, true, imgList[Math.floor(Math.random() * NUMBER_ICONS)]);
                 room.start();
-                const dict = this.dictionnaryService.get(room.parameters.dictionnary);
-                if (!dict) throw new Error('Dict deleted'); // TODO
-                const game = new Game(room, dict, this.gameHistoyService);
+                const dictionary = this.dictionnaryService.get(room.parameters.dictionnary);
+                if (!dictionary) throw new Error('Dict deleted'); // TODO
+                const game = new Game(room, dictionary, this.gameHistoyService);
                 this.roomsService.games.push(game);
-                const vP = new VirtualPlayer(parameters.difficulty || Difficulty.Beginner, game, dict.trie);
+                const vP = new VirtualPlayer(parameters.difficulty || Difficulty.Beginner, game, dictionary.trie);
                 vP.waitForTurn();
             }
         });
