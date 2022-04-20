@@ -19,6 +19,8 @@ export const NUMBER_OF_TILES = 15;
 export const GRID_ORIGIN = 20;
 export const CANVAS_ADJUSTMENT = 16;
 
+export const INDEX_POSITION = 3;
+
 export const DEFAULT_INNER_WIDTH = 500;
 export const DEFAULT_INNER_HEIGHT = 500;
 export const CENTER_TILE = 7;

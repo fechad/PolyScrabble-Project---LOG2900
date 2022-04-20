@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { GameState } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
+import { Rack } from '@app/classes/rack';
 import { State } from '@app/classes/room';
 import { Vec2 } from '@app/classes/vec2';
 import { BehaviorSubject, of } from 'rxjs';
@@ -14,22 +15,21 @@ describe('PlaceLetterService', () => {
     let gameService: jasmine.SpyObj<GameContextService>;
     let gridService: jasmine.SpyObj<GridService>;
     let mouseService: jasmine.SpyObj<MouseService>;
+    let rack: jasmine.SpyObj<Rack>;
+
     beforeEach(() => {
-        gameService = jasmine.createSpyObj(
-            'GameContextService',
-            ['place', 'addMessage', 'tempUpdateRack', 'attemptTempRackUpdate', 'isMyTurn', 'addTempRack'],
-            {
-                state: new BehaviorSubject({
-                    state: State.Started,
-                    board: [
-                        [null, { name: 'A', score: 1 }, null],
-                        [null, null, null],
-                        [null, null, null],
-                    ] as Tile[][],
-                } as unknown as GameState),
-                rack: new BehaviorSubject([{ name: 'A', score: 1 }]),
-            },
-        );
+        rack = jasmine.createSpyObj('Rack', ['tempUpdate', 'addTemp', 'attemptTempUpdate'], { rack: new BehaviorSubject([{ name: 'A', score: 1 }]) });
+        gameService = jasmine.createSpyObj('GameContextService', ['place', 'isMyTurn'], {
+            state: new BehaviorSubject({
+                state: State.Started,
+                board: [
+                    [null, { name: 'A', score: 1 }, null],
+                    [null, null, null],
+                    [null, null, null],
+                ] as Tile[][],
+            } as unknown as GameState),
+            rack,
+        });
         gameService.isMyTurn.and.callFake(() => of(true));
         gridService = jasmine.createSpyObj('GridService', ['drawGrid', 'tempUpdateBoard', 'drawArrow'], {
             rack: [{ name: 'A', score: 1 }] as Letter[],
@@ -69,7 +69,7 @@ describe('PlaceLetterService', () => {
     });
     it('placeWordOnCanvas should update the rack', () => {
         service.placeWordOnCanvas('a');
-        expect(gameService.tempUpdateRack).toHaveBeenCalled();
+        expect(gameService.rack.tempUpdate).toHaveBeenCalled();
     });
 
     it('clearing the variable should redraw the board', () => {

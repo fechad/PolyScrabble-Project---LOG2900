@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
@@ -17,6 +17,7 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./solo-dialog.component.scss'],
 })
 export class SoloDialogComponent implements OnInit {
+    @ViewChild('dropDown') dropDown: ElementRef;
     soloParametersForm: FormGroup;
     difficulties = [
         { id: Difficulty.Beginner, name: 'débutant' },
@@ -61,6 +62,10 @@ export class SoloDialogComponent implements OnInit {
     async chooseOpponent() {
         const names = await this.getPlayers();
         this.opponentName = names[Math.floor(Math.random() * names.length)];
+    }
+
+    rightSummary(id: string): boolean {
+        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[constants.INDEX_POSITION] === id;
     }
 
     async getPlayers(): Promise<string[]> {

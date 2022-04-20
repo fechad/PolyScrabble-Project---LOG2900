@@ -15,7 +15,7 @@ export class PlaceLetterService {
     removeWord() {
         for (const letter of this.gridService.letters) {
             this.gridService.rack.push(letter);
-            this.gameContextService.addTempRack(letter);
+            this.gameContextService.rack.addTemp(letter);
         }
         for (const position of this.gridService.letterPosition) {
             this.gameContextService.state.value.board[position.x][position.y] = null;
@@ -55,7 +55,7 @@ export class PlaceLetterService {
         this.gridService.letterForServer = this.gridService.letterForServer.slice(0, constants.LAST_INDEX);
         if (!letter) throw new Error('tried to remove a letter when word is empty');
         this.gridService.rack.push(letter);
-        this.gameContextService.addTempRack(letter);
+        this.gameContextService.rack.addTemp(letter);
         this.gameContextService.state.value.board[letterRemoved.x][letterRemoved.y] = null;
         this.gridService.drawGrid();
         this.drawShiftedArrow(letterRemoved, 1);
@@ -64,7 +64,7 @@ export class PlaceLetterService {
 
     placeWordOnCanvas(word: string) {
         const asterisk: Letter = { name: '*', score: 0 };
-        this.gameContextService.attemptTempRackUpdate(word);
+        this.gameContextService.rack.attemptTempUpdate(word);
         this.gridService.letterWritten++;
         const item = this.gridService.rack.find((i) => i.name === word.toUpperCase() && word.toLowerCase() === word);
         this.gridService.letters.push(item || asterisk);
@@ -82,7 +82,7 @@ export class PlaceLetterService {
         );
         const lastLetter = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         if (this.nextPosExist()) this.drawShiftedArrow(lastLetter, this.getShift(lastLetter));
-        this.gameContextService.tempUpdateRack();
+        this.gameContextService.rack.tempUpdate();
     }
 
     nextPosExist() {

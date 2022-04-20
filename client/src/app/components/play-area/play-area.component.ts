@@ -1,8 +1,9 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MessageType } from '@app/classes/chat-log';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
 import * as cst from '@app/constants';
-import { GameContextService, MessageType } from '@app/services/game-context.service';
+import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
 import { PlaceLetterService } from '@app/services/place-letter.service';
@@ -32,7 +33,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.gameContextService.state.subscribe(() => {
             if (this.isLoaded) this.gridService.drawGrid();
         });
-        this.gameContextService.rack.subscribe((rack) => {
+        this.gameContextService.rack.rack.subscribe((rack) => {
             for (const i of rack) {
                 if (this.rack.length <= cst.MAX_RACK_SIZE) this.rack.push(i.name);
             }
@@ -55,9 +56,9 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         this.buttonPressed = event.key;
         switch (this.buttonPressed) {
             case 'Enter':
-                if (this.gridService.letterForServer.length === 0) {
-                    this.gameContextService.addMessage("Vous n'avez placé aucune lettre sur le plateau de jeu", MessageType.Local);
-                } else {
+                if (this.gridService.letterForServer.length === 0)
+                    this.gameContextService.chatLog.addMessage("Vous n'avez placé aucune lettre sur le plateau de jeu", MessageType.Local);
+                else {
                     this.placeLetterService.sendPlacedLetters();
                 }
                 break;
@@ -75,7 +76,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
                         this.placeLetterService.placeWordOnCanvas(word);
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     } catch (e: any) {
-                        this.gameContextService.addMessage(e.message, MessageType.Local);
+                        this.gameContextService.chatLog.addMessage(e.message, MessageType.Local);
                     }
                 }
         }

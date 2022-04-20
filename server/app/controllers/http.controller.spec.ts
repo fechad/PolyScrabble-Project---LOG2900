@@ -44,7 +44,7 @@ class DBManager {
 }
 
 describe('HttpController', () => {
-    const DICTIONNARIES: Dictionnary[] = [new Dictionnary(0, 'français', [])];
+    const DICTIONNARIES: Dictionnary[] = [new Dictionnary(0, 'français', [], 'description')];
     const HIGH_SCORES_LOG2990 = [
         { score: 34, names: ['Bob', 'Bob1'] },
         { score: 33, names: ['Bo', 'B'] },

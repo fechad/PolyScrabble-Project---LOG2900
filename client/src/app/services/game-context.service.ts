@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { CommandParsing } from '@app/classes/command-parsing';
+import { ChatLog, MessageType } from '@app/classes/chat-log';
 import { GameState, PlayerInfo } from '@app/classes/game';
 import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
+import { Rack } from '@app/classes/rack';
 import { PlayerId, State } from '@app/classes/room';
 import * as cst from '@app/constants';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -14,26 +15,27 @@ export type Tile = Letter | null;
 export type Board = Tile[][];
 export type Objective = { text: string; score: number; isPublic: boolean; available: boolean; mine: boolean };
 export type ReserveContent = { [letter: string]: number };
-
-export enum MessageType {
-    Normal,
-    Command,
-    Local,
+export enum Command {
+    Place = 'place-letters',
+    Switch = 'switch-turn',
+    Forfeit = 'confirm-forfeit',
+    Exchange = 'change-letters',
+    Hint = 'hint',
+    GetReserve = 'reserve-content',
+    SyncRack = 'current-rack',
 }
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameContextService {
-    readonly rack: BehaviorSubject<Letter[]> = new BehaviorSubject([] as Letter[]);
-    readonly messages: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
-    readonly tempMessages: BehaviorSubject<string[]> = new BehaviorSubject([] as string[]);
+    readonly rack: Rack = new Rack();
+    readonly chatLog: ChatLog = new ChatLog();
     readonly objectives: BehaviorSubject<Objective[]> = new BehaviorSubject([] as Objective[]);
     readonly state: BehaviorSubject<GameState>;
     skipTurnEnabled: boolean = true;
     tempRack: Letter[];
     myId: PlayerId;
-    private msgCount: number = 0;
     private socket: Socket | undefined = undefined;
 
     constructor() {
@@ -58,25 +60,33 @@ export class GameContextService {
             state: State.Started,
         };
         this.state = new BehaviorSubject(state);
+        this.chatLog.successfulSending = (message: string) => {
+            if (this.socket?.disconnected) {
+                this.serverDownAlert();
+                return false;
+            }
+            this.socket?.emit('message', message);
+            return true;
+        };
     }
 
     init(socket: Socket) {
         this.socket = socket;
         socket.on('state', (state: GameState) => this.state.next(state));
         socket.on('message', (message: Message, msgCount: number) => {
-            this.receiveMessages(message, msgCount, message.emitter === this.myId);
+            this.chatLog.receiveMessages(message, msgCount, message.emitter === this.myId);
         });
-        socket.on('game-error', (error: string) => this.addMessage(error, MessageType.Local));
-        socket.on('valid-exchange', (response: string) => this.addMessage(response, MessageType.Command));
+        socket.on('game-error', (error: string) => this.chatLog.addMessage(error, MessageType.Local));
+        socket.on('valid-exchange', (response: string) => this.chatLog.addMessage(response, MessageType.Command));
         socket.on('rack', (rack: Letter[]) => {
-            this.rack.next(rack);
+            this.rack.rack.next(rack);
             this.allowSwitch(true);
         });
         socket.on('reserve-content', (sortedReserve: ReserveContent) => {
             const message = Object.entries(sortedReserve)
                 .map(([letter, qty]) => `${letter} : ${qty}`)
                 .join('\n');
-            this.addMessage(message, MessageType.Command);
+            this.chatLog.addMessage(message, MessageType.Command);
         });
         socket.on('objectives', (objectives: Objective[]) => {
             this.objectives.next(objectives);
@@ -86,7 +96,7 @@ export class GameContextService {
     close() {
         this.socket?.close();
         this.socket = undefined;
-        this.clearMessages();
+        this.chatLog.clearMessages();
     }
 
     isEnded(): Observable<boolean> {
@@ -109,97 +119,27 @@ export class GameContextService {
         this.skipTurnEnabled = isAllowed;
     }
 
-    receiveMessages(message: Message, msgCount: number, myself: boolean) {
-        this.messages.next([...this.messages.value, message]);
-        if (this.msgCount <= msgCount && myself) {
-            this.tempMessages.value.splice(0, msgCount - this.msgCount + 1);
-        }
-        this.msgCount = msgCount + 1;
-    }
-
-    clearMessages() {
-        this.messages.next([]);
-        this.tempMessages.next([]);
-    }
-
-    addMessage(message: string, type: MessageType = MessageType.Normal) {
-        switch (type) {
-            case MessageType.Local:
-                this.messages.next([...this.messages.value, { text: message, emitter: 'local' }]);
-                break;
-            case MessageType.Command:
-                this.messages.next([...this.messages.value, { text: message, emitter: 'command' }]);
-                break;
-            default:
-                if (this.socket?.disconnected) return this.serverDownAlert();
-                this.socket?.emit('message', message);
-                this.tempMessages.next([...this.tempMessages.value, message]);
-                break;
-        }
-    }
-
-    tempUpdateRack() {
-        this.rack.next(this.tempRack);
-    }
-
-    attemptTempRackUpdate(letters: string) {
-        const tempRack = [...this.rack.value];
-        for (const letter of letters) {
-            const index = tempRack.findIndex((foundLetter) => {
-                return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && CommandParsing.isUpperCaseLetter(letter));
-            });
-            if (index === cst.MISSING) throw new Error('Ces lettres ne sont pas dans le chevalet');
-            tempRack[index] = tempRack[tempRack.length - 1];
-            tempRack.pop();
-        }
-        this.tempRack = tempRack;
-    }
-    addTempRack(letter: Letter) {
-        this.tempRack.push(letter);
-    }
-
-    switchTurn(timerRequest: boolean) {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('switch-turn', timerRequest);
-    }
-
     place(letters: string, rowIndex: number, columnIndex: number, isHorizontal?: boolean) {
         if (this.socket?.disconnected) {
             setTimeout(() => {
                 this.serverDownAlert();
             }, cst.SEC_TO_MS);
         }
-        this.tempUpdateRack();
+        this.rack.tempUpdate();
         this.allowSwitch(false);
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
 
-    exchange(letters: string) {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('change-letters', letters);
-    }
-
-    hint() {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('hint');
-    }
-
-    getReserve() {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else this.socket?.emit('reserve-content');
-    }
-
     syncRack() {
-        if (this.socket?.disconnected) return this.serverDownAlert();
-        else
-            this.socket?.emit(
-                'current-rack',
-                this.rack.value.map((letter) => letter.name),
-            );
+        this.executeCommand(
+            Command.SyncRack,
+            this.rack.rack.value.map((letter) => letter.name),
+        );
     }
 
-    confirmForfeit() {
-        this.socket?.emit('confirm-forfeit');
+    executeCommand(command: Command, ...params: unknown[]) {
+        if (this.socket?.disconnected) return this.serverDownAlert();
+        else this.socket?.emit(command, params);
     }
 
     private serverDownAlert() {

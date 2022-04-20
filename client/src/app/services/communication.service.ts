@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId } from '@app/classes/room';
 import { IoWrapper } from '@app/classes/socket-wrapper';
@@ -11,11 +10,12 @@ import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import swal from 'sweetalert2';
 import { AuthService } from './auth.service';
-import { GameContextService } from './game-context.service';
+import { Command, GameContextService } from './game-context.service';
 
 type Token = number;
 type SaveScoreBody = { id: string | undefined; token: number; room: number | undefined };
 type ConnectBody = { id: string | undefined; token: number };
+export type DialogDictionary = { id: number; name: string; description: string; words: string[] };
 
 @Injectable({
     providedIn: 'root',
@@ -23,7 +23,7 @@ type ConnectBody = { id: string | undefined; token: number };
 export class CommunicationService {
     readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
     readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
-    readonly dictionnaries: Promise<Dictionnary[]>;
+    readonly dictionnaries: Promise<DialogDictionary[]>;
     private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
     private token: Token;
 
@@ -40,7 +40,7 @@ export class CommunicationService {
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('error', (e) => this.handleError(e));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
-        this.dictionnaries = httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
+        this.dictionnaries = httpClient.get<DialogDictionary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
 
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
             this.myId.next(id);
@@ -103,7 +103,7 @@ export class CommunicationService {
     }
 
     confirmForfeit() {
-        this.gameContextService.confirmForfeit();
+        this.gameContextService.executeCommand(Command.Forfeit);
         this.leaveGame();
     }
 

@@ -1,10 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DbDictionary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
 import { CommunicationService } from '@app/services/communication.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-game-setup-dialog',
@@ -12,9 +15,14 @@ import { CommunicationService } from '@app/services/communication.service';
     styleUrls: ['../../styles/dialogs.scss'],
 })
 export class GameSetupDialogComponent implements OnInit {
+    @ViewChild('dropDown') dropDown: ElementRef;
     gameParametersForm: FormGroup;
+    dictionnaries: DbDictionary[];
+    environment = environment;
+    dictionaryID: number;
 
     constructor(
+        readonly httpClient: HttpClient,
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<GameSetupDialogComponent>,
         public communicationService: CommunicationService,
@@ -37,6 +45,10 @@ export class GameSetupDialogComponent implements OnInit {
             seconds: new FormControl(0, [Validators.required]),
             dictionnary: new FormControl(0, [Validators.required]),
         });
+    }
+
+    rightSummary(id: string): boolean {
+        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[constants.INDEX_POSITION] === id;
     }
 
     async onSubmit() {

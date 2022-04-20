@@ -22,7 +22,7 @@ export class GridService {
     private canvasSize: Vec2 = { x: constants.DEFAULT_INNER_WIDTH, y: constants.DEFAULT_INNER_HEIGHT };
 
     constructor(private gameContext: GameContextService) {
-        this.gameContext.rack.subscribe((rack) => {
+        this.gameContext.rack.rack.subscribe((rack) => {
             this.rack = [...rack];
         });
     }
