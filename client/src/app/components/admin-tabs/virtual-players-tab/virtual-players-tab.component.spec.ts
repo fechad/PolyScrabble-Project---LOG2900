@@ -13,13 +13,6 @@ class MatSnackBarMock {
         return true;
     }
 }
-const setHTML = () => {
-    const div = document.createElement('div');
-    const section = document.createElement('section');
-    section.id = 'scrollMe';
-    div.appendChild(section);
-    document.body.appendChild(div);
-};
 
 const setHTML = () => {
     const div = document.createElement('div');

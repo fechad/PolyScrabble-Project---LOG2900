@@ -11,9 +11,6 @@ import { environment } from 'src/environments/environment';
 import swal from 'sweetalert2';
 import { AuthService } from './auth.service';
 import { GameContextService } from './game-context.service';
-<<<<<<< HEAD
-=======
->>>>>>> 46980e6 (Add tests)
 
 type Token = number;
 type SaveScoreBody = { id: string | undefined; token: number; room: number | undefined };
