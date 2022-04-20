@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-import * as constant from '@app/constants';
+import * as constants from '@app/constants';
 import { take } from 'rxjs/operators';
 import { GameContextService } from './game-context.service';
 import { GridService } from './grid.service';
@@ -18,15 +18,15 @@ export class MouseService {
         const myTurn = await this.gameContextService.isMyTurn().pipe(take(1)).toPromise();
         if (!myTurn) return;
         if (this.gridService.letterWritten !== 0) return;
-        if (event.button !== constant.MouseButton.Left || !this.isInBound(event)) return;
+        if (event.button !== constants.MouseButton.Left || !this.isInBound(event)) return;
 
         const prevPos = this.mousePosition;
         this.mousePosition = {
             x: this.calculateAxis(event.offsetX, true),
             y: this.calculateAxis(event.offsetY, false),
         };
-        const y = Math.ceil(this.mousePosition.y / constant.SQUARE_SIZE) - constant.ADJUSTMENT;
-        const x = Math.ceil(this.mousePosition.x / constant.SQUARE_SIZE) - constant.ADJUSTMENT;
+        const y = Math.ceil(this.mousePosition.y / constants.SQUARE_SIZE) - constants.ADJUSTMENT;
+        const x = Math.ceil(this.mousePosition.x / constants.SQUARE_SIZE) - constants.ADJUSTMENT;
         if (board[y][x]) return;
         this.isHorizontal = !this.areEqual(prevPos, this.mousePosition) || !this.isHorizontal;
         this.gridService.drawGrid();
@@ -35,7 +35,7 @@ export class MouseService {
 
     isInBound(event: MouseEvent): boolean {
         const size = document.getElementById('canvas')?.clientWidth;
-        const GRID_BORDERS = [constant.GRID_ORIGIN, size];
+        const GRID_BORDERS = [constants.GRID_ORIGIN, size];
         return (
             event.offsetX >= GRID_BORDERS[0]?.valueOf()! &&
             event.offsetX <= GRID_BORDERS[1]?.valueOf()! &&
@@ -45,12 +45,12 @@ export class MouseService {
     }
     calculateAxis(position: number, isHorizontal: boolean): number {
         const size = document.getElementById('canvas')?.clientWidth;
-        let sqrSize = constant.DEFAULT_SIZE / constant.NUMBER_OF_TILES;
-        if (!isHorizontal) sqrSize -= constant.OFFSET;
-        const converted = (position * constant.DEFAULT_SIZE) / size?.valueOf()!;
-        let axis = Math.floor((converted - constant.GRID_ORIGIN) / constant.TILE);
+        let sqrSize = constants.DEFAULT_SIZE / constants.NUMBER_OF_TILES;
+        if (!isHorizontal) sqrSize -= constants.OFFSET;
+        const converted = (position * constants.DEFAULT_SIZE) / size?.valueOf()!;
+        let axis = Math.floor((converted - constants.GRID_ORIGIN) / constants.TILE);
         if (axis < 0) axis = 0;
-        return (sqrSize + constant.OFFSET) * axis + constant.GRID_ORIGIN + constant.CANVAS_ADJUSTMENT;
+        return (sqrSize + constants.OFFSET) * axis + constants.GRID_ORIGIN + constants.CANVAS_ADJUSTMENT;
     }
 
     areEqual(vecA: Vec2, vecB: Vec2) {

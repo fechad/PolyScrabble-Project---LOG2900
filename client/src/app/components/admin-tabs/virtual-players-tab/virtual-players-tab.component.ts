@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { VP } from '@app/classes/virtual-player';
-import * as constant from '@app/constants';
+import * as constants from '@app/constants';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
@@ -86,12 +86,12 @@ export class VirtualPlayersTabComponent implements OnInit, AfterContentChecked {
             setTimeout(() => {
                 this.scroller.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
                 this.text.nativeElement.focus();
-            }, constant.RENDERING_DELAY);
+            }, constants.RENDERING_DELAY);
         else {
             setTimeout(() => {
                 this.scrollerExpert.nativeElement.scrollTop = this.scroller.nativeElement.scrollHeight;
                 this.textExpert.nativeElement.focus();
-            }, constant.RENDERING_DELAY);
+            }, constants.RENDERING_DELAY);
         }
     }
 

@@ -60,7 +60,7 @@ export class GameSetupDialogComponent implements OnInit {
 
         const parameters = new Parameters();
         parameters.avatar = this.avatarSelectionService.imgChosen;
-        parameters.timer = this.gameParametersForm.value.minutes * constants.SEC_CONVERT + this.gameParametersForm.value.seconds;
+        parameters.timer = this.gameParametersForm.value.minutes * constants.CONVERT_TO_SECONDS + this.gameParametersForm.value.seconds;
         parameters.dictionnary = this.gameParametersForm.value.dictionnary;
         parameters.log2990 = this.data.log2990;
         await this.communicationService.createRoom(this.gameParametersForm.value.playerName, parameters, undefined);

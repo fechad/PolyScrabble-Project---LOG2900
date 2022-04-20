@@ -42,7 +42,7 @@ export class CommunicationService {
 
         this.listenRooms();
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
-        this.mainSocket.on('error', (e) => this.handleError(e));
+        this.mainSocket.on('error', (error) => this.handleError(error));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
         this.dictionnaries = httpClient.get<DialogDictionary[]>(`${environment.serverUrl}/dictionnaries`).toPromise();
 
