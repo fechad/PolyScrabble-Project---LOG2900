@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DbDictionary } from '@app/classes/dictionnary';
+import { Dictionnary } from '@app/classes/dictionnary';
 import { Parameters } from '@app/classes/parameters';
 import * as constants from '@app/constants';
 import { AvatarSelectionService } from '@app/services/avatar-selection.service';
@@ -17,7 +17,7 @@ import { environment } from 'src/environments/environment';
 export class GameSetupDialogComponent implements OnInit {
     @ViewChild('dropDown') dropDown: ElementRef;
     gameParametersForm: FormGroup;
-    dictionnaries: DbDictionary[];
+    dictionnaries: Dictionnary[];
     environment = environment;
     dictionaryID: number;
 

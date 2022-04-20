@@ -28,6 +28,8 @@ export class SoloDialogComponent implements OnInit {
     selectedRoom: Observable<Room>;
     databaseNames: VP[];
     list: string[] = [];
+    description: string;
+
     constructor(
         private httpClient: HttpClient,
         private formBuilder: FormBuilder,
@@ -56,41 +58,23 @@ export class SoloDialogComponent implements OnInit {
             dictionnary: new FormControl(dictionarySelect, [Validators.required]),
         });
         this.databaseNames = await this.httpClient.get<VP[]>(`${environment.serverUrl}/vp-names`).toPromise();
-        await this.chooseOpponent();
+        this.list = this.databaseNames.filter((player) => player.beginner !== Boolean(this.soloParametersForm.value.difficulty)).map((vp) => vp.name);
+        this.opponentName = this.list[Math.floor(Math.random() * this.list.length)];
     }
 
-    async chooseOpponent() {
-        const names = await this.getPlayers();
-        this.opponentName = names[Math.floor(Math.random() * names.length)];
-    }
-
-    rightSummary(id: string): boolean {
-        return this.dropDown.nativeElement.options[this.dropDown.nativeElement.selectedIndex].value[constants.INDEX_POSITION] === id;
-    }
-
-    async getPlayers(): Promise<string[]> {
-        this.list = this.databaseNames
-            .filter((player) => {
-                if (player.beginner !== Boolean(this.soloParametersForm.value.difficulty)) {
-                    return player;
-                } else return;
-            })
-            .map((vp) => vp.name);
-        return this.list;
+    setDescription(id: number) {
+        this.description = this.communicationService.dictionnaries.value.find((dict) => dict.id === id)?.description || '';
     }
 
     closeDialog(): void {
         this.dialogRef.close();
     }
 
-    switchName(name: string): string {
-        const availableName = this.list.map((vp) => vp);
-        if (!this.soloParametersForm.value.playerName) return this.opponentName;
-        if (this.soloParametersForm.value.playerName.toLowerCase() === name.toLowerCase()) {
-            availableName.splice(availableName.indexOf(name), 1);
-            this.opponentName = availableName[Math.floor(Math.random() * availableName.length)];
-        }
-        return this.opponentName;
+    checkName() {
+        if (this.soloParametersForm.value.playerName?.toLowerCase() !== this.opponentName.toLowerCase()) return;
+        const availableName = this.list.slice();
+        availableName.splice(availableName.indexOf(this.opponentName), 1);
+        this.opponentName = availableName[Math.floor(Math.random() * availableName.length)];
     }
 
     async onSubmit() {

@@ -22,7 +22,7 @@
                     <div class="input-area">
                         <div class="col-md-10">
                             <label>Votre nom: </label>
-                            <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" />
+                            <input cdkFocusInitial type="text" formControlName="playerName" class="form-control" (change)="checkName()" />
                         </div>
 
                         <div
@@ -34,7 +34,7 @@
 
                         <div class="col-md-10">
                             <label>Votre adversaire:</label>
-                            {{ switchName(opponentName) }}
+                            {{ opponentName }}
                         </div>
 
                         <div class="col-md-10">
@@ -68,15 +68,15 @@
                         </div>
                         <div class="col-md-10">
                             <label>Choix du dictionnaire: </label>
-                            <select id="dictionaries" name="dictionnary" formControlName="dictionnary" class="form-control" #dropDown>
+                            <select id="dictionaries" name="dictionnary" formControlName="dictionnary" class="form-control" (change)="setDescription(value)">
                                 <option [ngValue]="dictionnary.id" *ngFor="let dictionnary of communicationService.dictionnaries | async">
                                     {{ dictionnary.title }}
                                 </option>
                             </select>
                         </div>
-                        <span class="description" *ngFor="let dictionnary of communicationService.dictionnaries | async">
-                            <p *ngIf="rightSummary(dictionnary.id.toString())">
-                                {{ dictionnary.description }}
+                        <span class="description">
+                            <p>
+                                {{ description }}
                             </p>
                         </span>
                     </div>
