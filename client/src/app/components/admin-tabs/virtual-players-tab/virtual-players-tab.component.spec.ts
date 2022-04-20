@@ -14,6 +14,14 @@ class MatSnackBarMock {
     }
 }
 
+const setHTML = () => {
+    const div = document.createElement('div');
+    const section = document.createElement('section');
+    section.id = 'scrollMe';
+    div.appendChild(section);
+    document.body.appendChild(div);
+};
+
 describe('VirtualPlayersTabComponent', () => {
     let component: VirtualPlayersTabComponent;
     let fixture: ComponentFixture<VirtualPlayersTabComponent>;
@@ -29,6 +37,7 @@ describe('VirtualPlayersTabComponent', () => {
     });
 
     beforeEach(() => {
+        setHTML();
         fixture = TestBed.createComponent(VirtualPlayersTabComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
