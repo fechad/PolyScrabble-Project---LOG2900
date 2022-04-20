@@ -24,12 +24,16 @@ export class JoiningRoomPageComponent {
         });
     }
 
+    getDictTitle(room: Room): string {
+        return this.dictionnaries?.find((dictionary) => dictionary.id === (room.parameters?.dictionnary || 0))?.title || '…';
+    }
+
     openDialog(room: Room) {
         this.dialog.open(JoinSetupDialogComponent, {
             data: {
                 room: room.id,
                 name: room.mainPlayer.name,
-                dictionnary: this.dictionnaries ? this.dictionnaries[room.parameters?.dictionnary || 0]?.title : '…',
+                dictionnary: this.getDictTitle(room),
                 timer: room.parameters.timer,
             },
         });

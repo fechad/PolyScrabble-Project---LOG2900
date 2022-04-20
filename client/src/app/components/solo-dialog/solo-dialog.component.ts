@@ -64,7 +64,9 @@ export class SoloDialogComponent implements OnInit {
     }
 
     setDescription() {
-        this.description = this.communicationService.dictionnaries.value[this.soloParametersForm.value.dictionnary]?.description || '';
+        this.description =
+            this.communicationService.dictionnaries.value.find((dictionary) => dictionary.id === this.soloParametersForm.value.dictionnary)
+                ?.description || '';
     }
 
     closeDialog(): void {

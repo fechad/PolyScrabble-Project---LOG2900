@@ -105,8 +105,6 @@ describe('CommunicationService', () => {
         service = TestBed.inject(CommunicationService);
         httpMock = TestBed.inject(HttpTestingController);
         gameContext = TestBed.inject(GameContextService);
-        const dictionnaries = httpMock.expectOne('http://localhost:3000/api/dictionaries');
-        dictionnaries.flush([]);
         sessionStorage.clear();
     });
 

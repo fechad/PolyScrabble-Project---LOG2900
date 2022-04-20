@@ -45,10 +45,10 @@ export class CommunicationService {
         this.mainSocket = this.io.io(`${environment.socketUrl}/`, { auth });
 
         this.listenRooms();
+        this.mainSocket.on('dictionaries', (dictionaries) => this.dictionnaries.next(dictionaries));
         this.mainSocket.on('join', (room) => this.joinRoomHandler(room));
         this.mainSocket.on('error', (error) => this.handleError(error));
         this.waitingRoomsSocket.on('broadcast-rooms', (rooms) => this.rooms.next(rooms));
-        this.updateDictionaries();
 
         this.mainSocket.on('id', (id: PlayerId, token: Token) => {
             this.myId.next(id);
@@ -57,11 +57,6 @@ export class CommunicationService {
 
             addEventListener('beforeunload', () => AuthService.saveAuth(id), { capture: true });
         });
-    }
-
-    async updateDictionaries(): Promise<void> {
-        this.dictionnaries.next([]);
-        this.dictionnaries.next(await this.httpClient.get<Dictionnary[]>(`${environment.serverUrl}/dictionaries`).toPromise());
     }
 
     async saveScore() {
@@ -161,7 +156,7 @@ export class CommunicationService {
     private handleError(error: string) {
         // eslint-disable-next-line no-console
         if (!environment.production) console.error(error);
-        if (error === 'Il y a déjà deux joueurs dans cette partie.') {
+        if (error === 'Il y a déjà deux joueurs dans cette partie' || error === 'Le dictionnaire sélectionné a été supprimé') {
             swal.fire({
                 title: 'Erreur!',
                 text: error,

@@ -50,7 +50,9 @@ export class GameSetupDialogComponent implements OnInit {
     }
 
     setDescription() {
-        this.description = this.communicationService.dictionnaries.value[this.gameParametersForm.value.dictionnary]?.description || '';
+        this.description =
+            this.communicationService.dictionnaries.value.find((dictionary) => dictionary.id === this.gameParametersForm.value.dictionnary)
+                ?.description || '';
     }
 
     async onSubmit() {

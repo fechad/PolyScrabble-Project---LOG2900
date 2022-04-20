@@ -2,11 +2,13 @@ import { Dictionnary, DictionnaryInfo } from '@app/classes/dictionary';
 import { UNDEFINED } from '@app/constants';
 import * as fs from 'fs';
 import { promises } from 'fs';
+import { EventEmitter } from 'stream';
 import { Service } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
 
 @Service()
 export class DictionnaryService {
+    eventEmitter: EventEmitter = new EventEmitter();
     private readonly dictionnaries: Dictionnary[] = [];
     private nextId = 0;
 
@@ -34,6 +36,7 @@ export class DictionnaryService {
         this.nextId += 1;
         this.dictionnaries.push(newDict);
         await this.writeDict(newDict);
+        this.eventEmitter.emit('update', this.getDictionnaries());
         return true;
     }
 
@@ -43,6 +46,7 @@ export class DictionnaryService {
         if (newTitle) dictionnary.title = newTitle;
         if (newDescription) dictionnary.description = newDescription;
         await this.writeDict(dictionnary);
+        this.eventEmitter.emit('update', this.getDictionnaries());
     }
 
     async delete(id: number) {
@@ -50,11 +54,13 @@ export class DictionnaryService {
         if (dictionnaryIdx === UNDEFINED || dictionnaryIdx === 0) return;
         await fs.promises.unlink(this.dictionnaries[dictionnaryIdx].filename);
         this.dictionnaries.splice(dictionnaryIdx, 1);
+        this.eventEmitter.emit('update', this.getDictionnaries());
     }
 
     async deleteAll() {
         for (const dictionnary of this.dictionnaries.slice(1)) await fs.promises.unlink(dictionnary.filename);
         this.dictionnaries.splice(1);
+        this.eventEmitter.emit('update', this.getDictionnaries());
     }
 
     private async loadDict(file: string) {

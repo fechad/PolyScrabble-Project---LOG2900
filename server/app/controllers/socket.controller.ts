@@ -107,9 +107,13 @@ export class SocketManager {
             if (isMainPlayer) {
                 socket.on('kick', () => room.kickOtherPlayer());
                 socket.on('start', () => {
-                    room.start();
                     const dictionary = this.dictionnaryService.get(room.parameters.dictionnary);
-                    if (!dictionary) throw new Error('Dict deleted'); // TODO
+                    if (!dictionary) {
+                        socket.emit('error', 'Le dictionnaire sélectionné a été supprimé');
+                        room.quit(true);
+                        return;
+                    }
+                    room.start();
                     const game = new Game(room, dictionary, this.gameHistoryService);
                     this.roomsService.games.push(game);
                     rooms.to(`room-${room.id}`).emit('join-game', game.id);

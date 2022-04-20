@@ -83,7 +83,7 @@
                         <div class="error" *ngIf="error !== ''">{{ error }}</div>
                     </div>
                     <br />
-                    <button class="submission" [disabled]="dictionaryForm.invalid" type="submit">Soumettre</button>
+                    <button class="submission" [disabled]="dictionaryForm.invalid || sending" type="submit">Soumettre</button>
                 </form>
             </div>
         </mat-card-content>

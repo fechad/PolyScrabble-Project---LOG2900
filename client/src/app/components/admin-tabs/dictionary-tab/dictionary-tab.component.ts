@@ -25,12 +25,13 @@ export class DictionaryTabComponent implements OnInit {
     environment = environment;
     dictionaries: Dictionnary[] = [];
     editedDictionary: number | undefined;
+    sending: boolean = false;
 
     constructor(
         readonly httpClient: HttpClient,
         private formBuilder: FormBuilder,
         private snackbar: MatSnackBar,
-        private communicationService: CommunicationService,
+        communicationService: CommunicationService,
     ) {
         communicationService.dictionnaries.subscribe((dictionaries) => {
             this.dictionaries = dictionaries;
@@ -47,11 +48,13 @@ export class DictionaryTabComponent implements OnInit {
 
     async addDictionary(files: FileList) {
         try {
+            this.sending = true;
             await this.httpClient.post(`${environment.serverUrl}/dictionaries`, files[0], { responseType: 'text' }).toPromise();
-            await this.communicationService.updateDictionaries();
             this.snackbar.open('Le dictionnaire a bien été ajouté', 'OK', { duration: 2000, panelClass: ['snackbar'] });
             this.uploading = false;
+            this.sending = false;
         } catch (e) {
+            this.sending = false;
             const error = e as HttpErrorResponse;
             const errorMsg = error.status === HttpStatusCode.Conflict ? 'Il existe déjà un dictionnaire avec ce nom' : "Le format n'est pas respecté";
             this.dictionaryForm.controls.file.reset();
@@ -61,7 +64,6 @@ export class DictionaryTabComponent implements OnInit {
 
     async deleteDictionary(id: number) {
         await this.httpClient.delete<void>(`${environment.serverUrl}/dictionaries/${id}`).toPromise();
-        await this.communicationService.updateDictionaries();
     }
 
     startEdit(id: number) {
@@ -88,7 +90,6 @@ export class DictionaryTabComponent implements OnInit {
                 description: this.dictionaryForm.value.description,
             })
             .toPromise();
-        await this.communicationService.updateDictionaries();
         this.editedDictionary = undefined;
     }
 
@@ -108,7 +109,6 @@ export class DictionaryTabComponent implements OnInit {
 
     async deleteAll() {
         await this.httpClient.delete(`${environment.serverUrl}/dictionaries/all`).toPromise();
-        await this.communicationService.updateDictionaries();
     }
 
     async confirmReset() {

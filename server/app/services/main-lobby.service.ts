@@ -1,3 +1,4 @@
+import { DictionnaryInfo } from '@app/classes/dictionary';
 import { Game } from '@app/classes/game';
 import { Difficulty, Parameters } from '@app/classes/parameters';
 import { PlayerId, Room, RoomId, State } from '@app/classes/room';
@@ -25,6 +26,10 @@ export class MainLobbyService {
             .find((r) => r.mainPlayer.id === id || r.getOtherPlayer()?.id === id);
         if (alreadyJoinedRoom) socket.emit('join', alreadyJoinedRoom.id);
 
+        const handler = (dictionaries: DictionnaryInfo[]) => socket.emit('dictionaries', dictionaries);
+        this.dictionnaryService.eventEmitter.on('update', handler);
+        socket.emit('dictionaries', this.dictionnaryService.getDictionnaries());
+
         socket.on('join-room', (roomId: RoomId, playerName: string, avatar: string) => {
             const room = this.roomsService.rooms.find((r) => r.id === roomId);
             if (!room) return socket.emit('error', 'Room is no longer available');
@@ -50,9 +55,11 @@ export class MainLobbyService {
                 vP.waitForTurn();
             }
         });
+
+        socket.on('disconnect', () => this.dictionnaryService.eventEmitter.off('update', handler));
     }
 
-    getNewRoomId(): RoomId {
+    private getNewRoomId(): RoomId {
         const roomId = this.nextRoomId;
         this.nextRoomId += 1;
         return roomId;
