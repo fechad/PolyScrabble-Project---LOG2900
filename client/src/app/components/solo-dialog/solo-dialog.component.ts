@@ -38,8 +38,8 @@ export class SoloDialogComponent implements OnInit {
     ) {}
 
     async ngOnInit(): Promise<void> {
-        const minutesSelect = this.data.timer ? Math.floor(this.data.timer / constants.SEC_CONVERT) : 1;
-        const secondsSelect = this.data.timer ? this.data.timer % constants.SEC_CONVERT : 0;
+        const minutesSelect = this.data.timer ? Math.floor(this.data.timer / constants.CONVERT_TO_SECONDS) : 1;
+        const secondsSelect = this.data.timer ? this.data.timer % constants.CONVERT_TO_SECONDS : 0;
         const dictionarySelect = this.data.dictionnary
             ? (await this.communicationService.dictionnaries).findIndex((dictionary) => dictionary.name === this.data.dictionnary)
             : 0;
@@ -102,7 +102,7 @@ export class SoloDialogComponent implements OnInit {
         if (this.communicationService.selectedRoom.value) this.communicationService.leave();
         const parameters = new Parameters();
         parameters.avatar = this.avatarSelectionService.imgChosen;
-        parameters.timer = this.soloParametersForm.value.minutes * constants.SEC_CONVERT + this.soloParametersForm.value.seconds;
+        parameters.timer = this.soloParametersForm.value.minutes * constants.CONVERT_TO_SECONDS + this.soloParametersForm.value.seconds;
         parameters.dictionnary = this.soloParametersForm.value.dictionnary;
         parameters.difficulty = this.soloParametersForm.value.difficulty;
         parameters.gameType = GameType.Solo;

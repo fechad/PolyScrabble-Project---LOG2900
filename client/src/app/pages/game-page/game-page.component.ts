@@ -1,7 +1,7 @@
 import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { State } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { Command, GameContextService, Objective } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
@@ -25,7 +25,7 @@ export class GamePageComponent implements AfterViewChecked {
     faAngleLeft = faAngleLeft;
     faAngleRight = faAngleRight;
 
-    resetSize = cst.DEFAULT_HEIGHT + cst.DEFAULT_HEIGHT;
+    resetSize = constants.DEFAULT_HEIGHT + constants.DEFAULT_HEIGHT;
     placingWords = true;
     publicObjectivesShown: boolean = true;
     privateObjectivesShown: boolean = true;

@@ -5,7 +5,7 @@ import { Letter } from '@app/classes/letter';
 import { Message } from '@app/classes/message';
 import { Rack } from '@app/classes/rack';
 import { PlayerId, State } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
@@ -40,9 +40,9 @@ export class GameContextService {
 
     constructor() {
         const board = [];
-        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
+        for (let i = 0; i < constants.BOARD_LENGTH; i++) {
             const row = [];
-            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
+            for (let j = 0; j < constants.BOARD_LENGTH; j++) {
                 row.push(null);
             }
             board.push(row);
@@ -53,8 +53,8 @@ export class GameContextService {
             players: [
                 { id: '0', avatar: 'a', name: 'P1', connected: true, virtual: false },
                 { id: '1', avatar: 'b', name: 'P2', connected: true, virtual: false },
-            ].map((info) => ({ info, score: 0, rackCount: cst.NORMAL_RACK_LENGTH })),
-            reserveCount: cst.DEFAULT_RESERVE,
+            ].map((info) => ({ info, score: 0, rackCount: constants.NORMAL_RACK_LENGTH })),
+            reserveCount: constants.DEFAULT_RESERVE,
             board,
             turn,
             state: State.Started,
@@ -123,7 +123,7 @@ export class GameContextService {
         if (this.socket?.disconnected) {
             setTimeout(() => {
                 this.serverDownAlert();
-            }, cst.SEC_TO_MS);
+            }, constants.SEC_TO_MS);
         }
         this.rack.tempUpdate();
         this.allowSwitch(false);

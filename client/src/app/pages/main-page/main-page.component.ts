@@ -19,7 +19,7 @@ export class MainPageComponent {
         },
         {
             route: '/log2990',
-            toolTip: 'Ajoutez du piquant à votre partie avec des objectifs supplémentaires',
+            toolTip: 'Ajoutez du piquant à votre partie\navec des objectifs supplémentaires',
             text: 'Mode LOG2990',
             disabled: false,
             promptsDialog: false,

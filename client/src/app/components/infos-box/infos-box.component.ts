@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { State } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { CommunicationService } from '@app/services/communication.service';
 import { Command, GameContextService } from '@app/services/game-context.service';
 import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
@@ -29,13 +29,13 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
             const [myIdx, otherIdx] =
                 this.gameContextService.state.value.players[0].info.id === this.communicationService.getId().value ? [0, 1] : [1, 0];
 
-            if (state.players[myIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
-            if (state.players[otherIdx].rackCount < cst.NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
+            if (state.players[myIdx].rackCount < constants.NORMAL_RACK_LENGTH) this.myRackIsVisible = true;
+            if (state.players[otherIdx].rackCount < constants.NORMAL_RACK_LENGTH) this.opponentRackIsVisible = true;
             if (state.state === State.Aborted) {
                 this.summary = 'Votre adversaire a abandonné, vous avez gagné!';
             } else if (state.state !== State.Ended) {
                 this.summary = undefined;
-            } else if (state.winner === undefined) {
+            } else if (!state.winner) {
                 this.summary = `Félicitations ${state.players[0].info.name} et ${state.players[1].info.name}!`;
             } else {
                 const winnerName = state.players.find((player) => player.info.id === state.winner)?.info.name;

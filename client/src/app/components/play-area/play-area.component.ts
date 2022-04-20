@@ -2,7 +2,7 @@ import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, I
 import { MessageType } from '@app/classes/chat-log';
 import { CommandParsing } from '@app/classes/command-parsing';
 import { State } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { GameContextService } from '@app/services/game-context.service';
 import { GridService } from '@app/services/grid.service';
 import { MouseService } from '@app/services/mouse.service';
@@ -22,7 +22,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     shift: number[] = [];
     myTurn = false;
     private isLoaded = false;
-    private canvasSize = { x: cst.DEFAULT_WIDTH, y: cst.DEFAULT_HEIGHT };
+    private canvasSize = { x: constants.DEFAULT_WIDTH, y: constants.DEFAULT_HEIGHT };
 
     constructor(
         public gridService: GridService,
@@ -35,7 +35,7 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
         });
         this.gameContextService.rack.rack.subscribe((rack) => {
             for (const i of rack) {
-                if (this.rack.length <= cst.MAX_RACK_SIZE) this.rack.push(i.name);
+                if (this.rack.length <= constants.MAX_RACK_SIZE) this.rack.push(i.name);
             }
         });
         this.gameContextService.isMyTurn().subscribe((bool) => {
@@ -91,9 +91,10 @@ export class PlayAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     isInBound() {
         return (
             (this.mouseDetectService.isHorizontal &&
-                this.mouseDetectService.mousePosition.x + this.gridService.letters.length * cst.CANVAS_SQUARE_SIZE <= cst.PLAY_AREA_SIZE) ||
+                this.mouseDetectService.mousePosition.x + this.gridService.letters.length * constants.CANVAS_SQUARE_SIZE <=
+                    constants.PLAY_AREA_SIZE) ||
             (!this.mouseDetectService.isHorizontal &&
-                this.mouseDetectService.mousePosition.y + this.gridService.letters.length * cst.CANVAS_SQUARE_SIZE <= cst.PLAY_AREA_SIZE)
+                this.mouseDetectService.mousePosition.y + this.gridService.letters.length * constants.CANVAS_SQUARE_SIZE <= constants.PLAY_AREA_SIZE)
         );
     }
 

@@ -110,7 +110,7 @@ export class Game {
             .map((objectiveType, i) => ({ objective: new objectiveType(playedWords), player: players[i] }));
     }
 
-    private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
+    private static createPlacingCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
         const columnOnBoard = pos.col + 1;
         const rowOnBoard = String.fromCharCode(pos.row + constants.ASCII_LOWERCASE_A);
         const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
@@ -201,7 +201,7 @@ export class Game {
 
             this.board.place(triedPlacement.newLetters);
 
-            const validMessage = player.name + ' : ' + Game.createCommand(letters, pos, isHorizontal);
+            const validMessage = player.name + ' : ' + Game.createPlacingCommand(letters, pos, isHorizontal);
             this.eventEmitter.emit('message', { text: validMessage, emitter: 'command' } as Message);
         } catch (e) {
             this.eventEmitter.emit('message', { text: player.name + ' a fait un mauvais placement', emitter: 'command' } as Message);
@@ -260,7 +260,7 @@ export class Game {
             hintMessage += options
                 .map(
                     (opt, i) =>
-                        ` ${i + 1}. ${Game.createCommand(
+                        ` ${i + 1}. ${Game.createPlacingCommand(
                             opt.placement.newLetters.map((letter) => letter.letter),
                             opt.placement.newLetters[0].position,
                             opt.placement.isHorizontal,

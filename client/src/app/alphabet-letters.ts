@@ -1,5 +1,5 @@
 import { Letter } from './classes/letter';
-export const alphabet: Letter[] = [
+export const ALPHABET: Letter[] = [
     {
         name: 'A',
         score: 1,
@@ -111,5 +111,5 @@ export const alphabet: Letter[] = [
 ];
 
 export const lookupLetter = (letter: string): Letter | undefined => {
-    return alphabet.find((l) => l.name === letter);
+    return ALPHABET.find((l) => l.name === letter);
 };

@@ -53,7 +53,7 @@ export class PlaceLetterService {
         const letterRemoved = this.gridService.letterPosition[this.gridService.letterPosition.length - 1];
         this.gridService.letterPosition.pop();
         this.gridService.letterForServer = this.gridService.letterForServer.slice(0, constants.LAST_INDEX);
-        if (!letter) throw new Error('tried to remove a letter when word is empty');
+        if (!letter) throw new Error("Vous n'avez aucune lettre à retirer.");
         this.gridService.rack.push(letter);
         this.gameContextService.rack.addTemp(letter);
         this.gameContextService.state.value.board[letterRemoved.x][letterRemoved.y] = null;
