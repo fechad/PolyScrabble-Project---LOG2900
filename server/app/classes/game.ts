@@ -165,18 +165,18 @@ export class Game {
         if (this.timeout !== undefined) clearTimeout(this.timeout);
         this.timeout = undefined;
         try {
-            if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
-            isHorizontal ??= this.board.isInContact(pos, false);
-            const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
-            const words = this.wordGetter.getWords(triedPlacement);
-            if (!words.every((wordOption) => this.dictionary.isValidWord(wordOption.word)))
-                throw new Error('Un des mots crees ne fait pas partie du dictionnaire ' + words.map((word) => word.word).join(' '));
-
             await new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(null);
                 }, constants.BOARD_PLACEMENT_DELAY);
             });
+
+            if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
+            isHorizontal ??= this.board.isInContact(pos, false);
+            const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
+            const words = this.wordGetter.getWords(triedPlacement);
+            if (!words.every((wordOption) => this.dictionary.isValidWord(wordOption.word)))
+                throw new Error(words.map((word) => word.word).join(' ou ') + " n'existe(nt) pas dans ce dictionnaire");
 
             this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
 
@@ -193,7 +193,11 @@ export class Game {
                     );
                 for (const newWord of words) this.playedWords.add(newWord.word);
                 for (const objective of accomplishedObjectives) {
-                    console.log(`Joueur ${playerId} a accompli l'objectif '${objective.objective.description}'`);
+                    console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
+                    this.eventEmitter.emit('message', {
+                        text: this.getPlayerInfo(playerId).info.name + " a complété l'objectif suivant: " + objective.objective.description,
+                        emitter: 'command',
+                    } as Message);
                     this.scores[playerIndex] += objective.objective.points;
                     objective.doneByPlayer = playerId;
                 }

@@ -154,7 +154,7 @@ describe('Game', () => {
         stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
         await promise;
         assert(stub.notCalled);
-        expect(stubError.args).to.deep.equal([[game.players[0].id, 'Un des mots crees ne fait pas partie du dictionnaire testz']]);
+        expect(stubError.args).to.deep.equal([[game.players[0].id, "testz n'existe(nt) pas dans ce dictionnaire"]]);
     });
 
     it('should output an error when placing valid words that go outside the board', async () => {
@@ -246,15 +246,6 @@ describe('Game', () => {
         game['nextTurn'](false);
         expect(game['skipCounter']).to.equal(0);
     });
-
-    // it('endGame should call calculateFinalScore, createGameSummaryMessage, getWinner', () => {
-    //     const calculateFinalScores = sinon.spy(EndGameCalculator, 'calculateFinalScores');
-    //     const createGameSummaryMessage = sinon.spy(EndGameCalculator, 'createGameSummaryMessage');
-    //     game.endGame();
-    //     assert(calculateFinalScores.called, 'Did not call final scores');
-    //     assert(createGameSummaryMessage.called, 'Did not call game summary');
-    //     expect(game['winner']).to.not.equal(undefined);
-    // });
 
     it('getWinner should return the winners id', () => {
         const mainPlayer = game.players[MAIN_PLAYER];
