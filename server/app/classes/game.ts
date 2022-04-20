@@ -1,6 +1,6 @@
 import { ALPHABET } from '@app/alphabet-template';
 import { EndGameCalculator } from '@app/classes/end-game-calculator';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { GameHistory, GameMode, PlayerGameInfo } from '@app/game-history';
 import { Message } from '@app/message';
 import { GameHistoryService } from '@app/services/game-history-service';
@@ -63,19 +63,19 @@ export class Game {
     private playedWords: Set<string>;
 
     constructor(readonly room: Room, private readonly dictionary: Dictionnary, private readonly gameHistoryService: GameHistoryService) {
-        if (room.getOtherPlayer() === undefined) throw new Error('Tried to create game with only one player');
+        if (room.getOtherPlayer() === undefined) throw new Error('Vous ne pouvez pas faire une partie sans adversaire');
         this.players = [room.mainPlayer, room.getOtherPlayer() as Player];
         this.board = new Board();
         this.reserve = new Reserve();
         this.eventEmitter = new EventEmitter();
         this.messages = [];
         this.scores = [0, 0];
-        this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * cst.SEC_TO_MS);
-        this.isPlayer0Turn = Math.random() >= cst.PLAYER_0_TURN_PROBABILITY;
+        this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * constants.SEC_TO_MS);
+        this.isPlayer0Turn = Math.random() >= constants.PLAYER_0_TURN_PROBABILITY;
         this.skipCounter = 0;
         this.wordGetter = new WordGetter(this.board);
-        const firstPlayerInfo: PlayerGameInfo = { name: this.players[cst.MAIN_PLAYER].name, pointsScored: undefined, replacedBy: null };
-        const secondPlayerInfo: PlayerGameInfo = { name: this.players[cst.OTHER_PLAYER].name, pointsScored: undefined, replacedBy: null };
+        const firstPlayerInfo: PlayerGameInfo = { name: this.players[constants.MAIN_PLAYER].name, pointsScored: undefined, replacedBy: null };
+        const secondPlayerInfo: PlayerGameInfo = { name: this.players[constants.OTHER_PLAYER].name, pointsScored: undefined, replacedBy: null };
         const gameMode = this.room.parameters.log2990 ? GameMode.Log2990 : GameMode.Classic;
         this.gameHistory = {
             startTime: new Date(),
@@ -86,7 +86,11 @@ export class Game {
         };
         if (room.parameters.log2990) {
             this.playedWords = new Set<string>();
-            this.objectives = Game.genRandomObjectives(this.players[cst.MAIN_PLAYER].id, this.players[cst.OTHER_PLAYER].id, this.playedWords);
+            this.objectives = Game.genRandomObjectives(
+                this.players[constants.MAIN_PLAYER].id,
+                this.players[constants.OTHER_PLAYER].id,
+                this.playedWords,
+            );
         }
     }
 
@@ -108,7 +112,7 @@ export class Game {
 
     private static createCommand(letters: string[], pos: Position, isHorizontal?: boolean): string {
         const columnOnBoard = pos.col + 1;
-        const rowOnBoard = String.fromCharCode(pos.row + cst.ASCII_LOWERCASE_A);
+        const rowOnBoard = String.fromCharCode(pos.row + constants.ASCII_LOWERCASE_A);
         const orientation = isHorizontal !== null ? (isHorizontal ? 'h' : 'v') : '';
         const position = rowOnBoard + columnOnBoard + orientation;
         return `!placer ${position} ${letters.join('')}`;
@@ -120,7 +124,7 @@ export class Game {
 
     sendState() {
         const state: GameState = {
-            players: [this.getPlayerInfo(this.players[cst.MAIN_PLAYER].id), this.getPlayerInfo(this.players[cst.OTHER_PLAYER].id)],
+            players: [this.getPlayerInfo(this.players[constants.MAIN_PLAYER].id), this.getPlayerInfo(this.players[constants.OTHER_PLAYER].id)],
             reserveCount: this.reserve.getCount(),
             board: this.board.getState().map((row) => row.map((tile) => (tile ? { name: tile, score: ALPHABET[tile].score } : undefined))),
             turn: this.room.getState() === State.Started ? this.getCurrentPlayer().id : undefined,
@@ -140,11 +144,11 @@ export class Game {
 
     getPlayerInfo(id: PlayerId): PlayerInfo {
         const playerIdx = this.players.findIndex((player) => player.id === id);
-        if (playerIdx === cst.INVALID_INDEX) throw new Error('Not one of the players');
+        if (playerIdx === constants.INVALID_INDEX) throw new Error("Ce n'est pas un joueur valide");
         return { info: this.players[playerIdx], score: this.scores[playerIdx], rackCount: this.reserve.letterRacks[playerIdx].length };
     }
 
-    message(message: Message) {
+    sendMessage(message: Message) {
         this.messages.push(message);
         this.eventEmitter.emit('message', message);
     }
@@ -152,8 +156,8 @@ export class Game {
     async placeLetters(playerId: PlayerId, letters: string[], pos: Position, isHorizontal?: boolean) {
         if (!this.checkTurn(playerId)) return;
         console.log(
-            `User ${playerId} made placement of word ${letters} at position ${JSON.stringify(pos)} in direction ${
-                isHorizontal ? 'horizontal' : 'vertical'
+            `Joueur ${playerId} a fait un placement du mot ${letters} à la position ${JSON.stringify(pos)} dans la direction ${
+                isHorizontal ? 'horizontale' : 'verticale'
             }`,
         );
         const playerIndex = this.getPlayerIndex(this.getCurrentPlayer().id);
@@ -164,7 +168,7 @@ export class Game {
             await new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(null);
-                }, cst.BOARD_PLACEMENT_DELAY);
+                }, constants.BOARD_PLACEMENT_DELAY);
             });
 
             if (!pos.isInBound()) throw new Error('Placement invalide: hors de la grille');
@@ -177,10 +181,10 @@ export class Game {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
 
             this.scores[playerIndex] += words.reduce((sum, word) => (sum += word.score), 0);
-            if (letters.length === cst.WORD_LENGTH_BONUS) this.scores[playerIndex] += cst.BONUS_POINTS;
+            if (letters.length === constants.WORD_LENGTH_BONUS) this.scores[playerIndex] += constants.BONUS_POINTS;
             if (this.objectives) {
                 const accomplishedObjectives = this.objectives
-                    .filter((objective) => !objective.player || objective.player === playerId || !objective.doneByPlayer)
+                    .filter((objective) => (!objective.player || objective.player === playerId) && !objective.doneByPlayer)
                     .filter((objective) =>
                         objective.objective.isAccomplished(
                             triedPlacement,
@@ -215,7 +219,7 @@ export class Game {
     }
 
     emptiedRack(): boolean {
-        return this.reserve.isPlayerRackEmpty(cst.MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(cst.OTHER_PLAYER);
+        return this.reserve.isPlayerRackEmpty(constants.MAIN_PLAYER) || this.reserve.isPlayerRackEmpty(constants.OTHER_PLAYER);
     }
 
     matchRack(rack: string[]) {
@@ -223,7 +227,7 @@ export class Game {
     }
 
     getCurrentPlayer(): Player {
-        const playerIndex = this.isPlayer0Turn ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
+        const playerIndex = this.isPlayer0Turn ? constants.MAIN_PLAYER : constants.OTHER_PLAYER;
         return this.players[playerIndex];
     }
 
@@ -231,7 +235,7 @@ export class Game {
         if (!this.checkTurn(playerId)) return;
         if (
             this.reserve.getCount() >= letters.length &&
-            (this.getCurrentPlayer().virtual || this.reserve.getCount() > cst.MINIMUM_EXCHANGE_RESERVE_COUNT)
+            (this.getCurrentPlayer().virtual || this.reserve.getCount() > constants.MINIMUM_EXCHANGE_RESERVE_COUNT)
         ) {
             this.reserve.updateReserve(letters, this.isPlayer0Turn, true);
             let validMessage = 'Vous avez échangé les lettres:  ' + letters;
@@ -254,7 +258,7 @@ export class Game {
             let hintMessage =
                 options.length === 0
                     ? 'Aucun placement possible'
-                    : options.length < cst.HINT_NUMBER_OPTIONS
+                    : options.length < constants.HINT_NUMBER_OPTIONS
                     ? 'Indices (moins de 3 placements possibles):\n'
                     : 'Indices:\n';
             hintMessage += options
@@ -289,10 +293,11 @@ export class Game {
         if (this.players.every((player) => player.id !== idLoser)) return;
         if (this.players.some((player) => player.virtual)) {
             this.room.end(true);
-            this.winner = idLoser === this.players[cst.MAIN_PLAYER].id ? this.players[cst.OTHER_PLAYER].id : this.players[cst.MAIN_PLAYER].id;
+            this.winner =
+                idLoser === this.players[constants.MAIN_PLAYER].id ? this.players[constants.OTHER_PLAYER].id : this.players[constants.MAIN_PLAYER].id;
             this.completeGameHistory();
         } else {
-            const loserIsMainPlayer = idLoser === this.players[cst.MAIN_PLAYER].id;
+            const loserIsMainPlayer = idLoser === this.players[constants.MAIN_PLAYER].id;
             const idxPlayerToReplace = this.getPlayerIndex(idLoser);
             const playerReplaced = loserIsMainPlayer ? this.gameHistory.firstPlayer : this.gameHistory.secondPlayer;
             await this.replaceByVirtualPlayer(idxPlayerToReplace);
@@ -305,13 +310,13 @@ export class Game {
     }
 
     getWinner(): string | undefined {
-        if (this.scores[cst.MAIN_PLAYER] > this.scores[cst.OTHER_PLAYER]) return this.players[cst.MAIN_PLAYER].id;
-        else if (this.scores[cst.MAIN_PLAYER] < this.scores[cst.OTHER_PLAYER]) return this.players[cst.OTHER_PLAYER].id;
+        if (this.scores[constants.MAIN_PLAYER] > this.scores[constants.OTHER_PLAYER]) return this.players[constants.MAIN_PLAYER].id;
+        else if (this.scores[constants.MAIN_PLAYER] < this.scores[constants.OTHER_PLAYER]) return this.players[constants.OTHER_PLAYER].id;
         return undefined;
     }
 
     getPlayerIndex(playerId: PlayerId) {
-        return this.players[cst.MAIN_PLAYER].id === playerId ? cst.MAIN_PLAYER : cst.OTHER_PLAYER;
+        return this.players[constants.MAIN_PLAYER].id === playerId ? constants.MAIN_PLAYER : constants.OTHER_PLAYER;
     }
 
     endGame() {
@@ -330,11 +335,11 @@ export class Game {
 
     private completeGameHistory() {
         const differenceInMs = new Date().getTime() - this.gameHistory.startTime.getTime();
-        const lengthInSeconds = Math.ceil((differenceInMs % cst.MIN_TO_MS) / cst.SEC_TO_MS);
-        const lengthInMinutes = Math.floor(differenceInMs / cst.MIN_TO_MS);
+        const lengthInSeconds = Math.ceil((differenceInMs % constants.MIN_TO_MS) / constants.SEC_TO_MS);
+        const lengthInMinutes = Math.floor(differenceInMs / constants.MIN_TO_MS);
         this.gameHistory.length = lengthInMinutes + ' min ' + lengthInSeconds + ' s';
-        this.gameHistory.firstPlayer.pointsScored = this.scores[cst.MAIN_PLAYER];
-        this.gameHistory.secondPlayer.pointsScored = this.scores[cst.OTHER_PLAYER];
+        this.gameHistory.firstPlayer.pointsScored = this.scores[constants.MAIN_PLAYER];
+        this.gameHistory.secondPlayer.pointsScored = this.scores[constants.OTHER_PLAYER];
         this.gameHistoryService.addGame(this.gameHistory);
     }
 
@@ -362,11 +367,11 @@ export class Game {
 
         this.skipCounter = userRequest ? this.skipCounter + 1 : 0;
 
-        if (this.skipCounter === cst.MAX_SKIP_IN_A_ROW) this.endGame();
+        if (this.skipCounter === constants.MAX_SKIP_IN_A_ROW) this.endGame();
 
         if (this.timeout) clearTimeout(this.timeout);
         if (this.room.getState() === State.Started) {
-            this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * cst.SEC_TO_MS);
+            this.timeout = setTimeout(() => this.timeoutHandler(), this.room.parameters.timer * constants.SEC_TO_MS);
         } else {
             this.timeout = undefined;
         }
@@ -387,7 +392,7 @@ export class Game {
     }
 
     private getPlayerId(isActivePlayer: boolean) {
-        return isActivePlayer === this.isPlayer0Turn ? this.players[cst.MAIN_PLAYER].id : this.players[cst.OTHER_PLAYER].id;
+        return isActivePlayer === this.isPlayer0Turn ? this.players[constants.MAIN_PLAYER].id : this.players[constants.OTHER_PLAYER].id;
     }
 
     private checkTurn(playerId: PlayerId) {

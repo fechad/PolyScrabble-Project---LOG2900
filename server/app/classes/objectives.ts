@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable max-classes-per-file */
-import * as cst from '../constants';
+import * as constants from '../constants';
 import { PlacementOption } from './placement-option';
 
 export abstract class Objective {
@@ -31,7 +31,7 @@ export abstract class ObjectiveFormed extends Objective {
 }
 
 export class ObjectivePalindrome extends ObjectiveFormed {
-    points = cst.OBJECTIVE_PALINDORME;
+    points = constants.POINTS_OBJECTIVE_PALINDORME;
     description = 'Former un palindrome';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -41,7 +41,7 @@ export class ObjectivePalindrome extends ObjectiveFormed {
 }
 
 export class ObjectiveAlreadyOnBoard extends ObjectiveFormed {
-    points = cst.OBJECTIVE_ALREADY_ON_BOARD;
+    points = constants.POINTS_OBJECTIVE_ALREADY_ON_BOARD;
     description = 'Former un mot déjà présent sur le plateau';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -50,17 +50,17 @@ export class ObjectiveAlreadyOnBoard extends ObjectiveFormed {
 }
 
 export class Objective3Vowels extends ObjectiveFormed {
-    points = cst.OBJECTIVE_3_VOWELS;
+    points = constants.POINTS_OBJECTIVE_3_VOWELS;
     description = 'Former un mot avec 3 voyelles';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        const vowelCount = [...word].filter((letter) => cst.VOWELS.has(letter)).length;
+        const vowelCount = [...word].filter((letter) => constants.VOWELS.has(letter)).length;
         return vowelCount >= 3;
     }
 }
 
 export class ObjectiveAnagram extends ObjectiveFormed {
-    points = cst.OBJECTIVE_ANAGRAM;
+    points = constants.POINTS_OBJECTIVE_ANAGRAM;
     description = "Former un anagramme d'un mot déja présent";
 
     isObjectiveAccomplishedFormed(word: string): boolean {
@@ -78,42 +78,42 @@ export class ObjectiveAnagram extends ObjectiveFormed {
 }
 
 export class ObjectiveOnlyVowels extends ObjectivePlacement {
-    points = cst.OBJECTIVE_ONLY_VOWELS;
+    points = constants.POINTS_OBJECTIVE_ONLY_VOWELS;
     description = 'Former un mot sans ajouter de consonne';
 
     isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean {
-        return wordPlacement.newLetters.every((letter) => cst.VOWELS.has(letter.letter.toLowerCase()));
+        return wordPlacement.newLetters.every((letter) => constants.VOWELS.has(letter.letter.toLowerCase()));
     }
 }
 
 export class Objective2BigLetters extends ObjectiveFormed {
-    points = cst.OBJECTIVE_2_BIG_LETTERS;
+    points = constants.POINTS_OBJECTIVE_2_BIG_LETTERS;
     description = 'Former un mot avec 2 lettres de plus de 5 points';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        const count = [...word].filter((letter) => cst.BIG_POINTS.has(letter)).length;
+        const count = [...word].filter((letter) => constants.BIG_POINTS.has(letter)).length;
         return count >= 2;
     }
 }
 
 export class Objective7LettersOrMore extends ObjectiveFormed {
-    points = cst.OBJECTIVE_7_LETTERS_OR_MORE;
+    points = constants.POINTS_OBJECTIVE_7_LETTERS_OR_MORE;
     description = 'Former un mot de plus de 7 lettres';
 
     isObjectiveAccomplishedFormed(word: string): boolean {
-        return word.length > cst.OBJECTIVE_NUMBER_OF_LETTER;
+        return word.length > constants.POINTS_OBJECTIVE_NUMBER_OF_LETTER;
     }
 }
 
 export class ObjectiveCornerPlacement extends ObjectivePlacement {
-    points = cst.OBJECTIVE_CORNER_PLACEMENT;
+    points = constants.POINTS_OBJECTIVE_CORNER_PLACEMENT;
     description = 'Placer une lettre dans un coin';
 
     isObjectiveAccomplishedPlacement(wordPlacement: PlacementOption): boolean {
         return wordPlacement.newLetters.some(
             (letter) =>
-                (letter.position.row === 0 || letter.position.row === cst.BOARD_LENGTH - 1) &&
-                (letter.position.col === 0 || letter.position.col === cst.BOARD_LENGTH - 1),
+                (letter.position.row === 0 || letter.position.row === constants.BOARD_LENGTH - 1) &&
+                (letter.position.col === 0 || letter.position.col === constants.BOARD_LENGTH - 1),
         );
     }
 }
