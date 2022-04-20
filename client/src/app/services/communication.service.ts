@@ -21,17 +21,21 @@ export type DialogDictionary = { id: number; name: string; description: string; 
     providedIn: 'root',
 })
 export class CommunicationService {
-    readonly rooms: BehaviorSubject<Room[]> = new BehaviorSubject([] as Room[]);
-    readonly selectedRoom: BehaviorSubject<Room | undefined> = new BehaviorSubject(undefined as Room | undefined);
+    readonly rooms: BehaviorSubject<Room[]>;
+    readonly selectedRoom: BehaviorSubject<Room | undefined>;
     readonly dictionnaries: Promise<DialogDictionary[]>;
-    private myId: BehaviorSubject<PlayerId | undefined> = new BehaviorSubject(undefined as PlayerId | undefined);
+    private myId: BehaviorSubject<PlayerId | undefined>;
     private token: Token;
 
     private readonly waitingRoomsSocket: Socket;
     private readonly mainSocket: Socket;
-    private roomSocket: Socket | undefined = undefined;
+    private roomSocket: Socket | undefined;
 
     constructor(public gameContextService: GameContextService, private httpClient: HttpClient, private router: Router, private io: IoWrapper) {
+        this.rooms = new BehaviorSubject([] as Room[]);
+        this.selectedRoom = new BehaviorSubject(undefined as Room | undefined);
+        this.myId = new BehaviorSubject(undefined as PlayerId | undefined);
+        this.roomSocket = undefined;
         this.waitingRoomsSocket = this.io.io(`${environment.socketUrl}/waitingRoom`);
         const auth = AuthService.getAuth();
         this.mainSocket = this.io.io(`${environment.socketUrl}/`, { auth });
@@ -77,7 +81,7 @@ export class CommunicationService {
         if (this.isMainPlayer()) {
             this.roomSocket?.emit('kick');
         } else {
-            throw new Error('Tried to kick when not room creator');
+            throw new Error("Vous avez essayé de rejeter un joueur de la salle alors que vous n'êtes pas son créateur.");
         }
     }
 
@@ -85,7 +89,7 @@ export class CommunicationService {
         if (this.selectedRoom.value !== undefined) {
             this.leaveGame();
         } else {
-            throw new Error('Tried to leave when not in room');
+            throw new Error('Vous avez essayé de quitter une salle alors que vous êtes dans aucune salle.');
         }
     }
 
@@ -94,7 +98,7 @@ export class CommunicationService {
         if (this.isMainPlayer()) {
             this.roomSocket?.emit('start');
         } else {
-            throw new Error('Tried to start when not room creator');
+            throw new Error("Vous avez essayé de démarrer la partie alors que vous n'êtes pas le créateur.");
         }
     }
 
@@ -108,7 +112,7 @@ export class CommunicationService {
     }
 
     async joinRoom(avatar: string, playerName: string, roomId: RoomId) {
-        if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
+        if (this.selectedRoom.value !== undefined) throw Error('Vous êtes déjà dans une salle de jeu.');
 
         if (this.isServerDown()) return;
         this.mainSocket.emit('join-room', roomId, playerName, avatar);
@@ -124,7 +128,7 @@ export class CommunicationService {
     }
 
     async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
-        if (this.selectedRoom.value !== undefined) throw Error('Already in a room');
+        if (this.selectedRoom.value !== undefined) throw Error('Vous êtes déjà dans une salle de jeu.');
         if (this.isServerDown()) return;
         this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();
@@ -145,13 +149,13 @@ export class CommunicationService {
         if (this.waitingRoomsSocket.connected) this.waitingRoomsSocket.disconnect();
     }
 
-    private handleError(e: string) {
+    private handleError(error: string) {
         // eslint-disable-next-line no-console
-        if (!environment.production) console.error(e);
-        if (e === 'Il y a déjà deux joueurs dans cette partie') {
+        if (!environment.production) console.error(error);
+        if (error === 'Il y a déjà deux joueurs dans cette partie.') {
             swal.fire({
                 title: 'Erreur!',
-                text: e,
+                text: error,
                 showCloseButton: true,
                 confirmButtonText: 'Ok!',
             });
@@ -196,7 +200,7 @@ export class CommunicationService {
     private serverDownAlert() {
         swal.fire({
             title: 'Oh non!',
-            text: "Vous n'êtes pas connecté au serveur actuellement",
+            text: "Vous n'êtes pas connecté au serveur actuellement.",
             showCloseButton: true,
             confirmButtonText: 'Compris!',
             heightAuto: false,

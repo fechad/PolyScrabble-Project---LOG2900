@@ -17,7 +17,7 @@ export class Rack {
             const index = tempRack.findIndex((foundLetter) => {
                 return letter === foundLetter.name.toLowerCase() || (foundLetter.name === '*' && CommandParsing.isUpperCaseLetter(letter));
             });
-            if (index === constants.MISSING) throw new Error('Ces lettres ne sont pas dans le chevalet');
+            if (index === constants.MISSING) throw new Error('Ces lettres ne sont pas dans le chevalet.');
             tempRack[index] = tempRack[tempRack.length - 1];
             tempRack.pop();
         }

@@ -46,7 +46,7 @@ export class ChatBoxLogicService {
         if (this.gameContextService.state.value.state !== State.Started) throw new Error(' La partie est terminée !');
         else if (this.commandStructure[cst.COMMAND_INDEX] === '!réserve' && commandLength === cst.RESERVE_COMMAND_LENGTH) this.getReserve();
         else if (this.commandStructure[cst.COMMAND_INDEX] === '!aide' && commandLength === cst.HELP_COMMAND_LENGTH) this.sendHelp();
-        else if (!myTurn) throw new Error("Ce n'est pas votre tour");
+        else if (!myTurn) throw new Error("Ce n'est pas votre tour.");
         else if (this.commandStructure[cst.COMMAND_INDEX] === '!indice' && commandLength === cst.HINT_COMMAND_LENGTH) this.hint();
         else if (this.commandStructure[cst.COMMAND_INDEX] === '!placer' && commandLength === cst.PLACE_COMMAND_LENGTH) {
             this.parsedLetters = CommandParsing.removeAccents(this.commandStructure[cst.WORD_TO_PLACE_INDEX]);
@@ -65,16 +65,17 @@ export class ChatBoxLogicService {
 
     private place() {
         this.gameContextService.rack.attemptTempUpdate(this.parsedLetters);
-        if (!CommandParsing.isPlayableWord(this.parsedLetters)) throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z");
+        if (!CommandParsing.isPlayableWord(this.parsedLetters))
+            throw new Error("Un des caractère n'est pas valide, les caractères valides sont de a à z.");
         if (!CommandParsing.isValidVerticalPosition(this.verticalPosition))
-            throw new Error("La position verticale choisie n'est pas sur la grille de jeu");
+            throw new Error("La position verticale choisie n'est pas sur la grille de jeu.");
         if (!CommandParsing.isValidHorizontalPosition(this.horizontalPosition))
-            throw new Error("La position horizontale choisie n'est pas sur la grille de jeu");
+            throw new Error("La position horizontale choisie n'est pas sur la grille de jeu.");
         if (this.placementOrientation === undefined) {
             if (this.parsedLetters.length !== cst.MIN_TYPED_WORD_LENGTH)
-                throw new Error("L'orientation du placement n'est pas mentionnée alors que le mot a une longeure supérieur à 1");
+                throw new Error("L'orientation du placement n'est pas mentionnée alors que le mot a une longeure supérieur à 1.");
         } else if (!CommandParsing.isValidOrientation(this.placementOrientation as string))
-            throw new Error("L'orientation du placement n'est pas valide");
+            throw new Error("L'orientation du placement n'est pas valide.");
         const verticalIndex = CommandParsing.getVerticalIndex(this.verticalPosition);
         const horizontalIndex = parseInt(this.horizontalPosition, cst.DECIMAL_BASE) - 1;
         const isHorizontal = CommandParsing.isHorizontalOrientation(this.placementOrientation);
@@ -86,8 +87,8 @@ export class ChatBoxLogicService {
     private exchange() {
         const isInBound = this.parsedLetters.length >= cst.MIN_TYPED_WORD_LENGTH && this.parsedLetters.length <= cst.MAX_TYPED_WORD_LENGTH;
         if (!CommandParsing.areValidCharactersToExchange(this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]))
-            throw new Error("Un des caractère n'est pas valide, les caractères valides sont a-z et *");
-        if (!isInBound) throw new Error("Impossible d'échanger cette quantité de lettres");
+            throw new Error("Un des caractère n'est pas valide, les caractères valides sont de a à z et *.");
+        if (!isInBound) throw new Error("Impossible d'échanger cette quantité de lettres.");
 
         this.gameContextService.rack.attemptTempUpdate(this.parsedLetters);
         this.gameContextService.executeCommand(Command.Exchange, this.commandStructure[cst.LETTERS_TO_EXCHANGE_INDEX]);
@@ -128,7 +129,7 @@ export class ChatBoxLogicService {
                 break;
             }
             default: {
-                throw new Error('Le coordonnées de positionnement ne respectent pas le format demandé');
+                throw new Error('Les coordonnées de positionnement ne respectent pas le format demandé.');
             }
         }
     }
