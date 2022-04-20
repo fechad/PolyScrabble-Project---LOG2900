@@ -1,5 +1,5 @@
 import { ALPHABET } from '@app/alphabet-template';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { MAIN_PLAYER, OTHER_PLAYER } from '@app/constants';
 
 export type Letter = string;
@@ -40,7 +40,7 @@ export class Reserve {
             const i = rack.findIndex(
                 (letter) => unwantedLetter === letter.toLowerCase() || (unwantedLetter.toUpperCase() === unwantedLetter && letter === '*'),
             );
-            if (i === cst.UNDEFINED) throw new Error('Tried to remove letter that is not in rack');
+            if (i === constants.UNDEFINED) throw new Error('Tried to remove letter that is not in rack');
             if (putBack) this.reserve.push(rack[i]);
             rack[i] = rack[rack.length - 1];
             rack.pop();
@@ -70,7 +70,7 @@ export class Reserve {
     }
 
     private setRacks() {
-        const rackLength = cst.RACK_LENGTH;
+        const rackLength = constants.RACK_LENGTH;
         const rack1: string[] = [];
         const rack2: string[] = [];
         for (let i = 0; i < rackLength; i++) {

@@ -1,7 +1,7 @@
 import { Game } from '@app/classes/game';
 import { Position } from '@app/classes/position';
 import { PlayerId, Room, State } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { LoginsService } from '@app/services/logins.service';
@@ -73,7 +73,7 @@ export class SocketManager {
         rooms.use((socket, next) => {
             const roomId = Number.parseInt(socket.nsp.name.substring('/rooms/'.length), 10);
             const idx = this.roomsService.rooms.findIndex((room) => room.id === roomId);
-            if (idx === cst.UNDEFINED) {
+            if (idx === constants.UNDEFINED) {
                 next(Error('Invalid room number'));
                 return;
             }
@@ -133,7 +133,7 @@ export class SocketManager {
         games.use((socket, next) => {
             const gameId = Number.parseInt(socket.nsp.name.substring('/games/'.length), 10);
             const idx = this.roomsService.games.findIndex((game) => game.id === gameId);
-            if (idx === cst.UNDEFINED) {
+            if (idx === constants.UNDEFINED) {
                 next(Error('Invalid game number'));
                 return;
             }
@@ -186,7 +186,7 @@ export class SocketManager {
                 handlers.forEach(([name, handler]) => game.eventEmitter.off(name, handler));
                 setTimeout(() => {
                     if (!this.logins.verify(id, this.token)) game.forfeit(id);
-                }, cst.AWOL_DELAY);
+                }, constants.AWOL_DELAY);
             });
 
             game.sendState();

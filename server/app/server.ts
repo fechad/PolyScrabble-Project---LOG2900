@@ -1,5 +1,5 @@
 import { Application } from '@app/app';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
@@ -24,7 +24,7 @@ export class Server {
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
-        const port: number = typeof val === 'string' ? parseInt(val, cst.DECIMAL_BASE) : val;
+        const port: number = typeof val === 'string' ? parseInt(val, constants.DECIMAL_BASE) : val;
         if (isNaN(port)) {
             return val;
         } else if (port >= 0) {

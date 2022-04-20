@@ -1,4 +1,4 @@
-import * as cst from '@app/controllers/db.controller';
+import * as constants from '@app/controllers/db.controller';
 import { DataBaseController, Score, User } from '@app/controllers/db.controller';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -12,7 +12,7 @@ export class HighScoresService {
 
     async connect() {
         await this.dataBase.connect();
-        this.collection = this.dataBase.db?.collection(cst.SCORES_COLLECTION);
+        this.collection = this.dataBase.db?.collection(constants.SCORES_COLLECTION);
     }
 
     async resetScores(res: Response): Promise<void> {
@@ -26,17 +26,17 @@ export class HighScoresService {
     }
 
     async getScores(log2990: boolean): Promise<Score[]> {
-        if (!this.collection) return cst.DEFAULT_USERS;
+        if (!this.collection) return constants.DEFAULT_USERS;
         let leaderboard = (await this.collection
             .aggregate([
                 { $match: { log2990 } },
                 { $group: { _id: '$score', score: { $max: '$score' }, names: { $addToSet: '$name' } } },
                 { $sort: { score: -1 } },
             ])
-            .limit(cst.MAX_RESULTS)
+            .limit(constants.MAX_RESULTS)
             .project({ _id: 0, log2990: 0 })
             .toArray()) as Score[];
-        leaderboard.push(...cst.DEFAULT_USERS);
+        leaderboard.push(...constants.DEFAULT_USERS);
         leaderboard.sort((s1, s2) => s2.score - s1.score);
         leaderboard = leaderboard.reduce((arr, score) => {
             if (arr.length > 0 && arr[arr.length - 1].score === score.score) {
@@ -46,7 +46,7 @@ export class HighScoresService {
             }
             return arr;
         }, [] as Score[]);
-        leaderboard.splice(cst.MAX_RESULTS);
+        leaderboard.splice(constants.MAX_RESULTS);
         return leaderboard;
     }
 

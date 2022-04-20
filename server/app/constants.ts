@@ -1,6 +1,6 @@
 import { Position } from './classes/position';
 
-export type Braket = [number, number];
+export type Bracket = [number, number];
 
 export const RACK_LENGTH = 7;
 export const MIDDLE_INDEX = 7;
@@ -54,9 +54,9 @@ export const LOWER_BOUND_INDEX = 0;
 export const HIGHER_BOUND_INDEX = 1;
 export const MIN_TO_MS = 60000;
 /* eslint-disable  @typescript-eslint/no-magic-numbers */
-export const LOWER_POINT_BRACKET: Braket = [1, 6];
-export const MIDDLE_POINT_BRACKET: Braket = [7, 12];
-export const HIGHER_POINT_BRACKET: Braket = [13, 18];
+export const LOWER_POINT_BRACKET: Bracket = [1, 6];
+export const MIDDLE_POINT_BRACKET: Bracket = [7, 12];
+export const HIGHER_POINT_BRACKET: Bracket = [13, 18];
 export const VOWELS = new Set<string>(['a', 'e', 'i', 'o', 'u', 'y']);
 export const BIG_POINTS = new Set<string>(['j', 'k', 'q', 'w', 'x', 'y', 'z']);
 export const MULT_WORDS_3 = [

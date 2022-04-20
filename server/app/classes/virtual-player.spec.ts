@@ -2,7 +2,7 @@
 
 import { Difficulty, GameType, Parameters } from '@app/classes/parameters';
 import { PlacementOption } from '@app/classes/placement-option';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { DictionnaryService } from '@app/services/dictionnary.service';
 import { GameHistoryService } from '@app/services/game-history-service';
 import { expect } from 'chai';
@@ -37,7 +37,7 @@ describe('VirtualPlayer', () => {
         parameters.log2990 = false;
         const room = new Room(1, '1', 'Dummy', parameters);
         room.addPlayer('2', 'otherDummy', false, 'a');
-        room.addPlayer(cst.AI_ID, 'heo', true, 'a');
+        room.addPlayer(constants.AI_ID, 'heo', true, 'a');
         game = new Game(room, dictionnaryService.dictionnaries[0], gameHistory);
         vP = new VirtualPlayer(Difficulty.Expert, game, dictionnaryService.dictionnaries[0].trie);
         previousMathRandom = Math.random;
@@ -74,11 +74,11 @@ describe('VirtualPlayer', () => {
 
     it('should select a random bracket', () => {
         Math.random = () => 0.2;
-        expect(vP['getRandomPointBracket']()).to.deep.equal(cst.LOWER_POINT_BRACKET);
+        expect(vP['getRandomPointBracket']()).to.deep.equal(constants.LOWER_POINT_BRACKET);
         Math.random = () => 0.5;
-        expect(vP['getRandomPointBracket']()).to.deep.equal(cst.MIDDLE_POINT_BRACKET);
+        expect(vP['getRandomPointBracket']()).to.deep.equal(constants.MIDDLE_POINT_BRACKET);
         Math.random = () => 0.9;
-        expect(vP['getRandomPointBracket']()).to.deep.equal(cst.HIGHER_POINT_BRACKET);
+        expect(vP['getRandomPointBracket']()).to.deep.equal(constants.HIGHER_POINT_BRACKET);
     });
 
     const testPrefixSuffix = (position: Position, prefix: string, toTest: string, suffix: string): boolean => {

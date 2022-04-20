@@ -1,6 +1,6 @@
 import { ALPHABET } from '@app/alphabet-template';
 import { LetterPlacement, PlacementOption } from '@app/classes/placement-option';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { Board } from './board';
 import { Position } from './position';
 
@@ -19,8 +19,8 @@ export class WordGetter {
         const words = placement.newLetters
             .map((newLetter) => this.getWord([newLetter], !placement.isHorizontal))
             .filter((letter) => letter) as Placement[];
-        const firstWord = !this.board.get(new Position(cst.HALF_LENGTH, cst.HALF_LENGTH)).letter;
-        const placeMiddle = placement.newLetters.some((letter) => letter.position.equals(new Position(cst.HALF_LENGTH, cst.HALF_LENGTH)));
+        const firstWord = !this.board.get(new Position(constants.HALF_LENGTH, constants.HALF_LENGTH)).letter;
+        const placeMiddle = placement.newLetters.some((letter) => letter.position.equals(new Position(constants.HALF_LENGTH, constants.HALF_LENGTH)));
         if (firstWord && !placeMiddle) throw new Error('Placement invalide: Le premier mot doit toucher le milieu du plateau');
         const mainWord = this.getWord(placement.newLetters, placement.isHorizontal);
         if (mainWord) words.push(mainWord);

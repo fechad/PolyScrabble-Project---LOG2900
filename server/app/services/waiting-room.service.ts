@@ -1,5 +1,5 @@
 import { Room } from '@app/classes/room';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { EventEmitter } from 'events';
 import { Service } from 'typedi';
 import { isDeepStrictEqual } from 'util';
@@ -19,7 +19,7 @@ export class WaitingRoomService extends EventEmitter {
                 this.emit('broadcast-rooms', newRooms);
                 this.prevRooms = newRooms;
             }
-        }, cst.ROOMS_LIST_UPDATE_TIMEOUT);
+        }, constants.ROOMS_LIST_UPDATE_TIMEOUT);
     }
 
     connect(socket: EventEmitter) {
