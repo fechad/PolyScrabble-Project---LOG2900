@@ -22,7 +22,9 @@ export class LetterRackComponent {
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         const buttonPressed = event.key;
-        if (event.target instanceof Element && (event.target.id === 'writingBox' || event.target.classList.contains('play-area'))) {
+        const clickedOutOfRack =
+            event.target instanceof Element && (event.target.id === 'writingBox' || event.target.classList.contains('play-area'));
+        if (clickedOutOfRack) {
             return;
         }
         if (buttonPressed === 'ArrowLeft' || buttonPressed === 'ArrowRight') this.shiftLetter(buttonPressed);
@@ -48,7 +50,7 @@ export class LetterRackComponent {
     @HostListener('document:click', ['$event'])
     clear(event: MouseEvent) {
         const selection = event.target as HTMLElement;
-        const parentPossibilities = [
+        const PARENT_POSSIBILITIES = [
             'name',
             'letter-name',
             'big-let',
@@ -65,7 +67,7 @@ export class LetterRackComponent {
         ];
         const name = selection?.getAttribute('class') as string;
 
-        if (!parentPossibilities.includes(name)) {
+        if (!PARENT_POSSIBILITIES.includes(name)) {
             this.manipulating = undefined;
             this.exchanging = [];
         }

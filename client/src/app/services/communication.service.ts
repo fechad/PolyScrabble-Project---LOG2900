@@ -65,7 +65,7 @@ export class CommunicationService {
     }
 
     isMainPlayer(): boolean {
-        return this.selectedRoom.value !== undefined && this.selectedRoom.value.mainPlayer.id === this.myId.value;
+        return !!this.selectedRoom.value && this.selectedRoom.value.mainPlayer.id === this.myId.value;
     }
 
     isServerDown(): boolean {
@@ -86,7 +86,7 @@ export class CommunicationService {
     }
 
     leave() {
-        if (this.selectedRoom.value !== undefined) {
+        if (this.selectedRoom.value) {
             this.leaveGame();
         } else {
             throw new Error('Vous avez essayé de quitter une salle alors que vous êtes dans aucune salle.');
@@ -112,7 +112,7 @@ export class CommunicationService {
     }
 
     async joinRoom(avatar: string, playerName: string, roomId: RoomId) {
-        if (this.selectedRoom.value !== undefined) throw Error('Vous êtes déjà dans une salle de jeu.');
+        if (this.selectedRoom.value) throw Error('Vous êtes déjà dans une salle de jeu.');
 
         if (this.isServerDown()) return;
         this.mainSocket.emit('join-room', roomId, playerName, avatar);
@@ -128,7 +128,7 @@ export class CommunicationService {
     }
 
     async createRoom(playerName: string, parameters: Parameters, joueurVirtuel?: string) {
-        if (this.selectedRoom.value !== undefined) throw Error('Vous êtes déjà dans une salle de jeu.');
+        if (this.selectedRoom.value) throw Error('Vous êtes déjà dans une salle de jeu.');
         if (this.isServerDown()) return;
         this.mainSocket.emit('create-room', playerName, parameters, joueurVirtuel);
         await this.waitForRoom();

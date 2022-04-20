@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { alphabet } from '@app/alphabet-letters';
+import { ALPHABET } from '@app/alphabet-letters';
 import { MessageType } from '@app/classes/chat-log';
 import { Letter } from '@app/classes/letter';
 import { ChatBoxLogicService } from './chat-box-logic.service';
@@ -38,7 +38,7 @@ describe('ChatBoxLogicService', () => {
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {
-            rackStub.push(alphabet[i]); // adds 'abcdefg'
+            rackStub.push(ALPHABET[i]); // adds 'abcdefg'
         }
         service.gameContextService.rack.rack.next(rackStub);
         for (const i of placeCommands) {
@@ -51,7 +51,7 @@ describe('ChatBoxLogicService', () => {
         const sendLocalMessage = spyOn(service.gameContextService.chatLog, 'addMessage');
         for (const i of invalidPlaceCommands) {
             await service.validateSyntax(i);
-            expect(sendLocalMessage).toHaveBeenCalledWith('Ces lettres ne sont pas dans le chevalet', MessageType.Local);
+            expect(sendLocalMessage).toHaveBeenCalledWith('Ces lettres ne sont pas dans le chevalet.', MessageType.Local);
         }
     });
 
@@ -68,7 +68,7 @@ describe('ChatBoxLogicService', () => {
         const rackStub: Letter[] = [];
         const RACKS_LENGTH = 7;
         for (let i = 0; i < RACKS_LENGTH; i++) {
-            rackStub.push(alphabet[i]); // adds 'abcdefg'
+            rackStub.push(ALPHABET[i]); // adds 'abcdefg'
         }
         service.gameContextService.rack.rack.next(rackStub);
         for (const i of exchangeCommands) {

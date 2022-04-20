@@ -35,7 +35,7 @@ export class InfosBoxComponent implements AfterViewInit, OnDestroy {
                 this.summary = 'Votre adversaire a abandonné, vous avez gagné!';
             } else if (state.state !== State.Ended) {
                 this.summary = undefined;
-            } else if (state.winner === undefined) {
+            } else if (!state.winner) {
                 this.summary = `Félicitations ${state.players[0].info.name} et ${state.players[1].info.name}!`;
             } else {
                 const winnerName = state.players.find((player) => player.info.id === state.winner)?.info.name;
