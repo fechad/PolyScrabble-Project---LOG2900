@@ -172,7 +172,7 @@ export class Game {
             const triedPlacement = PlacementOption.newPlacement(this.board, pos, isHorizontal, letters);
             const words = this.wordGetter.getWords(triedPlacement);
             if (!words.every((wordOption) => this.dictionary.isValidWord(wordOption.word)))
-                throw new Error(words.map((word) => word.word).join(' et ') + " n'existe(nt) pas dans ce dictionnaire");
+                throw new Error(words.map((word) => word.word).join(' ou ') + " n'existe(nt) pas dans ce dictionnaire");
 
             this.reserve.updateReserve(letters, this.isPlayer0Turn, false);
 
@@ -190,6 +190,10 @@ export class Game {
                 for (const newWord of words) this.playedWords.add(newWord.word);
                 for (const objective of accomplishedObjectives) {
                     console.log(`Player ${playerId} accomplished objective '${objective.objective.description}'`);
+                    this.eventEmitter.emit('message', {
+                        text: this.getPlayerInfo(playerId).info.name + " a complété l'objectif suivant: " + objective.objective.description,
+                        emitter: 'command',
+                    } as Message);
                     this.scores[playerIndex] += objective.objective.points;
                     objective.doneByPlayer = playerId;
                 }

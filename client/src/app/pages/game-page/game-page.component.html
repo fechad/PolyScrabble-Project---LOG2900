@@ -57,7 +57,7 @@
                     </button>
                 </div>
                 <div id="objectives-container" *ngIf="publicObjectives.length !== 0">
-                    <app-objectives [objectives]="privateObjectives" headerName="Objectifs privés"></app-objectives>
+                    <app-objectives [objectives]="privateObjectives" headerName="Objectifs privés" id="private-objectives"></app-objectives>
                     <app-objectives [objectives]="publicObjectives" id="public-objective" headerName="Objectifs publiques"></app-objectives>
                 </div>
             </div>
