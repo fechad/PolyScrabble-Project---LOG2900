@@ -1,5 +1,5 @@
 import { LetterPlacement } from '@app/classes/placement-option';
-import * as cst from '@app/constants';
+import * as constants from '@app/constants';
 import { GameTile } from './game-tile';
 import { Position } from './position';
 
@@ -8,20 +8,20 @@ export class Board {
 
     constructor() {
         this.board = [];
-        for (let i = 0; i < cst.BOARD_LENGTH; i++) {
+        for (let i = 0; i < constants.BOARD_LENGTH; i++) {
             this.board[i] = [];
-            for (let j = 0; j < cst.BOARD_LENGTH; j++) {
+            for (let j = 0; j < constants.BOARD_LENGTH; j++) {
                 this.board[i][j] = new GameTile(1);
             }
         }
-        this.initList(cst.MULT_WORDS_3, 1, 3);
-        this.initList(cst.MULT_WORDS_2, 1, 2);
-        this.initList(cst.MULT_LETTERS_3, 3);
-        this.initList(cst.MULT_LETTERS_2, 2);
+        this.initList(constants.MULT_WORDS_3, 1, 3);
+        this.initList(constants.MULT_WORDS_2, 1, 2);
+        this.initList(constants.MULT_LETTERS_3, 3);
+        this.initList(constants.MULT_LETTERS_2, 2);
     }
 
     get(position: Position): GameTile {
-        if (!position.isInBound()) throw new Error('Tried to get tile outside board');
+        if (!position.isInBound()) throw new Error('Cette case est hors du plateau');
         return this.board[position.row][position.col];
     }
 
@@ -34,9 +34,9 @@ export class Board {
     isInContact(pos: Position, isWordHorizontal: boolean): boolean {
         return isWordHorizontal
             ? (pos.row > 0 && !!this.board[pos.row - 1][pos.col].letter) ||
-                  (pos.row + 1 < cst.BOARD_LENGTH && !!this.board[pos.row + 1][pos.col].letter)
+                  (pos.row + 1 < constants.BOARD_LENGTH && !!this.board[pos.row + 1][pos.col].letter)
             : (pos.col > 0 && !!this.board[pos.row][pos.col - 1].letter) ||
-                  (pos.col + 1 < cst.BOARD_LENGTH && !!this.board[pos.row][pos.col + 1].letter);
+                  (pos.col + 1 < constants.BOARD_LENGTH && !!this.board[pos.row][pos.col + 1].letter);
     }
 
     getState(): (string | undefined)[][] {

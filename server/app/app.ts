@@ -38,9 +38,6 @@ export class Application {
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api', this.httpController.router);
-        /* this.app.use('/', (req, res) => {
-            res.redirect('/api/docs');
-        });*/ // TODO: decide if interesting
         this.errorHandling();
     }
 
@@ -56,7 +53,7 @@ export class Application {
     private errorHandling(): void {
         // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const err: HttpException = new HttpException('Not Found');
+            const err: HttpException = new HttpException('Introuvé');
             next(err);
         });
 

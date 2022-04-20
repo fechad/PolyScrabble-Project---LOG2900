@@ -268,7 +268,7 @@ describe('SocketManager service tests', () => {
         const row = 7;
         const col = 6;
         const isHoriontal = true;
-        const expectedPoints = 2;
+        const expectedPoints = 4;
         const [gameSocket, gameSocket2] = (await joinGame())[1];
         // eslint-disable-next-line dot-notation
         Container.get(RoomsService).games[0]['isPlayer0Turn'] = true;
