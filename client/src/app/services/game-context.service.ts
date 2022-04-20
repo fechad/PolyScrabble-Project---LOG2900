@@ -130,6 +130,10 @@ export class GameContextService {
         this.socket?.emit('place-letters', letters, rowIndex, columnIndex, isHorizontal);
     }
 
+    confirmForfeit() {
+        this.socket?.emit(Command.Forfeit);
+    }
+
     syncRack() {
         this.executeCommand(
             Command.SyncRack,

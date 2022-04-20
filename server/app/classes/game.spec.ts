@@ -154,7 +154,7 @@ describe('Game', () => {
         stubSetTimeout.args[stubSetTimeout.args.length - 1][0]();
         await promise;
         assert(stub.notCalled);
-        expect(stubError.args).to.deep.equal([[game.players[0].id, 'Un des mots crees ne fait pas partie du dictionnaire testz']]);
+        expect(stubError.args).to.deep.equal([[game.players[0].id, "testz n'existe(nt) pas dans ce dictionnaire"]]);
     });
 
     it('should output an error when placing valid words that go outside the board', async () => {

@@ -249,7 +249,7 @@ describe('CommunicationService', () => {
         (gameContext['socket'] as unknown as SocketMock).events.emit('state', { ...DEFAULT_STATE, ended: true });
         const emitSpy = (gameContext['socket'] as unknown as SocketMock).emitSpy;
         service.confirmForfeit();
-        expect(emitSpy).toHaveBeenCalledWith('confirm-forfeit', []);
+        expect(emitSpy).toHaveBeenCalledWith('confirm-forfeit');
     });
 
     it('should receive state', () => {
